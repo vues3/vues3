@@ -109,7 +109,6 @@ type TPage = FromSchema<typeof plainPage> & {
   name: string | null;
   urn: string;
   favicon: string | null;
-  edit: boolean;
 };
 
 type TResource = FromSchema<typeof Resource>;

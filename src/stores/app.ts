@@ -6,6 +6,7 @@ import {
   whenever,
 } from "@vueuse/core";
 import { logicAnd } from "@vueuse/math";
+import mime from "mime";
 import { defineStore, storeToRefs } from "pinia";
 import { toXML } from "to-xml";
 import { computed, ComputedRef, reactive, watch } from "vue";
@@ -20,6 +21,113 @@ export default defineStore("app", () => {
   const { putObject, headObject, getObject } = storeS3();
   const { pages } = storeToRefs(Data());
   const { $, validate } = Data();
+
+  /**
+   * Модификатор для вотчера, указывает на проверку всех изменений в глубину
+   *
+   * @constant
+   * @default
+   * @type {boolean}
+   */
+  const deep: boolean = true;
+
+  /**
+   * Объект, на котором определяется загрузка шаблона страницы
+   *
+   * @type {PropertyDescriptor}
+   */
+  const htm: PropertyDescriptor = {
+    /**
+     * Геттер шаблона страницы
+     *
+     * @returns {Promise<string>} - Шаблон страницы
+     */
+    get(): Promise<string> {
+      return getObject(`/assets/${(<TPage>this).id}.htm`);
+    },
+    /**
+     * Сеттер шаблона страницы
+     *
+     * @param {string} value - Передаваемый шаблон страницы
+     */
+    set(value) {
+      putObject(`/assets/${(<TPage>this).id}.htm`, mime.getType("htm"), value);
+    },
+  };
+
+  /**
+   * Объект, на котором определяется загрузка стилей страницы
+   *
+   * @type {PropertyDescriptor}
+   */
+  const css: PropertyDescriptor = {
+    /**
+     * Геттер стилей страницы
+     *
+     * @returns {Promise<string>} - Стили страницы
+     */
+    get(): Promise<string> {
+      return getObject(`/assets/${(<TPage>this).id}.css`);
+    },
+    /**
+     * Сеттер стилей страницы
+     *
+     * @param {string} value - Передаваемые стили страницы
+     */
+    set(value) {
+      putObject(`/assets/${(<TPage>this).id}.css`, mime.getType("css"), value);
+    },
+  };
+
+  /**
+   * Объект, на котором определяется загрузка скриптов страницы
+   *
+   * @type {PropertyDescriptor}
+   */
+  const js: PropertyDescriptor = {
+    /**
+     * Геттер скриптов страницы
+     *
+     * @returns {Promise<string>} - Скрипты страницы
+     */
+    get(): Promise<string> {
+      return getObject(`/assets/${(<TPage>this).id}.js`);
+    },
+    /**
+     * Сеттер скриптов страницы
+     *
+     * @param {string} value - Передаваемые скрипты страницы
+     */
+    set(value) {
+      putObject(`/assets/${(<TPage>this).id}.js`, mime.getType("js"), value);
+    },
+  };
+
+  /**
+   * Рекурсивная функция ремонта страниц
+   *
+   * @type {Function}
+   * @param {TPage[]} siblings - Элементы массива страниц
+   */
+  const fix: Function = (siblings: TPage[]) => {
+    siblings.forEach((value) => {
+      Object.defineProperties(value, {
+        htm,
+        css,
+        js,
+      });
+      fix(value.children ?? []);
+    });
+  };
+
+  watch(
+    () => $?.content ?? [],
+    (value) => {
+      fix(value);
+      // console.log(value);
+    },
+    { deep },
+  );
 
   watch(S3, async () => {
     const data = JSON.parse((await getObject("assets/data.json")) ?? "{}");
@@ -36,7 +144,7 @@ export default defineStore("app", () => {
    */
   const { data } = useFetch("monolit/.vite/manifest.json", {
     /**
-     * Преводим в массив
+     * Переводим в массив
      *
      * @param {object} ctx - Возвращаемый объект
      * @returns {object} - Трансформируемый возвращаемый объект
@@ -76,7 +184,7 @@ export default defineStore("app", () => {
       if (value && oldValue)
         putObject(
           "assets/data.json",
-          "application/json",
+          mime.getType("json"),
           JSON.stringify(value),
         );
     },
@@ -146,7 +254,7 @@ export default defineStore("app", () => {
     sitemap,
     (value, oldValue) => {
       if (value && oldValue)
-        putObject("sitemap.xml", "application/xml", toXML(value));
+        putObject("sitemap.xml", mime.getType("xml"), toXML(value));
     },
     { debounce: 1000, maxWait: 10000 },
   );

@@ -105,6 +105,7 @@ const properties = {
   full: { type: "boolean", default: true },
   setup: { type: "boolean", default: true },
   scoped: { type: "boolean", default: true },
+  edit: { type: "boolean" },
 } as const;
 
 export const plainPage = {
