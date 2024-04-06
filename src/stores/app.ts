@@ -1,6 +1,7 @@
 import {
   get,
   useArrayFind,
+  useDebounceFn,
   useFetch,
   watchDebounced,
   whenever,
@@ -22,6 +23,8 @@ export default defineStore("app", () => {
   const { pages } = storeToRefs(Data());
   const { $, validate } = Data();
 
+  const debounce = 1000;
+
   /**
    * Модификатор для вотчера, указывает на проверку всех изменений в глубину
    *
@@ -42,8 +45,8 @@ export default defineStore("app", () => {
      *
      * @returns {Promise<string>} - Шаблон страницы
      */
-    get(): Promise<string> {
-      return getObject(`/assets/${(<TPage>this).id}.htm`);
+    async get(): Promise<string> {
+      return (await getObject(`/assets/${(<TPage>this).id}.htm`)) ?? "";
     },
     /**
      * Сеттер шаблона страницы
@@ -51,7 +54,14 @@ export default defineStore("app", () => {
      * @param {string} value - Передаваемый шаблон страницы
      */
     set(value) {
-      putObject(`/assets/${(<TPage>this).id}.htm`, mime.getType("htm"), value);
+      console.log("set htm");
+      useDebounceFn(() => {
+        putObject(
+          `/assets/${(<TPage>this).id}.htm`,
+          mime.getType("htm"),
+          value,
+        );
+      }, debounce)();
     },
   };
 
@@ -66,8 +76,8 @@ export default defineStore("app", () => {
      *
      * @returns {Promise<string>} - Стили страницы
      */
-    get(): Promise<string> {
-      return getObject(`/assets/${(<TPage>this).id}.css`);
+    async get(): Promise<string> {
+      return (await getObject(`/assets/${(<TPage>this).id}.css`)) ?? "";
     },
     /**
      * Сеттер стилей страницы
@@ -75,7 +85,14 @@ export default defineStore("app", () => {
      * @param {string} value - Передаваемые стили страницы
      */
     set(value) {
-      putObject(`/assets/${(<TPage>this).id}.css`, mime.getType("css"), value);
+      console.log("set css");
+      useDebounceFn(() => {
+        putObject(
+          `/assets/${(<TPage>this).id}.css`,
+          mime.getType("css"),
+          value,
+        );
+      }, debounce)();
     },
   };
 
@@ -90,8 +107,8 @@ export default defineStore("app", () => {
      *
      * @returns {Promise<string>} - Скрипты страницы
      */
-    get(): Promise<string> {
-      return getObject(`/assets/${(<TPage>this).id}.js`);
+    async get(): Promise<string> {
+      return (await getObject(`/assets/${(<TPage>this).id}.js`)) ?? "";
     },
     /**
      * Сеттер скриптов страницы
@@ -99,7 +116,10 @@ export default defineStore("app", () => {
      * @param {string} value - Передаваемые скрипты страницы
      */
     set(value) {
-      putObject(`/assets/${(<TPage>this).id}.js`, mime.getType("js"), value);
+      console.log("set js");
+      useDebounceFn(() => {
+        putObject(`/assets/${(<TPage>this).id}.js`, mime.getType("js"), value);
+      }, debounce)();
     },
   };
 
@@ -124,7 +144,6 @@ export default defineStore("app", () => {
     () => $?.content ?? [],
     (value) => {
       fix(value);
-      // console.log(value);
     },
     { deep },
   );
@@ -188,7 +207,7 @@ export default defineStore("app", () => {
           JSON.stringify(value),
         );
     },
-    { deep: true, debounce: 1000, maxWait: 10000 },
+    { deep, debounce },
   );
   const state = reactive({
     rightDrawer: null,
@@ -256,7 +275,7 @@ export default defineStore("app", () => {
       if (value && oldValue)
         putObject("sitemap.xml", mime.getType("xml"), toXML(value));
     },
-    { debounce: 1000, maxWait: 10000 },
+    { debounce },
   );
 
   return {

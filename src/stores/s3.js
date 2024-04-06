@@ -71,6 +71,7 @@ export default defineStore("s3", () => {
     const textDecoder = new TextDecoder();
     let ret;
     if (isDefined(S3)) {
+      // try
       const { Body } = await get(S3).send(
         new GetObjectCommand({ ResponseCacheControl, Bucket, Key }),
       );
@@ -85,6 +86,8 @@ export default defineStore("s3", () => {
           }
         })([]);
       });
+      // } finally {
+      //   //
     }
     return ret;
   };
