@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Login",
+    "icon": "login",
+    "to": "/"
+  },
+  {
+    "title": "About",
+    "icon": "info",
+    "to": "/about"
+  }
+]

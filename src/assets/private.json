@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Content",
+    "icon": "wysiwyg",
+    "to": "/content"
+  },
+  {
+    "title": "Navbar",
+    "icon": "padding",
+    "to": "/navbar"
+  },
+  {
+    "title": "CSS",
+    "icon": "css",
+    "to": "/css"
+  },
+  {
+    "title": "JavaScript",
+    "icon": "javascript",
+    "to": "/js"
+  },
+  {
+    "title": "Settings",
+    "icon": "settings",
+    "to": "/settings"
+  },
+  {
+    "title": "Logout",
+    "icon": "logout",
+    "to": "/"
+  }
+]

@@ -1,0 +1,100 @@
+name: Build & Release
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=version::$(npm pkg get version | tr -d '"')
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_version.outputs.version }}
+          release_name: Release ${{ steps.get_version.outputs.version }}
+          body: ${{ steps.get_version.outputs.version }}
+          draft: false
+          prerelease: false
+  build:
+    name: Build
+    needs: create_release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+      - name: Install NPM packages
+        run: npm ci
+      - name: Build project
+        run: npm run ${{ matrix.os }}
+      - name: KosmoS3.dmg
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./out/kosmos3.dmg
+          asset_name: kosmos3.dmg
+          asset_content_type: application/x-apple-diskimage
+      - name: KosmoS3-amd64.deb
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./out/kosmos3_${{ needs.create_release.outputs.version }}_amd64.deb
+          asset_name: kosmos3_${{ needs.create_release.outputs.version }}_amd64.deb
+          asset_content_type: application/vnd.debian.binary-package
+      - name: KosmoS3-full.nupkg
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./out/kosmos3-${{ needs.create_release.outputs.version }}-full.nupkg
+          asset_name: kosmos3-${{ needs.create_release.outputs.version }}-full.nupkg
+          asset_content_type: application/octet-stream
+      - name: KosmoS3-setup.exe
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./out/kosmos3-${{ needs.create_release.outputs.version }}-setup.exe
+          asset_name: kosmos3-${{ needs.create_release.outputs.version }}-setup.exe
+          asset_content_type: application/octet-stream
+      - name: KosmoS3-setup.msi
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./out/kosmos3-${{ needs.create_release.outputs.version }}-setup.msi
+          asset_name: kosmos3-${{ needs.create_release.outputs.version }}-setup.msi
+          asset_content_type: application/x-msi

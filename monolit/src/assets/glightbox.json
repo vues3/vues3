@@ -1,0 +1,20 @@
+[
+  "$=\".apng\"",
+  "$=\".avif\"",
+  "$=\".gif\"",
+  "$=\".jpg\"",
+  "$=\".jpeg\"",
+  "$=\".jfif\"",
+  "$=\".pjpeg\"",
+  "$=\".pjp\"",
+  "$=\".png\"",
+  "$=\".svg\"",
+  "$=\".webp\"",
+  "^=\"https://www.youtube.com/embed/\"",
+  "^=\"https://www.youtube.com/watch?v=\"",
+  "^=\"https://www.youtu.be/embed/\"",
+  "^=\"https://www.youtu.be/watch?v=\"",
+  "^=\"https://www.youtube-nocookie.com/embed/\"",
+  "^=\"https://www.youtube-nocookie.com/watch?v=\"",
+  "^=\"https://vimeo.com/\""
+]
