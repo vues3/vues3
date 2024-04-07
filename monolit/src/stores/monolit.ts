@@ -17,80 +17,6 @@ export default defineStore("monolit", () => {
   const cache = "no-cache";
 
   /**
-   * Объект, на котором определяется загрузка шаблона страницы
-   *
-   * @type {PropertyDescriptor}
-   */
-  const htm: PropertyDescriptor = {
-    /**
-     * Геттер шаблона страницы
-     *
-     * @returns {Promise<string>} - Шаблон страницы
-     */
-    async get(): Promise<string> {
-      const response = await fetch(`/assets/${(<TPage>this).id}.htm`, {
-        cache,
-      });
-      return response.ok ? response.text() : "";
-    },
-  };
-
-  /**
-   * Объект, на котором определяется загрузка стилей страницы
-   *
-   * @type {PropertyDescriptor}
-   */
-  const css: PropertyDescriptor = {
-    /**
-     * Геттер стилей страницы
-     *
-     * @returns {Promise<string>} - Стили страницы
-     */
-    async get(): Promise<string> {
-      const response = await fetch(`/assets/${(<TPage>this).id}.css`, {
-        cache,
-      });
-      return response.ok ? response.text() : "";
-    },
-  };
-
-  /**
-   * Объект, на котором определяется загрузка скриптов страницы
-   *
-   * @type {PropertyDescriptor}
-   */
-  const js: PropertyDescriptor = {
-    /**
-     * Геттер скриптов страницы
-     *
-     * @returns {Promise<string>} - Скрипты страницы
-     */
-    async get(): Promise<string> {
-      const response = await fetch(`/assets/${(<TPage>this).id}.js`, {
-        cache,
-      });
-      return response.ok ? response.text() : "";
-    },
-  };
-
-  /**
-   * Рекурсивная функция ремонта страниц
-   *
-   * @type {Function}
-   * @param {TPage[]} siblings - Элементы массива страниц
-   */
-  const fix: Function = (siblings: TPage[]) => {
-    siblings.forEach((value) => {
-      Object.defineProperties(value, {
-        htm,
-        css,
-        js,
-      });
-      fix(value.children ?? []);
-    });
-  };
-
-  /**
    * Модули, передаваемые шаблону
    *
    * @type {object}
@@ -137,56 +63,59 @@ export default defineStore("monolit", () => {
    * @param {string} page.path - Путь до страницы
    * @param {boolean} page.setup - Тип скриптов
    * @param {boolean} page.scoped - Тип стилей
-   * @returns {object} Шаблон
+   * @returns {Promise<object>} Шаблон
    */
   const fncTemplate = ({
-    id: _id = "",
+    id: _id,
     _: id = `style_${_id}`,
-    template = "",
-    script = "",
-    style = "",
     path = "",
     setup = true,
     scoped = true,
+    htm,
+    js,
+    css,
   }: {
     _: string;
     id: string;
-    template: string;
-    script: string;
-    style: string;
     path: string;
     setup: boolean;
     scoped: boolean;
-  }): object => {
-    /**
-     * Константа со скриптами
-     *
-     * @type {string}
-     */
-    const cntScript =
-      script && `<script${setup ? " setup" : ""}>${script}</script>`;
-    /**
-     * Константа с шаблоном
-     *
-     * @type {string}
-     */
-    const cntTemplate = template && `<template>${template}</template>`;
-
-    /**
-     * Константа со стилями
-     *
-     * @type {string}
-     */
-    const cntStyle =
-      style && `<style${scoped ? " scoped" : ""}>${style}</style>`;
+    htm: Promise<string>;
+    css: Promise<string>;
+    js: Promise<string>;
+  }): Promise<object> => {
     /**
      * Функция получения файла шаблона
      *
      * @type {Function}
      * @returns {string} Шаблон
      */
-    const getFile = () =>
-      Promise.resolve(`${cntScript}${cntTemplate}${cntStyle}`);
+    const getFile = async () => {
+      const [template, script, style] = await Promise.all([htm, js, css]);
+      /**
+       * Константа со скриптами
+       *
+       * @type {string}
+       */
+      const cntScript =
+        script && `<script${setup ? " setup" : ""}>${script}</script>`;
+      /**
+       * Константа с шаблоном
+       *
+       * @type {string}
+       */
+      const cntTemplate = template && `<template>${template}</template>`;
+
+      /**
+       * Константа со стилями
+       *
+       * @type {string}
+       */
+      const cntStyle =
+        style && `<style${scoped ? " scoped" : ""}>${style}</style>`;
+
+      return `${cntScript}${cntTemplate}${cntStyle}`;
+    };
 
     /**
      * Процедура добавления стилей
@@ -215,6 +144,90 @@ export default defineStore("monolit", () => {
       }));
 
     return defineAsyncComponent(<any>{ loader, delay });
+  };
+
+  /**
+   * @param {TPage} that - Текущий объект страницы
+   * @param {string} key - Название свойства для хранения считанного файла
+   * @param {string} ext - Расширение файла
+   * @returns {Promise<string>} Содержимое файла
+   */
+  const getFile = async (
+    that: TPage,
+    key: string,
+    ext: string,
+  ): Promise<string> => {
+    if (that[key as keyof TPage] == null) {
+      const response = await fetch(`/assets/${that.id}.${ext}`, { cache });
+      const value = response.ok ? await response.text() : "";
+      Object.defineProperty(that, key, { value });
+    }
+    return that[key as keyof TPage] as string;
+  };
+
+  /**
+   * Объект, на котором определяется загрузка шаблона страницы
+   *
+   * @type {PropertyDescriptor}
+   */
+  const htm: PropertyDescriptor = {
+    /**
+     * Геттер шаблона страницы
+     *
+     * @returns {Promise<string>} - Шаблон страницы
+     */
+    async get(): Promise<string> {
+      return getFile(this as TPage, "template", "htm");
+    },
+  };
+
+  /**
+   * Объект, на котором определяется загрузка стилей страницы
+   *
+   * @type {PropertyDescriptor}
+   */
+  const css: PropertyDescriptor = {
+    /**
+     * Геттер стилей страницы
+     *
+     * @returns {Promise<string>} - Стили страницы
+     */
+    async get(): Promise<string> {
+      return getFile(this as TPage, "style", "css");
+    },
+  };
+
+  /**
+   * Объект, на котором определяется загрузка скриптов страницы
+   *
+   * @type {PropertyDescriptor}
+   */
+  const js: PropertyDescriptor = {
+    /**
+     * Геттер скриптов страницы
+     *
+     * @returns {Promise<string>} - Скрипты страницы
+     */
+    async get(): Promise<string> {
+      return getFile(this as TPage, "script", "js");
+    },
+  };
+
+  /**
+   * Рекурсивная функция ремонта страниц
+   *
+   * @type {Function}
+   * @param {TPage[]} siblings - Элементы массива страниц
+   */
+  const fix: Function = (siblings: TPage[]) => {
+    siblings.forEach((value) => {
+      Object.defineProperties(value, {
+        htm,
+        css,
+        js,
+      });
+      fix(value.children ?? []);
+    });
   };
 
   return { fncTemplate, fix };

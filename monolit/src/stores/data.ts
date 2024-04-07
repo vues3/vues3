@@ -84,13 +84,13 @@ import Settings from "~/src/schemas/settings";
  *   страниц
  * @property {TPage | null} prev - Предыдущая страница в массиве одноуровневых
  *   страниц
- * @property {TPage | null} next - Последующая страниа в массиве одноуровневых
+ * @property {TPage | null} next - Последующая страница в массиве одноуровневых
  *   станиц
  * @property {string | null} name - Вычисленное имя страницы, предпочтительно
  *   полное
  * @property {string} urn
- * @property {astring | nullny} favicon
- * @property {boolean} edit
+ * @property {string | null} favicon
+ * @property {boolean} contenteditable
  * @property {TPage[]} pages
  */
 type TPage = FromSchema<typeof plainPage> & {
@@ -101,6 +101,7 @@ type TPage = FromSchema<typeof plainPage> & {
   prev: TPage | null;
   next: TPage | null;
   pages: TPage[];
+  html: string;
   htm: string;
   js: string;
   css: string;
@@ -109,6 +110,9 @@ type TPage = FromSchema<typeof plainPage> & {
   name: string | null;
   urn: string;
   favicon: string | null;
+  style?: string | null;
+  script?: string | null;
+  template?: string | null;
 };
 
 type TResource = FromSchema<typeof Resource>;

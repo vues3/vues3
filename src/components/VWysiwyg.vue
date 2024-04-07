@@ -1,8 +1,9 @@
 <template lang="pug">
 div
   q-editor.col.column.full-width(
+    v-if="htm !== null",
     ref="editorRef",
-    v-model="selectedValue",
+    :model-value="htm",
     :dense="$q?.screen?.lt?.md",
     :toolbar="editorTlb",
     :fonts="fonts",
@@ -11,7 +12,9 @@ div
     placeholder="Добавьте контент на вашу страницу...",
     :definitions="editorDef",
     @paste="capture",
-    @drop="capture"
+    @drop="capture",
+    @update:model-value="$emit('update:modelValue', $event)",
+    @vue:mounted="nextTick(editorRef.focus)"
   )
   q-dialog(
     v-model="template",
@@ -87,7 +90,7 @@ import { useArrayFind, useFileDialog } from "@vueuse/core";
 import mime from "mime";
 import { storeToRefs } from "pinia";
 import { useQuasar } from "quasar";
-import { onMounted, ref, watch, watchPostEffect } from "vue";
+import { nextTick, ref, watch, watchEffect, watchPostEffect } from "vue";
 
 import mimes from "@/assets/mimes.json";
 import templates from "@/assets/templates.json";
@@ -96,13 +99,22 @@ import s3 from "@/stores/s3";
 import data from "~/monolit/src/stores/data";
 import { fonts } from "~/uno.config";
 
+const { modelValue } = defineProps({
+  modelValue: { default: "", type: [Promise, String] },
+});
+defineEmits(["update:modelValue"]);
+const htm = ref(null);
+watchEffect(async () => {
+  htm.value = await modelValue;
+});
+
 const template = ref(false);
 const routerLink = ref(false);
 const $q = useQuasar();
 const S3 = s3();
 const { base } = storeToRefs(S3);
 const { putFile } = S3;
-const { the, selectedValue } = storeToRefs(app());
+const { the } = storeToRefs(app());
 const { pages } = storeToRefs(data());
 const { $ } = data();
 const inserted = ref(null);
@@ -269,11 +281,9 @@ const editorTlb = [
   ["undo", "redo"],
   ["upload", "template", "routerLink"],
 ];
-onMounted(() => {
-  editorRef?.value?.focus();
-});
 watchPostEffect(() => {
-  editorRef.value.getContentEl().dataset.theme = the?.value?.theme;
+  if (editorRef.value)
+    editorRef.value.getContentEl().dataset.theme = the?.value?.theme;
 });
 /** ShowDialog */
 const showDialog = () => {

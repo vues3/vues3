@@ -7,6 +7,7 @@ import {
   whenever,
 } from "@vueuse/core";
 import { logicAnd } from "@vueuse/math";
+import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import mime from "mime";
 import { defineStore, storeToRefs } from "pinia";
 import { toXML } from "to-xml";
@@ -23,7 +24,7 @@ export default defineStore("app", () => {
   const { pages } = storeToRefs(Data());
   const { $, validate } = Data();
 
-  const debounce = 1000;
+  const debounce = 10000;
 
   /**
    * Модификатор для вотчера, указывает на проверку всех изменений в глубину
@@ -33,6 +34,55 @@ export default defineStore("app", () => {
    * @type {boolean}
    */
   const deep: boolean = true;
+
+  const configurable: boolean = true;
+
+  /**
+   * @param {TPage} that - Текущий объект страницы
+   * @param {string} key - Название свойства для хранения считанного файла
+   * @param {string} ext - Расширение файла
+   * @param {Function} beautify - Ф-ция форматирования кода
+   * @returns {Promise<string>} Содержимое файла
+   */
+  const getFile = async (
+    that: TPage,
+    key: string,
+    ext: string,
+    beautify: Function,
+  ): Promise<string> => {
+    if (that[key as keyof TPage] == null) {
+      const value = beautify(
+        (await getObject(`assets/${that.id}.${ext}`)) ?? "",
+      );
+      Object.defineProperty(that, key, { value, configurable });
+    }
+    return that[key as keyof TPage] as string;
+  };
+
+  /**
+   * @param {TPage} that - Текущий объект страницы
+   * @param {string} key - Название свойства для хранения считанного файла
+   * @param {string} ext - Расширение файла
+   * @param {string} text - Новое содержимое файла
+   */
+  const save = (that: TPage, key: string, ext: string, text: string) => {
+    putObject(`assets/${that.id}.${ext}`, mime.getType(ext), text);
+    const value = new Date().toISOString();
+    Reflect.defineProperty(that, "lastmod", { value });
+  };
+
+  const debounceFn = useDebounceFn(save, debounce);
+
+  /**
+   * @param {TPage} that - Текущий объект страницы
+   * @param {string} key - Название свойства для хранения считанного файла
+   * @param {string} ext - Расширение файла
+   * @param {string} value - Новое содержимое файла
+   */
+  const setFile = (that: TPage, key: string, ext: string, value: string) => {
+    Object.defineProperty(that, key, { value, configurable });
+    debounceFn(that, key, ext, value);
+  };
 
   /**
    * Объект, на котором определяется загрузка шаблона страницы
@@ -45,23 +95,49 @@ export default defineStore("app", () => {
      *
      * @returns {Promise<string>} - Шаблон страницы
      */
-    async get(): Promise<string> {
-      return (await getObject(`/assets/${(<TPage>this).id}.htm`)) ?? "";
+    get(): Promise<string> {
+      return getFile(this as TPage, "template", "htm", html_beautify);
     },
     /**
      * Сеттер шаблона страницы
      *
      * @param {string} value - Передаваемый шаблон страницы
      */
-    set(value) {
-      console.log("set htm");
-      useDebounceFn(() => {
-        putObject(
-          `/assets/${(<TPage>this).id}.htm`,
-          mime.getType("htm"),
-          value,
-        );
-      }, debounce)();
+    set(value: string) {
+      setFile(this as TPage, "template", "htm", value);
+    },
+  };
+
+  /**
+   * Объект, на котором определяется загрузка шаблона страницы
+   *
+   * @type {PropertyDescriptor}
+   */
+  const html: PropertyDescriptor = {
+    /**
+     * Считывание исходного кода из структуры данных
+     *
+     * @returns {Promise<string>} - Template
+     */
+    async get() {
+      const baseUrl = `${get(base)}/`;
+      return (await (<TPage>this).htm).replace(
+        /(["'(;])([^"'(;:]*?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>))/gi,
+        (match, p1, p2) =>
+          `${p1}${new URL(p2.replace(/^\//, ""), baseUrl).href}`,
+      );
+    },
+    /**
+     * Запись исходного кода страницы в структуры данных
+     *
+     * @param {string} value - Template
+     */
+    set(value: string) {
+      const regexp = new RegExp(`^${get(base)}`);
+      (<TPage>this).htm = value.replace(
+        /[^"'(;]+?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>)/gi,
+        (match) => match.replace(regexp, ""),
+      );
     },
   };
 
@@ -76,23 +152,16 @@ export default defineStore("app", () => {
      *
      * @returns {Promise<string>} - Стили страницы
      */
-    async get(): Promise<string> {
-      return (await getObject(`/assets/${(<TPage>this).id}.css`)) ?? "";
+    get(): Promise<string> {
+      return getFile(this as TPage, "style", "css", css_beautify);
     },
     /**
      * Сеттер стилей страницы
      *
      * @param {string} value - Передаваемые стили страницы
      */
-    set(value) {
-      console.log("set css");
-      useDebounceFn(() => {
-        putObject(
-          `/assets/${(<TPage>this).id}.css`,
-          mime.getType("css"),
-          value,
-        );
-      }, debounce)();
+    set(value: string) {
+      setFile(this as TPage, "style", "css", value);
     },
   };
 
@@ -108,18 +177,15 @@ export default defineStore("app", () => {
      * @returns {Promise<string>} - Скрипты страницы
      */
     async get(): Promise<string> {
-      return (await getObject(`/assets/${(<TPage>this).id}.js`)) ?? "";
+      return getFile(this as TPage, "script", "js", js_beautify);
     },
     /**
      * Сеттер скриптов страницы
      *
      * @param {string} value - Передаваемые скрипты страницы
      */
-    set(value) {
-      console.log("set js");
-      useDebounceFn(() => {
-        putObject(`/assets/${(<TPage>this).id}.js`, mime.getType("js"), value);
-      }, debounce)();
+    set(value: string) {
+      setFile(this as TPage, "script", "js", value);
     },
   };
 
@@ -131,11 +197,7 @@ export default defineStore("app", () => {
    */
   const fix: Function = (siblings: TPage[]) => {
     siblings.forEach((value) => {
-      Object.defineProperties(value, {
-        htm,
-        css,
-        js,
-      });
+      Object.defineProperties(value, { html, htm, css, js });
       fix(value.children ?? []);
     });
   };
@@ -228,35 +290,6 @@ export default defineStore("app", () => {
   const the: ComputedRef<TPage> = <ComputedRef<TPage>>(
     useArrayFind(pages, ({ id }) => id === state.content.selected)
   );
-  const selectedValue = computed({
-    /**
-     * Считывание исходного кода из структуры данных
-     *
-     * @returns {string} - Template
-     */
-    get() {
-      const { template = "" } = get(the) ?? {};
-      const baseUrl = `${get(base)}/`;
-      return template.replace(
-        /(["'(;])([^"'(;:]*?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>))/gi,
-        (match, p1, p2) =>
-          `${p1}${new URL(p2.replace(/^\//, ""), baseUrl).href}`,
-      );
-    },
-    /**
-     * Запись исходного кода страницы в структуры данных
-     *
-     * @param {string} value - Template
-     */
-    set(value) {
-      const regexp = new RegExp(`^${get(base)}`);
-      get(the).template = value.replace(
-        /[^"'(;]+?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>)/gi,
-        (match) => match.replace(regexp, ""),
-      );
-      get(the).lastmod = new Date().toISOString();
-    },
-  });
   const sitemap = computed(() => ({
     "?": 'xml version="1.0" encoding="UTF-8"',
     urlset: {
@@ -278,9 +311,5 @@ export default defineStore("app", () => {
     { debounce },
   );
 
-  return {
-    state,
-    selectedValue,
-    the,
-  };
+  return { state, the, save };
 });

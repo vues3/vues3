@@ -70,25 +70,25 @@ export default defineStore("s3", () => {
     const ResponseCacheControl = "no-cache";
     const textDecoder = new TextDecoder();
     let ret;
-    if (isDefined(S3)) {
-      // try
-      const { Body } = await get(S3).send(
-        new GetObjectCommand({ ResponseCacheControl, Bucket, Key }),
-      );
-      const reader = Body.getReader();
-      ret = await new Promise((resolve) => {
-        (async function read(chunks) {
-          const { done, value } = await reader.read();
-          if (done) resolve(chunks.join(""));
-          else {
-            chunks.push(textDecoder.decode(value));
-            read(chunks);
-          }
-        })([]);
-      });
-      // } finally {
-      //   //
-    }
+    if (isDefined(S3))
+      try {
+        const { Body } = await get(S3).send(
+          new GetObjectCommand({ ResponseCacheControl, Bucket, Key }),
+        );
+        const reader = Body.getReader();
+        ret = await new Promise((resolve) => {
+          (async function read(chunks) {
+            const { done, value } = await reader.read();
+            if (done) resolve(chunks.join(""));
+            else {
+              chunks.push(textDecoder.decode(value));
+              read(chunks);
+            }
+          })([]);
+        });
+      } catch (e) {
+        //
+      }
     return ret;
   };
   const base = computed(

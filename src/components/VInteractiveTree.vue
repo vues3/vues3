@@ -19,17 +19,19 @@ q-btn-group.q-mx-xs(spread, flat)
     @update:expanded="$emit('update:expanded', $event)"
   )
     template(#default-header="prop")
-      .row.no-wrap.full-width.items-center(@dblclick="prop.node.edit = true")
+      .row.no-wrap.full-width.items-center(
+        @dblclick="prop.node.contenteditable = true"
+      )
         q-checkbox.q-mr-xs(v-model="prop.node.visible", dense)
         q-input.full-width.min-w-96(
           v-model.trim="prop.node[type === 'text' ? 'label' : type]",
           dense,
-          :readonly="!prop.node.edit",
+          :readonly="!prop.node.contenteditable",
           :type="type",
           outlined,
           :bg-color="prop.node.id === selected ? 'primary' : undefined",
           @click.stop="$emit('update:selected', prop.node.id)",
-          @keyup.enter="prop.node.edit = false"
+          @keyup.enter="prop.node.contenteditable = false"
         )
 </template>
 <script setup>
@@ -61,8 +63,8 @@ const $q = useQuasar();
 const tree = ref();
 const updateSelected = "update:selected";
 watch(the, (newVal, oldVal = {}) => {
-  const lOldVal = oldVal;
-  lOldVal.edit = false;
+  const value = false;
+  Reflect.defineProperty(oldVal, "contenteditable", { value });
 });
 /** Добавление новой страницы */
 const newPage = () => {

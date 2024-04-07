@@ -1,10 +1,12 @@
 <template lang="pug">
 v-ace-editor(
+  v-if="value !== null",
   ref="editorRef",
-  :value="modelValue",
+  :value="value",
   :lang="lang",
   :options="options",
-  @update:value="$emit('update:modelValue', $event)"
+  @update:value="$emit('update:modelValue', $event)",
+  @vue:mounted="beautify(value); nextTick(editorRef.focus)"
 )
 </template>
 
@@ -12,8 +14,7 @@ v-ace-editor(
 // eslint-disable-next-line simple-import-sort/imports
 import { VAceEditor } from "vue3-ace-editor";
 import "ace-builds/esm-resolver";
-import { onMounted, ref } from "vue";
-import { get } from "@vueuse/core";
+import { ref, watchEffect, nextTick } from "vue";
 import { js, css, html } from "js-beautify";
 
 const { options, lang, modelValue } = defineProps({
@@ -23,9 +24,10 @@ const { options, lang, modelValue } = defineProps({
     type: Object,
   },
   lang: { default: "html", type: String },
-  modelValue: { default: "", type: String },
+  modelValue: { default: "", type: [Promise, String] },
 });
-const emits = defineEmits(["update:modelValue"]);
+
+const emit = defineEmits(["update:modelValue"]);
 /** @param {string} value - Исходный код */
 const beautify = (value) => {
   let code;
@@ -40,11 +42,12 @@ const beautify = (value) => {
       code = html(value);
       break;
   }
-  emits("update:modelValue", code);
+  emit("update:modelValue", code);
 };
 const editorRef = ref();
-onMounted(() => {
-  if (modelValue) beautify(modelValue);
-  get(editorRef).focus();
+const value = ref(null);
+
+watchEffect(async () => {
+  value.value = await modelValue;
 });
 </script>

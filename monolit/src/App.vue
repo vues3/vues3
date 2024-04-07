@@ -117,21 +117,21 @@ const navigator: ComputedRef<object> = computed(() => {
    *
    * @type {string}
    */
-  const template: string = $?.navbar?.template;
+  const htm: string = $?.navbar?.template;
 
   /**
    * Срипты навбара
    *
    * @type {string}
    */
-  const script: string = $?.navbar?.script;
+  const js: string = $?.navbar?.script;
 
   /**
    * Стили навбара
    *
    * @type {string}
    */
-  const style: string = $?.navbar?.style;
+  const css: string = $?.navbar?.style;
 
   /**
    * Тип скриптов навбара
@@ -154,7 +154,7 @@ const navigator: ComputedRef<object> = computed(() => {
    */
   const path: string = "~";
 
-  return fncTemplate({ id, template, script, style, setup, scoped, path });
+  return fncTemplate({ id, htm, js, css, setup, scoped, path });
 });
 
 /** @type {{ pages: any[] }} */

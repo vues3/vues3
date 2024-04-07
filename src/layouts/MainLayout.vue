@@ -5,7 +5,7 @@ q-layout(view="hHh Lpr lff")
       q-btn(flat, dense, round, icon="menu", @click="leftDrawer = !leftDrawer")
       q-toolbar-title
         q-avatar(icon="rocket_launch", size="xl")
-        | kosmos3
+        | Vue.S3
       q-btn(
         v-if="state.rightDrawer !== null",
         flat,

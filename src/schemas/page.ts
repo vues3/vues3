@@ -36,9 +36,6 @@ const properties = {
   lastmod: { type: "string", nullable, default: null },
   loc: { type: "string", nullable, default: null },
   priority: { type: "number", nullable, default: null, minimum: 0, maximum: 1 },
-  template: { type: "string", default: "" },
-  script: { type: "string", default: "" },
-  style: { type: "string", default: "" },
   theme: {
     type: "string",
     nullable,
@@ -105,7 +102,7 @@ const properties = {
   full: { type: "boolean", default: true },
   setup: { type: "boolean", default: true },
   scoped: { type: "boolean", default: true },
-  edit: { type: "boolean" },
+  contenteditable: { type: "boolean", default: false },
 } as const;
 
 export const plainPage = {

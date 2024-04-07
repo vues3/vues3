@@ -178,17 +178,35 @@ q-page.column.full-height
   q-separator
   q-tab-panels.full-width.col(v-model="state.content.tab")
     q-tab-panel.column(name="wysiwyg")
-      v-wysiwyg.full-width.col.column(:key="the?.id")
+      v-wysiwyg.full-width.col.column(
+        v-if="the",
+        :key="the.id",
+        v-model="the.html",
+        @vue:unmounted="onUnmounted(the, 'template', 'htm', the.html)"
+      )
     q-tab-panel.column(name="template")
-      v-source-code.col(:key="the?.id", v-model="selectedValue")
+      v-source-code.col(
+        v-if="the",
+        :key="the.id",
+        v-model="the.html",
+        @vue:unmounted="onUnmounted(the, 'template', 'htm', the.html)"
+      )
     q-tab-panel.column(name="script")
       v-source-code.col(
-        :key="the?.id",
-        v-model="the.script",
-        lang="javascript"
+        v-if="the",
+        :key="the.id",
+        v-model="the.js",
+        lang="javascript",
+        @vue:unmounted="onUnmounted(the, 'script', 'js', the.js)"
       )
     q-tab-panel.column(name="style")
-      v-source-code.col(:key="the?.id", v-model="the.style", lang="css")
+      v-source-code.col(
+        v-if="the",
+        :key="the.id",
+        v-model="the.css",
+        lang="css",
+        @vue:unmounted="onUnmounted(the, 'style', 'css', the.css)"
+      )
 </template>
 <script setup>
 import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
@@ -211,12 +229,24 @@ import data from "~/monolit/src/stores/data";
 
 const $q = useQuasar();
 const S3 = s3();
-const { state, selectedValue, the } = storeToRefs(app());
+const { state, the } = storeToRefs(app());
+const { save } = app();
 const { pages } = storeToRefs(data());
 const { $ } = data();
 const { base } = storeToRefs(S3);
 const { putFile } = S3;
 const icons = ref(materialIcons.icons);
+
+/**
+ * @param {object} that - Текущий объект страницы
+ * @param {string} key - Название свойства для хранения считанного файла
+ * @param {string} ext - Расширение файла
+ * @param {string} value - Новое содержимое файла
+ */
+const onUnmounted = async (that, key, ext, value) => {
+  save(that, key, ext, await value);
+};
+
 const loc = computed({
   /** @returns {string} - Постоянная ссылка */
   get() {
