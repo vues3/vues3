@@ -181,15 +181,15 @@ q-page.column.full-height
       v-wysiwyg.full-width.col.column(
         v-if="the",
         :key="the.id",
-        v-model="the.html",
-        @vue:unmounted="onUnmounted(the, 'template', 'htm', the.html)"
+        v-model="the.htm",
+        @vue:unmounted="onUnmounted(the, 'template', 'htm', the.htm)"
       )
     q-tab-panel.column(name="template")
       v-source-code.col(
         v-if="the",
         :key="the.id",
-        v-model="the.html",
-        @vue:unmounted="onUnmounted(the, 'template', 'htm', the.html)"
+        v-model="the.htm",
+        @vue:unmounted="onUnmounted(the, 'template', 'htm', the.htm)"
       )
     q-tab-panel.column(name="script")
       v-source-code.col(
