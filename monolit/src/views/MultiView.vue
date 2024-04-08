@@ -144,7 +144,7 @@ const root: Ref<HTMLElement | SVGElement | null | undefined> =
  *
  * @type {boolean}
  */
-let pause: boolean = false;
+let pause: boolean = true;
 
 /**
  * Флаг условия изменения роута
