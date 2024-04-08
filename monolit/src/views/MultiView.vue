@@ -88,7 +88,7 @@ const the: ComputedRef<any> = computed(() => {
  * @type {ComputedRef<any[]>}
  */
 const siblings: ComputedRef<any[]> = computed(() =>
-  the?.value?.siblings?.filter(({ visible = true } = {}) => visible),
+  the?.value?.siblings?.filter(({ enabled = true } = {}) => enabled),
 );
 
 /**

@@ -6,7 +6,7 @@ import * as vueuseMath from "@vueuse/math";
 import { defineStore } from "pinia";
 import * as vue from "vue";
 import * as vueRouter from "vue-router";
-import { loadModule, Options } from "vue3-sfc-loader";
+import { ContentData, loadModule, Options } from "vue3-sfc-loader";
 
 import { TPage } from "@/stores/data";
 
@@ -55,28 +55,22 @@ export default defineStore("monolit", () => {
    *
    * @type {Function}
    * @param {object} page - Объект страницы
-   * @param {string} page._ - Фейковый параметр
-   * @param {string} page.id - Id страницы
-   * @param {string} page.template - Шаблон страницы
-   * @param {string} page.script - Скрипты страницы
-   * @param {string} page.style - Стили страницы
    * @param {string} page.path - Путь до страницы
    * @param {boolean} page.setup - Тип скриптов
    * @param {boolean} page.scoped - Тип стилей
+   * @param {string} page.htm - Шаблон страницы
+   * @param {string} page.js - Скрипты страницы
+   * @param {string} page.css - Стили страницы
    * @returns {Promise<object>} Шаблон
    */
-  const fncTemplate = ({
-    id: _id,
-    _: id = `style_${_id}`,
-    path = "",
-    setup = true,
-    scoped = true,
+  const fncTemplate: Function = ({
+    path,
+    setup,
+    scoped,
     htm,
     js,
     css,
   }: {
-    _: string;
-    id: string;
     path: string;
     setup: boolean;
     scoped: boolean;
@@ -88,30 +82,31 @@ export default defineStore("monolit", () => {
      * Функция получения файла шаблона
      *
      * @type {Function}
-     * @returns {string} Шаблон
+     * @returns {Promise<ContentData>} Шаблон
      */
-    const getFile = async () => {
+    const getFile: Function = async (): Promise<ContentData> => {
       const [template, script, style] = await Promise.all([htm, js, css]);
       /**
        * Константа со скриптами
        *
        * @type {string}
        */
-      const cntScript =
+      const cntScript: string =
         script && `<script${setup ? " setup" : ""}>${script}</script>`;
       /**
        * Константа с шаблоном
        *
        * @type {string}
        */
-      const cntTemplate = template && `<template>${template}</template>`;
+      const cntTemplate: string =
+        template && `<template>${template}</template>`;
 
       /**
        * Константа со стилями
        *
        * @type {string}
        */
-      const cntStyle =
+      const cntStyle: string =
         style && `<style${scoped ? " scoped" : ""}>${style}</style>`;
 
       return `${cntScript}${cntTemplate}${cntStyle}`;
@@ -123,8 +118,8 @@ export default defineStore("monolit", () => {
      * @type {Function}
      * @param {string} styles - Стили
      */
-    const addStyle = (styles = "") => {
-      useStyleTag(styles, { id });
+    const addStyle = (styles: string) => {
+      useStyleTag(styles);
     };
 
     /**

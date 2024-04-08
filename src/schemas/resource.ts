@@ -6,7 +6,7 @@ const dynamicDefaults = { id };
 const properties = {
   id: { type: "string" },
   url: { type: "string", default: "" },
-  visible: { type: "boolean", default: true },
+  enabled: { type: "boolean", default: true },
 } as const;
 
 /** Схема ресурсных записей */

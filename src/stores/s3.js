@@ -69,7 +69,7 @@ export default defineStore("s3", () => {
    */
   const getObject = async (Key) => {
     const Bucket = get(bucket);
-    const ResponseCacheControl = "no-cache";
+    const ResponseCacheControl = "no-store";
     const textDecoder = new TextDecoder();
     let ret;
     if (isDefined(S3))

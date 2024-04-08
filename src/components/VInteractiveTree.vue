@@ -22,7 +22,7 @@ q-btn-group.q-mx-xs(spread, flat)
       .row.no-wrap.full-width.items-center(
         @dblclick="prop.node.contenteditable = true"
       )
-        q-checkbox.q-mr-xs(v-model="prop.node.visible", dense)
+        q-checkbox.q-mr-xs(v-model="prop.node.enabled", dense)
         q-input.full-width.min-w-96(
           v-model.trim="prop.node[type === 'text' ? 'label' : type]",
           dense,
@@ -70,8 +70,8 @@ watch(the, (newVal, oldVal = {}) => {
 const newPage = () => {
   const { parent, children, index, siblings } = get(the);
   const id = uid();
-  const visible = true;
-  const page = { id, visible };
+  const enabled = true;
+  const page = { id, enabled };
   switch (true) {
     case !!parent:
       siblings.splice(index + 1, 0, page);
@@ -111,7 +111,7 @@ const deletePage = () => {
           ({ id = uid() } = parent ?? {});
       }
       siblings.splice(index, 1);
-      if (!siblings.length && !parent) siblings.push({ id, visible: true });
+      if (!siblings.length && !parent) siblings.push({ id, enabled: true });
       emits(updateSelected, id);
     });
 };

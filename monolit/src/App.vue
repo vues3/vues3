@@ -55,14 +55,14 @@ v-head
     @scroll.passive="start"
   )
     .z-40(
-      v-if="pages?.[0]?.visible",
+      v-if="pages?.[0]?.enabled",
       :class="[...(ready ? [] : $?.navbar?.scrollClasses ?? []), ...($?.navbar?.classes ?? [])]",
       :data-theme="$?.navbar?.theme"
     )
       .navbar
         component(:is="navigator", :the="the")
     router-view
-  .drawer-side.z-50(v-if="pages?.[0]?.visible")
+  .drawer-side.z-50(v-if="pages?.[0]?.enabled")
     label.drawer-overlay(for="drawer")
     .grid.max-w-full.self-stretch.overflow-x-auto.scroll-smooth(
       :class="{ 'justify-self-stretch': pages?.[0]?.full }"
@@ -234,17 +234,17 @@ const favicon: string = crypto.randomUUID();
  *
  * @type {Function}
  * @param {any} resource - Объект ресурса
- * @param {boolean} resource.visible - Признак использования
+ * @param {boolean} resource.enabled - Признак использования
  * @param {string} resource.url - Ссылка на ресурс
  * @returns {boolean} - Флаг проверки ресурса
  */
 const alive: Function = ({
-  visible = true,
+  enabled = true,
   url = "",
 }: {
-  visible: boolean;
+  enabled: boolean;
   url: string;
-}): boolean => !!(visible && url);
+}): boolean => !!(enabled && url);
 
 /**
  * Фильтр глобальных скриптов по видимости

@@ -1,4 +1,4 @@
-import Ajv from "ajv";
+import Ajv, { FuncKeywordDefinition, ValidateFunction } from "ajv";
 import dynamicDefaults, {
   DynamicDefaultFunc,
 } from "ajv-keywords/dist/definitions/dynamicDefaults";
@@ -14,7 +14,7 @@ import Settings from "~/src/schemas/settings";
 
 /**
  * @type {TPage}
- * @property {string} id - Идентификатор страницы, значения по умолчанию
+ * @property {string} [id] - Идентификатор страницы, значения по умолчанию
  *   вычисляются динамически
  * @property {string | null} [changefreq=null] - Вероятная частота изменения
  *   этой страницы. Это значение предоставляет общую информацию для поисковых
@@ -54,7 +54,7 @@ import Settings from "~/src/schemas/settings";
  *   `null`
  * @property {string | null} [title=null] - Полный заголовок страницы. Default
  *   is `null`
- * @property {boolean} [visible=true] - Флаг видимости страницы на сайте. Не
+ * @property {boolean} [enabled=true] - Флаг видимости страницы на сайте. Не
  *   скрывает страницу от поисковиков. Default is `true`
  * @property {string | null} [type=null] - Тип объекта, например, video.movie
  *   (фильм), @see {@link https://ogp.me/#types} см. документацию. Если у вас
@@ -97,9 +97,9 @@ import Settings from "~/src/schemas/settings";
  *   полное
  * @property {string} url - Если введен loc - значит loc. Иначе возвращает path
  * @property {string | null} favicon - Название фавиконки из набора mdi
- * @property {string} [style] - Сохраненные стили страницы. Default is `""`
- * @property {string} [script] - Сохраненные скрипты страницы. Default is `""`
- * @property {string} [template] - Сохраненный шаблон страницы. Default is `""`
+ * @property {string} [style] - Сохраненные стили страницы
+ * @property {string} [script] - Сохраненные скрипты страницы
+ * @property {string} [template] - Сохраненный шаблон страницы
  */
 type TPage = FromSchema<typeof plainPage> & {
   children: TPage[];
@@ -123,25 +123,66 @@ type TPage = FromSchema<typeof plainPage> & {
   template?: string | null;
 };
 
+/**
+ * @type {TResource}
+ * @property {string} [id] - Id ресурса, вычисляется динамически
+ * @property {boolean} enabled - Признак использования ресурса
+ * @property {string} url - Url ресурса
+ */
 type TResource = FromSchema<typeof Resource>;
+
+/**
+ * @type {TSettings}
+ * @property {string | null} yandex - Id яндекса
+ * @property {string | null} metrika - Id метрики
+ * @property {string | null} google - Id гугла
+ * @property {string | null} analytics - Id аналитики
+ * @property {boolean} landing - Признак формирования сайта в виде лендинга
+ */
 type TSettings = FromSchema<typeof Settings>;
 
+/**
+ * @type {TNavbar}
+ * @property {string | null} [theme=null] - Тема daisyui, @see
+ *   {@link https://daisyui.com/docs/themes/} см. документацию. Default is
+ *   `null`
+ * @property {boolean} [setup=true] - Добавление атрибута setup в таг script.
+ *   Default is `true`
+ * @property {boolean} [scoped=true] - Добавление атрибута scoped в таг style.
+ *   Default is `true`
+ * @property {string[]} classes - Массив классов
+ * @property {string[]} scrollClasses - Массив классов, добавляемых при скроле
+ * @property {string} [template] - Сохраненный шаблон страницы
+ * @property {string} [script] - Сохраненные скрипты страницы
+ * @property {string} [style] - Сохраненные стили страницы
+ */
+type TNavbar = FromSchema<typeof Navbar>;
+
+/**
+ * @type {TData}
+ * @property {TSettings} settings - Настройки сайта
+ * @property {string | null} style - Общие стили сайта
+ * @property {string | null} script - Общие скрипты сайта
+ * @property {TResource[]} css - Подключаемые общие стили сайта
+ * @property {TResource[]} js - Подключаемые общие скрипты сайта
+ * @property {TNavbar} navbar - Навигационная плашка сайта
+ * @property {TPage[]} content - Дерево объектов страниц сайта
+ */
 type TData = FromSchema<
   typeof plainData,
   { references: [typeof Settings, typeof Resource, typeof Navbar] }
 > & { content: TPage[] | null };
 
+/**
+ * Динамический расчет uuid при валидации
+ *
+ * @returns {DynamicDefaultFunc} Ф-ция динамического расчета uuid при валидации
+ */
+dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => (): any =>
+  crypto.randomUUID();
+
 export type { TData, TPage, TSettings };
 export default defineStore("data", () => {
-  /**
-   * RandomUUID
-   *
-   * @returns {DynamicDefaultFunc} Ф-ция динамического рассчета uuid при
-   *   валидации
-   */
-  dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => (): any =>
-    crypto.randomUUID();
-
   /**
    * Главный реактивный объект данных
    *
@@ -166,15 +207,77 @@ export default defineStore("data", () => {
    */
   const deep: boolean = true;
 
-  const schemas = [Resource, Page, Settings, Navbar, Data];
+  /**
+   * An array or object of schemas that will be added to the instance
+   *
+   * @constant
+   * @default
+   * @type {object[]}
+   */
+  const schemas: object[] = [Resource, Page, Settings, Navbar, Data];
 
+  /**
+   * Replace missing or undefined properties and items with the values from
+   * corresponding default keywords.
+   *
+   * @constant
+   * @default
+   * @type {boolean}
+   */
   const useDefaults: boolean = true;
-  const coerceTypes: boolean = true;
-  const removeAdditional: boolean = true;
-  const esm: boolean = true;
-  const code: object = { esm };
-  const keywords = [dynamicDefaults()];
 
+  /**
+   * Change data type of data to match type keyword
+   *
+   * @constant
+   * @default
+   * @type {boolean}
+   */
+  const coerceTypes: boolean = true;
+
+  /**
+   * Remove additional properties
+   *
+   * @constant
+   * @default
+   * @type {boolean}
+   */
+  const removeAdditional: boolean = true;
+
+  /**
+   * How functions should be exported - by default CJS is used, so the validate
+   * function(s) file can be `required`. Set this value to true to export the
+   * validate function(s) as ES Modules, enabling bundlers to do their job.
+   *
+   * @constant
+   * @default
+   * @type {boolean}
+   */
+  const esm: boolean = true;
+
+  /**
+   * Code generation options
+   *
+   * @default
+   * @type {object}
+   */
+  const code: object = { esm };
+
+  /**
+   * An array of keyword definitions or strings
+   *
+   * @constant
+   * @default
+   * @type {FuncKeywordDefinition[]}
+   */
+  const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
+
+  /**
+   * Объект валидатора
+   *
+   * @type {Ajv}
+   * @see {@link https://ajv.js.org} см. документацию
+   */
   const ajv: Ajv = new Ajv({
     useDefaults,
     coerceTypes,
@@ -184,7 +287,14 @@ export default defineStore("data", () => {
     keywords,
   });
 
-  const validate = ajv.getSchema("urn:jsonschema:data");
+  /**
+   * Скомпилированная схема для валидации данных
+   *
+   * @type {ValidateFunction}
+   */
+  const validate: ValidateFunction = ajv.getSchema(
+    "urn:jsonschema:data",
+  ) as ValidateFunction;
 
   /**
    * Рекурсивная функция преобразования древовидного объекта в массив страниц
@@ -197,7 +307,7 @@ export default defineStore("data", () => {
     pages.flatMap((element) => [element, ...getPages(element.children ?? [])]);
 
   /**
-   * Функция для вызова рассчета массива страниц
+   * Функция для вызова расчета массива страниц
    *
    * @type {() => any}
    * @returns {TPage[]} - Страницы
@@ -205,12 +315,12 @@ export default defineStore("data", () => {
   const get: () => any = (): TPage[] => getPages($.content ?? []);
 
   /**
-   * Рассчетный массив страниц
+   * Расчетный массив страниц
    *
    * @type {ComputedRef<TPage[]>}
    */
   const pages: ComputedRef<TPage[]> = computed(() =>
-    get().map((value = {}) => {
+    get().map((value: TPage) => {
       Object.defineProperty(value, "pages", { get });
       return value;
     }),

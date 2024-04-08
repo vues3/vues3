@@ -77,7 +77,7 @@ const properties = {
     ],
   },
   title: { type: "string", nullable, default: null },
-  visible: { type: "boolean", default: true },
+  enabled: { type: "boolean", default: true },
   type: {
     type: "string",
     nullable,
