@@ -157,17 +157,11 @@ const putImage = async (file) => {
 };
 /** @param {object} evt - Объект события */
 const capture = (evt) => {
-  const { files = [] } =
-    evt?.dataTransfer ||
-    evt?.originalEvent?.clipboardData ||
-    evt?.clipboardData ||
-    window?.clipboardData ||
-    {};
-  const lFiles = [...files];
-  if (lFiles?.length) {
-    evt?.preventDefault();
-    evt?.stopPropagation();
-    lFiles?.forEach(putImage);
+  const { files = [] } = evt?.dataTransfer ?? evt?.clipboardData ?? {};
+  if (files.length) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    Array.from(files).forEach(putImage);
   }
 };
 const accept = "image/*";
