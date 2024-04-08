@@ -2,10 +2,10 @@ name: Build & Release
 on:
   push:
     branches:
-      - main
+      -  #main
   pull_request:
     branches:
-      - main
+      -  #main
 jobs:
   create_release:
     name: Create Release

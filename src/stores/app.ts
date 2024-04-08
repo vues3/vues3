@@ -95,15 +95,8 @@ export default defineStore("app", () => {
      *
      * @returns {Promise<string>} - Шаблон страницы
      */
-    async get(): Promise<string> {
-      const baseUrl = `${get(base)}/`;
-      return (
-        await getFile(this as TPage, "template", "htm", html_beautify)
-      ).replace(
-        /(["'(;])([^"'(;:]*?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>))/gi,
-        (match, p1, p2) =>
-          `${p1}${new URL(p2.replace(/^\//, ""), baseUrl).href}`,
-      );
+    get(): Promise<string> {
+      return getFile(this as TPage, "template", "htm", html_beautify);
     },
     /**
      * Сеттер шаблона страницы
@@ -111,15 +104,39 @@ export default defineStore("app", () => {
      * @param {string} value - Передаваемый шаблон страницы
      */
     set(value: string) {
+      setFile(this as TPage, "template", "htm", value);
+    },
+  };
+
+  /**
+   * Объект, на котором определяется загрузка шаблона страницы
+   *
+   * @type {PropertyDescriptor}
+   */
+  const html: PropertyDescriptor = {
+    /**
+     * Считывание исходного кода из структуры данных
+     *
+     * @returns {Promise<string>} - Template
+     */
+    async get(): Promise<string> {
+      const baseUrl = `${get(base)}/`;
+      return (await (<TPage>this).htm).replace(
+        /(["'(;])([^"'(;:]*?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>))/gi,
+        (match, p1, p2) =>
+          `${p1}${new URL(p2.replace(/^\//, ""), baseUrl).href}`,
+      );
+    },
+    /**
+     * Запись исходного кода страницы в структуры данных
+     *
+     * @param {string} value - Template
+     */
+    set(value: string) {
       const regexp = new RegExp(`^${get(base)}`);
-      setFile(
-        this as TPage,
-        "template",
-        "htm",
-        value.replace(
-          /[^"'(;]+?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>)/gi,
-          (match) => match.replace(regexp, ""),
-        ),
+      (<TPage>this).htm = value.replace(
+        /[^"'(;]+?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>)/gi,
+        (match) => match.replace(regexp, ""),
       );
     },
   };
@@ -180,7 +197,7 @@ export default defineStore("app", () => {
    */
   const fix: Function = (siblings: TPage[]) => {
     siblings.forEach((value) => {
-      Object.defineProperties(value, { htm, css, js });
+      Object.defineProperties(value, { html, htm, css, js });
       fix(value.children ?? []);
     });
   };
