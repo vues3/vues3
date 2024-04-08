@@ -4,7 +4,7 @@ import { configure } from "quasar/wrappers";
 
 export default configure(() => ({
   boot: ["main", "uno", "route"],
-  css: ["app.css"],
+  css: ["app.sass"],
   extras: ["mdi-v6", "roboto-font", "material-icons"],
   build: {
     alias: {
@@ -49,7 +49,7 @@ export default configure(() => ({
     inspectPort: 5858,
     bundler: "packager",
     packager: {},
-    builder: { appId: "kosmos3" },
+    builder: { appId: "vues3" },
   },
   bex: { contentScripts: ["my-content-script"] },
 }));

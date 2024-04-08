@@ -1,5 +1,5 @@
 import "glightbox/dist/css/glightbox.css";
-import "./style.css";
+import "./style.sass";
 import "@unocss/reset/tailwind.css";
 import "daisyui/dist/full.css";
 // eslint-disable-next-line import/no-unresolved
