@@ -294,8 +294,8 @@ export default defineStore("app", () => {
     "?": 'xml version="1.0" encoding="UTF-8"',
     urlset: {
       "@xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
-      url: get(pages).map(({ urn, lastmod, changefreq, priority }) => ({
-        loc: `https://${get(bucket)}/${urn}`,
+      url: get(pages).map(({ url, lastmod, changefreq, priority }) => ({
+        loc: `https://${get(bucket)}/${url}`,
         lastmod,
         changefreq,
         priority,

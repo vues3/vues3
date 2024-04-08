@@ -217,8 +217,8 @@ const drawer: Ref<boolean> = ref(false);
  */
 const canonical: ComputedRef<string | false> = computed(
   () =>
-    the?.value?.urn?.constructor === String &&
-    `${window.location.origin}/${the?.value?.urn}`,
+    the?.value?.url?.constructor === String &&
+    `${window.location.origin}/${the?.value?.url}`,
 );
 
 /**

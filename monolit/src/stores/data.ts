@@ -14,8 +14,8 @@ import Settings from "~/src/schemas/settings";
 
 /**
  * @type {TPage}
- * @property {string | undefined} id - Идентификатор страницы, значения по
- *   умолчанию вычисляются динамически
+ * @property {string} id - Идентификатор страницы, значения по умолчанию
+ *   вычисляются динамически
  * @property {string | null} [changefreq=null] - Вероятная частота изменения
  *   этой страницы. Это значение предоставляет общую информацию для поисковых
  *   систем и может не соответствовать точно частоте сканирования этой страницы.
@@ -49,10 +49,6 @@ import Settings from "~/src/schemas/settings";
  *   Это значение не влияет на процедуру сравнения Ваших страниц со страницами
  *   на других сайтах — оно только позволяет указать поисковым системам, какие
  *   страницы, по Вашему мнению, более важны для сканеров. Default is `null`
- * @property {string} [template=""] - Шаблон страницы в формате vue. Default is
- *   `""`
- * @property {string} [script=""] - Скрипты страницы. Default is `""`
- * @property {string} [style=""] - Стили страницы. Default is `""`
  * @property {string | null} [theme=null] - Тема daisyui, @see
  *   {@link https://daisyui.com/docs/themes/} см. документацию. Default is
  *   `null`
@@ -73,25 +69,37 @@ import Settings from "~/src/schemas/settings";
  *   Default is `true`
  * @property {boolean} [scoped=true] - Добавление атрибута scoped в таг style.
  *   Default is `true`
- * @property {TPage[]} children - Дочерние страницы
+ * @property {boolean} [contenteditable=false] - Признак редактирования свойства
+ *   {@link label}. Default is `false`
+ * @property {TPage[]} children - Массив дочерних страниц
  * @property {TPage | null} parent - Родительская страница
  * @property {TPage[]} siblings - Массив одноуровневых страниц
  * @property {TPage[]} branch - Массив объектов, определяющий путь до страницы,
  *   проще говоря, ветка в дереве
- * @property {string} path - Путь до страницы для использования в поисковой
- *   строке браузера
- * @property {number} index - Порядковый номер страницы в массиве одноуровневых
- *   страниц
  * @property {TPage | null} prev - Предыдущая страница в массиве одноуровневых
  *   страниц
  * @property {TPage | null} next - Последующая страница в массиве одноуровневых
  *   станиц
+ * @property {TPage[]} pages - Плоский массив всех объектов страниц
+ * @property {Promise<string> | string} html - Обещание на содержимое шаблона
+ *   страницы с исправленными путями картинок
+ * @property {Promise<string> | string} htm - Обещание на содержимое шаблона
+ *   страницы
+ * @property {Promise<string> | string} js - Обещание на содержимое скриптов
+ *   страницы
+ * @property {Promise<string> | string} css - Обещание на содержимое стилей
+ *   страницы
+ * @property {string} path - Путь до страницы для использования в поисковой
+ *   строке браузера
+ * @property {number} index - Порядковый номер страницы в массиве одноуровневых
+ *   страниц
  * @property {string | null} name - Вычисленное имя страницы, предпочтительно
  *   полное
- * @property {string} urn
- * @property {string | null} favicon
- * @property {boolean} contenteditable
- * @property {TPage[]} pages
+ * @property {string} url - Если введен loc - значит loc. Иначе возвращает path
+ * @property {string | null} favicon - Название фавиконки из набора mdi
+ * @property {string} [style] - Сохраненные стили страницы. Default is `""`
+ * @property {string} [script] - Сохраненные скрипты страницы. Default is `""`
+ * @property {string} [template] - Сохраненный шаблон страницы. Default is `""`
  */
 type TPage = FromSchema<typeof plainPage> & {
   children: TPage[];
@@ -101,14 +109,14 @@ type TPage = FromSchema<typeof plainPage> & {
   prev: TPage | null;
   next: TPage | null;
   pages: TPage[];
-  html: string;
-  htm: string;
-  js: string;
-  css: string;
+  html?: Promise<string> | string;
+  htm: Promise<string> | string;
+  js: Promise<string> | string;
+  css: Promise<string> | string;
   path: string;
   index: number;
   name: string | null;
-  urn: string;
+  url: string;
   favicon: string | null;
   style?: string | null;
   script?: string | null;
@@ -313,15 +321,15 @@ export default defineStore("data", () => {
   };
 
   /**
-   * Объект, на котором определяется urn ресурса
+   * Объект, на котором определяется url ресурса
    *
    * @type {PropertyDescriptor}
    */
-  const urn: PropertyDescriptor = {
+  const url: PropertyDescriptor = {
     /**
-     * Геттер urn ресурса
+     * Геттер url ресурса
      *
-     * @returns {string} - Urn ресурса
+     * @returns {string} - Url ресурса
      */
     get(): string {
       return (
@@ -399,7 +407,7 @@ export default defineStore("data", () => {
         prev,
         next,
         name,
-        urn,
+        url,
         favicon,
       });
       fixDeep({ value: value.children ?? [] }, { value });
