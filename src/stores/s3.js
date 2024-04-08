@@ -43,11 +43,13 @@ export default defineStore("s3", () => {
    * @param {string | null} ContentType Тип mime
    * @param {string | Uint8Array | Buffer | Blob} body Тело файла
    */
-  const putObject = (Key, ContentType, body) => {
+  const putObject = async (Key, ContentType, body) => {
     const Bucket = get(bucket);
     const Body =
       typeof body === "string" ? new TextEncoder().encode(body) : body;
-    get(S3)?.send(new PutObjectCommand({ Bucket, Key, ContentType, Body }));
+    await get(S3)?.send(
+      new PutObjectCommand({ Bucket, Key, ContentType, Body }),
+    );
   };
   /**
    * Запись файла
@@ -57,7 +59,7 @@ export default defineStore("s3", () => {
    * @param {File} file Файл
    */
   const putFile = async (Key, ContentType, file) => {
-    putObject(Key, ContentType, await file.arrayBuffer());
+    await putObject(Key, ContentType, await file.arrayBuffer());
   };
   /**
    * Считывание объекта
