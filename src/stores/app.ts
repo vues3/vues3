@@ -24,7 +24,7 @@ export default defineStore("app", () => {
   const { pages } = storeToRefs(Data());
   const { $, validate } = Data();
 
-  const debounce = 10000;
+  const debounce = 1000;
 
   /**
    * Модификатор для вотчера, указывает на проверку всех изменений в глубину
