@@ -1,9 +1,5 @@
-import {
-  createRouter,
-  createWebHistory,
-  RouteRecordRaw,
-  RouterHistory,
-} from "vue-router";
+import type { RouteRecordRaw, RouterHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 
 /**
  * Объект истории

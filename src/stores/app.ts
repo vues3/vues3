@@ -11,9 +11,11 @@ import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import mime from "mime";
 import { defineStore, storeToRefs } from "pinia";
 import { toXML } from "to-xml";
-import { computed, ComputedRef, reactive, watch } from "vue";
+import type { ComputedRef } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 
-import Data, { TData, TPage } from "~/monolit/src/stores/data";
+import type { TData, TPage } from "~/monolit/src/stores/data";
+import Data from "~/monolit/src/stores/data";
 
 import storeS3 from "./s3";
 
@@ -271,16 +273,12 @@ export default defineStore("app", () => {
     },
     { deep, debounce },
   );
+
+  const accessKeyId = ref("");
+
+  const rightDrawer = ref(null);
+
   const state = reactive({
-    rightDrawer: null,
-    js: {
-      selected: undefined,
-      tab: "script",
-    },
-    css: {
-      selected: undefined,
-      tab: "style",
-    },
     content: {
       selected: undefined,
       tab: "wysiwyg",
@@ -311,5 +309,5 @@ export default defineStore("app", () => {
     { debounce },
   );
 
-  return { state, the, save };
+  return { state, the, save, accessKeyId, rightDrawer };
 });

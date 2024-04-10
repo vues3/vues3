@@ -82,13 +82,10 @@ v-head
 <script setup lang="ts">
 import { useTimeout } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { computed, ComputedRef, Ref, ref } from "vue";
-import {
-  RouteLocationNormalizedLoaded,
-  Router,
-  useRoute,
-  useRouter,
-} from "vue-router";
+import type { ComputedRef, Ref } from "vue";
+import { computed, ref } from "vue";
+import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import data from "@/stores/data";
 import Monolit from "@/stores/monolit";

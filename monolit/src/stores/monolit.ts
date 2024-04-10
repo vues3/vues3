@@ -4,17 +4,13 @@ import * as vueuseComponents from "@vueuse/components";
 import * as vueuseCore from "@vueuse/core";
 import * as vueuseMath from "@vueuse/math";
 import { defineStore } from "pinia";
+import type { AsyncComponentLoader } from "vue";
 import * as vue from "vue";
-import { AsyncComponentLoader } from "vue";
 import * as vueRouter from "vue-router";
-import {
-  ContentData,
-  loadModule,
-  ModuleExport,
-  Options,
-} from "vue3-sfc-loader";
+import type { ContentData, ModuleExport, Options } from "vue3-sfc-loader";
+import { loadModule } from "vue3-sfc-loader";
 
-import { TPage } from "@/stores/data";
+import type { TPage } from "@/stores/data";
 
 export default defineStore("monolit", () => {
   const { defineAsyncComponent } = vue;

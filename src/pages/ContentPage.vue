@@ -1,5 +1,5 @@
 <template lang="pug">
-q-drawer(v-model="state.rightDrawer", bordered, side="right")
+q-drawer(v-model="rightDrawer", bordered, side="right")
   q-list
     q-expansion-item(
       icon="account_tree",
@@ -229,7 +229,7 @@ import data from "~/monolit/src/stores/data";
 
 const $q = useQuasar();
 const S3 = s3();
-const { state, the } = storeToRefs(app());
+const { state, the, rightDrawer } = storeToRefs(app());
 const { save } = app();
 const { pages } = storeToRefs(data());
 const { $ } = data();
@@ -265,7 +265,7 @@ const iconPicker = ref({
     page: 0,
   },
 });
-get(state).rightDrawer = true;
+rightDrawer.value = true;
 watch(
   () => $?.content ?? [],
   ([{ id = "" } = {}] = []) => {

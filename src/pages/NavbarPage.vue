@@ -1,5 +1,5 @@
 <template lang="pug">
-q-drawer(v-model="state.rightDrawer", bordered, side="right")
+q-drawer(v-model="rightDrawer", bordered, side="right")
   q-card(flat)
     q-item.text-teal
       q-item-section(avatar)
@@ -76,7 +76,7 @@ q-page.column.full-height
       v-source-code.col(v-model="$.navbar.style", lang="css")
 </template>
 <script setup>
-import { get, useStorage } from "@vueuse/core";
+import { useStorage } from "@vueuse/core";
 import Ajv from "ajv";
 import { storeToRefs } from "pinia";
 import { useQuasar } from "quasar";
@@ -88,10 +88,10 @@ import app from "@/stores/app";
 import data from "~/monolit/src/stores/data";
 
 const $q = useQuasar();
-const { state } = storeToRefs(app());
+const { rightDrawer } = storeToRefs(app());
 const { $ } = data();
 const navbarTabs = useStorage("navbar-tabs", "template");
-get(state).rightDrawer = true;
+rightDrawer.value = true;
 
 const schemas = [Navbar];
 const useDefaults = true;

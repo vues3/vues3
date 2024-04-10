@@ -15,8 +15,10 @@
 <script setup lang="ts">
 import GLightbox from "glightbox";
 import { storeToRefs } from "pinia";
-import { computed, ComputedRef, Ref } from "vue";
-import { RouteLocationNormalizedLoaded, useRoute } from "vue-router";
+import type { ComputedRef, Ref } from "vue";
+import { computed } from "vue";
+import type { RouteLocationNormalizedLoaded } from "vue-router";
+import { useRoute } from "vue-router";
 
 import selectors from "@/assets/glightbox.json";
 import data from "@/stores/data";

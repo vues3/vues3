@@ -7,12 +7,12 @@ q-layout(view="hHh Lpr lff")
         q-avatar(icon="rocket_launch", size="xl")
         | Vue.S3
       q-btn(
-        v-if="state.rightDrawer !== null",
+        v-if="rightDrawer !== null",
         flat,
         dense,
         round,
         icon="more_vert",
-        @click="state.rightDrawer = !state.rightDrawer"
+        @click="rightDrawer = !rightDrawer"
       )
   q-drawer(
     v-model="leftDrawer",
@@ -52,7 +52,7 @@ import publicItems from "@/assets/public.json";
 import app from "@/stores/app";
 import s3 from "@/stores/s3";
 
-const { state } = storeToRefs(app());
+const { rightDrawer } = storeToRefs(app());
 const { S3 } = storeToRefs(s3());
 const leftDrawer = ref(false);
 const miniState = ref(true);

@@ -19,7 +19,8 @@ import { initYandexMetrika } from "yandex-metrika-vue3";
 
 import App from "@/App.vue";
 import router from "@/router";
-import Data, { TData, TSettings } from "@/stores/data";
+import type { TData, TSettings } from "@/stores/data";
+import Data from "@/stores/data";
 import Monolit from "@/stores/monolit";
 import defaults from "~/uno.config";
 

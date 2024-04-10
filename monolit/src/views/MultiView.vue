@@ -24,13 +24,10 @@ import { vIntersectionObserver } from "@vueuse/components";
 import { useParentElement } from "@vueuse/core";
 import GLightbox from "glightbox";
 import { storeToRefs } from "pinia";
-import { computed, ComputedRef, Ref, ref, watch } from "vue";
-import {
-  RouteLocationNormalizedLoaded,
-  Router,
-  useRoute,
-  useRouter,
-} from "vue-router";
+import type { ComputedRef, Ref } from "vue";
+import { computed, ref, watch } from "vue";
+import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import selectors from "@/assets/glightbox.json";
 import data from "@/stores/data";

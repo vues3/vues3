@@ -1,10 +1,11 @@
-import Ajv, { FuncKeywordDefinition, ValidateFunction } from "ajv";
-import dynamicDefaults, {
-  DynamicDefaultFunc,
-} from "ajv-keywords/dist/definitions/dynamicDefaults";
+import type { FuncKeywordDefinition, ValidateFunction } from "ajv";
+import Ajv from "ajv";
+import type { DynamicDefaultFunc } from "ajv-keywords/dist/definitions/dynamicDefaults";
+import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
 import { FromSchema } from "json-schema-to-ts";
 import { defineStore } from "pinia";
-import { computed, ComputedRef, reactive, watch } from "vue";
+import type { ComputedRef } from "vue";
+import { computed, reactive, watch } from "vue";
 
 import Data, { plainData } from "~/src/schemas/data";
 import Navbar from "~/src/schemas/navbar";
@@ -181,7 +182,7 @@ type TData = FromSchema<
 dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => (): any =>
   crypto.randomUUID();
 
-export type { TData, TPage, TSettings };
+export type { TData, TPage, TResource, TSettings };
 export default defineStore("data", () => {
   /**
    * Главный реактивный объект данных

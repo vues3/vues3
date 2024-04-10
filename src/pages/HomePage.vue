@@ -123,12 +123,11 @@ import storeS3 from "@/stores/s3";
 
 const router = useRouter();
 const $q = useQuasar();
-const { state } = storeToRefs(storeApp());
+const { accessKeyId, rightDrawer } = storeToRefs(storeApp());
 const { S3, bucket, wendpoint } = storeToRefs(storeS3());
 set(bucket, "");
 set(wendpoint, "");
-get(state).rightDrawer = null;
-const accessKeyId = ref("");
+rightDrawer.value = null;
 const secretAccessKey = ref("");
 const region = ref("");
 const endpoint = ref("");
@@ -180,7 +179,7 @@ const providers = [
 ];
 const provider = ref(null);
 const regions = ref([]);
-const creds = useStorage("kosmos3", []);
+const creds = useStorage("vues3", []);
 const cred = ref(null);
 watch(provider, (value) => {
   if (value) {
