@@ -523,9 +523,11 @@ export default defineStore("data", () => {
       fixDeep({ value: value.children ?? [] }, { value });
     });
   };
+
   watch($, (value) => {
     validate?.(value);
   });
+
   watch(
     () => $?.content ?? [],
     (value) => {
@@ -533,6 +535,7 @@ export default defineStore("data", () => {
     },
     { deep },
   );
+
   watch(
     () => $?.css ?? [],
     (value) => {
@@ -540,6 +543,7 @@ export default defineStore("data", () => {
     },
     { deep },
   );
+
   watch(
     () => $?.js ?? [],
     (value) => {
