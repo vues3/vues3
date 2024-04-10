@@ -5,8 +5,14 @@ import * as vueuseCore from "@vueuse/core";
 import * as vueuseMath from "@vueuse/math";
 import { defineStore } from "pinia";
 import * as vue from "vue";
+import { AsyncComponentLoader } from "vue";
 import * as vueRouter from "vue-router";
-import { ContentData, loadModule, Options } from "vue3-sfc-loader";
+import {
+  ContentData,
+  loadModule,
+  ModuleExport,
+  Options,
+} from "vue3-sfc-loader";
 
 import { TPage } from "@/stores/data";
 
@@ -14,14 +20,19 @@ export default defineStore("monolit", () => {
   const { defineAsyncComponent } = vue;
   const { useStyleTag } = vueuseCore;
 
-  const cache = "no-cache";
+  /**
+   * Настройка кеширования
+   *
+   * @type {RequestCache}
+   */
+  const cache: RequestCache = "no-cache";
 
   /**
    * Модули, передаваемые шаблону
    *
-   * @type {object}
+   * @type {ModuleExport}
    */
-  const moduleCache = {
+  const moduleCache: ModuleExport = {
     vue,
     "vue-router": vueRouter,
     "@vueuse/core": vueuseCore,
@@ -36,19 +47,12 @@ export default defineStore("monolit", () => {
    *
    * @type {Function}
    * @param {string} type - Тип записи
-   * @param {...any} args - Содержимое записи
+   * @param {any[]} args - Содержимое записи
    */
-  const log = (type = "", ...args: any[]) => {
+  const log: Function = (type: string, ...args: any[]) => {
     // eslint-disable-next-line no-console
-    (<any>console)[type]?.(...args);
+    (console[type as keyof Console] as Function)(...args);
   };
-
-  /**
-   * Задержка рендеригна шаблона
-   *
-   * @type {number}
-   */
-  const delay = 0;
 
   /**
    * Функция, возвращающая Promise на сконструированный шаблон
@@ -63,7 +67,7 @@ export default defineStore("monolit", () => {
    * @param {string} page.css - Стили страницы
    * @returns {Promise<object>} Шаблон
    */
-  const fncTemplate: Function = ({
+  const getAsyncComponent: Function = ({
     path,
     setup,
     scoped,
@@ -85,7 +89,10 @@ export default defineStore("monolit", () => {
      * @returns {Promise<ContentData>} Шаблон
      */
     const getFile: Function = async (): Promise<ContentData> => {
-      const [template, script, style] = await Promise.all([htm, js, css]);
+      /** @type {[string, string, string]} */
+      const [template, script, style]: [string, string, string] =
+        await Promise.all([htm, js, css]);
+
       /**
        * Константа со скриптами
        *
@@ -93,6 +100,7 @@ export default defineStore("monolit", () => {
        */
       const cntScript: string =
         script && `<script${setup ? " setup" : ""}>${script}</script>`;
+
       /**
        * Константа с шаблоном
        *
@@ -118,36 +126,27 @@ export default defineStore("monolit", () => {
      * @type {Function}
      * @param {string} styles - Стили
      */
-    const addStyle = (styles: string) => {
+    const addStyle: Function = (styles: string) => {
       useStyleTag(styles);
     };
 
-    /**
-     * Загрузчик шаблона
-     *
-     * @type {Function}
-     * @returns {Promise} Промис
-     */
-    const loader = () =>
-      loadModule(`${["", "~"].includes(path) ? "" : "/"}${path}/view.vue`, <
-        Options
-      >(<unknown>{
+    return defineAsyncComponent((() =>
+      loadModule(`${["", "~"].includes(path) ? "" : "/"}${path}/view.vue`, {
         moduleCache,
         getFile,
         addStyle,
         log,
-      }));
-
-    return defineAsyncComponent(<any>{ loader, delay });
+      } as unknown as Options)) as AsyncComponentLoader);
   };
 
   /**
+   * @type {Function}
    * @param {TPage} that - Текущий объект страницы
    * @param {string} key - Название свойства для хранения считанного файла
    * @param {string} ext - Расширение файла
    * @returns {Promise<string>} Содержимое файла
    */
-  const getFile = async (
+  const getFile: Function = async (
     that: TPage,
     key: string,
     ext: string,
@@ -225,5 +224,5 @@ export default defineStore("monolit", () => {
     });
   };
 
-  return { fncTemplate, fix };
+  return { getAsyncComponent, fix };
 });

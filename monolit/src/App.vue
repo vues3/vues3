@@ -93,8 +93,8 @@ import {
 import data from "@/stores/data";
 import Monolit from "@/stores/monolit";
 
-/** @type {{ fncTemplate: Function }} */
-const { fncTemplate }: { fncTemplate: Function } = Monolit();
+/** @type {{ getAsyncComponent: Function }} */
+const { getAsyncComponent }: { getAsyncComponent: Function } = Monolit();
 
 /** @type {{ $: any }} */
 const { $ }: { $: any } = data();
@@ -154,7 +154,7 @@ const navigator: ComputedRef<object> = computed(() => {
    */
   const path: string = "~";
 
-  return fncTemplate({ id, htm, js, css, setup, scoped, path });
+  return getAsyncComponent({ id, htm, js, css, setup, scoped, path });
 });
 
 /** @type {{ pages: any[] }} */
@@ -191,7 +191,7 @@ const router: Router = useRouter();
  * @type {ComputedRef<object>}
  */
 const root: ComputedRef<object> = computed(() =>
-  fncTemplate(pages?.value?.[0]),
+  getAsyncComponent(pages?.value?.[0]),
 );
 
 /**

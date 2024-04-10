@@ -22,8 +22,8 @@ import selectors from "@/assets/glightbox.json";
 import data from "@/stores/data";
 import Monolit from "@/stores/monolit";
 
-/** @type {{ fncTemplate: Function }} */
-const { fncTemplate }: { fncTemplate: Function } = Monolit();
+/** @type {{ getAsyncComponent: Function }} */
+const { getAsyncComponent }: { getAsyncComponent: Function } = Monolit();
 
 /** @type {{ pages: any[] }} */
 const { pages }: { pages: Ref<any[]> } = storeToRefs(data());
@@ -66,7 +66,9 @@ const the: ComputedRef<object> = computed(() => {
  *
  * @type {ComputedRef<object>}
  */
-const template: ComputedRef<object> = computed(() => fncTemplate(the?.value));
+const template: ComputedRef<object> = computed(() =>
+  getAsyncComponent(the?.value),
+);
 
 /**
  * Loop slides on end

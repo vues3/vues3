@@ -17,6 +17,10 @@
   },
   {
     "label": "Icon",
-    "value": "<!--icon--><div class=\"flex flex-col items-center gap-3 w-60 md:w-64 lg:w-72 xl:w-80 2xl:w-96\"><div class=\"avatar placeholder\"><div class=\"bg-neutral text-neutral-content rounded-full w-24\"><svg viewBox=\"0 0 24 24\" class=\"fill-current w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28\"><path :d=\"mdi[`${($attrs.the??the).favicon??'mdiWeb'}`]\"></path></svg></div></div><div v-if=\"($attrs.the??the).name||($attrs.the??the).description\"><div v-if=\"($attrs.the??the).name\" class=\"text-ellipsis overflow-hidden font-bold\">{{ ($attrs.the??the).name }}</div><div v-if=\"($attrs.the??the).description\" class=\"text-ellipsis overflow-hidden text-sm opacity-50\">{{ ($attrs.the??the).description }}</div></div></div><!--/icon-->"
+    "value": "<!--icon--><div class=\"flex flex-col items-center gap-3 w-60 md:w-64 lg:w-72 xl:w-80 2xl:w-96\"><div class=\"avatar placeholder\"><div class=\"bg-neutral text-neutral-content rounded-full w-24\"><svg viewBox=\"0 0 24 24\" class=\"fill-current w-14\"><path :d=\"mdi[`${($attrs.the??the).favicon??'mdiWeb'}`]\"></path></svg></div></div><div><div v-if=\"($attrs.the??the).name\" class=\"text-ellipsis overflow-hidden font-bold\">{{ ($attrs.the??the).name }}</div><div v-if=\"($attrs.the??the).description\" class=\"text-ellipsis overflow-hidden text-sm opacity-50\">{{ ($attrs.the??the).description }}</div></div></div><!--/icon-->"
+  },
+  {
+    "label": "Container",
+    "value": "<!--container--><div class=\"flex items-center size-full\"><div class=\"container mx-auto\"><div class=\"flex flex-col gap-4\"><div class=\"skeleton h-32 w-full\"></div><div class=\"skeleton h-4 w-1/2\"></div><div class=\"skeleton h-4 w-full\"></div><div class=\"skeleton h-4 w-full\"></div></div></div></div><!--/container-->"
   }
 ]

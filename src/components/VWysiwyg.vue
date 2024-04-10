@@ -53,7 +53,7 @@ div
           v-close-popup,
           flat,
           label="Ok",
-          @click="editorRef.runCmd('insertHTML', model)"
+          @click="editorRef.runCmd('insertHTML', html_beautify(model))"
         )
   q-dialog(v-model="routerLink", full-width, full-height, persistent)
     q-card.column
@@ -87,6 +87,7 @@ div
 import "daisyui/dist/full.css";
 
 import { useArrayFind, useFileDialog } from "@vueuse/core";
+import { html_beautify } from "js-beautify";
 import mime from "mime";
 import { storeToRefs } from "pinia";
 import { useQuasar } from "quasar";
