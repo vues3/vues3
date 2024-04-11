@@ -53,12 +53,8 @@ const app = createApp(App);
 app.config.globalProperties.mdi = mdi;
 app.use(createPinia());
 
-/** @type {{ pages: {} }} */
 const { pages } = storeToRefs(Data());
-
-/** @type {{ $: {}; validate: Function }} */
 const { $, validate } = Data();
-
 const { fix } = Monolit();
 
 const cache = "no-cache";
@@ -71,7 +67,7 @@ const cache = "no-cache";
   Object.keys(data).forEach((key) => {
     $[key as keyof TData] = data[key as keyof {}];
   });
-  fix($.content);
+  fix($.content ?? []);
 })();
 
 /**
@@ -95,7 +91,7 @@ watch(
       /**
        * Функция динамического импорта компонента
        *
-       * @type {Function}
+       * @function component
        * @returns {object} - Страница ошибки
        */
       const component = () =>
@@ -133,7 +129,7 @@ watch(
     /**
      * Функция динамического импорта компонента
      *
-     * @type {Function}
+     * @function component
      * @returns {object} - Страница ошибки
      */
     const component = () => import("@/views/NotFoundView.vue");

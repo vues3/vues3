@@ -104,11 +104,11 @@ const outDir: string = "../public/monolit";
  * graph unless they are already in another manual chunk. The name of the chunk
  * will be determined by the property key.
  *
- * @type {Function}
+ * @function manualChunks
  * @param {string} id - Путь до модуля
  * @returns {string} - Вендор
  */
-const manualChunks: Function = (id: string = ""): string =>
+const manualChunks = (id: string = ""): string =>
   id?.split("node_modules/")?.[1]?.split("/")?.[0] ?? "";
 
 /**

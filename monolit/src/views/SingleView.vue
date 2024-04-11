@@ -1,9 +1,9 @@
 <template lang="pug">
-.flex.snap-start(:id="the?.id", :class="{ 'min-h-full': the?.full }")
+.flex.snap-start(v-if="the", :id="the.id", :class="{ 'min-h-full': the.full }")
   .prose.w-full.max-w-none.flex-auto.text-sm(
     v-cloak,
     class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
-    :data-theme="the?.theme",
+    :data-theme="the.theme",
     role="main"
   )
     component(
@@ -15,20 +15,18 @@
 <script setup lang="ts">
 import GLightbox from "glightbox";
 import { storeToRefs } from "pinia";
-import type { ComputedRef, Ref } from "vue";
+import type { ComputedRef } from "vue";
 import { computed } from "vue";
 import type { RouteLocationNormalizedLoaded } from "vue-router";
 import { useRoute } from "vue-router";
 
 import selectors from "@/assets/glightbox.json";
+import type { TPage } from "@/stores/data";
 import data from "@/stores/data";
 import Monolit from "@/stores/monolit";
 
-/** @type {{ getAsyncComponent: Function }} */
-const { getAsyncComponent }: { getAsyncComponent: Function } = Monolit();
-
-/** @type {{ pages: any[] }} */
-const { pages }: { pages: Ref<any[]> } = storeToRefs(data());
+const { getAsyncComponent } = Monolit();
+const { pages } = storeToRefs(data());
 
 /**
  * Текущий роут сайта
@@ -38,38 +36,36 @@ const { pages }: { pages: Ref<any[]> } = storeToRefs(data());
 const route: RouteLocationNormalizedLoaded = useRoute();
 
 /**
- * Вычисление переадресации корневого объекта страницы на первый доступный
- * объект страницы
+ * Вычисление текущего объекта с учетом переадресации корневого объекта страницы
+ * на первый доступный объект страницы
  *
- * @type {ComputedRef<object>}
+ * @type {ComputedRef<TPage | null>}
  */
-const the: ComputedRef<object> = computed(() => {
+const the: ComputedRef<TPage | null> = computed(() => {
   /**
    * Позиция текущей страницы в массиве страниц
    *
    * @type {number}
    */
-  const index: number = pages?.value?.findIndex(
-    ({ id = "" } = {}) => id === route.name,
-  );
+  const index: number = pages.value.findIndex(({ id }) => id === route.name);
 
   /**
    * Вычисленный текущий объект
    *
-   * @type {any}
+   * @type {TPage}
    */
-  const ret: any = pages?.value?.[index];
+  const ret: TPage = pages.value[index];
 
-  return index ? ret : ret?.children?.[0];
+  return index ? ret : ret.children[0] ?? null;
 });
 
 /**
  * Вычисление объекта загруженных шаблонов
  *
- * @type {ComputedRef<object>}
+ * @type {ComputedRef<object | null>}
  */
-const template: ComputedRef<object> = computed(() =>
-  getAsyncComponent(the?.value),
+const template: ComputedRef<object | null> = computed(
+  () => the.value && getAsyncComponent(the.value),
 );
 
 /**
@@ -96,5 +92,5 @@ const zoomable: boolean = false;
  * @type {string}
  * @see {@link https://github.com/biati-digital/glightbox} см. документацию
  */
-const selector: string = selectors?.map((el = "") => `a[href${el}]`)?.join();
+const selector: string = selectors.map((el) => `a[href${el}]`).join();
 </script>

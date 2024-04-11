@@ -300,11 +300,11 @@ export default defineStore("data", () => {
   /**
    * Рекурсивная функция преобразования древовидного объекта в массив страниц
    *
-   * @type {Function}
+   * @function getPages
    * @param {TPage[]} pages - Элементы массива страниц
    * @returns {TPage[]} - Аддитивный массив страниц
    */
-  const getPages: Function = (pages: TPage[]): TPage[] =>
+  const getPages = (pages: TPage[]): TPage[] =>
     pages.flatMap((element) => [element, ...getPages(element.children ?? [])]);
 
   /**
@@ -488,10 +488,11 @@ export default defineStore("data", () => {
   /**
    * Функция ремонта плоских массивов js & css
    *
-   * @type {Function}
-   * @param {{ value: TResource[] }} siblings - Исходный массив
+   * @function fixPlain
+   * @param {{}} siblings - Объект для defineProperties
+   * @param {TResource[]} siblings.value - Исходный массив
    */
-  const fixPlain: Function = (siblings: { value: TResource[] }) => {
+  const fixPlain = (siblings: { value: TResource[] }) => {
     siblings.value.forEach((element) => {
       Object.defineProperties(element, { siblings, index, prev, next });
     });
@@ -500,11 +501,13 @@ export default defineStore("data", () => {
   /**
    * Рекурсивная функция ремонта страниц
    *
-   * @type {Function}
-   * @param {{ value: TPage[] }} siblings - Элементы массива страниц
-   * @param {{ value: TPage }} parent - Элементы массива страниц
+   * @function fixDeep
+   * @param {{ value: TPage[] }} siblings - Объект для defineProperties
+   * @param {TPage[]} [siblings.value] - Элементы массива страниц
+   * @param {{ value: TPage }} [parent] - Объект для defineProperties
+   * @param {TPage} parent.value - Родительский объект
    */
-  const fixDeep: Function = (
+  const fixDeep = (
     siblings: { value: TPage[] },
     parent: { value: TPage | null } = { value: null },
   ) => {

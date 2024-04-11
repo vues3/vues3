@@ -194,10 +194,10 @@ export default defineStore("app", () => {
   /**
    * Рекурсивная функция ремонта страниц
    *
-   * @type {Function}
+   * @function fix
    * @param {TPage[]} siblings - Элементы массива страниц
    */
-  const fix: Function = (siblings: TPage[]) => {
+  const fix = (siblings: TPage[]) => {
     siblings.forEach((value) => {
       Object.defineProperties(value, { html, htm, css, js });
       fix(value.children ?? []);

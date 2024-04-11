@@ -229,13 +229,13 @@ const favicon: string = crypto.randomUUID();
 /**
  * Ф-ция проверки ресурса
  *
- * @type {Function}
+ * @function alive
  * @param {any} resource - Объект ресурса
  * @param {boolean} resource.enabled - Признак использования
  * @param {string} resource.url - Ссылка на ресурс
  * @returns {boolean} - Флаг проверки ресурса
  */
-const alive: Function = ({
+const alive = ({
   enabled = true,
   url = "",
 }: {

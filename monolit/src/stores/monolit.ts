@@ -41,11 +41,11 @@ export default defineStore("monolit", () => {
   /**
    * Процедура логирования ошибок
    *
-   * @type {Function}
+   * @function log
    * @param {string} type - Тип записи
    * @param {any[]} args - Содержимое записи
    */
-  const log: Function = (type: string, ...args: any[]) => {
+  const log = (type: string, ...args: any[]) => {
     // eslint-disable-next-line no-console
     (console[type as keyof Console] as Function)(...args);
   };
@@ -53,8 +53,8 @@ export default defineStore("monolit", () => {
   /**
    * Функция, возвращающая Promise на сконструированный шаблон
    *
-   * @type {Function}
-   * @param {object} page - Объект страницы
+   * @function getAsyncComponent
+   * @param {TPage} page - Объект страницы
    * @param {string} page.path - Путь до страницы
    * @param {boolean} page.setup - Тип скриптов
    * @param {boolean} page.scoped - Тип стилей
@@ -63,28 +63,22 @@ export default defineStore("monolit", () => {
    * @param {string} page.css - Стили страницы
    * @returns {Promise<object>} Шаблон
    */
-  const getAsyncComponent: Function = ({
+  const getAsyncComponent = ({
     path,
     setup,
     scoped,
     htm,
     js,
     css,
-  }: {
-    path: string;
-    setup: boolean;
-    scoped: boolean;
-    htm: Promise<string>;
-    css: Promise<string>;
-    js: Promise<string>;
-  }): Promise<object> => {
+  }: TPage): Promise<object> => {
     /**
      * Функция получения файла шаблона
      *
-     * @type {Function}
+     * @async
+     * @function getFile
      * @returns {Promise<ContentData>} Шаблон
      */
-    const getFile: Function = async (): Promise<ContentData> => {
+    const getFile = async (): Promise<ContentData> => {
       /** @type {[string, string, string]} */
       const [template, script, style]: [string, string, string] =
         await Promise.all([htm, js, css]);
@@ -119,10 +113,10 @@ export default defineStore("monolit", () => {
     /**
      * Процедура добавления стилей
      *
-     * @type {Function}
+     * @function addStyle
      * @param {string} styles - Стили
      */
-    const addStyle: Function = (styles: string) => {
+    const addStyle = (styles: string) => {
       useStyleTag(styles);
     };
 
@@ -136,13 +130,16 @@ export default defineStore("monolit", () => {
   };
 
   /**
-   * @type {Function}
+   * Запрос на сервер за контентом
+   *
+   * @async
+   * @function getFile
    * @param {TPage} that - Текущий объект страницы
    * @param {string} key - Название свойства для хранения считанного файла
    * @param {string} ext - Расширение файла
    * @returns {Promise<string>} Содержимое файла
    */
-  const getFile: Function = async (
+  const getFile = async (
     that: TPage,
     key: string,
     ext: string,
@@ -164,6 +161,8 @@ export default defineStore("monolit", () => {
     /**
      * Геттер шаблона страницы
      *
+     * @async
+     * @function get
      * @returns {Promise<string>} - Шаблон страницы
      */
     async get(): Promise<string> {
@@ -180,6 +179,8 @@ export default defineStore("monolit", () => {
     /**
      * Геттер стилей страницы
      *
+     * @async
+     * @function get
      * @returns {Promise<string>} - Стили страницы
      */
     async get(): Promise<string> {
@@ -196,6 +197,8 @@ export default defineStore("monolit", () => {
     /**
      * Геттер скриптов страницы
      *
+     * @async
+     * @function get
      * @returns {Promise<string>} - Скрипты страницы
      */
     async get(): Promise<string> {
@@ -206,10 +209,10 @@ export default defineStore("monolit", () => {
   /**
    * Рекурсивная функция ремонта страниц
    *
-   * @type {Function}
+   * @function fix
    * @param {TPage[]} siblings - Элементы массива страниц
    */
-  const fix: Function = (siblings: TPage[]) => {
+  const fix = (siblings: TPage[]) => {
     siblings.forEach((value) => {
       Object.defineProperties(value, {
         htm,

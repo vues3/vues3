@@ -1,22 +1,22 @@
 <template lang="pug">
 .flex.snap-start(
   v-for="a in siblings",
-  :id="a?.id",
-  :key="a?.id",
+  :id="a.id",
+  :key="a.id",
   ref="refs",
   v-intersection-observer="[callback,{root,rootMargin,threshold}]",
-  :class="{ 'min-h-full': a?.full }"
+  :class="{ 'min-h-full': a.full }"
 )
   .prose.w-full.max-w-none.flex-auto.text-sm(
     v-cloak,
     class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
-    :data-theme="a?.theme",
-    :role="a?.id === the?.id ? 'main' : null"
+    :data-theme="a.theme",
+    :role="a.id === the.id ? 'main' : null"
   )
     component(
-      :is="templates?.[a?.id]",
+      :is="templates[a.id]",
       :the="a",
-      @vue:mounted="promises?.[a?.id]?.resolve"
+      @vue:mounted="promises[a.id].resolve"
     )
 </template>
 <script setup lang="ts">
@@ -30,14 +30,12 @@ import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
 
 import selectors from "@/assets/glightbox.json";
+import type { TPage } from "@/stores/data";
 import data from "@/stores/data";
 import Monolit from "@/stores/monolit";
 
-/** @type {{ getAsyncComponent: Function }} */
-const { getAsyncComponent }: { getAsyncComponent: Function } = Monolit();
-
-/** @type {{ pages: any[] }} */
-const { pages }: { pages: Ref<any[]> } = storeToRefs(data());
+const { getAsyncComponent } = Monolit();
+const { pages } = storeToRefs(data());
 
 /**
  * Текущий роут сайта
@@ -57,59 +55,53 @@ const router: Router = useRouter();
  * Вычисление текущего объекта с учетом переадресации корневого объекта страницы
  * на первый доступный объект страницы
  *
- * @type {ComputedRef<any>}
+ * @type {ComputedRef<TPage | null>}
  */
-const the: ComputedRef<any> = computed(() => {
+const the: ComputedRef<TPage | null> = computed(() => {
   /**
    * Позиция текущей страницы в массиве страниц
    *
    * @type {number}
    */
-  const index: number = pages?.value?.findIndex(
-    ({ id = "" } = {}) => id === route?.name,
-  );
+  const index: number = pages.value.findIndex(({ id }) => id === route.name);
 
   /**
    * Вычисленный текущий объект
    *
-   * @type {any}
+   * @type {TPage}
    */
-  const ret: any = pages?.value?.[index];
+  const ret: TPage = pages.value[index];
 
-  return index ? ret : ret?.children?.[0];
+  return index ? ret : ret.children[0] ?? null;
 });
 
 /**
  * Вычисление массива видимых объектов страниц с одинаковым предком
  *
- * @type {ComputedRef<any[]>}
+ * @type {ComputedRef<TPage[]>}
  */
-const siblings: ComputedRef<any[]> = computed(() =>
-  the?.value?.siblings?.filter(({ enabled = true } = {}) => enabled),
+const siblings: ComputedRef<TPage[]> = computed(
+  () => the.value?.siblings.filter(({ enabled }) => enabled) ?? [],
 );
 
 /**
  * Вычисление идентифицированного объекта промисов
  *
- * @type {ComputedRef<any[]>}
+ * @type {ComputedRef<object>}
  */
-const promises: ComputedRef<any[]> = computed(() =>
+const promises: ComputedRef<object> = computed(() =>
   Object.fromEntries(
-    siblings?.value?.map(({ id = "" } = {}) => [id, Promise.withResolvers()]) ??
-      [],
+    siblings.value.map(({ id }) => [id, Promise.withResolvers()]),
   ),
 );
 
 /**
  * Вычисление массива загруженных шаблонов
  *
- * @type {ComputedRef<object[]>}
+ * @type {ComputedRef<object>}
  */
-const templates: ComputedRef<object[]> = computed(() =>
-  Object.fromEntries(
-    siblings?.value?.map((a = { id: "" }) => [a?.id, getAsyncComponent(a)]) ??
-      [],
-  ),
+const templates: ComputedRef<object> = computed(() =>
+  Object.fromEntries(siblings.value.map((a) => [a.id, getAsyncComponent(a)])),
 );
 
 /**
@@ -131,14 +123,13 @@ const threshold: number = 0;
 /**
  * Родительский элемент представления
  *
- * @type {Ref<HTMLElement | SVGElement | null | undefined>}
+ * @type {Ref<HTMLElement>}
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root} см. документацию
  */
-const root: Ref<HTMLElement | SVGElement | null | undefined> =
-  useParentElement();
+const root: Ref<HTMLElement> = useParentElement() as Ref<HTMLElement>;
 
 /**
- * Флаг постановки проверки пересечения страницы с облатью видимости на паузу
+ * Флаг постановки проверки пересечения страницы с областью видимости на паузу
  *
  * @type {boolean}
  */
@@ -155,17 +146,16 @@ let push: boolean = false;
  * Процедура обновления роутера, если страница появилась в области видимости
  *
  * @type {IntersectionObserverCallback}
- * @param {Array} entries - Массив объектов, описывающих пересечения
- * @param {IntersectionObserverEntry} entries."0" - Первый и единственный
- *   объект, описывающий пересечение
+ * @param {IntersectionObserverEntry[]} entries - Массив объектов, описывающих
+ *   пересечения
  */
 const callback: IntersectionObserverCallback = ([
   {
-    isIntersecting = false,
-    target: { id: name = "" },
+    isIntersecting,
+    target: { id: name },
   },
 ]: IntersectionObserverEntry[]) => {
-  if (!pause && isIntersecting && name !== the?.value?.id) {
+  if (!pause && isIntersecting && name !== the.value?.id) {
     push = true;
     router.push({ name });
   }
@@ -195,14 +185,14 @@ const zoomable: boolean = false;
  * @type {string}
  * @see {@link https://github.com/biati-digital/glightbox} см. документацию
  */
-const selector: string = selectors?.map((el = "") => `a[href${el}]`)?.join();
+const selector: string = selectors.map((el) => `a[href${el}]`).join();
 
 /**
  * Массив страниц, отображаемых на экране
  *
- * @type {Ref<any[]>}
+ * @type {Ref<HTMLElement[]>}
  */
-const refs: Ref<any[]> = ref([]);
+const refs: Ref<HTMLElement[]> = ref([]);
 
 /**
  * Немедленное срабатывание смотрителя
@@ -214,20 +204,19 @@ const immediate: boolean = true;
 /**
  * Быстрый скролл
  *
- * @type {string}
+ * @type {ScrollBehavior}
  */
-const behavior: string = "instant";
+const behavior: ScrollBehavior = "instant";
 
 /**
  * Процедура ожидания загрузки страниц
  *
- * @type {Function}
+ * @async
+ * @function all
  */
-const all: Function = async () => {
+const all = async () => {
   await Promise.all(
-    Object.values(promises?.value ?? {})?.map(
-      ({ promise = null } = {}) => promise,
-    ),
+    Object.values(promises.value).map(({ promise }) => promise),
   );
 };
 
@@ -246,8 +235,8 @@ watch(
     if (!push) {
       await all();
       pause = true;
-      refs?.value
-        ?.find(({ id = "" } = {}) => id === the?.value?.id)
+      refs.value
+        .find(({ id }) => id === the.value?.id)
         ?.scrollIntoView({ behavior });
       pause = false;
     } else push = false;
