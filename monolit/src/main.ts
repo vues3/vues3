@@ -13,11 +13,14 @@ import { Head } from "@unhead/vue/components";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
 import { createPinia, storeToRefs } from "pinia";
+import type { App } from "vue";
 import { createApp, watch } from "vue";
 import VueGtag from "vue-gtag";
+import type { RouteComponent } from "vue-router";
 import { initYandexMetrika } from "yandex-metrika-vue3";
+import type { Config } from "yandex-metrika-vue3/src/types";
 
-import App from "@/App.vue";
+import vueApp from "@/App.vue";
 import router from "@/router";
 import type { TData, TSettings } from "@/stores/data";
 import Data from "@/stores/data";
@@ -37,7 +40,7 @@ console.info(
  *
  * @type {boolean}
  */
-const autoPrefix = true;
+const autoPrefix: boolean = true;
 
 /**
  * When enabled, UnoCSS will look for the existing selectors defined in the
@@ -46,10 +49,17 @@ const autoPrefix = true;
  *
  * @type {boolean}
  */
-const bypassDefined = true;
+const bypassDefined: boolean = true;
 
 initUnocssRuntime({ autoPrefix, defaults, bypassDefined });
-const app = createApp(App);
+
+/**
+ * Приложение vue
+ *
+ * @type {App}
+ */
+const app: App = createApp(vueApp);
+
 app.config.globalProperties.mdi = mdi;
 app.use(createPinia());
 
@@ -57,12 +67,30 @@ const { pages } = storeToRefs(Data());
 const { $, validate } = Data();
 const { fix } = Monolit();
 
-const cache = "no-cache";
+/**
+ * Настройка кеширования
+ *
+ * @type {RequestCache}
+ */
+const cache: RequestCache = "no-cache";
+
 (async () => {
-  const response = await fetch("/assets/data.json", {
+  /**
+   * Ответ на считывание data.json
+   *
+   * @type {Response}
+   */
+  const response: Response = await fetch("/assets/data.json", {
     cache,
   });
-  const data = response.ok ? await response.json() : {};
+
+  /**
+   * Объект данных, полученный с сервера
+   *
+   * @type {TData}
+   */
+  const data: TData = response.ok ? await response.json() : {};
+
   validate?.(data);
   Object.keys(data).forEach((key) => {
     $[key as keyof TData] = data[key as keyof {}];
@@ -73,16 +101,16 @@ const cache = "no-cache";
 /**
  * Перевод яндекс метрики в продуктовый режим
  *
- * @type {string}
+ * @type {string | null}
  */
-const env = process.env.NODE_ENV;
+const env: string | null = process.env.NODE_ENV ?? null;
 
 /**
  * Запуск вотчера единожды
  *
  * @type {boolean}
  */
-const once = true;
+const once: boolean = true;
 
 watch(
   pages,
@@ -92,31 +120,29 @@ watch(
        * Функция динамического импорта компонента
        *
        * @function component
-       * @returns {object} - Страница ошибки
+       * @returns {RouteComponent} - Страница ошибки
        */
-      const component = () =>
+      const component = (): RouteComponent =>
         import(
-          $?.settings?.landing
+          $.settings?.landing
             ? "@/views/MultiView.vue"
             : "@/views/SingleView.vue"
         );
-      value?.forEach(
-        ({
-          path: _path = "",
-          _: path = `/${_path}`,
-          id: name = "",
-          loc = "",
-        }: any) => {
-          /**
-           * Подготовленный алиас
-           *
-           * @type {string}
-           */
-          const alias = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
+      value.forEach(({ path, id: name, loc }) => {
+        /**
+         * Подготовленный алиас
+         *
+         * @type {string}
+         */
+        const alias: string = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
 
-          router.addRoute({ name, path, ...(loc && { alias }), component });
-        },
-      );
+        router.addRoute({
+          name,
+          path: `/${path}`,
+          ...(loc && { alias }),
+          component,
+        });
+      });
     })();
 
     /**
@@ -124,15 +150,15 @@ watch(
      *
      * @type {string}
      */
-    const path = "/:catchAll(.*)*";
+    const path: string = "/:catchAll(.*)*";
 
     /**
      * Функция динамического импорта компонента
      *
      * @function component
-     * @returns {object} - Страница ошибки
+     * @returns {RouteComponent} - Страница ошибки
      */
-    const component = () => import("@/views/NotFoundView.vue");
+    const component = (): RouteComponent => import("@/views/NotFoundView.vue");
 
     router.addRoute({ path, component });
     router.replace(router.currentRoute.value.fullPath);
@@ -140,8 +166,8 @@ watch(
   { once },
 );
 watch(
-  () => <TSettings>$?.settings,
-  ({ metrika, analytics }: TSettings) => {
+  () => $.settings as TSettings,
+  ({ metrika, analytics }) => {
     if (metrika) {
       /**
        * Id метрики
@@ -150,7 +176,7 @@ watch(
        */
       const id: string = metrika;
 
-      app.use(initYandexMetrika, <any>{ id, router, env });
+      app.use(initYandexMetrika, { id, router, env } as Config);
     }
     if (analytics) {
       /**
@@ -158,14 +184,14 @@ watch(
        *
        * @type {string}
        */
-      const id = analytics;
+      const id: string = analytics;
 
       /**
        * Подготовленный конфиг
        *
-       * @type {{ string }}
+       * @type {{ id: string }}
        */
-      const config = { id };
+      const config: { id: string } = { id };
 
       app.use(VueGtag, { config }, router);
     }

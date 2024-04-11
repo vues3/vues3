@@ -3,18 +3,18 @@ v-head
   title {{ the?.name || " " }}
   link(
     v-for="a in theCSS",
-    :key="a?.id",
+    :key="a.id",
     crossorigin,
     rel="stylesheet",
-    :href="a?.url"
+    :href="a.url"
   )
   component(
     :is="'script'",
     v-for="a in theJS",
-    :key="a?.id",
+    :key="a.id",
     crossorigin,
     deffer,
-    :src="a?.url"
+    :src="a.url"
   )
   meta(
     v-if="the?.description",
@@ -29,21 +29,21 @@ v-head
   link(
     :key="favicon",
     rel="icon",
-    :href="`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='${mdi?.[the?.favicon ?? 'mdiWeb']}'/></svg>`",
+    :href="`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='${mdi[the?.favicon ?? 'mdiWeb']}'/></svg>`",
     type="image/svg+xml"
   )
   link(v-if="canonical", rel="canonical", :href="canonical")
-  component(:is="'style'", v-if="$?.style") {{ $?.style }}
-  component(:is="'script'", v-if="$?.script") {{ $?.script }}
+  component(:is="'style'", v-if="$.style") {{ $.style }}
+  component(:is="'script'", v-if="$.script") {{ $.script }}
   meta(
-    v-if="$?.settings?.yandex",
+    v-if="$.settings?.yandex",
     name="yandex-verification",
-    :content="$?.settings?.yandex"
+    :content="$.settings?.yandex"
   )
   meta(
-    v-if="$?.settings?.google",
+    v-if="$.settings?.google",
     name="google-site-verification",
-    :content="$?.settings?.google"
+    :content="$.settings?.google"
   )
 .drawer.h-dvh
   input#drawer.drawer-toggle(
@@ -55,29 +55,29 @@ v-head
     @scroll.passive="start"
   )
     .z-40(
-      v-if="pages?.[0]?.enabled",
-      :class="[...(ready ? [] : $?.navbar?.scrollClasses ?? []), ...($?.navbar?.classes ?? [])]",
-      :data-theme="$?.navbar?.theme"
+      v-if="pages[0]?.enabled",
+      :class="[...(ready ? [] : $.navbar?.scrollClasses ?? []), ...($.navbar?.classes ?? [])]",
+      :data-theme="$.navbar?.theme"
     )
       .navbar
         component(:is="navigator", :the="the")
     router-view
-  .drawer-side.z-50(v-if="pages?.[0]?.enabled")
+  .drawer-side.z-50(v-if="pages[0]?.enabled")
     label.drawer-overlay(for="drawer")
     .grid.max-w-full.self-stretch.overflow-x-auto.scroll-smooth(
-      :class="{ 'justify-self-stretch': pages?.[0]?.full }"
+      :class="{ 'justify-self-stretch': pages[0]?.full }"
     )
       .col-start-1.row-start-1.flex
         .prose.w-full.max-w-none.flex-auto.text-sm(
           class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
-          :data-theme="pages?.[0]?.theme"
+          :data-theme="pages[0]?.theme"
         )
-          component(:is="root", :the="pages?.[0]")
+          component(:is="root", :the="pages[0]")
       label.btn.btn-circle.btn-ghost.sticky.right-1.top-1.col-start-1.row-start-1.justify-self-end(
         for="drawer"
       )
         svg.h-6.w-6
-          path(:d="mdi?.mdiClose")
+          path(:d="mdi.mdiClose")
 </template>
 <script setup lang="ts">
 import { useTimeout } from "@vueuse/core";
@@ -87,14 +87,22 @@ import { computed, ref } from "vue";
 import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
 
+import type { TPage, TResource } from "@/stores/data";
 import data from "@/stores/data";
 import Monolit from "@/stores/monolit";
 
-/** @type {{ getAsyncComponent: Function }} */
-const { getAsyncComponent }: { getAsyncComponent: Function } = Monolit();
+const { getAsyncComponent } = Monolit();
+const { $ } = data();
+const { pages } = storeToRefs(data());
 
-/** @type {{ $: any }} */
-const { $ }: { $: any } = data();
+/**
+ * Expose more controls
+ *
+ * @type {boolean}
+ */
+const controls: boolean = true;
+
+const { ready, start } = useTimeout(1000, { controls });
 
 /**
  * Вычисление навбара
@@ -110,63 +118,22 @@ const navigator: ComputedRef<object> = computed(() => {
   const id: string = crypto.randomUUID();
 
   /**
-   * Шаблон навбара
-   *
-   * @type {string}
-   */
-  const htm: string = $?.navbar?.template;
-
-  /**
-   * Срипты навбара
-   *
-   * @type {string}
-   */
-  const js: string = $?.navbar?.script;
-
-  /**
-   * Стили навбара
-   *
-   * @type {string}
-   */
-  const css: string = $?.navbar?.style;
-
-  /**
-   * Тип скриптов навбара
-   *
-   * @type {boolean}
-   */
-  const setup: boolean = $?.navbar?.setup;
-
-  /**
-   * Тип стилей навбара
-   *
-   * @type {boolean}
-   */
-  const scoped: boolean = $?.navbar?.scoped;
-
-  /**
    * Путь готового шаблона навбара
    *
    * @type {string}
    */
   const path: string = "~";
 
-  return getAsyncComponent({ id, htm, js, css, setup, scoped, path });
+  const {
+    template: htm,
+    script: js,
+    style: css,
+    setup,
+    scoped,
+  } = $.navbar ?? {};
+
+  return getAsyncComponent({ id, htm, js, css, setup, scoped, path } as TPage);
 });
-
-/** @type {{ pages: any[] }} */
-const { pages }: { pages: Ref<any[]> } = storeToRefs(data());
-
-/**
- * Expose more controls
- *
- * @type {boolean}
- */
-const controls: boolean = true;
-
-/** @type {{ ready: ComputedRef<boolean>; start: Function }} */
-const { ready, start }: { ready: ComputedRef<boolean>; start: Function } =
-  useTimeout(1000, { controls });
 
 /**
  * Текущий роут сайта
@@ -188,16 +155,16 @@ const router: Router = useRouter();
  * @type {ComputedRef<object>}
  */
 const root: ComputedRef<object> = computed(() =>
-  getAsyncComponent(pages?.value?.[0]),
+  getAsyncComponent(pages.value[0]),
 );
 
 /**
  * Поиск текущего объекта страницы
  *
- * @type {ComputedRef<any>}
+ * @type {ComputedRef<TPage | null>}
  */
-const the: ComputedRef<any> = computed(() =>
-  pages?.value?.find(({ id = "" } = {}) => id === route?.name),
+const the: ComputedRef<TPage | null> = computed(
+  () => pages.value.find(({ id }) => id === route.name) ?? null,
 );
 
 /**
@@ -214,8 +181,8 @@ const drawer: Ref<boolean> = ref(false);
  */
 const canonical: ComputedRef<string | false> = computed(
   () =>
-    the?.value?.url?.constructor === String &&
-    `${window.location.origin}/${the?.value?.url}`,
+    the.value?.url.constructor === String &&
+    `${window.location.origin}/${the.value.url}`,
 );
 
 /**
@@ -235,27 +202,25 @@ const favicon: string = crypto.randomUUID();
  * @param {string} resource.url - Ссылка на ресурс
  * @returns {boolean} - Флаг проверки ресурса
  */
-const alive = ({
-  enabled = true,
-  url = "",
-}: {
-  enabled: boolean;
-  url: string;
-}): boolean => !!(enabled && url);
+const alive = ({ enabled, url }: TResource): boolean => !!(enabled && url);
 
 /**
  * Фильтр глобальных скриптов по видимости
  *
- * @type {ComputedRef<any[]>}
+ * @type {ComputedRef<TResource[]>}
  */
-const theJS: ComputedRef<any[]> = computed(() => $?.js?.filter(alive));
+const theJS: ComputedRef<TResource[]> = computed(
+  () => $.js?.filter(alive) ?? [],
+);
 
 /**
  * Фильтр глобальных стилей по видимости
  *
- * @type {ComputedRef<any[]>}
+ * @type {ComputedRef<TResource[]>}
  */
-const theCSS: ComputedRef<any[]> = computed(() => $?.css?.filter(alive));
+const theCSS: ComputedRef<TResource[]> = computed(
+  () => $?.css?.filter(alive) ?? [],
+);
 
 router.beforeEach(() => {
   drawer.value = false;
