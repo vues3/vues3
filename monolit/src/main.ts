@@ -38,6 +38,8 @@ console.info(
 /**
  * Enable css property auto prefixer
  *
+ * @constant
+ * @default
  * @type {boolean}
  */
 const autoPrefix: boolean = true;
@@ -47,6 +49,8 @@ const autoPrefix: boolean = true;
  * stylesheet and bypass them. This is useful when using the runtime alongwith
  * the build-time UnoCSS.
  *
+ * @constant
+ * @default
  * @type {boolean}
  */
 const bypassDefined: boolean = true;
@@ -70,6 +74,8 @@ const { fix } = Monolit();
 /**
  * Настройка кеширования
  *
+ * @constant
+ * @default
  * @type {RequestCache}
  */
 const cache: RequestCache = "no-cache";
@@ -78,6 +84,8 @@ const cache: RequestCache = "no-cache";
   /**
    * Ответ на считывание data.json
    *
+   * @constant
+   * @default
    * @type {Response}
    */
   const response: Response = await fetch("/assets/data.json", {
@@ -87,6 +95,8 @@ const cache: RequestCache = "no-cache";
   /**
    * Объект данных, полученный с сервера
    *
+   * @constant
+   * @default
    * @type {TData}
    */
   const data: TData = response.ok ? await response.json() : {};
@@ -101,6 +111,8 @@ const cache: RequestCache = "no-cache";
 /**
  * Перевод яндекс метрики в продуктовый режим
  *
+ * @constant
+ * @default
  * @type {string | null}
  */
 const env: string | null = process.env.NODE_ENV ?? null;
@@ -108,6 +120,8 @@ const env: string | null = process.env.NODE_ENV ?? null;
 /**
  * Запуск вотчера единожды
  *
+ * @constant
+ * @default
  * @type {boolean}
  */
 const once: boolean = true;
@@ -115,52 +129,57 @@ const once: boolean = true;
 watch(
   pages,
   (value) => {
-    (() => {
+    value.forEach(({ path, id: name, loc }) => {
+      /**
+       * Подготовленный алиас
+       *
+       * @constant
+       * @default
+       * @type {string}
+       */
+      const alias: string = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
+
+      router.addRoute({
+        name,
+        path: `/${path}`,
+        ...(loc && { alias }),
+        /**
+         * Функция динамического импорта компонента
+         *
+         * @function component
+         * @returns {RouteComponent} - Страница ошибки
+         */
+        component(): RouteComponent {
+          return import(
+            $.settings?.landing
+              ? "@/views/MultiView.vue"
+              : "@/views/SingleView.vue"
+          );
+        },
+      });
+    });
+
+    /**
+     * Все неучтенные пути
+     *
+     * @constant
+     * @default
+     * @type {string}
+     */
+    const path: string = "/:catchAll(.*)*";
+
+    router.addRoute({
+      path,
       /**
        * Функция динамического импорта компонента
        *
        * @function component
        * @returns {RouteComponent} - Страница ошибки
        */
-      const component = (): RouteComponent =>
-        import(
-          $.settings?.landing
-            ? "@/views/MultiView.vue"
-            : "@/views/SingleView.vue"
-        );
-      value.forEach(({ path, id: name, loc }) => {
-        /**
-         * Подготовленный алиас
-         *
-         * @type {string}
-         */
-        const alias: string = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
-
-        router.addRoute({
-          name,
-          path: `/${path}`,
-          ...(loc && { alias }),
-          component,
-        });
-      });
-    })();
-
-    /**
-     * Все неучтенные пути
-     *
-     * @type {string}
-     */
-    const path: string = "/:catchAll(.*)*";
-
-    /**
-     * Функция динамического импорта компонента
-     *
-     * @function component
-     * @returns {RouteComponent} - Страница ошибки
-     */
-    const component = (): RouteComponent => import("@/views/NotFoundView.vue");
-
-    router.addRoute({ path, component });
+      component(): RouteComponent {
+        return import("@/views/NotFoundView.vue");
+      },
+    });
     router.replace(router.currentRoute.value.fullPath);
   },
   { once },
@@ -172,6 +191,8 @@ watch(
       /**
        * Id метрики
        *
+       * @constant
+       * @default
        * @type {string}
        */
       const id: string = metrika;
@@ -182,6 +203,8 @@ watch(
       /**
        * Id аналитики
        *
+       * @constant
+       * @default
        * @type {string}
        */
       const id: string = analytics;
@@ -189,6 +212,8 @@ watch(
       /**
        * Подготовленный конфиг
        *
+       * @constant
+       * @default
        * @type {{ id: string }}
        */
       const config: { id: string } = { id };

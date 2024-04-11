@@ -107,6 +107,8 @@ const templates: ComputedRef<object> = computed(() =>
 /**
  * Сдвиг области видимости
  *
+ * @constant
+ * @default
  * @type {string}
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin} см. документацию
  */
@@ -115,6 +117,8 @@ const rootMargin: string = "-1% 0px -99%";
 /**
  * Процент площади объекта, который должен попасть в область видимости
  *
+ * @constant
+ * @default
  * @type {number}
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds} см. документацию
  */
@@ -131,6 +135,8 @@ const root: Ref<HTMLElement> = useParentElement() as Ref<HTMLElement>;
 /**
  * Флаг постановки проверки пересечения страницы с областью видимости на паузу
  *
+ * @constant
+ * @default
  * @type {boolean}
  */
 let pause: boolean = true;
@@ -138,6 +144,8 @@ let pause: boolean = true;
 /**
  * Флаг условия изменения роута
  *
+ * @constant
+ * @default
  * @type {boolean}
  */
 let push: boolean = false;
@@ -164,6 +172,8 @@ const callback: IntersectionObserverCallback = ([
 /**
  * Loop slides on end
  *
+ * @constant
+ * @default
  * @type {boolean}
  * @see {@link https://github.com/biati-digital/glightbox} см. документацию
  */
@@ -173,6 +183,8 @@ const loop: boolean = true;
  * Enable or disable zoomable images you can also use data-zoomable="false" on
  * individual nodes.
  *
+ * @constant
+ * @default
  * @type {boolean}
  * @see {@link https://github.com/biati-digital/glightbox} см. документацию
  */
@@ -182,6 +194,8 @@ const zoomable: boolean = false;
  * Name of the selector for example '.glightbox' or 'data-glightbox' or
  * '*[data-glightbox]'
  *
+ * @constant
+ * @default
  * @type {string}
  * @see {@link https://github.com/biati-digital/glightbox} см. документацию
  */

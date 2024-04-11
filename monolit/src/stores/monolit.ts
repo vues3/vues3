@@ -19,6 +19,8 @@ export default defineStore("monolit", () => {
   /**
    * Настройка кеширования
    *
+   * @constant
+   * @default
    * @type {RequestCache}
    */
   const cache: RequestCache = "no-cache";
@@ -26,6 +28,8 @@ export default defineStore("monolit", () => {
   /**
    * Модули, передаваемые шаблону
    *
+   * @constant
+   * @default
    * @type {ModuleExport}
    */
   const moduleCache: ModuleExport = {
@@ -86,6 +90,8 @@ export default defineStore("monolit", () => {
       /**
        * Константа со скриптами
        *
+       * @constant
+       * @default
        * @type {string}
        */
       const cntScript: string =
@@ -94,6 +100,8 @@ export default defineStore("monolit", () => {
       /**
        * Константа с шаблоном
        *
+       * @constant
+       * @default
        * @type {string}
        */
       const cntTemplate: string =
@@ -102,6 +110,8 @@ export default defineStore("monolit", () => {
       /**
        * Константа со стилями
        *
+       * @constant
+       * @default
        * @type {string}
        */
       const cntStyle: string =

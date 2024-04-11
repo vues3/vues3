@@ -71,6 +71,8 @@ const template: ComputedRef<object | null> = computed(
 /**
  * Loop slides on end
  *
+ * @constant
+ * @default
  * @type {boolean}
  * @see {@link https://github.com/biati-digital/glightbox} см. документацию
  */
@@ -80,6 +82,8 @@ const loop: boolean = true;
  * Enable or disable zoomable images you can also use data-zoomable="false" on
  * individual nodes.
  *
+ * @constant
+ * @default
  * @type {boolean}
  * @see {@link https://github.com/biati-digital/glightbox} см. документацию
  */
@@ -89,6 +93,8 @@ const zoomable: boolean = false;
  * Name of the selector for example '.glightbox' or 'data-glightbox' or
  * '*[data-glightbox]'
  *
+ * @constant
+ * @default
  * @type {string}
  * @see {@link https://github.com/biati-digital/glightbox} см. документацию
  */

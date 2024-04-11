@@ -1,10 +1,13 @@
+import type { S3Client } from "@aws-sdk/client-s3";
 import {
   GetObjectCommand,
   HeadObjectCommand,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
+import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
 import { get, isDefined } from "@vueuse/core";
 import { defineStore } from "pinia";
+import type { Ref } from "vue";
 import { computed, ref } from "vue";
 
 export default defineStore("s3", () => {
@@ -23,16 +26,16 @@ export default defineStore("s3", () => {
   /**
    * Клиент к сервису s3
    *
-   * @type {object}
+   * @type {Ref<S3Client | undefined>}
    */
-  const S3 = ref();
+  const S3: Ref<S3Client | undefined> = ref();
   /**
    * Считывание заголовка файла
    *
    * @param {string} Key Имя файла
    * @returns {object} Заголовок файла
    */
-  const headObject = (Key) => {
+  const headObject = (Key: string) => {
     const Bucket = get(bucket);
     return get(S3)?.send(new HeadObjectCommand({ Bucket, Key }));
   };
@@ -40,10 +43,14 @@ export default defineStore("s3", () => {
    * Запись объекта
    *
    * @param {string} Key Имя файла
-   * @param {string | null} ContentType Тип mime
-   * @param {string | Uint8Array | Buffer | Blob} body Тело файла
+   * @param {string} ContentType Тип mime
+   * @param {StreamingBlobTypes} body Тело файла
    */
-  const putObject = async (Key, ContentType, body) => {
+  const putObject = async (
+    Key: string,
+    ContentType: string,
+    body: StreamingBlobPayloadInputTypes,
+  ) => {
     const Bucket = get(bucket);
     const Body =
       typeof body === "string" ? new TextEncoder().encode(body) : body;
@@ -58,8 +65,8 @@ export default defineStore("s3", () => {
    * @param {string} ContentType Тип mime
    * @param {File} file Файл
    */
-  const putFile = async (Key, ContentType, file) => {
-    await putObject(Key, ContentType, await file.arrayBuffer());
+  const putFile = async (Key: string, ContentType: string, file: File) => {
+    await putObject(Key, ContentType, new Blob([await file.arrayBuffer()]));
   };
   /**
    * Считывание объекта
@@ -67,7 +74,7 @@ export default defineStore("s3", () => {
    * @param {string} Key Имя файла
    * @returns {Promise<string>} Тело файла
    */
-  const getObject = async (Key) => {
+  const getObject = async (Key: string) => {
     const Bucket = get(bucket);
     const ResponseCacheControl = "no-store";
     const textDecoder = new TextDecoder();
@@ -77,7 +84,7 @@ export default defineStore("s3", () => {
         const { Body } = await get(S3).send(
           new GetObjectCommand({ ResponseCacheControl, Bucket, Key }),
         );
-        const reader = Body.getReader();
+        const reader = (Body as ReadableStream)?.getReader();
         ret = await new Promise((resolve) => {
           (async function read(chunks) {
             const { done, value } = await reader.read();
@@ -86,7 +93,7 @@ export default defineStore("s3", () => {
               chunks.push(textDecoder.decode(value));
               read(chunks);
             }
-          })([]);
+          })([] as string[]);
         });
       } catch (e) {
         //

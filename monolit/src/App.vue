@@ -98,6 +98,8 @@ const { pages } = storeToRefs(data());
 /**
  * Expose more controls
  *
+ * @constant
+ * @default
  * @type {boolean}
  */
 const controls: boolean = true;
@@ -189,6 +191,8 @@ const canonical: ComputedRef<string | false> = computed(
  * Уникальный ключ для favicon. Иначе иконка динамически не обновляется в chrome
  * при смене страницы
  *
+ * @constant
+ * @default
  * @type {string}
  */
 const favicon: string = crypto.randomUUID();
