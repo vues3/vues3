@@ -16,12 +16,17 @@ import { createPinia, storeToRefs } from "pinia";
 import type { App } from "vue";
 import { createApp, watch } from "vue";
 import VueGtag from "vue-gtag";
-import type { RouteComponent } from "vue-router";
+import type {
+  RouteComponent,
+  Router,
+  RouteRecordRaw,
+  RouterHistory,
+} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import { initYandexMetrika } from "yandex-metrika-vue3";
 import type { Config } from "yandex-metrika-vue3/src/types";
 
 import vueApp from "@/App.vue";
-import router from "@/router";
 import type { TData, TSettings } from "@/stores/data";
 import Data from "@/stores/data";
 import Monolit from "@/stores/monolit";
@@ -125,6 +130,27 @@ const env: string | null = process.env.NODE_ENV ?? null;
  * @type {boolean}
  */
 const once: boolean = true;
+
+/**
+ * Объект истории
+ *
+ * @type {RouterHistory}
+ */
+const history: RouterHistory = createWebHistory(import.meta.env.BASE_URL);
+
+/**
+ * Роуты
+ *
+ * @type {RouteRecordRaw[]}
+ */
+const routes: RouteRecordRaw[] = [];
+
+/**
+ * Роутер
+ *
+ * @type {Router}
+ */
+const router: Router = createRouter({ history, routes });
 
 watch(
   pages,

@@ -72,13 +72,13 @@ export default defineStore("s3", () => {
    * Считывание объекта
    *
    * @param {string} Key Имя файла
-   * @returns {Promise<string>} Тело файла
+   * @returns {Promise<string | null>} Тело файла
    */
-  const getObject = async (Key: string) => {
+  const getObject = async (Key: string): Promise<string | null> => {
     const Bucket = get(bucket);
     const ResponseCacheControl = "no-store";
     const textDecoder = new TextDecoder();
-    let ret;
+    let ret: string | null = null;
     if (isDefined(S3))
       try {
         const { Body } = await get(S3).send(

@@ -56,7 +56,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
       ) Сброс параметров
 q-page.column.full-height
   q-tabs.text-grey(
-    v-model="navbarTabs",
+    v-model="config.navbar.tab",
     dense,
     active-color="primary",
     indicator-color="primary",
@@ -67,7 +67,7 @@ q-page.column.full-height
     q-tab(name="script", :label="`script${$?.navbar?.setup ? ' setup' : ''}`")
     q-tab(name="style", :label="`style${$?.navbar?.scoped ? ' scoped' : ''}`")
   q-separator
-  q-tab-panels.full-width.col(v-model="navbarTabs")
+  q-tab-panels.full-width.col(v-model="config.navbar.tab")
     q-tab-panel.column(name="template")
       v-source-code.col(v-model="$.navbar.template")
     q-tab-panel.column(name="script")
@@ -75,22 +75,45 @@ q-page.column.full-height
     q-tab-panel.column(name="style")
       v-source-code.col(v-model="$.navbar.style", lang="css")
 </template>
-<script setup>
+<script setup lang="ts">
+import type { RemovableRef } from "@vueuse/core";
 import { useStorage } from "@vueuse/core";
 import Ajv from "ajv";
 import { storeToRefs } from "pinia";
 import { useQuasar } from "quasar";
+import { watch } from "vue";
 
 import themes from "@/assets/themes.json";
 import VSourceCode from "@/components/VSourceCode.vue";
 import Navbar from "@/schemas/navbar";
+import type { TConfig } from "@/stores/app";
 import app from "@/stores/app";
+import type { TNavbar } from "~/monolit/src/stores/data";
 import data from "~/monolit/src/stores/data";
 
 const $q = useQuasar();
-const { rightDrawer } = storeToRefs(app());
+const { accessKeyId, rightDrawer } = storeToRefs(app());
+const { validateConfig } = app();
 const { $ } = data();
-const navbarTabs = useStorage("navbar-tabs", "template");
+const mergeDefaults = true;
+
+const config: RemovableRef<TConfig> = useStorage(
+  `config-${accessKeyId.value}`,
+  {} as TConfig,
+  localStorage,
+  {
+    mergeDefaults,
+  },
+);
+const immediate = true;
+watch(
+  config,
+  (value) => {
+    validateConfig?.(value);
+  },
+  { immediate },
+);
+
 rightDrawer.value = true;
 
 const schemas = [Navbar];
@@ -129,11 +152,11 @@ const fncResetNavbar = () => {
     },
     cancel: true,
     persistent: true,
-  }).onOk((value) => {
+  }).onOk((value: string[]) => {
     value.forEach((element) => {
-      delete $.navbar[element];
+      delete $.navbar?.[element as keyof TNavbar];
     });
-    validateNavbar($.navbar);
+    validateNavbar?.($.navbar);
   });
 };
 </script>

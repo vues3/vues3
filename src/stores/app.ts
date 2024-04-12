@@ -1,25 +1,47 @@
 import {
   get,
-  useArrayFind,
   useDebounceFn,
   useFetch,
   watchDebounced,
   whenever,
 } from "@vueuse/core";
 import { logicAnd } from "@vueuse/math";
+import Ajv from "ajv";
 import { css_beautify, html_beautify, js_beautify } from "js-beautify";
+import { FromSchema } from "json-schema-to-ts";
 import mime from "mime";
 import { defineStore, storeToRefs } from "pinia";
 import { toXML } from "to-xml";
-import type { ComputedRef } from "vue";
-import { computed, reactive, ref, watch } from "vue";
+import type { Ref } from "vue";
+import { computed, ref, watch } from "vue";
 
+import Config from "@/schemas/config";
 import type { TData, TPage } from "~/monolit/src/stores/data";
 import Data from "~/monolit/src/stores/data";
 
 import storeS3 from "./s3";
 
+type TConfig = FromSchema<typeof Config>;
+
+export type { TConfig };
 export default defineStore("app", () => {
+  const schemas = [Config];
+  const useDefaults = true;
+  const coerceTypes = true;
+  const removeAdditional = true;
+  const esm = true;
+  const code = { esm };
+
+  const ajv = new Ajv({
+    useDefaults,
+    coerceTypes,
+    removeAdditional,
+    schemas,
+    code,
+  });
+
+  const validateConfig = ajv.getSchema("urn:jsonschema:config");
+
   const rootFileName = "index.html";
   const { S3, base, bucket } = storeToRefs(storeS3());
   const { putObject, headObject, getObject } = storeS3();
@@ -68,7 +90,11 @@ export default defineStore("app", () => {
    * @param {string} text - Новое содержимое файла
    */
   const save = (that: TPage, key: string, ext: string, text: string) => {
-    putObject(`assets/${that.id}.${ext}`, mime.getType(ext), text);
+    putObject(
+      `assets/${that.id}.${ext}`,
+      mime.getType(ext) ?? "text/plain",
+      text,
+    );
     const value = new Date().toISOString();
     Reflect.defineProperty(that, "lastmod", { value });
   };
@@ -157,6 +183,7 @@ export default defineStore("app", () => {
     get(): Promise<string> {
       return getFile(this as TPage, "style", "css", css_beautify);
     },
+
     /**
      * Сеттер стилей страницы
      *
@@ -212,19 +239,19 @@ export default defineStore("app", () => {
     { deep },
   );
 
-  watch(S3, async () => {
-    const data = JSON.parse((await getObject("assets/data.json")) ?? "{}");
-    validate?.(data);
-    Object.keys(data).forEach((key) => {
-      $[key as keyof TData] = data[key as keyof {}];
-    });
+  watch(S3, async (value) => {
+    if (value) {
+      const data = JSON.parse((await getObject("assets/data.json")) ?? "{}");
+      validate?.(data);
+      Object.keys(data).forEach((key) => {
+        $[key as keyof TData] = data[key as keyof {}];
+      });
+    } else
+      Object.keys($).forEach((key) => {
+        delete $[key as keyof {}];
+      });
   });
 
-  /**
-   * Переключатель видимости правой панели
-   *
-   * @type {boolean}
-   */
   const { data } = useFetch("monolit/.vite/manifest.json", {
     /**
      * Переводим в массив
@@ -267,7 +294,7 @@ export default defineStore("app", () => {
       if (value && oldValue)
         putObject(
           "assets/data.json",
-          mime.getType("json"),
+          "application/json",
           JSON.stringify(value),
         );
     },
@@ -276,18 +303,8 @@ export default defineStore("app", () => {
 
   const accessKeyId = ref("");
 
-  const rightDrawer = ref(null);
+  const rightDrawer: Ref<boolean | null> = ref(null);
 
-  const state = reactive({
-    content: {
-      selected: undefined,
-      tab: "wysiwyg",
-      expanded: [],
-    },
-  });
-  const the: ComputedRef<TPage> = <ComputedRef<TPage>>(
-    useArrayFind(pages, ({ id }) => id === state.content.selected)
-  );
   const sitemap = computed(() => ({
     "?": 'xml version="1.0" encoding="UTF-8"',
     urlset: {
@@ -304,10 +321,10 @@ export default defineStore("app", () => {
     sitemap,
     (value, oldValue) => {
       if (value && oldValue)
-        putObject("sitemap.xml", mime.getType("xml"), toXML(value));
+        putObject("sitemap.xml", "application/xml", toXML(value));
     },
     { debounce },
   );
 
-  return { state, the, save, accessKeyId, rightDrawer };
+  return { save, accessKeyId, rightDrawer, validateConfig };
 });

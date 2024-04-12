@@ -6,5 +6,6 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": ["source.fixAll.eslint"],
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
-  "cSpell.language": "en,ru"
+  "cSpell.language": "en,ru",
+  "cSpell.words": ["qiconpicker"]
 }

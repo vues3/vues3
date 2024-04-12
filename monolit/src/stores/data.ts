@@ -182,7 +182,7 @@ type TData = FromSchema<
 dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => (): any =>
   crypto.randomUUID();
 
-export type { TData, TPage, TResource, TSettings };
+export type { TData, TNavbar, TPage, TResource, TSettings };
 export default defineStore("data", () => {
   /**
    * Главный реактивный объект данных
@@ -190,14 +190,14 @@ export default defineStore("data", () => {
    * @type {TData}
    */
   const $: TData = reactive({
-    content: null,
-    settings: null,
-    style: null,
-    script: null,
-    css: null,
-    js: null,
-    navbar: null,
-  });
+    // content: null,
+    // settings: null,
+    // style: null,
+    // script: null,
+    // css: null,
+    // js: null,
+    // navbar: null,
+  } as TData);
 
   /**
    * Модификатор для вотчера, указывает на проверку всех изменений в глубину
@@ -529,7 +529,7 @@ export default defineStore("data", () => {
   };
 
   watch($, (value) => {
-    validate?.(value);
+    if (Object.keys(value).length) validate?.(value);
   });
 
   watch(

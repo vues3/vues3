@@ -8,8 +8,8 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
       header-class="text-primary"
     )
       v-interactive-tree(
-        v-model:selected="state.content.selected",
-        v-model:expanded="state.content.expanded",
+        v-model:selected="config.content.selected",
+        v-model:expanded="config.content.expanded",
         :nodes="$?.content",
         :list="pages"
       )
@@ -164,7 +164,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
             q-btn(label="Загрузить картинку", color="primary", @click="open")
 q-page.column.full-height
   q-tabs.text-grey(
-    v-model="state.content.tab",
+    v-model="config.content.tab",
     dense,
     active-color="primary",
     indicator-color="primary",
@@ -176,20 +176,21 @@ q-page.column.full-height
     q-tab(name="script", :label="`script${the?.setup ? ' setup' : ''}`")
     q-tab(name="style", :label="`style${the?.scoped ? ' scoped' : ''}`")
   q-separator
-  q-tab-panels.full-width.col(v-model="state.content.tab")
+  q-tab-panels.full-width.col(v-model="config.content.tab")
     q-tab-panel.column(name="wysiwyg")
       v-wysiwyg.full-width.col.column(
         v-if="the",
         :key="the.id",
         v-model="the.html",
-        @vue:unmounted="onUnmounted(the, 'template', 'htm', the.html)"
+        :theme="the.theme",
+        @vue:unmounted="onUnmounted(the, 'template', 'htm', the?.html)"
       )
     q-tab-panel.column(name="template")
       v-source-code.col(
         v-if="the",
         :key="the.id",
         v-model="the.htm",
-        @vue:unmounted="onUnmounted(the, 'template', 'htm', the.htm)"
+        @vue:unmounted="onUnmounted(the, 'template', 'htm', the?.htm)"
       )
     q-tab-panel.column(name="script")
       v-source-code.col(
@@ -197,7 +198,7 @@ q-page.column.full-height
         :key="the.id",
         v-model="the.js",
         lang="javascript",
-        @vue:unmounted="onUnmounted(the, 'script', 'js', the.js)"
+        @vue:unmounted="onUnmounted(the, 'script', 'js', the?.js)"
       )
     q-tab-panel.column(name="style")
       v-source-code.col(
@@ -205,12 +206,14 @@ q-page.column.full-height
         :key="the.id",
         v-model="the.css",
         lang="css",
-        @vue:unmounted="onUnmounted(the, 'style', 'css', the.css)"
+        @vue:unmounted="onUnmounted(the, 'style', 'css', the?.css)"
       )
 </template>
-<script setup>
+<script setup lang="ts">
+// @ts-ignore
 import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
-import { get, useFileDialog } from "@vueuse/core";
+import type { RemovableRef } from "@vueuse/core";
+import { get, useFileDialog, useStorage } from "@vueuse/core";
 import mime from "mime";
 import { storeToRefs } from "pinia";
 import { uid, useQuasar } from "quasar";
@@ -223,14 +226,16 @@ import types from "@/assets/types.json";
 import VInteractiveTree from "@/components/VInteractiveTree.vue";
 import VSourceCode from "@/components/VSourceCode.vue";
 import VWysiwyg from "@/components/VWysiwyg.vue";
+import type { TConfig } from "@/stores/app";
 import app from "@/stores/app";
 import s3 from "@/stores/s3";
+import type { TPage } from "~/monolit/src/stores/data";
 import data from "~/monolit/src/stores/data";
 
 const $q = useQuasar();
 const S3 = s3();
-const { state, the, rightDrawer } = storeToRefs(app());
-const { save } = app();
+const { accessKeyId, rightDrawer } = storeToRefs(app());
+const { save, validateConfig } = app();
 const { pages } = storeToRefs(data());
 const { $ } = data();
 const { base } = storeToRefs(S3);
@@ -238,14 +243,41 @@ const { putFile } = S3;
 const icons = ref(materialIcons.icons);
 
 /**
- * @param {object} that - Текущий объект страницы
+ * @param {TPage} that - Текущий объект страницы
  * @param {string} key - Название свойства для хранения считанного файла
  * @param {string} ext - Расширение файла
  * @param {string} value - Новое содержимое файла
  */
-const onUnmounted = async (that, key, ext, value) => {
-  save(that, key, ext, await value);
+const onUnmounted = async (
+  that: TPage,
+  key: string,
+  ext: string,
+  value: string,
+) => {
+  if (that) save(that, key, ext, await value);
 };
+const mergeDefaults = true;
+
+const config: RemovableRef<TConfig> = useStorage(
+  `config-${accessKeyId.value}`,
+  {} as TConfig,
+  localStorage,
+  {
+    mergeDefaults,
+  },
+);
+const immediate = true;
+watch(
+  config,
+  (value) => {
+    validateConfig?.(value);
+  },
+  { immediate },
+);
+
+const the = computed(() =>
+  pages.value.find(({ id }) => id === config.value.content.selected),
+);
 
 const loc = computed({
   /** @returns {string} - Постоянная ссылка */
@@ -254,7 +286,7 @@ const loc = computed({
   },
   /** @param {string} value - Новое значение постоянной ссылки */
   set(value) {
-    get(the).loc = value.replace(/^\/|\/$/g, "");
+    if (the.value) the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
   },
 });
 const iconPicker = ref({
@@ -267,13 +299,10 @@ const iconPicker = ref({
 });
 rightDrawer.value = true;
 watch(
-  () => $?.content ?? [],
-  ([{ id = "" } = {}] = []) => {
-    const {
-      content: { expanded, selected },
-    } = get(state);
-    if (!expanded.length) get(state).content.expanded = [id];
-    if (!selected) get(state).content.selected = id;
+  () => $.content ?? [],
+  ([{ id = null } = {}]) => {
+    if (!config.value.content.expanded.length && id)
+      config.value.content.expanded.push(id);
   },
   { immediate: true },
 );
@@ -291,13 +320,13 @@ watch(files, async (newFiles) => {
       if (mimes.includes(type)) {
         const filePath = `assets/${uid()}.${mime.getExtension(type)}`;
         await putFile(filePath, type, file);
-        get(the).image = `/${filePath}`;
+        if (the.value) the.value.image = `/${filePath}`;
       } else
         throw new Error(
           "Тип графического файла не подходит для использования в сети интернет",
         );
     } catch (err) {
-      const { message } = err;
+      const { message } = err as Error;
       $q.notify({ message });
     }
 });

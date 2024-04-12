@@ -35,9 +35,9 @@ q-btn-group.q-mx-xs(spread, flat)
         )
 </template>
 <script setup>
-import { get, useArrayFind } from "@vueuse/core";
+import { get } from "@vueuse/core";
 import { uid, useQuasar } from "quasar";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 
 const props = defineProps({
   selected: { default: "", type: String },
@@ -54,18 +54,25 @@ const props = defineProps({
     type: Array,
   },
 });
-const the = useArrayFind(
-  () => props.list,
-  ({ id }) => id === props.selected,
+const immediate = true;
+const the = computed(() =>
+  props.list.length
+    ? props.list.find(({ id }) => id === props.selected) ?? null
+    : undefined,
 );
 const emits = defineEmits(["update:expanded", "update:selected"]);
 const $q = useQuasar();
 const tree = ref();
 const updateSelected = "update:selected";
-watch(the, (newVal, oldVal = {}) => {
-  const value = false;
-  Reflect.defineProperty(oldVal, "contenteditable", { value });
-});
+const value = false;
+watch(
+  the,
+  (newVal, oldVal) => {
+    if (!newVal && props.list.length) emits(updateSelected, props.list[0].id);
+    if (oldVal) Reflect.defineProperty(oldVal, "contenteditable", { value });
+  },
+  { immediate },
+);
 /** Добавление новой страницы */
 const newPage = () => {
   const { parent, children, index, siblings } = get(the);

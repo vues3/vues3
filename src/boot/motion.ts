@@ -1,9 +1,10 @@
 import { MotionPlugin } from "@vueuse/motion";
+import type { App } from "vue";
 
 /**
  * @param {object} boot - Boot object
- * @param {object} boot.app - Vue app instance
+ * @param {App} boot.app - Vue app instance
  */
-export default ({ app }) => {
+export default ({ app }: { app: App }) => {
   app.use(MotionPlugin);
 };

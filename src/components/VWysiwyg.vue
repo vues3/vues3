@@ -95,13 +95,13 @@ import { nextTick, ref, watch, watchEffect, watchPostEffect } from "vue";
 
 import mimes from "@/assets/mimes.json";
 import templates from "@/assets/templates.json";
-import app from "@/stores/app";
 import s3 from "@/stores/s3";
 import data from "~/monolit/src/stores/data";
 import { fonts } from "~/uno.config";
 
-const { modelValue } = defineProps({
+const { modelValue, theme } = defineProps({
   modelValue: { default: "", type: [Promise, String] },
+  theme: { default: null, type: String },
 });
 defineEmits(["update:modelValue"]);
 const htm = ref(null);
@@ -115,7 +115,6 @@ const $q = useQuasar();
 const S3 = s3();
 const { base } = storeToRefs(S3);
 const { putFile } = S3;
-const { the } = storeToRefs(app());
 const { pages } = storeToRefs(data());
 const { $ } = data();
 const inserted = ref(null);
@@ -277,12 +276,10 @@ const editorTlb = [
   ["upload", "template", "routerLink"],
 ];
 watchPostEffect(() => {
-  if (editorRef.value)
-    editorRef.value.getContentEl().dataset.theme = the?.value?.theme;
+  if (editorRef.value) editorRef.value.getContentEl().dataset.theme = theme;
 });
 /** ShowDialog */
 const showDialog = () => {
-  const { theme } = the?.value ?? {};
   modalRef.value.dataset.theme = theme;
 };
 const [{ value }] = templates;
