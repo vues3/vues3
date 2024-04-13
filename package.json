@@ -68,7 +68,6 @@
   "devDependencies": {
     "@prettier/plugin-pug": "^3.0.0",
     "@quasar/app-vite": "^2.0.0-beta.5",
-    "@rushstack/eslint-patch": "^1.10.2",
     "@types/js-beautify": "^1.14.3",
     "@vue/eslint-config-airbnb": "^8.0.0",
     "@vue/eslint-config-airbnb-with-typescript": "^8.0.0",
