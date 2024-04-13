@@ -155,8 +155,26 @@ export default defineStore("monolit", () => {
     ext: string,
   ): Promise<string> => {
     if (that[key as keyof TPage] == null) {
-      const response = await fetch(`/assets/${that.id}.${ext}`, { cache });
-      const value = response.ok ? await response.text() : "";
+      /**
+       * Ответ сервера
+       *
+       * @constant
+       * @default
+       * @type {Response}
+       */
+      const response: Response = await fetch(`/assets/${that.id}.${ext}`, {
+        cache,
+      });
+
+      /**
+       * Текстовые данные, полученные с сервера
+       *
+       * @constant
+       * @default
+       * @type {string}
+       */
+      const value: string = response.ok ? await response.text() : "";
+
       Object.defineProperty(that, key, { value });
     }
     return that[key as keyof TPage] as string;
