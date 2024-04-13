@@ -50,8 +50,7 @@ export default defineStore("monolit", () => {
    * @param {any[]} args - Содержимое записи
    */
   const log = (type: string, ...args: any[]) => {
-    // eslint-disable-next-line no-console
-    (console[type as keyof Console] as Function)(...args);
+    (window.console[type as keyof Console] as Function)(...args);
   };
 
   /**
@@ -83,9 +82,7 @@ export default defineStore("monolit", () => {
      * @returns {Promise<ContentData>} Шаблон
      */
     const getFile = async (): Promise<ContentData> => {
-      /** @type {[string, string, string]} */
-      const [template, script, style]: [string, string, string] =
-        await Promise.all([htm, js, css]);
+      const [template, script, style] = await Promise.all([htm, js, css]);
 
       /**
        * Константа со скриптами
@@ -247,6 +244,7 @@ export default defineStore("monolit", () => {
         css,
         js,
       });
+
       fix(value.children ?? []);
     });
   };

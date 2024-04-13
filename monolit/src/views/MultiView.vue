@@ -165,6 +165,7 @@ const callback: IntersectionObserverCallback = ([
 ]: IntersectionObserverEntry[]) => {
   if (!pause && isIntersecting && name !== the.value?.id) {
     push = true;
+
     router.push({ name });
   }
 };
@@ -238,6 +239,7 @@ watch(
   siblings,
   async () => {
     await all();
+
     GLightbox({ loop, zoomable, selector });
   },
   { immediate },
@@ -248,10 +250,13 @@ watch(
   async () => {
     if (!push) {
       await all();
+
       pause = true;
+
       refs.value
         .find(({ id }) => id === the.value?.id)
         ?.scrollIntoView({ behavior });
+
       pause = false;
     } else push = false;
   },

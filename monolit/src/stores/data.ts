@@ -183,6 +183,7 @@ dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => (): any =>
   crypto.randomUUID();
 
 export type { TData, TNavbar, TPage, TResource, TSettings };
+
 export default defineStore("data", () => {
   /**
    * Главный реактивный объект данных
@@ -387,16 +388,20 @@ export default defineStore("data", () => {
        * @type {TPage[]}
        */
       const ret: TPage[] = [];
+
       /**
        * Родительский объект
        *
        * @type {TPage | null}
        */
       let parent: TPage | null = <TPage>this;
+
       do {
         ret.unshift(parent);
+
         ({ parent = null } = parent);
       } while (parent);
+
       return ret;
     },
   };
@@ -516,6 +521,7 @@ export default defineStore("data", () => {
         url,
         favicon,
       });
+
       fixDeep({ value: value.children ?? [] }, { value });
     });
   };

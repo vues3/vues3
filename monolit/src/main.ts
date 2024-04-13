@@ -2,13 +2,11 @@ import "glightbox/dist/css/glightbox.css";
 import "./style.sass";
 import "@unocss/reset/tailwind.css";
 import "daisyui/dist/full.css";
-// eslint-disable-next-line import/no-unresolved
 import "virtual:uno.css";
 
 import * as mdi from "@mdi/js";
 import Tres from "@tresjs/core";
 import { createHead } from "@unhead/vue";
-// eslint-disable-next-line import/no-unresolved
 import { Head } from "@unhead/vue/components";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
@@ -32,8 +30,7 @@ import Data from "@/stores/data";
 import Monolit from "@/stores/monolit";
 import defaults from "~/uno.config";
 
-// eslint-disable-next-line no-console
-console.info(
+window.console.info(
   "👨‍🚀",
   "The vues3 framework",
   `ver:${__APP_VERSION__}`,
@@ -107,9 +104,11 @@ const cache: RequestCache = "no-cache";
   const data: TData = response.ok ? await response.json() : {};
 
   validate?.(data);
+
   Object.keys(data).forEach((key) => {
     $[key as keyof TData] = data[key as keyof {}];
   });
+
   fix($.content ?? []);
 })();
 
@@ -206,6 +205,7 @@ watch(
         return import("@/views/NotFoundView.vue");
       },
     });
+
     router.replace(router.currentRoute.value.fullPath);
   },
   { once },
@@ -249,9 +249,15 @@ watch(
   },
   { once },
 );
+
 app.use(router);
+
 app.use(createHead());
+
 app.use(Tres);
+
 app.use(MotionPlugin);
+
 app.component("VHead", Head);
+
 app.mount("#app");
