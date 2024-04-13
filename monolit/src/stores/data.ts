@@ -189,15 +189,7 @@ export default defineStore("data", () => {
    *
    * @type {TData}
    */
-  const $: TData = reactive({
-    // content: null,
-    // settings: null,
-    // style: null,
-    // script: null,
-    // css: null,
-    // js: null,
-    // navbar: null,
-  } as TData);
+  const $: TData = reactive({} as TData);
 
   /**
    * Модификатор для вотчера, указывает на проверку всех изменений в глубину
