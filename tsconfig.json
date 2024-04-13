@@ -8,5 +8,6 @@
       "~/*": ["*"]
     },
     "types": ["vite/client", "node"]
-  }
+  },
+  "exclude": ["dist", ".quasar", "node_modules"]
 }

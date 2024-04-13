@@ -14,14 +14,14 @@ import { defineConfig } from "vite";
  * @type {Extractor[]}
  * @see {@link https://unocss.dev/config/extractors} см. документацию
  */
-const extractors: Array<Extractor> = [extractorPug()];
+const extractors: Extractor[] = [extractorPug()];
 
 /**
  * Массив с типами замещаемых полифилов
  *
  * @type {string[]}
  */
-// const modernPolyfills: Array<string> = ["es.promise.with-resolvers"];
+// const modernPolyfills: string[] = ["es.promise.with-resolvers"];
 
 /**
  * Конфигурационный файл UnoCSS

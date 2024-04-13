@@ -14,6 +14,7 @@ import type { TPage } from "@/stores/data";
 
 export default defineStore("monolit", () => {
   const { defineAsyncComponent } = vue;
+
   const { useStyleTag } = vueuseCore;
 
   /**

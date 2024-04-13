@@ -67,10 +67,13 @@ initUnocssRuntime({ autoPrefix, defaults, bypassDefined });
 const app: App = createApp(vueApp);
 
 app.config.globalProperties.mdi = mdi;
+
 app.use(createPinia());
 
 const { pages } = storeToRefs(Data());
+
 const { $, validate } = Data();
+
 const { fix } = Monolit();
 
 /**
