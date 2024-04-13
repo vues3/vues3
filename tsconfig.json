@@ -7,6 +7,6 @@
       "@/*": ["src/*", "monolit/src/*"],
       "~/*": ["*"]
     },
-    "types": ["vite/client"]
+    "types": ["vite/client", "node"]
   }
 }

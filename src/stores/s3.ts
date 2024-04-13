@@ -44,7 +44,7 @@ export default defineStore("s3", () => {
    *
    * @param {string} Key Имя файла
    * @param {string} ContentType Тип mime
-   * @param {StreamingBlobTypes} body Тело файла
+   * @param {StreamingBlobPayloadInputTypes} body Тело файла
    */
   const putObject = async (
     Key: string,

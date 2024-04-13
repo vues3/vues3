@@ -84,7 +84,8 @@
     "prettier-plugin-organize-attributes": "^1.0.0",
     "prettier-plugin-tailwindcss": "^0.5.13",
     "pug": "^3.0.2",
-    "vite-plugin-checker": "^0.6.4"
+    "vite-plugin-checker": "^0.6.4",
+    "vue-tsc": "^2.0.13"
   },
   "engines": {
     "node": "^24 || ^22 || ^20 || ^18",

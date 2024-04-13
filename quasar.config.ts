@@ -17,8 +17,11 @@ export default configure(() => ({
       [
         "vite-plugin-checker",
         {
+          vueTsc: {
+            tsconfigPath: "tsconfig.vue-tsc.json",
+          },
           eslint: {
-            lintCommand: 'eslint "./**/*.{js,mjs,cjs,vue}"',
+            lintCommand: 'eslint "./**/*.{js,ts,mjs,cjs,vue}"',
           },
         },
         { server: false },
