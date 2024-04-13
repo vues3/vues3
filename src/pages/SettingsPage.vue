@@ -32,7 +32,7 @@ q-page.column.full-height
           q-item-section
             q-item-label В виде лендинга
 </template>
-<script setup>
+<script setup lang="ts">
 import { storeToRefs } from "pinia";
 
 import app from "@/stores/app";

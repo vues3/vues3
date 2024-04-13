@@ -83,15 +83,23 @@ div
         )
 </template>
 
-<script setup>
+<script setup lang="ts">
 import "daisyui/dist/full.css";
 
-import { useArrayFind, useFileDialog } from "@vueuse/core";
+import { useFileDialog } from "@vueuse/core";
 import { html_beautify } from "js-beautify";
 import mime from "mime";
 import { storeToRefs } from "pinia";
 import { useQuasar } from "quasar";
-import { nextTick, ref, watch, watchEffect, watchPostEffect } from "vue";
+import type { Ref } from "vue";
+import {
+  computed,
+  nextTick,
+  ref,
+  watch,
+  watchEffect,
+  watchPostEffect,
+} from "vue";
 
 import mimes from "@/assets/mimes.json";
 import templates from "@/assets/templates.json";
@@ -99,12 +107,18 @@ import s3 from "@/stores/s3";
 import data from "~/monolit/src/stores/data";
 import { fonts } from "~/uno.config";
 
-const { modelValue, theme } = defineProps({
-  modelValue: { default: "", type: [Promise, String] },
-  theme: { default: null, type: String },
+interface IProps {
+  modelValue: Promise<string> | string;
+  theme: string | null;
+}
+
+const { modelValue, theme } = withDefaults(defineProps<IProps>(), {
+  modelValue: "",
+  theme: null,
 });
+
 defineEmits(["update:modelValue"]);
-const htm = ref(null);
+const htm: Ref<string | null> = ref(null);
 watchEffect(async () => {
   htm.value = await modelValue;
 });
@@ -117,15 +131,14 @@ const { base } = storeToRefs(S3);
 const { putFile } = S3;
 const { pages } = storeToRefs(data());
 const { $ } = data();
-const inserted = ref(null);
-const insertedObject = useArrayFind(
-  pages,
-  ({ id = "" } = {}) => id === inserted?.value,
+const inserted: Ref<string | null | undefined> = ref(null);
+const insertedObject = computed(() =>
+  pages.value.find(({ id }) => id === inserted?.value),
 );
 const immediate = true;
 watch(
   () => $?.content ?? [],
-  ([{ id = "" } = {}] = []) => {
+  ([{ id }]) => {
     inserted.value = id;
   },
   { immediate },
@@ -139,7 +152,7 @@ const modalRef = ref();
  *
  * @param {object} file - Файл
  */
-const putImage = async (file) => {
+const putImage = async (file: File) => {
   try {
     const { type } = file;
     if (mimes?.includes(type)) {
@@ -151,13 +164,16 @@ const putImage = async (file) => {
         "Тип графического файла не подходит для использования в сети интернет",
       );
   } catch (err) {
-    const { message } = err;
+    const { message } = err as Error;
     $q?.notify({ message });
   }
 };
 /** @param {object} evt - Объект события */
-const capture = (evt) => {
-  const { files = [] } = evt?.dataTransfer ?? evt?.clipboardData ?? {};
+const capture = (evt: ClipboardEvent | DragEvent) => {
+  const { files = [] } =
+    (evt as DragEvent)?.dataTransfer ??
+    (evt as ClipboardEvent)?.clipboardData ??
+    {};
   if (files.length) {
     evt.preventDefault();
     evt.stopPropagation();
@@ -167,7 +183,7 @@ const capture = (evt) => {
 const accept = "image/*";
 const { files, open } = useFileDialog({ accept });
 watch(files, (newFiles) => {
-  [...newFiles]?.forEach(putImage);
+  if (newFiles) [...newFiles]?.forEach(putImage);
 });
 const e = $q?.lang?.editor;
 const i = $q?.iconSet?.editor;

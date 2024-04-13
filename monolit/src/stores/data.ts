@@ -496,17 +496,31 @@ export default defineStore("data", () => {
   };
 
   /**
+   * Равен true только в том случае, если тип этого дескриптора свойства может
+   * быть изменён и если свойство может быть удалено из содержащего его
+   * объекта.
+   *
+   * @constant
+   * @default
+   * @type {boolean}
+   */
+  const configurable: boolean = true;
+
+  /**
    * Рекурсивная функция ремонта страниц
    *
    * @function fixDeep
    * @param {{ value: TPage[] }} siblings - Объект для defineProperties
    * @param {TPage[]} [siblings.value] - Элементы массива страниц
-   * @param {{ value: TPage }} [parent] - Объект для defineProperties
+   * @param {boolean} [siblings.configurable] - Признак возможности конфигурации
+   * @param {{ value: TPage; configurable: boolean }} [parent] - Объект для
+   *   defineProperties
    * @param {TPage} parent.value - Родительский объект
+   * @param {boolean} [parent.configurable] - Признак возможности конфигурации
    */
   const fixDeep = (
-    siblings: { value: TPage[] },
-    parent: { value: TPage | null } = { value: null },
+    siblings: { value: TPage[]; configurable?: boolean },
+    parent: { value: TPage | null; configurable?: boolean } = { value: null },
   ) => {
     siblings.value.forEach((value) => {
       Object.defineProperties(value, {
@@ -522,7 +536,10 @@ export default defineStore("data", () => {
         favicon,
       });
 
-      fixDeep({ value: value.children ?? [] }, { value });
+      fixDeep(
+        { value: value.children ?? [], configurable },
+        { value, configurable },
+      );
     });
   };
 

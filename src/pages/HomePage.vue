@@ -109,17 +109,38 @@ q-page.column
           div
             q-btn.full-width(label="LogIn", type="submit", color="primary")
 </template>
-<script setup>
+<script setup lang="ts">
+import type { S3ClientConfig } from "@aws-sdk/client-s3";
 import { HeadBucketCommand, S3Client } from "@aws-sdk/client-s3";
 import { FetchHttpHandler } from "@smithy/fetch-http-handler";
+import type { RemovableRef } from "@vueuse/core";
 import { get, set, useStorage } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { useQuasar } from "quasar";
+import type { Ref } from "vue";
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import storeApp from "@/stores/app";
 import storeS3 from "@/stores/s3";
+
+interface IRegion {
+  label: string;
+  regions: string[];
+  region: string;
+  endpoint: string;
+  wendpoint: string;
+}
+
+interface ICred {
+  label: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+  region: string;
+  endpoint: string;
+  wendpoint: string;
+  provider: string;
+}
 
 const router = useRouter();
 const $q = useQuasar();
@@ -134,7 +155,7 @@ const region = ref("");
 const endpoint = ref("");
 const isPwd = ref(true);
 const remember = ref(true);
-const providers = [
+const providers: IRegion[] = [
   {
     label: "aws",
     regions: [
@@ -178,10 +199,10 @@ const providers = [
     wendpoint: "https://website.yandexcloud.net",
   },
 ];
-const provider = ref(null);
+const provider: Ref<IRegion | null> = ref(null);
 const regions = ref([]);
-const creds = useStorage("vues3", []);
-const cred = ref(null);
+const creds: RemovableRef<ICred[]> = useStorage("vues3", []);
+const cred: Ref<ICred | null> = ref(null);
 watch(provider, (value) => {
   if (value) {
     set(regions, value.regions);
@@ -194,7 +215,7 @@ watch(provider, (value) => {
   }
 });
 watch(region, () => {
-  if (get(provider)) set(wendpoint, get(provider).wendpoint);
+  if (get(provider)) set(wendpoint, provider.value?.wendpoint);
   else set(wendpoint, "");
 });
 watch(cred, (value) => {
@@ -219,32 +240,32 @@ watch(cred, (value) => {
     set(wendpoint, "");
   }
 });
-let s3Client = null;
+let s3Client: S3Client | null = null;
 /** { @link https://fetch.spec.whatwg.org/#http-network-or-cache-fetch } */
 const login = async () => {
   if (!s3Client)
     try {
       s3Client = new S3Client({
-        region: get(region),
-        endpoint: get(endpoint),
+        region: region.value,
+        endpoint: endpoint.value,
         credentials: {
-          accessKeyId: get(accessKeyId),
-          secretAccessKey: get(secretAccessKey),
+          accessKeyId: accessKeyId.value,
+          secretAccessKey: secretAccessKey.value,
         },
         requestHandler: new FetchHttpHandler({ keepAlive: false }),
-      });
+      } as S3ClientConfig);
       set(creds, [
         ...get(creds).filter(({ label }) => label !== get(bucket)),
         ...(get(remember)
           ? [
               {
-                label: get(bucket),
-                accessKeyId: get(accessKeyId),
-                secretAccessKey: get(secretAccessKey),
-                region: get(region),
-                endpoint: get(endpoint),
-                wendpoint: get(wendpoint),
-                provider: get(provider).label,
+                label: bucket.value,
+                accessKeyId: accessKeyId.value,
+                secretAccessKey: secretAccessKey.value,
+                region: region.value,
+                endpoint: endpoint.value,
+                wendpoint: wendpoint.value,
+                provider: provider.value?.label,
               },
             ]
           : []),
@@ -258,7 +279,7 @@ const login = async () => {
       router.push("/content");
     } catch (err) {
       s3Client = null;
-      const { message } = err;
+      const { message } = err as Error;
       $q.notify({ message });
     }
 };

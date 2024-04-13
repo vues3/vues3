@@ -10,26 +10,33 @@ v-ace-editor(
 )
 </template>
 
-<script setup>
+<script setup lang="ts">
 // eslint-disable-next-line simple-import-sort/imports
 import { VAceEditor } from "vue3-ace-editor";
 import "ace-builds/esm-resolver";
 import { ref, watchEffect, nextTick } from "vue";
+import type { Ref } from "vue";
 import { js, css, html } from "js-beautify";
 
-const { options, lang, modelValue } = defineProps({
-  options: {
-    /** @returns {object} - Пустой объект по умолчанию */
-    default: () => ({}),
-    type: Object,
-  },
-  lang: { default: "html", type: String },
-  modelValue: { default: "", type: [Promise, String] },
+interface IProps {
+  options?: object;
+  lang?: string;
+  modelValue: Promise<string> | string;
+}
+
+const { options, lang, modelValue } = withDefaults(defineProps<IProps>(), {
+  /**
+   * @function options
+   * @returns {object} - Пустой объект по умолчанию
+   */
+  options: () => ({}),
+  lang: "html",
+  modelValue: "",
 });
 
 const emit = defineEmits(["update:modelValue"]);
 /** @param {string} value - Исходный код */
-const beautify = (value) => {
+const beautify = (value: string) => {
   let code;
   switch (lang) {
     case "javascript":
@@ -45,7 +52,8 @@ const beautify = (value) => {
   emit("update:modelValue", code);
 };
 const editorRef = ref();
-const value = ref(null);
+
+const value: Ref<string | null> = ref(null);
 
 watchEffect(async () => {
   value.value = await modelValue;

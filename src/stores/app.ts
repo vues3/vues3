@@ -301,7 +301,7 @@ export default defineStore("app", () => {
     { deep, debounce },
   );
 
-  const accessKeyId = ref("");
+  const accessKeyId: Ref<string | null> = ref(null);
 
   const rightDrawer: Ref<boolean | null> = ref(null);
 
