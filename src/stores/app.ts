@@ -1,11 +1,14 @@
+import type { RemovableRef } from "@vueuse/core";
 import {
   get,
   useDebounceFn,
   useFetch,
+  useStorage,
   watchDebounced,
   whenever,
 } from "@vueuse/core";
 import { logicAnd } from "@vueuse/math";
+import type { AnySchema, CodeOptions, ValidateFunction } from "ajv";
 import Ajv from "ajv";
 import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import { FromSchema } from "json-schema-to-ts";
@@ -24,307 +27,387 @@ import storeS3 from "./s3";
 type TConfig = FromSchema<typeof Config>;
 
 export type { TConfig };
-export default defineStore("app", () => {
-  const schemas = [Config];
-  const useDefaults = true;
-  const coerceTypes = true;
-  const removeAdditional = true;
-  const esm = true;
-  const code = { esm };
 
-  const ajv = new Ajv({
-    useDefaults,
-    coerceTypes,
-    removeAdditional,
-    schemas,
-    code,
-  });
+/**
+ * @constant
+ * @type {AnySchema[]}
+ */
+const schemas: AnySchema[] = [Config];
 
-  const validateConfig = ajv.getSchema("urn:jsonschema:config");
+/**
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const useDefaults: boolean = true;
 
-  const rootFileName = "index.html";
-  const { S3, base, bucket } = storeToRefs(storeS3());
-  const { putObject, headObject, getObject } = storeS3();
-  const { pages } = storeToRefs(Data());
-  const { $, validate } = Data();
+/**
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const coerceTypes: boolean = true;
 
-  const debounce = 1000;
+/**
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const removeAdditional: boolean = true;
 
-  /**
-   * Модификатор для вотчера, указывает на проверку всех изменений в глубину
-   *
-   * @constant
-   * @default
-   * @type {boolean}
-   */
-  const deep: boolean = true;
+/** @type {boolean} */
+const esm: boolean = true;
 
-  const configurable: boolean = true;
+/**
+ * @constant
+ * @default
+ * @type {CodeOptions}
+ */
+const code: CodeOptions = { esm };
 
-  /**
-   * @param {TPage} that - Текущий объект страницы
-   * @param {string} key - Название свойства для хранения считанного файла
-   * @param {string} ext - Расширение файла
-   * @param {Function} beautify - Ф-ция форматирования кода
-   * @returns {Promise<string>} Содержимое файла
-   */
-  const getFile = async (
-    that: TPage,
-    key: string,
-    ext: string,
-    beautify: Function,
-  ): Promise<string> => {
-    if (that[key as keyof TPage] == null) {
-      const value = beautify(
-        (await getObject(`assets/${that.id}.${ext}`)) ?? "",
-      );
-      Object.defineProperty(that, key, { value, configurable });
-    }
-    return that[key as keyof TPage] as string;
-  };
-
-  /**
-   * @param {TPage} that - Текущий объект страницы
-   * @param {string} key - Название свойства для хранения считанного файла
-   * @param {string} ext - Расширение файла
-   * @param {string} text - Новое содержимое файла
-   */
-  const save = (that: TPage, key: string, ext: string, text: string) => {
-    putObject(
-      `assets/${that.id}.${ext}`,
-      mime.getType(ext) ?? "text/plain",
-      text,
-    );
-    const value = new Date().toISOString();
-    Reflect.defineProperty(that, "lastmod", { value });
-  };
-
-  const debounceFn = useDebounceFn(save, debounce);
-
-  /**
-   * @param {TPage} that - Текущий объект страницы
-   * @param {string} key - Название свойства для хранения считанного файла
-   * @param {string} ext - Расширение файла
-   * @param {string} value - Новое содержимое файла
-   */
-  const setFile = (that: TPage, key: string, ext: string, value: string) => {
-    Object.defineProperty(that, key, { value, configurable });
-    debounceFn(that, key, ext, value);
-  };
-
-  /**
-   * Объект, на котором определяется загрузка шаблона страницы
-   *
-   * @type {PropertyDescriptor}
-   */
-  const htm: PropertyDescriptor = {
-    /**
-     * Геттер шаблона страницы
-     *
-     * @returns {Promise<string>} - Шаблон страницы
-     */
-    get(): Promise<string> {
-      return getFile(this as TPage, "template", "htm", html_beautify);
-    },
-    /**
-     * Сеттер шаблона страницы
-     *
-     * @param {string} value - Передаваемый шаблон страницы
-     */
-    set(value: string) {
-      setFile(this as TPage, "template", "htm", value);
-    },
-  };
-
-  /**
-   * Объект, на котором определяется загрузка шаблона страницы
-   *
-   * @type {PropertyDescriptor}
-   */
-  const html: PropertyDescriptor = {
-    /**
-     * Считывание исходного кода из структуры данных
-     *
-     * @returns {Promise<string>} - Template
-     */
-    async get(): Promise<string> {
-      const baseUrl = `${get(base)}/`;
-      return (await (<TPage>this).htm).replace(
-        /(["'(;])([^"'(;:]*?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>))/gi,
-        (match, p1, p2) =>
-          `${p1}${new URL(p2.replace(/^\//, ""), baseUrl).href}`,
-      );
-    },
-    /**
-     * Запись исходного кода страницы в структуры данных
-     *
-     * @param {string} value - Template
-     */
-    set(value: string) {
-      const regexp = new RegExp(`^${get(base)}`);
-      (<TPage>this).htm = value.replace(
-        /[^"'(;]+?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>)/gi,
-        (match) => match.replace(regexp, ""),
-      );
-    },
-  };
-
-  /**
-   * Объект, на котором определяется загрузка стилей страницы
-   *
-   * @type {PropertyDescriptor}
-   */
-  const css: PropertyDescriptor = {
-    /**
-     * Геттер стилей страницы
-     *
-     * @returns {Promise<string>} - Стили страницы
-     */
-    get(): Promise<string> {
-      return getFile(this as TPage, "style", "css", css_beautify);
-    },
-
-    /**
-     * Сеттер стилей страницы
-     *
-     * @param {string} value - Передаваемые стили страницы
-     */
-    set(value: string) {
-      setFile(this as TPage, "style", "css", value);
-    },
-  };
-
-  /**
-   * Объект, на котором определяется загрузка скриптов страницы
-   *
-   * @type {PropertyDescriptor}
-   */
-  const js: PropertyDescriptor = {
-    /**
-     * Геттер скриптов страницы
-     *
-     * @returns {Promise<string>} - Скрипты страницы
-     */
-    async get(): Promise<string> {
-      return getFile(this as TPage, "script", "js", js_beautify);
-    },
-    /**
-     * Сеттер скриптов страницы
-     *
-     * @param {string} value - Передаваемые скрипты страницы
-     */
-    set(value: string) {
-      setFile(this as TPage, "script", "js", value);
-    },
-  };
-
-  /**
-   * Рекурсивная функция ремонта страниц
-   *
-   * @function fix
-   * @param {TPage[]} siblings - Элементы массива страниц
-   */
-  const fix = (siblings: TPage[]) => {
-    siblings.forEach((value) => {
-      Object.defineProperties(value, { html, htm, css, js });
-      fix(value.children ?? []);
-    });
-  };
-
-  watch(
-    () => $?.content ?? [],
-    (value) => {
-      fix(value);
-    },
-    { deep },
-  );
-
-  watch(S3, async (value) => {
-    if (value) {
-      const data = JSON.parse((await getObject("assets/data.json")) ?? "{}");
-      validate?.(data);
-      Object.keys(data).forEach((key) => {
-        $[key as keyof TData] = data[key as keyof {}];
-      });
-    } else
-      Object.keys($).forEach((key) => {
-        delete $[key as keyof {}];
-      });
-  });
-
-  const { data } = useFetch("monolit/.vite/manifest.json", {
-    /**
-     * Переводим в массив
-     *
-     * @param {object} ctx - Возвращаемый объект
-     * @returns {object} - Трансформируемый возвращаемый объект
-     */
-    afterFetch(ctx) {
-      ctx.data = [
-        ...new Set([
-          rootFileName,
-          "robots.txt",
-          ...Object.values(ctx.data).map(({ file }: any) => file),
-          ...ctx.data[rootFileName].css,
-        ]),
-      ];
-      return ctx;
-    },
-  }).json();
-
-  whenever(logicAnd(S3, data), () => {
-    /** @param {string} pAsset - Путь до файла ресурса */
-    const headPutObject = async (pAsset: any) => {
-      try {
-        if (pAsset === rootFileName) throw new Error();
-        await headObject(pAsset);
-      } catch (e) {
-        const body = await (await fetch(`monolit/${pAsset}`)).blob();
-        putObject(pAsset, body.type, body);
-      }
-    };
-    get(data).reduce(async (promise: any, asset: any, currentIndex: any) => {
-      if (currentIndex % 2) await promise;
-      await headPutObject(asset);
-    }, Promise.resolve());
-  });
-  watchDebounced(
-    $,
-    (value, oldValue) => {
-      if (value && oldValue)
-        putObject(
-          "assets/data.json",
-          "application/json",
-          JSON.stringify(value),
-        );
-    },
-    { deep, debounce },
-  );
-
-  const accessKeyId: Ref<string | null> = ref(null);
-
-  const rightDrawer: Ref<boolean | null> = ref(null);
-
-  const sitemap = computed(() => ({
-    "?": 'xml version="1.0" encoding="UTF-8"',
-    urlset: {
-      "@xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
-      url: get(pages).map(({ url, lastmod, changefreq, priority }) => ({
-        loc: `https://${get(bucket)}/${url}`,
-        lastmod,
-        changefreq,
-        priority,
-      })),
-    },
-  }));
-  watchDebounced(
-    sitemap,
-    (value, oldValue) => {
-      if (value && oldValue)
-        putObject("sitemap.xml", "application/xml", toXML(value));
-    },
-    { debounce },
-  );
-
-  return { save, accessKeyId, rightDrawer, validateConfig };
+/**
+ * @constant
+ * @type {Ajv}
+ */
+const ajv: Ajv = new Ajv({
+  useDefaults,
+  coerceTypes,
+  removeAdditional,
+  schemas,
+  code,
 });
+
+/**
+ * Функция проверки конфига
+ *
+ * @function validateConfig
+ * @type {ValidateFunction}
+ */
+const validateConfig: ValidateFunction = ajv.getSchema(
+  "urn:jsonschema:config",
+) as ValidateFunction;
+
+const rootFileName = "index.html";
+
+const debounce = 1000;
+
+/**
+ * Модификатор для вотчера, указывает на проверку всех изменений в глубину
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const deep: boolean = true;
+
+const configurable: boolean = true;
+
+/**
+ * Моментальный запуск вотчера
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const immediate: boolean = true;
+
+const { S3, base, bucket } = storeToRefs(storeS3());
+const { putObject, headObject, getObject } = storeS3();
+const { pages } = storeToRefs(Data());
+const { $, validate } = Data();
+
+/**
+ * @param {TPage} that - Текущий объект страницы
+ * @param {string} key - Название свойства для хранения считанного файла
+ * @param {string} ext - Расширение файла
+ * @param {Function} beautify - Ф-ция форматирования кода
+ * @returns {Promise<string>} Содержимое файла
+ */
+const getFile = async (
+  that: TPage,
+  key: string,
+  ext: string,
+  beautify: Function,
+): Promise<string> => {
+  if (that[key as keyof TPage] == null) {
+    const value = beautify((await getObject(`assets/${that.id}.${ext}`)) ?? "");
+    Object.defineProperty(that, key, { value, configurable });
+  }
+  return that[key as keyof TPage] as string;
+};
+
+/**
+ * @param {TPage} that - Текущий объект страницы
+ * @param {string} key - Название свойства для хранения считанного файла
+ * @param {string} ext - Расширение файла
+ * @param {string} text - Новое содержимое файла
+ */
+const save = (that: TPage, key: string, ext: string, text: string) => {
+  putObject(
+    `assets/${that.id}.${ext}`,
+    mime.getType(ext) ?? "text/plain",
+    text,
+  );
+  const value = new Date().toISOString();
+  Reflect.defineProperty(that, "lastmod", { value });
+};
+
+const debounceFn = useDebounceFn(save, debounce);
+
+/**
+ * @param {TPage} that - Текущий объект страницы
+ * @param {string} key - Название свойства для хранения считанного файла
+ * @param {string} ext - Расширение файла
+ * @param {string} value - Новое содержимое файла
+ */
+const setFile = (that: TPage, key: string, ext: string, value: string) => {
+  Object.defineProperty(that, key, { value, configurable });
+  debounceFn(that, key, ext, value);
+};
+
+/**
+ * Объект, на котором определяется загрузка шаблона страницы
+ *
+ * @type {PropertyDescriptor}
+ */
+const htm: PropertyDescriptor = {
+  /**
+   * Геттер шаблона страницы
+   *
+   * @returns {Promise<string>} - Шаблон страницы
+   */
+  get(): Promise<string> {
+    return getFile(this as TPage, "template", "htm", html_beautify);
+  },
+  /**
+   * Сеттер шаблона страницы
+   *
+   * @param {string} value - Передаваемый шаблон страницы
+   */
+  set(value: string) {
+    setFile(this as TPage, "template", "htm", value);
+  },
+};
+
+/**
+ * Объект, на котором определяется загрузка шаблона страницы
+ *
+ * @type {PropertyDescriptor}
+ */
+const html: PropertyDescriptor = {
+  /**
+   * Считывание исходного кода из структуры данных
+   *
+   * @returns {Promise<string>} - Template
+   */
+  async get(): Promise<string> {
+    const baseUrl = `${get(base)}/`;
+    return (await (<TPage>this).htm).replace(
+      /(["'(;])([^"'(;:]*?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>))/gi,
+      (match, p1, p2) => `${p1}${new URL(p2.replace(/^\//, ""), baseUrl).href}`,
+    );
+  },
+  /**
+   * Запись исходного кода страницы в структуры данных
+   *
+   * @param {string} value - Template
+   */
+  set(value: string) {
+    const regexp = new RegExp(`^${get(base)}`);
+    (<TPage>this).htm = value.replace(
+      /[^"'(;]+?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>)/gi,
+      (match) => match.replace(regexp, ""),
+    );
+  },
+};
+
+/**
+ * Объект, на котором определяется загрузка стилей страницы
+ *
+ * @type {PropertyDescriptor}
+ */
+const css: PropertyDescriptor = {
+  /**
+   * Геттер стилей страницы
+   *
+   * @returns {Promise<string>} - Стили страницы
+   */
+  get(): Promise<string> {
+    return getFile(this as TPage, "style", "css", css_beautify);
+  },
+
+  /**
+   * Сеттер стилей страницы
+   *
+   * @param {string} value - Передаваемые стили страницы
+   */
+  set(value: string) {
+    setFile(this as TPage, "style", "css", value);
+  },
+};
+
+/**
+ * Объект, на котором определяется загрузка скриптов страницы
+ *
+ * @type {PropertyDescriptor}
+ */
+const js: PropertyDescriptor = {
+  /**
+   * Геттер скриптов страницы
+   *
+   * @returns {Promise<string>} - Скрипты страницы
+   */
+  async get(): Promise<string> {
+    return getFile(this as TPage, "script", "js", js_beautify);
+  },
+  /**
+   * Сеттер скриптов страницы
+   *
+   * @param {string} value - Передаваемые скрипты страницы
+   */
+  set(value: string) {
+    setFile(this as TPage, "script", "js", value);
+  },
+};
+
+/**
+ * Рекурсивная функция ремонта страниц
+ *
+ * @function fix
+ * @param {TPage[]} siblings - Элементы массива страниц
+ */
+const fix = (siblings: TPage[]) => {
+  siblings.forEach((value) => {
+    Object.defineProperties(value, { html, htm, css, js });
+    fix(value.children ?? []);
+  });
+};
+
+watch(
+  () => $?.content ?? [],
+  (value) => {
+    fix(value);
+  },
+  { deep },
+);
+
+watch(S3, async (value) => {
+  if (value) {
+    const data = JSON.parse((await getObject("assets/data.json")) ?? "{}");
+    validate?.(data);
+    Object.keys(data).forEach((key) => {
+      $[key as keyof TData] = data[key as keyof {}];
+    });
+  } else
+    Object.keys($).forEach((key) => {
+      delete $[key as keyof {}];
+    });
+});
+
+const { data } = useFetch("monolit/.vite/manifest.json", {
+  /**
+   * Переводим в массив
+   *
+   * @param {object} ctx - Возвращаемый объект
+   * @returns {object} - Трансформируемый возвращаемый объект
+   */
+  afterFetch(ctx) {
+    ctx.data = [
+      ...new Set([
+        rootFileName,
+        "robots.txt",
+        ...Object.values(ctx.data).map(({ file }: any) => file),
+        ...ctx.data[rootFileName].css,
+      ]),
+    ];
+    return ctx;
+  },
+}).json();
+
+whenever(logicAnd(S3, data), () => {
+  /** @param {string} pAsset - Путь до файла ресурса */
+  const headPutObject = async (pAsset: any) => {
+    try {
+      if (pAsset === rootFileName) throw new Error();
+      await headObject(pAsset);
+    } catch (e) {
+      const body = await (await fetch(`monolit/${pAsset}`)).blob();
+      putObject(pAsset, body.type, body);
+    }
+  };
+  get(data).reduce(async (promise: any, asset: any, currentIndex: any) => {
+    if (currentIndex % 2) await promise;
+    await headPutObject(asset);
+  }, Promise.resolve());
+});
+watchDebounced(
+  $,
+  (value, oldValue) => {
+    if (value && oldValue)
+      putObject("assets/data.json", "application/json", JSON.stringify(value));
+  },
+  { deep, debounce },
+);
+
+const accessKeyId: Ref<string | null> = ref(null);
+
+/**
+ * Смешивание сохраненного объекта с объектом по умолчанию
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const mergeDefaults: boolean = true;
+
+/**
+ * Хранимая конфигурация приложения
+ *
+ * @type {RemovableRef<TConfig>}
+ */
+const config: RemovableRef<TConfig> = useStorage(
+  `config-${accessKeyId.value}`,
+  {} as TConfig,
+  localStorage,
+  {
+    mergeDefaults,
+  },
+);
+
+const rightDrawer: Ref<boolean | null> = ref(null);
+
+const sitemap = computed(() => ({
+  "?": 'xml version="1.0" encoding="UTF-8"',
+  urlset: {
+    "@xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
+    url: get(pages).map(({ url, lastmod, changefreq, priority }) => ({
+      loc: `https://${get(bucket)}/${url}`,
+      lastmod,
+      changefreq,
+      priority,
+    })),
+  },
+}));
+watchDebounced(
+  sitemap,
+  (value, oldValue) => {
+    if (value && oldValue)
+      putObject("sitemap.xml", "application/xml", toXML(value));
+  },
+  { debounce },
+);
+
+watch(
+  config,
+  (value) => {
+    validateConfig?.(value);
+  },
+  { immediate },
+);
+
+export default defineStore("app", () => ({
+  save,
+  accessKeyId,
+  rightDrawer,
+  config,
+}));

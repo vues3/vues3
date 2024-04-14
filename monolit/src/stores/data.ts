@@ -182,394 +182,406 @@ type TData = FromSchema<
 dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => (): any =>
   crypto.randomUUID();
 
+/**
+ * Модификатор для вотчера, указывает на проверку всех изменений в глубину
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const deep: boolean = true;
+
+/**
+ * An array or object of schemas that will be added to the instance
+ *
+ * @constant
+ * @default
+ * @type {object[]}
+ */
+const schemas: object[] = [Resource, Page, Settings, Navbar, Data];
+
+/**
+ * Replace missing or undefined properties and items with the values from
+ * corresponding default keywords.
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const useDefaults: boolean = true;
+
+/**
+ * Change data type of data to match type keyword
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const coerceTypes: boolean = true;
+
+/**
+ * Remove additional properties
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const removeAdditional: boolean = true;
+
+/**
+ * How functions should be exported - by default CJS is used, so the validate
+ * function(s) file can be `required`. Set this value to true to export the
+ * validate function(s) as ES Modules, enabling bundlers to do their job.
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const esm: boolean = true;
+
+/**
+ * Code generation options
+ *
+ * @default
+ * @type {object}
+ */
+const code: object = { esm };
+
+/**
+ * An array of keyword definitions or strings
+ *
+ * @constant
+ * @default
+ * @type {FuncKeywordDefinition[]}
+ */
+const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
+
+/**
+ * Объект валидатора
+ *
+ * @type {Ajv}
+ * @see {@link https://ajv.js.org} см. документацию
+ */
+const ajv: Ajv = new Ajv({
+  useDefaults,
+  coerceTypes,
+  removeAdditional,
+  schemas,
+  code,
+  keywords,
+});
+
+/**
+ * Скомпилированная схема для валидации данных
+ *
+ * @type {ValidateFunction}
+ */
+const validate: ValidateFunction = ajv.getSchema(
+  "urn:jsonschema:data",
+) as ValidateFunction;
+
+/**
+ * Функция проверки навбара
+ *
+ * @function validateNavbar
+ * @type {ValidateFunction}
+ */
+const validateNavbar: ValidateFunction = ajv.getSchema(
+  "urn:jsonschema:navbar",
+) as ValidateFunction;
+
+/**
+ * Равен true только в том случае, если тип этого дескриптора свойства может
+ * быть изменён и если свойство может быть удалено из содержащего его объекта.
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const configurable: boolean = true;
+
+/**
+ * Рекурсивная функция преобразования древовидного объекта в массив страниц
+ *
+ * @function getPages
+ * @param {TPage[]} pages - Элементы массива страниц
+ * @returns {TPage[]} - Аддитивный массив страниц
+ */
+const getPages = (pages: TPage[]): TPage[] =>
+  pages.flatMap((element) => [element, ...getPages(element.children ?? [])]);
+
+/**
+ * Объект, на котором определяется свойство позиции в соседних объектах
+ *
+ * @type {PropertyDescriptor}
+ */
+const index: PropertyDescriptor = {
+  /**
+   * Геттер позиции в соседних объектах
+   *
+   * @returns {number} - Позиция в соседних объектах
+   */
+  get(): number {
+    return (<TPage>this).siblings.findIndex(
+      ({ id }) => (<TPage>this).id === id,
+    );
+  },
+};
+
+/**
+ * Объект, на котором определяется свойство предыдущего объекта
+ *
+ * @type {PropertyDescriptor}
+ */
+const prev: PropertyDescriptor = {
+  /**
+   * Геттер предыдущего объекта
+   *
+   * @returns {TPage | null} - Предыдущий объект
+   */
+  get(): TPage | null {
+    return (<TPage>this).siblings[(<TPage>this).index - 1] ?? null;
+  },
+};
+
+/**
+ * Объект, на котором определяется свойство следующего объекта
+ *
+ * @type {PropertyDescriptor}
+ */
+const next: PropertyDescriptor = {
+  /**
+   * Геттер следующего объекта
+   *
+   * @returns {TPage | null} - Следующий объект
+   */
+  get(): TPage | null {
+    return (<TPage>this).siblings[(<TPage>this).index + 1] ?? null;
+  },
+};
+
+/**
+ * Объект, на котором определяется свойство ветви объектов
+ *
+ * @type {PropertyDescriptor}
+ */
+const branch: PropertyDescriptor = {
+  /**
+   * Геттер ветви объектов
+   *
+   * @returns {TPage[]} - Ветвь объектов
+   */
+  get(): TPage[] {
+    /**
+     * Результирующий массив для записи ветви
+     *
+     * @type {TPage[]}
+     */
+    const ret: TPage[] = [];
+
+    /**
+     * Родительский объект
+     *
+     * @type {TPage | null}
+     */
+    let parent: TPage | null = <TPage>this;
+
+    do {
+      ret.unshift(parent);
+
+      ({ parent = null } = parent);
+    } while (parent);
+
+    return ret;
+  },
+};
+
+/**
+ * Объект, на котором определяется путь до объекта
+ *
+ * @type {PropertyDescriptor}
+ */
+const path: PropertyDescriptor = {
+  /**
+   * Геттер пути до объекта
+   *
+   * @returns {string | null} - Путь до объекта
+   */
+  get(): string | null {
+    return (<TPage>this).branch
+      .map(
+        ({ label, id }) =>
+          encodeURIComponent(label?.replace(" ", "_") ?? "") || id,
+      )
+      .slice(1)
+      .join("/");
+  },
+};
+
+/**
+ * Объект, на котором определяется url ресурса
+ *
+ * @type {PropertyDescriptor}
+ */
+const url: PropertyDescriptor = {
+  /**
+   * Геттер url ресурса
+   *
+   * @returns {string} - Url ресурса
+   */
+  get(): string {
+    return (
+      ((<TPage>this).loc &&
+        encodeURI((<TPage>this).loc?.replace(" ", "_") ?? "")) ||
+      (<TPage>this).path
+    );
+  },
+};
+
+/**
+ * Объект, на котором определяется название страницы
+ *
+ * @type {PropertyDescriptor}
+ */
+const name: PropertyDescriptor = {
+  /**
+   * Геттер названия страницы
+   *
+   * @returns {string | null} - Название страницы
+   */
+  get(): string | null {
+    return (<TPage>this).title ?? (<TPage>this).label ?? null;
+  },
+};
+
+/**
+ * Объект, на котором определяется фавиконка страницы
+ *
+ * @type {PropertyDescriptor}
+ */
+const favicon: PropertyDescriptor = {
+  /**
+   * Геттер фавиконки страницы
+   *
+   * @returns {string | null} - Фавиконка страницы
+   */
+  get(): string | null {
+    return (
+      (<TPage>this).icon?.replace(/-./g, (x) => x[1].toUpperCase()) ?? null
+    );
+  },
+};
+
+/**
+ * Функция ремонта плоских массивов js & css
+ *
+ * @function fixPlain
+ * @param {{}} siblings - Объект для defineProperties
+ * @param {TResource[]} siblings.value - Исходный массив
+ */
+const fixPlain = (siblings: { value: TResource[] }) => {
+  siblings.value.forEach((element) => {
+    Object.defineProperties(element, { siblings, index, prev, next });
+  });
+};
+
+/**
+ * Рекурсивная функция ремонта страниц
+ *
+ * @function fixDeep
+ * @param {{ value: TPage[] }} siblings - Объект для defineProperties
+ * @param {TPage[]} [siblings.value] - Элементы массива страниц
+ * @param {boolean} [siblings.configurable] - Признак возможности конфигурации
+ * @param {{ value: TPage; configurable: boolean }} [parent] - Объект для
+ *   defineProperties
+ * @param {TPage} parent.value - Родительский объект
+ * @param {boolean} [parent.configurable] - Признак возможности конфигурации
+ */
+const fixDeep = (
+  siblings: { value: TPage[]; configurable?: boolean },
+  parent: { value: TPage | null; configurable?: boolean } = { value: null },
+) => {
+  siblings.value.forEach((value) => {
+    Object.defineProperties(value, {
+      parent,
+      siblings,
+      branch,
+      path,
+      index,
+      prev,
+      next,
+      name,
+      url,
+      favicon,
+    });
+
+    fixDeep(
+      { value: value.children ?? [], configurable },
+      { value, configurable },
+    );
+  });
+};
+
+/**
+ * Главный реактивный объект данных
+ *
+ * @type {TData}
+ */
+const $: TData = reactive({} as TData);
+
+/**
+ * Функция для вызова расчета массива страниц
+ *
+ * @type {() => any}
+ * @returns {TPage[]} - Страницы
+ */
+const get: () => any = (): TPage[] => getPages($.content ?? []);
+
+/**
+ * Расчетный массив страниц
+ *
+ * @type {ComputedRef<TPage[]>}
+ */
+const pages: ComputedRef<TPage[]> = computed(() =>
+  get().map((value: TPage) => {
+    Object.defineProperty(value, "pages", { get });
+    return value;
+  }),
+);
+
+watch($, (value) => {
+  if (Object.keys(value).length) validate?.(value);
+});
+
+watch(
+  () => $?.content ?? [],
+  (value) => {
+    fixDeep({ value });
+  },
+  { deep },
+);
+
+watch(
+  () => $?.css ?? [],
+  (value) => {
+    fixPlain({ value });
+  },
+  { deep },
+);
+
+watch(
+  () => $?.js ?? [],
+  (value) => {
+    fixPlain({ value });
+  },
+  { deep },
+);
+
 export type { TData, TNavbar, TPage, TResource, TSettings };
 
-export default defineStore("data", () => {
-  /**
-   * Главный реактивный объект данных
-   *
-   * @type {TData}
-   */
-  const $: TData = reactive({} as TData);
-
-  /**
-   * Модификатор для вотчера, указывает на проверку всех изменений в глубину
-   *
-   * @constant
-   * @default
-   * @type {boolean}
-   */
-  const deep: boolean = true;
-
-  /**
-   * An array or object of schemas that will be added to the instance
-   *
-   * @constant
-   * @default
-   * @type {object[]}
-   */
-  const schemas: object[] = [Resource, Page, Settings, Navbar, Data];
-
-  /**
-   * Replace missing or undefined properties and items with the values from
-   * corresponding default keywords.
-   *
-   * @constant
-   * @default
-   * @type {boolean}
-   */
-  const useDefaults: boolean = true;
-
-  /**
-   * Change data type of data to match type keyword
-   *
-   * @constant
-   * @default
-   * @type {boolean}
-   */
-  const coerceTypes: boolean = true;
-
-  /**
-   * Remove additional properties
-   *
-   * @constant
-   * @default
-   * @type {boolean}
-   */
-  const removeAdditional: boolean = true;
-
-  /**
-   * How functions should be exported - by default CJS is used, so the validate
-   * function(s) file can be `required`. Set this value to true to export the
-   * validate function(s) as ES Modules, enabling bundlers to do their job.
-   *
-   * @constant
-   * @default
-   * @type {boolean}
-   */
-  const esm: boolean = true;
-
-  /**
-   * Code generation options
-   *
-   * @default
-   * @type {object}
-   */
-  const code: object = { esm };
-
-  /**
-   * An array of keyword definitions or strings
-   *
-   * @constant
-   * @default
-   * @type {FuncKeywordDefinition[]}
-   */
-  const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
-
-  /**
-   * Объект валидатора
-   *
-   * @type {Ajv}
-   * @see {@link https://ajv.js.org} см. документацию
-   */
-  const ajv: Ajv = new Ajv({
-    useDefaults,
-    coerceTypes,
-    removeAdditional,
-    schemas,
-    code,
-    keywords,
-  });
-
-  /**
-   * Скомпилированная схема для валидации данных
-   *
-   * @type {ValidateFunction}
-   */
-  const validate: ValidateFunction = ajv.getSchema(
-    "urn:jsonschema:data",
-  ) as ValidateFunction;
-
-  /**
-   * Рекурсивная функция преобразования древовидного объекта в массив страниц
-   *
-   * @function getPages
-   * @param {TPage[]} pages - Элементы массива страниц
-   * @returns {TPage[]} - Аддитивный массив страниц
-   */
-  const getPages = (pages: TPage[]): TPage[] =>
-    pages.flatMap((element) => [element, ...getPages(element.children ?? [])]);
-
-  /**
-   * Функция для вызова расчета массива страниц
-   *
-   * @type {() => any}
-   * @returns {TPage[]} - Страницы
-   */
-  const get: () => any = (): TPage[] => getPages($.content ?? []);
-
-  /**
-   * Расчетный массив страниц
-   *
-   * @type {ComputedRef<TPage[]>}
-   */
-  const pages: ComputedRef<TPage[]> = computed(() =>
-    get().map((value: TPage) => {
-      Object.defineProperty(value, "pages", { get });
-      return value;
-    }),
-  );
-
-  /**
-   * Объект, на котором определяется свойство позиции в соседних объектах
-   *
-   * @type {PropertyDescriptor}
-   */
-  const index: PropertyDescriptor = {
-    /**
-     * Геттер позиции в соседних объектах
-     *
-     * @returns {number} - Позиция в соседних объектах
-     */
-    get(): number {
-      return (<TPage>this).siblings.findIndex(
-        ({ id }) => (<TPage>this).id === id,
-      );
-    },
-  };
-
-  /**
-   * Объект, на котором определяется свойство предыдущего объекта
-   *
-   * @type {PropertyDescriptor}
-   */
-  const prev: PropertyDescriptor = {
-    /**
-     * Геттер предыдущего объекта
-     *
-     * @returns {TPage | null} - Предыдущий объект
-     */
-    get(): TPage | null {
-      return (<TPage>this).siblings[(<TPage>this).index - 1] ?? null;
-    },
-  };
-
-  /**
-   * Объект, на котором определяется свойство следующего объекта
-   *
-   * @type {PropertyDescriptor}
-   */
-  const next: PropertyDescriptor = {
-    /**
-     * Геттер следующего объекта
-     *
-     * @returns {TPage | null} - Следующий объект
-     */
-    get(): TPage | null {
-      return (<TPage>this).siblings[(<TPage>this).index + 1] ?? null;
-    },
-  };
-
-  /**
-   * Объект, на котором определяется свойство ветви объектов
-   *
-   * @type {PropertyDescriptor}
-   */
-  const branch: PropertyDescriptor = {
-    /**
-     * Геттер ветви объектов
-     *
-     * @returns {TPage[]} - Ветвь объектов
-     */
-    get(): TPage[] {
-      /**
-       * Результирующий массив для записи ветви
-       *
-       * @type {TPage[]}
-       */
-      const ret: TPage[] = [];
-
-      /**
-       * Родительский объект
-       *
-       * @type {TPage | null}
-       */
-      let parent: TPage | null = <TPage>this;
-
-      do {
-        ret.unshift(parent);
-
-        ({ parent = null } = parent);
-      } while (parent);
-
-      return ret;
-    },
-  };
-
-  /**
-   * Объект, на котором определяется путь до объекта
-   *
-   * @type {PropertyDescriptor}
-   */
-  const path: PropertyDescriptor = {
-    /**
-     * Геттер пути до объекта
-     *
-     * @returns {string | null} - Путь до объекта
-     */
-    get(): string | null {
-      return (<TPage>this).branch
-        .map(
-          ({ label, id }) =>
-            encodeURIComponent(label?.replace(" ", "_") ?? "") || id,
-        )
-        .slice(1)
-        .join("/");
-    },
-  };
-
-  /**
-   * Объект, на котором определяется url ресурса
-   *
-   * @type {PropertyDescriptor}
-   */
-  const url: PropertyDescriptor = {
-    /**
-     * Геттер url ресурса
-     *
-     * @returns {string} - Url ресурса
-     */
-    get(): string {
-      return (
-        ((<TPage>this).loc &&
-          encodeURI((<TPage>this).loc?.replace(" ", "_") ?? "")) ||
-        (<TPage>this).path
-      );
-    },
-  };
-
-  /**
-   * Объект, на котором определяется название страницы
-   *
-   * @type {PropertyDescriptor}
-   */
-  const name: PropertyDescriptor = {
-    /**
-     * Геттер названия страницы
-     *
-     * @returns {string | null} - Название страницы
-     */
-    get(): string | null {
-      return (<TPage>this).title ?? (<TPage>this).label ?? null;
-    },
-  };
-
-  /**
-   * Объект, на котором определяется фавиконка страницы
-   *
-   * @type {PropertyDescriptor}
-   */
-  const favicon: PropertyDescriptor = {
-    /**
-     * Геттер фавиконки страницы
-     *
-     * @returns {string | null} - Фавиконка страницы
-     */
-    get(): string | null {
-      return (
-        (<TPage>this).icon?.replace(/-./g, (x) => x[1].toUpperCase()) ?? null
-      );
-    },
-  };
-
-  /**
-   * Функция ремонта плоских массивов js & css
-   *
-   * @function fixPlain
-   * @param {{}} siblings - Объект для defineProperties
-   * @param {TResource[]} siblings.value - Исходный массив
-   */
-  const fixPlain = (siblings: { value: TResource[] }) => {
-    siblings.value.forEach((element) => {
-      Object.defineProperties(element, { siblings, index, prev, next });
-    });
-  };
-
-  /**
-   * Равен true только в том случае, если тип этого дескриптора свойства может
-   * быть изменён и если свойство может быть удалено из содержащего его
-   * объекта.
-   *
-   * @constant
-   * @default
-   * @type {boolean}
-   */
-  const configurable: boolean = true;
-
-  /**
-   * Рекурсивная функция ремонта страниц
-   *
-   * @function fixDeep
-   * @param {{ value: TPage[] }} siblings - Объект для defineProperties
-   * @param {TPage[]} [siblings.value] - Элементы массива страниц
-   * @param {boolean} [siblings.configurable] - Признак возможности конфигурации
-   * @param {{ value: TPage; configurable: boolean }} [parent] - Объект для
-   *   defineProperties
-   * @param {TPage} parent.value - Родительский объект
-   * @param {boolean} [parent.configurable] - Признак возможности конфигурации
-   */
-  const fixDeep = (
-    siblings: { value: TPage[]; configurable?: boolean },
-    parent: { value: TPage | null; configurable?: boolean } = { value: null },
-  ) => {
-    siblings.value.forEach((value) => {
-      Object.defineProperties(value, {
-        parent,
-        siblings,
-        branch,
-        path,
-        index,
-        prev,
-        next,
-        name,
-        url,
-        favicon,
-      });
-
-      fixDeep(
-        { value: value.children ?? [], configurable },
-        { value, configurable },
-      );
-    });
-  };
-
-  watch($, (value) => {
-    if (Object.keys(value).length) validate?.(value);
-  });
-
-  watch(
-    () => $?.content ?? [],
-    (value) => {
-      fixDeep({ value });
-    },
-    { deep },
-  );
-
-  watch(
-    () => $?.css ?? [],
-    (value) => {
-      fixPlain({ value });
-    },
-    { deep },
-  );
-
-  watch(
-    () => $?.js ?? [],
-    (value) => {
-      fixPlain({ value });
-    },
-    { deep },
-  );
-
-  return { $, pages, validate };
-});
+export default defineStore("data", () => ({
+  $,
+  pages,
+  validate,
+  validateNavbar,
+}));

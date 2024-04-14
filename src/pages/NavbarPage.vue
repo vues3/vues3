@@ -8,6 +8,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         q-item-label Настройки панели навигации
     q-card-section
       q-select(
+        v-if="$.navbar?.theme !== undefined",
         v-model="$.navbar.theme",
         label="Цветовая тема",
         :options="themes",
@@ -19,15 +20,22 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         q-list
           q-item(v-ripple, tag="label")
             q-item-section(avatar)
-              q-checkbox(v-model="$.navbar.setup")
+              q-checkbox(
+                v-if="$.navbar?.setup !== undefined",
+                v-model="$.navbar.setup"
+              )
             q-item-section
               q-item-label script setup
           q-item(v-ripple, tag="label")
             q-item-section(avatar)
-              q-checkbox(v-model="$.navbar.scoped")
+              q-checkbox(
+                v-if="$.navbar?.scoped !== undefined",
+                v-model="$.navbar.scoped"
+              )
             q-item-section
               q-item-label style scoped
       q-select(
+        v-if="$.navbar?.classes !== undefined",
         v-model.trim="$.navbar.classes",
         multiple,
         use-chips,
@@ -38,6 +46,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         label="Классы навигатора"
       )
       q-select(
+        v-if="$.navbar?.scrollClasses !== undefined",
         v-model.trim="$.navbar.scrollClasses",
         multiple,
         use-chips,
@@ -52,7 +61,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         rounded,
         color="primary",
         icon="sync",
-        @click="fncResetNavbar"
+        @click="resetNavbar"
       ) Сброс параметров
 q-page.column.full-height
   q-tabs.text-grey(
@@ -64,99 +73,133 @@ q-page.column.full-height
     narrow-indicator
   )
     q-tab(name="template", label="template")
-    q-tab(name="script", :label="`script${$?.navbar?.setup ? ' setup' : ''}`")
-    q-tab(name="style", :label="`style${$?.navbar?.scoped ? ' scoped' : ''}`")
+    q-tab(name="script", :label="`script${$.navbar?.setup ? ' setup' : ''}`")
+    q-tab(name="style", :label="`style${$.navbar?.scoped ? ' scoped' : ''}`")
   q-separator
   q-tab-panels.full-width.col(v-model="config.navbar.tab")
     q-tab-panel.column(name="template")
-      v-source-code.col(v-model="$.navbar.template")
+      v-source-code.col(
+        v-if="$.navbar?.template !== undefined",
+        v-model="$.navbar.template"
+      )
     q-tab-panel.column(name="script")
-      v-source-code.col(v-model="$.navbar.script", lang="javascript")
+      v-source-code.col(
+        v-if="$.navbar?.script !== undefined",
+        v-model="$.navbar.script",
+        lang="javascript"
+      )
     q-tab-panel.column(name="style")
-      v-source-code.col(v-model="$.navbar.style", lang="css")
+      v-source-code.col(
+        v-if="$.navbar?.style !== undefined",
+        v-model="$.navbar.style",
+        lang="css"
+      )
 </template>
 <script setup lang="ts">
-import type { RemovableRef } from "@vueuse/core";
-import { useStorage } from "@vueuse/core";
-import Ajv from "ajv";
 import { storeToRefs } from "pinia";
+import type {
+  QDialogSelectionPrompt,
+  QOptionGroupProps,
+  QVueGlobals,
+  SelectionPromptType,
+} from "quasar";
 import { useQuasar } from "quasar";
-import { watch } from "vue";
 
 import themes from "@/assets/themes.json";
 import VSourceCode from "@/components/VSourceCode.vue";
 import Navbar from "@/schemas/navbar";
-import type { TConfig } from "@/stores/app";
 import app from "@/stores/app";
 import type { TNavbar } from "~/monolit/src/stores/data";
 import data from "~/monolit/src/stores/data";
 
-const $q = useQuasar();
-const { accessKeyId, rightDrawer } = storeToRefs(app());
-const { validateConfig } = app();
-const { $ } = data();
-const mergeDefaults = true;
+const { config, rightDrawer } = storeToRefs(app());
 
-const config: RemovableRef<TConfig> = useStorage(
-  `config-${accessKeyId.value}`,
-  {} as TConfig,
-  localStorage,
-  {
-    mergeDefaults,
-  },
-);
-const immediate = true;
-watch(
-  config,
-  (value) => {
-    validateConfig?.(value);
-  },
-  { immediate },
-);
+const { $, validateNavbar } = data();
 
-rightDrawer.value = true;
+/**
+ * Объект quasar
+ *
+ * @type {QVueGlobals}
+ */
+const $q: QVueGlobals = useQuasar();
 
-const schemas = [Navbar];
-const useDefaults = true;
-const coerceTypes = true;
-const removeAdditional = true;
-const esm = true;
-const code = { esm };
+/**
+ * A text for the heading title of the dialog
+ *
+ * @constant
+ * @default
+ * @type {string}
+ */
+const title: string = "Сброс навбара";
 
-const ajv = new Ajv({
-  useDefaults,
-  coerceTypes,
-  removeAdditional,
-  schemas,
-  code,
-});
+/**
+ * A text with more information about what needs to be input, selected or
+ * confirmed.
+ *
+ * @constant
+ * @default
+ * @type {string}
+ */
+const message: string = "Выбор сбрасываемых параметров:";
 
-const validateNavbar = ajv.getSchema("urn:jsonschema:navbar");
+/**
+ * Тип элементов диалога
+ *
+ * @constant
+ * @default
+ * @type {string}
+ */
+const type: SelectionPromptType = "checkbox";
+
+/** @type {[]} */
+const model: [] = [];
+
+/**
+ * Props for a 'CANCEL' button
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const cancel: boolean = true;
+
+/**
+ * User cannot dismiss Dialog if clicking outside of it or hitting ESC key;
+ * Also, an app route change won't dismiss it
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+const persistent: boolean = true;
+
+/**
+ * Список элементов формы
+ *
+ * @type {QOptionGroupProps["options"]}
+ */
+const items: QOptionGroupProps["options"] = Object.entries(Navbar.properties)
+  .map(([key, { description }]) => ({ label: description, value: key }))
+  .filter(({ label }) => label);
+
+/**
+ * Dialog options
+ *
+ * @type {QDialogSelectionPrompt}
+ */
+const options: QDialogSelectionPrompt = { type, model, items };
 
 /** Сброс параметров навбара */
-const fncResetNavbar = () => {
-  $q.dialog({
-    title: "Сброс навбара",
-    message: "Выбор сбрасываемых параметров:",
-    options: {
-      type: "checkbox",
-      model: [],
-      items: [
-        { label: "Шаблон", value: "template" },
-        { label: "Скрипты", value: "script" },
-        { label: "Стили", value: "style" },
-        { label: "Тема", value: "theme" },
-        { label: "Классы", value: "classes" },
-        { label: "Скролл классы", value: "scrollClasses" },
-      ],
+const resetNavbar = () => {
+  $q.dialog({ title, message, options, cancel, persistent }).onOk(
+    (value: string[]) => {
+      value.forEach((element) => {
+        delete $.navbar?.[element as keyof TNavbar];
+      });
+      validateNavbar?.($.navbar);
     },
-    cancel: true,
-    persistent: true,
-  }).onOk((value: string[]) => {
-    value.forEach((element) => {
-      delete $.navbar?.[element as keyof TNavbar];
-    });
-    validateNavbar?.($.navbar);
-  });
+  );
 };
+
+rightDrawer.value = true;
 </script>

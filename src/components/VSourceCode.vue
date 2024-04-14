@@ -24,7 +24,7 @@ interface IProps {
   modelValue: Promise<string> | string;
 }
 
-const { options, lang, modelValue } = withDefaults(defineProps<IProps>(), {
+const props: IProps = withDefaults(defineProps<IProps>(), {
   /**
    * @function options
    * @returns {object} - Пустой объект по умолчанию
@@ -38,7 +38,7 @@ const emit = defineEmits(["update:modelValue"]);
 /** @param {string} value - Исходный код */
 const beautify = (value: string) => {
   let code;
-  switch (lang) {
+  switch (props.lang) {
     case "javascript":
       code = js(value);
       break;
@@ -56,6 +56,6 @@ const editorRef = ref();
 const value: Ref<string | null> = ref(null);
 
 watchEffect(async () => {
-  value.value = await modelValue;
+  value.value = await props.modelValue;
 });
 </script>

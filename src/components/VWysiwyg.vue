@@ -112,7 +112,7 @@ interface IProps {
   theme: string | null;
 }
 
-const { modelValue, theme } = withDefaults(defineProps<IProps>(), {
+const props: IProps = withDefaults(defineProps<IProps>(), {
   modelValue: "",
   theme: null,
 });
@@ -120,7 +120,7 @@ const { modelValue, theme } = withDefaults(defineProps<IProps>(), {
 defineEmits(["update:modelValue"]);
 const htm: Ref<string | null> = ref(null);
 watchEffect(async () => {
-  htm.value = await modelValue;
+  htm.value = await props.modelValue;
 });
 
 const template = ref(false);
@@ -292,11 +292,12 @@ const editorTlb = [
   ["upload", "template", "routerLink"],
 ];
 watchPostEffect(() => {
-  if (editorRef.value) editorRef.value.getContentEl().dataset.theme = theme;
+  if (editorRef.value)
+    editorRef.value.getContentEl().dataset.theme = props.theme;
 });
 /** ShowDialog */
 const showDialog = () => {
-  modalRef.value.dataset.theme = theme;
+  modalRef.value.dataset.theme = props.theme;
 };
 const [{ value }] = templates;
 const model = ref(value);

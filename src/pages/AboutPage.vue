@@ -1,20 +1,16 @@
 <template lang="pug">
 q-page.q-pa-xl
-  q-timeline(layout="comfortable", side="left")
+  q-timeline(layout="comfortable", side="right")
     q-timeline-entry(title="Homepage", icon="rocket_launch")
       template(#subtitle)
-        a(
-          href="https://kosmos3.ru",
-          target="_blank",
-          rel="noopener noreferrer"
-        ) kosmos3.ru
+        a(href="https://vues3.ru", target="_blank", rel="noopener noreferrer") vues3.ru
     q-timeline-entry(title="Repository", icon="share")
       template(#subtitle)
         a(
-          href="https://github.com/jbruwes/kosmos3",
+          href="https://github.com/vues3/vues3",
           target="_blank",
           rel="noopener noreferrer"
-        ) github.com/jbruwes/kosmos3
+        ) github.com/vues3/vues3
   q-separator
   h3(style="text-align: center") GNU AFFERO GENERAL PUBLIC LICENSE
   p(style="text-align: center") Version 3, 19 November 2007

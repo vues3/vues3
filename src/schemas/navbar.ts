@@ -5,7 +5,7 @@ const additionalProperties = false;
 const nullable = true;
 const type = "object";
 const properties = {
-  theme: { type: "string", nullable, default: null },
+  theme: { type: "string", nullable, default: null, description: "Тема" },
   classes: {
     type: "array",
     default: [
@@ -21,13 +21,16 @@ const properties = {
       "hover:opacity-100",
     ],
     items: { type: "string" },
+    description: "Классы",
   },
   scrollClasses: {
     type: "array",
     default: ["opacity-100"],
     items: { type: "string" },
+    description: "Скролл классы",
   },
   template: {
+    description: "Шаблон",
     type: "string",
     default: `<div class="flex-none">
     <label class="btn btn-square btn-ghost" for="drawer">
@@ -51,6 +54,7 @@ const properties = {
 </div>`,
   },
   script: {
+    description: "Скрипты",
     type: "string",
     default: `import {
   useSpeechSynthesis,
@@ -68,9 +72,9 @@ const {
   lang
 });`,
   },
-  style: { type: "string", default: "" },
-  setup: { type: "boolean", default: true },
-  scoped: { type: "boolean", default: true },
+  style: { type: "string", default: "", description: "Стили" },
+  setup: { type: "boolean", default: true, description: "" },
+  scoped: { type: "boolean", default: true, description: "" },
 } as const;
 
 const Navbar = {
