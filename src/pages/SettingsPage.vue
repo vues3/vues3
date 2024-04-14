@@ -1,6 +1,6 @@
 <template lang="pug">
 q-page.column.full-height
-  q-card.q-ma-xl.col.scroll(flat)
+  q-card.q-ma-xl.col.scroll(v-if="$?.settings", flat)
     q-card-section
       .text-h6 YANDEX
     q-separator
@@ -39,6 +39,8 @@ import app from "@/stores/app";
 import data from "~/monolit/src/stores/data";
 
 const { rightDrawer } = storeToRefs(app());
+
 const { $ } = data();
+
 rightDrawer.value = null;
 </script>
