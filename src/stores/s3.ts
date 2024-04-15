@@ -6,7 +6,6 @@ import {
 } from "@aws-sdk/client-s3";
 import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
 import { get, isDefined } from "@vueuse/core";
-import { defineStore } from "pinia";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
 
@@ -15,29 +14,33 @@ import { computed, ref } from "vue";
  *
  * @type {string}
  */
-const bucket = ref("");
+export const bucket = ref("");
+
 /**
  * Путь к сайту через сервис s3
  *
  * @type {string}
  */
-const wendpoint = ref("");
+export const wendpoint = ref("");
+
 /**
  * Клиент к сервису s3
  *
  * @type {Ref<S3Client | undefined>}
  */
-const S3: Ref<S3Client | undefined> = ref();
+export const S3: Ref<S3Client | undefined> = ref();
+
 /**
  * Считывание заголовка файла
  *
  * @param {string} Key Имя файла
  * @returns {object} Заголовок файла
  */
-const headObject = (Key: string) => {
+export const headObject = (Key: string) => {
   const Bucket = get(bucket);
   return get(S3)?.send(new HeadObjectCommand({ Bucket, Key }));
 };
+
 /**
  * Запись объекта
  *
@@ -45,7 +48,7 @@ const headObject = (Key: string) => {
  * @param {string} ContentType Тип mime
  * @param {StreamingBlobPayloadInputTypes} body Тело файла
  */
-const putObject = async (
+export const putObject = async (
   Key: string,
   ContentType: string,
   body: StreamingBlobPayloadInputTypes,
@@ -54,6 +57,7 @@ const putObject = async (
   const Body = typeof body === "string" ? new TextEncoder().encode(body) : body;
   await get(S3)?.send(new PutObjectCommand({ Bucket, Key, ContentType, Body }));
 };
+
 /**
  * Запись файла
  *
@@ -61,16 +65,17 @@ const putObject = async (
  * @param {string} ContentType Тип mime
  * @param {File} file Файл
  */
-const putFile = async (Key: string, ContentType: string, file: File) => {
+export const putFile = async (Key: string, ContentType: string, file: File) => {
   await putObject(Key, ContentType, new Blob([await file.arrayBuffer()]));
 };
+
 /**
  * Считывание объекта
  *
  * @param {string} Key Имя файла
  * @returns {Promise<string | null>} Тело файла
  */
-const getObject = async (Key: string): Promise<string | null> => {
+export const getObject = async (Key: string): Promise<string | null> => {
   const Bucket = get(bucket);
   const ResponseCacheControl = "no-store";
   const textDecoder = new TextDecoder();
@@ -96,19 +101,9 @@ const getObject = async (Key: string): Promise<string | null> => {
     }
   return ret;
 };
-const base = computed(
+
+export const base = computed(
   () =>
     S3?.value &&
     `${isDefined(wendpoint) ? get(wendpoint) : "https:/"}/${get(bucket)}`,
 );
-
-export default defineStore("s3", () => ({
-  bucket,
-  wendpoint,
-  base,
-  S3,
-  putFile,
-  putObject,
-  getObject,
-  headObject,
-}));

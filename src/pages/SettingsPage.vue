@@ -52,14 +52,8 @@ q-page.column.full-height
             q-item-label В виде лендинга
 </template>
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
-
-import app from "@/stores/app";
-import data from "~/monolit/src/stores/data";
-
-const { rightDrawer } = storeToRefs(app());
-
-const { $ } = data();
+import { rightDrawer } from "@/stores/app";
+import { $ } from "~/monolit/src/stores/data";
 
 rightDrawer.value = null;
 </script>

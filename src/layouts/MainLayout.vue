@@ -44,16 +44,13 @@ q-layout(view="hHh Lpr lff")
 
 <script setup>
 import { get } from "@vueuse/core";
-import { storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 
 import privateItems from "@/assets/private.json";
 import publicItems from "@/assets/public.json";
-import app from "@/stores/app";
-import s3 from "@/stores/s3";
+import { rightDrawer } from "@/stores/app";
+import { S3 } from "@/stores/s3";
 
-const { rightDrawer } = storeToRefs(app());
-const { S3 } = storeToRefs(s3());
 const leftDrawer = ref(false);
 const miniState = ref(true);
 const items = computed(() => (get(S3) ? privateItems : publicItems));

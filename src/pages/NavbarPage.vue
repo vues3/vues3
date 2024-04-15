@@ -96,7 +96,6 @@ q-page.column.full-height
       )
 </template>
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
 import type {
   QDialogSelectionPrompt,
   QOptionGroupProps,
@@ -108,13 +107,9 @@ import { useQuasar } from "quasar";
 import themes from "@/assets/themes.json";
 import VSourceCode from "@/components/VSourceCode.vue";
 import Navbar from "@/schemas/navbar";
-import app from "@/stores/app";
+import { config, rightDrawer } from "@/stores/app";
 import type { TNavbar } from "~/monolit/src/stores/data";
-import data from "~/monolit/src/stores/data";
-
-const { config, rightDrawer } = storeToRefs(app());
-
-const { $, validateNavbar } = data();
+import { $, validateNavbar } from "~/monolit/src/stores/data";
 
 /**
  * Объект quasar

@@ -2,10 +2,11 @@ import * as tresjsCientos from "@tresjs/cientos";
 import * as tresjsCore from "@tresjs/core";
 import * as vueuseComponents from "@vueuse/components";
 import * as vueuseCore from "@vueuse/core";
+import { useStyleTag } from "@vueuse/core";
 import * as vueuseMath from "@vueuse/math";
-import { defineStore } from "pinia";
 import type { AsyncComponentLoader } from "vue";
 import * as vue from "vue";
+import { defineAsyncComponent } from "vue";
 import * as vueRouter from "vue-router";
 import type { ContentData, ModuleExport, Options } from "vue3-sfc-loader";
 import { loadModule } from "vue3-sfc-loader";
@@ -19,7 +20,7 @@ import type { TPage } from "@/stores/data";
  * @default
  * @type {RequestCache}
  */
-const cache: RequestCache = "no-cache";
+export const cache: RequestCache = "no-cache";
 
 /**
  * Модули, передаваемые шаблону
@@ -28,7 +29,7 @@ const cache: RequestCache = "no-cache";
  * @default
  * @type {ModuleExport}
  */
-const moduleCache: ModuleExport = {
+export const moduleCache: ModuleExport = {
   vue,
   "vue-router": vueRouter,
   "@vueuse/core": vueuseCore,
@@ -45,13 +46,9 @@ const moduleCache: ModuleExport = {
  * @param {string} type - Тип записи
  * @param {any[]} args - Содержимое записи
  */
-const log = (type: string, ...args: any[]) => {
+export const log = (type: string, ...args: any[]) => {
   (window.console[type as keyof Console] as Function)(...args);
 };
-
-const { defineAsyncComponent } = vue;
-
-const { useStyleTag } = vueuseCore;
 
 /**
  * Функция, возвращающая Promise на сконструированный шаблон
@@ -66,7 +63,7 @@ const { useStyleTag } = vueuseCore;
  * @param {string} page.css - Стили страницы
  * @returns {Promise<object>} Шаблон
  */
-const getAsyncComponent = ({
+export const getAsyncComponent = ({
   path,
   setup,
   scoped,
@@ -145,7 +142,7 @@ const getAsyncComponent = ({
  * @param {string} ext - Расширение файла
  * @returns {Promise<string>} Содержимое файла
  */
-const getFile = async (
+export const getFile = async (
   that: TPage,
   key: string,
   ext: string,
@@ -181,7 +178,7 @@ const getFile = async (
  *
  * @type {PropertyDescriptor}
  */
-const htm: PropertyDescriptor = {
+export const htm: PropertyDescriptor = {
   /**
    * Геттер шаблона страницы
    *
@@ -199,7 +196,7 @@ const htm: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const css: PropertyDescriptor = {
+export const css: PropertyDescriptor = {
   /**
    * Геттер стилей страницы
    *
@@ -217,7 +214,7 @@ const css: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const js: PropertyDescriptor = {
+export const js: PropertyDescriptor = {
   /**
    * Геттер скриптов страницы
    *
@@ -236,7 +233,7 @@ const js: PropertyDescriptor = {
  * @function fix
  * @param {TPage[]} siblings - Элементы массива страниц
  */
-const fix = (siblings: TPage[]) => {
+export const fix = (siblings: TPage[]) => {
   siblings.forEach((value) => {
     Object.defineProperties(value, {
       htm,
@@ -247,5 +244,3 @@ const fix = (siblings: TPage[]) => {
     fix(value.children ?? []);
   });
 };
-
-export default defineStore("monolit", () => ({ getAsyncComponent, fix }));

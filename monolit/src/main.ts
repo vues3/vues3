@@ -10,7 +10,6 @@ import { createHead } from "@unhead/vue";
 import { Head } from "@unhead/vue/components";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
-import { createPinia, storeToRefs } from "pinia";
 import type { App } from "vue";
 import { createApp, watch } from "vue";
 import VueGtag from "vue-gtag";
@@ -26,8 +25,8 @@ import type { Config } from "yandex-metrika-vue3/src/types";
 
 import vueApp from "@/App.vue";
 import type { TData, TSettings } from "@/stores/data";
-import Data from "@/stores/data";
-import Monolit from "@/stores/monolit";
+import { $, pages, validate } from "@/stores/data";
+import { fix } from "@/stores/monolit";
 import defaults from "~/uno.config";
 
 window.console.info(
@@ -67,14 +66,6 @@ initUnocssRuntime({ autoPrefix, defaults, bypassDefined });
 const app: App = createApp(vueApp);
 
 app.config.globalProperties.mdi = mdi;
-
-app.use(createPinia());
-
-const { pages } = storeToRefs(Data());
-
-const { $, validate } = Data();
-
-const { fix } = Monolit();
 
 /**
  * Настройка кеширования

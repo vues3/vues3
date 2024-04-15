@@ -3,7 +3,6 @@ import Ajv from "ajv";
 import type { DynamicDefaultFunc } from "ajv-keywords/dist/definitions/dynamicDefaults";
 import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
 import { FromSchema } from "json-schema-to-ts";
-import { defineStore } from "pinia";
 import type { ComputedRef } from "vue";
 import { computed, reactive, watch } from "vue";
 
@@ -102,7 +101,7 @@ import Settings from "~/src/schemas/settings";
  * @property {string} [script] - Сохраненные скрипты страницы
  * @property {string} [template] - Сохраненный шаблон страницы
  */
-type TPage = FromSchema<typeof plainPage> & {
+export type TPage = FromSchema<typeof plainPage> & {
   children: TPage[];
   parent: TPage | null;
   siblings: TPage[];
@@ -130,7 +129,7 @@ type TPage = FromSchema<typeof plainPage> & {
  * @property {boolean} enabled - Признак использования ресурса
  * @property {string} url - Url ресурса
  */
-type TResource = FromSchema<typeof Resource>;
+export type TResource = FromSchema<typeof Resource>;
 
 /**
  * @type {TSettings}
@@ -140,7 +139,7 @@ type TResource = FromSchema<typeof Resource>;
  * @property {string | null} analytics - Id аналитики
  * @property {boolean} landing - Признак формирования сайта в виде лендинга
  */
-type TSettings = FromSchema<typeof Settings>;
+export type TSettings = FromSchema<typeof Settings>;
 
 /**
  * @type {TNavbar}
@@ -157,7 +156,7 @@ type TSettings = FromSchema<typeof Settings>;
  * @property {string} [script] - Сохраненные скрипты страницы
  * @property {string} [style] - Сохраненные стили страницы
  */
-type TNavbar = FromSchema<typeof Navbar>;
+export type TNavbar = FromSchema<typeof Navbar>;
 
 /**
  * @type {TData}
@@ -169,7 +168,7 @@ type TNavbar = FromSchema<typeof Navbar>;
  * @property {TNavbar} navbar - Навигационная плашка сайта
  * @property {TPage[]} content - Дерево объектов страниц сайта
  */
-type TData = FromSchema<
+export type TData = FromSchema<
   typeof plainData,
   { references: [typeof Settings, typeof Resource, typeof Navbar] }
 > & { content: TPage[] | null };
@@ -189,7 +188,7 @@ dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => (): any =>
  * @default
  * @type {boolean}
  */
-const deep: boolean = true;
+export const deep: boolean = true;
 
 /**
  * An array or object of schemas that will be added to the instance
@@ -198,7 +197,7 @@ const deep: boolean = true;
  * @default
  * @type {object[]}
  */
-const schemas: object[] = [Resource, Page, Settings, Navbar, Data];
+export const schemas: object[] = [Resource, Page, Settings, Navbar, Data];
 
 /**
  * Replace missing or undefined properties and items with the values from
@@ -208,7 +207,7 @@ const schemas: object[] = [Resource, Page, Settings, Navbar, Data];
  * @default
  * @type {boolean}
  */
-const useDefaults: boolean = true;
+export const useDefaults: boolean = true;
 
 /**
  * Change data type of data to match type keyword
@@ -217,7 +216,7 @@ const useDefaults: boolean = true;
  * @default
  * @type {boolean}
  */
-const coerceTypes: boolean = true;
+export const coerceTypes: boolean = true;
 
 /**
  * Remove additional properties
@@ -226,7 +225,7 @@ const coerceTypes: boolean = true;
  * @default
  * @type {boolean}
  */
-const removeAdditional: boolean = true;
+export const removeAdditional: boolean = true;
 
 /**
  * How functions should be exported - by default CJS is used, so the validate
@@ -237,7 +236,7 @@ const removeAdditional: boolean = true;
  * @default
  * @type {boolean}
  */
-const esm: boolean = true;
+export const esm: boolean = true;
 
 /**
  * Code generation options
@@ -245,7 +244,7 @@ const esm: boolean = true;
  * @default
  * @type {object}
  */
-const code: object = { esm };
+export const code: object = { esm };
 
 /**
  * An array of keyword definitions or strings
@@ -254,7 +253,7 @@ const code: object = { esm };
  * @default
  * @type {FuncKeywordDefinition[]}
  */
-const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
+export const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
 
 /**
  * Объект валидатора
@@ -262,7 +261,7 @@ const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
  * @type {Ajv}
  * @see {@link https://ajv.js.org} см. документацию
  */
-const ajv: Ajv = new Ajv({
+export const ajv: Ajv = new Ajv({
   useDefaults,
   coerceTypes,
   removeAdditional,
@@ -276,7 +275,7 @@ const ajv: Ajv = new Ajv({
  *
  * @type {ValidateFunction}
  */
-const validate: ValidateFunction = ajv.getSchema(
+export const validate: ValidateFunction = ajv.getSchema(
   "urn:jsonschema:data",
 ) as ValidateFunction;
 
@@ -286,7 +285,7 @@ const validate: ValidateFunction = ajv.getSchema(
  * @function validateNavbar
  * @type {ValidateFunction}
  */
-const validateNavbar: ValidateFunction = ajv.getSchema(
+export const validateNavbar: ValidateFunction = ajv.getSchema(
   "urn:jsonschema:navbar",
 ) as ValidateFunction;
 
@@ -298,7 +297,7 @@ const validateNavbar: ValidateFunction = ajv.getSchema(
  * @default
  * @type {boolean}
  */
-const configurable: boolean = true;
+export const configurable: boolean = true;
 
 /**
  * Рекурсивная функция преобразования древовидного объекта в массив страниц
@@ -307,7 +306,7 @@ const configurable: boolean = true;
  * @param {TPage[]} pages - Элементы массива страниц
  * @returns {TPage[]} - Аддитивный массив страниц
  */
-const getPages = (pages: TPage[]): TPage[] =>
+export const getPages = (pages: TPage[]): TPage[] =>
   pages.flatMap((element) => [element, ...getPages(element.children ?? [])]);
 
 /**
@@ -315,7 +314,7 @@ const getPages = (pages: TPage[]): TPage[] =>
  *
  * @type {PropertyDescriptor}
  */
-const index: PropertyDescriptor = {
+export const index: PropertyDescriptor = {
   /**
    * Геттер позиции в соседних объектах
    *
@@ -333,7 +332,7 @@ const index: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const prev: PropertyDescriptor = {
+export const prev: PropertyDescriptor = {
   /**
    * Геттер предыдущего объекта
    *
@@ -349,7 +348,7 @@ const prev: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const next: PropertyDescriptor = {
+export const next: PropertyDescriptor = {
   /**
    * Геттер следующего объекта
    *
@@ -365,7 +364,7 @@ const next: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const branch: PropertyDescriptor = {
+export const branch: PropertyDescriptor = {
   /**
    * Геттер ветви объектов
    *
@@ -401,7 +400,7 @@ const branch: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const path: PropertyDescriptor = {
+export const path: PropertyDescriptor = {
   /**
    * Геттер пути до объекта
    *
@@ -423,7 +422,7 @@ const path: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const url: PropertyDescriptor = {
+export const url: PropertyDescriptor = {
   /**
    * Геттер url ресурса
    *
@@ -443,7 +442,7 @@ const url: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const name: PropertyDescriptor = {
+export const name: PropertyDescriptor = {
   /**
    * Геттер названия страницы
    *
@@ -459,7 +458,7 @@ const name: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const favicon: PropertyDescriptor = {
+export const favicon: PropertyDescriptor = {
   /**
    * Геттер фавиконки страницы
    *
@@ -479,7 +478,7 @@ const favicon: PropertyDescriptor = {
  * @param {{}} siblings - Объект для defineProperties
  * @param {TResource[]} siblings.value - Исходный массив
  */
-const fixPlain = (siblings: { value: TResource[] }) => {
+export const fixPlain = (siblings: { value: TResource[] }) => {
   siblings.value.forEach((element) => {
     Object.defineProperties(element, { siblings, index, prev, next });
   });
@@ -497,7 +496,7 @@ const fixPlain = (siblings: { value: TResource[] }) => {
  * @param {TPage} parent.value - Родительский объект
  * @param {boolean} [parent.configurable] - Признак возможности конфигурации
  */
-const fixDeep = (
+export const fixDeep = (
   siblings: { value: TPage[]; configurable?: boolean },
   parent: { value: TPage | null; configurable?: boolean } = { value: null },
 ) => {
@@ -527,7 +526,7 @@ const fixDeep = (
  *
  * @type {TData}
  */
-const $: TData = reactive({} as TData);
+export const $: TData = reactive({} as TData);
 
 /**
  * Функция для вызова расчета массива страниц
@@ -535,14 +534,14 @@ const $: TData = reactive({} as TData);
  * @type {() => any}
  * @returns {TPage[]} - Страницы
  */
-const get: () => any = (): TPage[] => getPages($.content ?? []);
+export const get: () => any = (): TPage[] => getPages($.content ?? []);
 
 /**
  * Расчетный массив страниц
  *
  * @type {ComputedRef<TPage[]>}
  */
-const pages: ComputedRef<TPage[]> = computed(() =>
+export const pages: ComputedRef<TPage[]> = computed(() =>
   get().map((value: TPage) => {
     Object.defineProperty(value, "pages", { get });
     return value;
@@ -576,12 +575,3 @@ watch(
   },
   { deep },
 );
-
-export type { TData, TNavbar, TPage, TResource, TSettings };
-
-export default defineStore("data", () => ({
-  $,
-  pages,
-  validate,
-  validateNavbar,
-}));

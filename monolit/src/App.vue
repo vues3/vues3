@@ -81,19 +81,14 @@ v-head
 </template>
 <script setup lang="ts">
 import { useTimeout } from "@vueuse/core";
-import { storeToRefs } from "pinia";
 import type { ComputedRef, Ref } from "vue";
 import { computed, ref } from "vue";
 import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
 
 import type { TPage, TResource } from "@/stores/data";
-import data from "@/stores/data";
-import Monolit from "@/stores/monolit";
-
-const { getAsyncComponent } = Monolit();
-const { $ } = data();
-const { pages } = storeToRefs(data());
+import { $, pages } from "@/stores/data";
+import { getAsyncComponent } from "@/stores/monolit";
 
 /**
  * Expose more controls

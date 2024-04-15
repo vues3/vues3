@@ -89,7 +89,6 @@ import "daisyui/dist/full.css";
 import { useFileDialog } from "@vueuse/core";
 import { html_beautify } from "js-beautify";
 import mime from "mime";
-import { storeToRefs } from "pinia";
 import { useQuasar } from "quasar";
 import type { Ref } from "vue";
 import {
@@ -103,8 +102,8 @@ import {
 
 import mimes from "@/assets/mimes.json";
 import templates from "@/assets/templates.json";
-import s3 from "@/stores/s3";
-import data from "~/monolit/src/stores/data";
+import { base, putFile } from "@/stores/s3";
+import { $, pages } from "~/monolit/src/stores/data";
 import { fonts } from "~/uno.config";
 
 interface IProps {
@@ -126,11 +125,6 @@ watchEffect(async () => {
 const template = ref(false);
 const routerLink = ref(false);
 const $q = useQuasar();
-const S3 = s3();
-const { base } = storeToRefs(S3);
-const { putFile } = S3;
-const { pages } = storeToRefs(data());
-const { $ } = data();
 const inserted: Ref<string | null | undefined> = ref(null);
 const insertedObject = computed(() =>
   pages.value.find(({ id }) => id === inserted?.value),

@@ -13,63 +13,60 @@ import Ajv from "ajv";
 import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import { FromSchema } from "json-schema-to-ts";
 import mime from "mime";
-import { defineStore, storeToRefs } from "pinia";
 import { toXML } from "to-xml";
 import type { Ref } from "vue";
 import { computed, ref, watch } from "vue";
 
 import Config from "@/schemas/config";
 import type { TData, TPage } from "~/monolit/src/stores/data";
-import Data from "~/monolit/src/stores/data";
+import { $, pages, validate } from "~/monolit/src/stores/data";
 
-import storeS3 from "./s3";
+import { base, bucket, getObject, headObject, putObject, S3 } from "./s3";
 
-type TConfig = FromSchema<typeof Config>;
-
-export type { TConfig };
+export type TConfig = FromSchema<typeof Config>;
 
 /**
  * @constant
  * @type {AnySchema[]}
  */
-const schemas: AnySchema[] = [Config];
+export const schemas: AnySchema[] = [Config];
 
 /**
  * @constant
  * @default
  * @type {boolean}
  */
-const useDefaults: boolean = true;
+export const useDefaults: boolean = true;
 
 /**
  * @constant
  * @default
  * @type {boolean}
  */
-const coerceTypes: boolean = true;
+export const coerceTypes: boolean = true;
 
 /**
  * @constant
  * @default
  * @type {boolean}
  */
-const removeAdditional: boolean = true;
+export const removeAdditional: boolean = true;
 
 /** @type {boolean} */
-const esm: boolean = true;
+export const esm: boolean = true;
 
 /**
  * @constant
  * @default
  * @type {CodeOptions}
  */
-const code: CodeOptions = { esm };
+export const code: CodeOptions = { esm };
 
 /**
  * @constant
  * @type {Ajv}
  */
-const ajv: Ajv = new Ajv({
+export const ajv: Ajv = new Ajv({
   useDefaults,
   coerceTypes,
   removeAdditional,
@@ -83,13 +80,13 @@ const ajv: Ajv = new Ajv({
  * @function validateConfig
  * @type {ValidateFunction}
  */
-const validateConfig: ValidateFunction = ajv.getSchema(
+export const validateConfig: ValidateFunction = ajv.getSchema(
   "urn:jsonschema:config",
 ) as ValidateFunction;
 
-const rootFileName = "index.html";
+export const rootFileName = "index.html";
 
-const debounce = 1000;
+export const debounce = 1000;
 
 /**
  * Модификатор для вотчера, указывает на проверку всех изменений в глубину
@@ -98,9 +95,9 @@ const debounce = 1000;
  * @default
  * @type {boolean}
  */
-const deep: boolean = true;
+export const deep: boolean = true;
 
-const configurable: boolean = true;
+export const configurable: boolean = true;
 
 /**
  * Моментальный запуск вотчера
@@ -109,12 +106,7 @@ const configurable: boolean = true;
  * @default
  * @type {boolean}
  */
-const immediate: boolean = true;
-
-const { S3, base, bucket } = storeToRefs(storeS3());
-const { putObject, headObject, getObject } = storeS3();
-const { pages } = storeToRefs(Data());
-const { $, validate } = Data();
+export const immediate: boolean = true;
 
 /**
  * @param {TPage} that - Текущий объект страницы
@@ -123,7 +115,7 @@ const { $, validate } = Data();
  * @param {Function} beautify - Ф-ция форматирования кода
  * @returns {Promise<string>} Содержимое файла
  */
-const getFile = async (
+export const getFile = async (
   that: TPage,
   key: string,
   ext: string,
@@ -142,7 +134,7 @@ const getFile = async (
  * @param {string} ext - Расширение файла
  * @param {string} text - Новое содержимое файла
  */
-const save = (that: TPage, key: string, ext: string, text: string) => {
+export const save = (that: TPage, key: string, ext: string, text: string) => {
   putObject(
     `assets/${that.id}.${ext}`,
     mime.getType(ext) ?? "text/plain",
@@ -152,7 +144,7 @@ const save = (that: TPage, key: string, ext: string, text: string) => {
   Reflect.defineProperty(that, "lastmod", { value });
 };
 
-const debounceFn = useDebounceFn(save, debounce);
+export const debounceFn = useDebounceFn(save, debounce);
 
 /**
  * @param {TPage} that - Текущий объект страницы
@@ -160,7 +152,12 @@ const debounceFn = useDebounceFn(save, debounce);
  * @param {string} ext - Расширение файла
  * @param {string} value - Новое содержимое файла
  */
-const setFile = (that: TPage, key: string, ext: string, value: string) => {
+export const setFile = (
+  that: TPage,
+  key: string,
+  ext: string,
+  value: string,
+) => {
   Object.defineProperty(that, key, { value, configurable });
   debounceFn(that, key, ext, value);
 };
@@ -170,7 +167,7 @@ const setFile = (that: TPage, key: string, ext: string, value: string) => {
  *
  * @type {PropertyDescriptor}
  */
-const htm: PropertyDescriptor = {
+export const htm: PropertyDescriptor = {
   /**
    * Геттер шаблона страницы
    *
@@ -194,7 +191,7 @@ const htm: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const html: PropertyDescriptor = {
+export const html: PropertyDescriptor = {
   /**
    * Считывание исходного кода из структуры данных
    *
@@ -226,7 +223,7 @@ const html: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const css: PropertyDescriptor = {
+export const css: PropertyDescriptor = {
   /**
    * Геттер стилей страницы
    *
@@ -251,7 +248,7 @@ const css: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const js: PropertyDescriptor = {
+export const js: PropertyDescriptor = {
   /**
    * Геттер скриптов страницы
    *
@@ -276,7 +273,7 @@ const js: PropertyDescriptor = {
  * @function fix
  * @param {TPage[]} siblings - Элементы массива страниц
  */
-const fix = (siblings: TPage[]) => {
+export const fix = (siblings: TPage[]) => {
   siblings.forEach((value) => {
     Object.defineProperties(value, { html, htm, css, js });
     fix(value.children ?? []);
@@ -304,7 +301,7 @@ watch(S3, async (value) => {
     });
 });
 
-const { data } = useFetch("monolit/.vite/manifest.json", {
+export const { data } = useFetch("monolit/.vite/manifest.json", {
   /**
    * Переводим в массив
    *
@@ -349,7 +346,7 @@ watchDebounced(
   { deep, debounce },
 );
 
-const accessKeyId: Ref<string | null> = ref(null);
+export const accessKeyId: Ref<string | null> = ref(null);
 
 /**
  * Смешивание сохраненного объекта с объектом по умолчанию
@@ -358,14 +355,14 @@ const accessKeyId: Ref<string | null> = ref(null);
  * @default
  * @type {boolean}
  */
-const mergeDefaults: boolean = true;
+export const mergeDefaults: boolean = true;
 
 /**
  * Хранимая конфигурация приложения
  *
  * @type {RemovableRef<TConfig>}
  */
-const config: RemovableRef<TConfig> = useStorage(
+export const config: RemovableRef<TConfig> = useStorage(
   `config-${accessKeyId.value}`,
   {} as TConfig,
   localStorage,
@@ -374,9 +371,9 @@ const config: RemovableRef<TConfig> = useStorage(
   },
 );
 
-const rightDrawer: Ref<boolean | null> = ref(null);
+export const rightDrawer: Ref<boolean | null> = ref(null);
 
-const sitemap = computed(() => ({
+export const sitemap = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
   urlset: {
     "@xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
@@ -404,10 +401,3 @@ watch(
   },
   { immediate },
 );
-
-export default defineStore("app", () => ({
-  save,
-  accessKeyId,
-  rightDrawer,
-  config,
-}));

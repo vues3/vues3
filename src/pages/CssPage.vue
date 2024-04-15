@@ -27,16 +27,10 @@ q-page.column.full-height
       )
 </template>
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
-
 import VInteractiveTree from "@/components/VInteractiveTree.vue";
 import VSourceCode from "@/components/VSourceCode.vue";
-import app from "@/stores/app";
-import data from "~/monolit/src/stores/data";
-
-const { rightDrawer, config } = storeToRefs(app());
-
-const { $ } = data();
+import { config, rightDrawer } from "@/stores/app";
+import { $ } from "~/monolit/src/stores/data";
 
 rightDrawer.value = null;
 </script>

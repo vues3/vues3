@@ -214,7 +214,6 @@ q-page.column.full-height
 import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
 import { get, useFileDialog } from "@vueuse/core";
 import mime from "mime";
-import { storeToRefs } from "pinia";
 import { uid, useQuasar } from "quasar";
 import { computed, ref, watch } from "vue";
 
@@ -225,19 +224,12 @@ import types from "@/assets/types.json";
 import VInteractiveTree from "@/components/VInteractiveTree.vue";
 import VSourceCode from "@/components/VSourceCode.vue";
 import VWysiwyg from "@/components/VWysiwyg.vue";
-import app from "@/stores/app";
-import s3 from "@/stores/s3";
+import { config, rightDrawer, save } from "@/stores/app";
+import { base, putFile } from "@/stores/s3";
 import type { TPage } from "~/monolit/src/stores/data";
-import data from "~/monolit/src/stores/data";
+import { $, pages } from "~/monolit/src/stores/data";
 
 const $q = useQuasar();
-const S3 = s3();
-const { config, rightDrawer } = storeToRefs(app());
-const { save } = app();
-const { pages } = storeToRefs(data());
-const { $ } = data();
-const { base } = storeToRefs(S3);
-const { putFile } = S3;
 const icons = ref(materialIcons.icons);
 
 /**
