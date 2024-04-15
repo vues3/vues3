@@ -8,7 +8,7 @@ import {
   whenever,
 } from "@vueuse/core";
 import { logicAnd } from "@vueuse/math";
-import type { AnySchema, CodeOptions, ValidateFunction } from "ajv";
+import type { AnySchema, ValidateFunction } from "ajv";
 import Ajv from "ajv";
 import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import { FromSchema } from "json-schema-to-ts";
@@ -19,7 +19,17 @@ import { computed, ref, watch } from "vue";
 
 import Config from "@/schemas/config";
 import type { TData, TPage } from "~/monolit/src/stores/data";
-import { $, pages, validate } from "~/monolit/src/stores/data";
+import {
+  $,
+  code,
+  coerceTypes,
+  configurable,
+  deep,
+  pages,
+  removeAdditional,
+  useDefaults,
+  validate,
+} from "~/monolit/src/stores/data";
 
 import { base, bucket, getObject, headObject, putObject, S3 } from "./s3";
 
@@ -29,44 +39,13 @@ export type TConfig = FromSchema<typeof Config>;
  * @constant
  * @type {AnySchema[]}
  */
-export const schemas: AnySchema[] = [Config];
-
-/**
- * @constant
- * @default
- * @type {boolean}
- */
-export const useDefaults: boolean = true;
-
-/**
- * @constant
- * @default
- * @type {boolean}
- */
-export const coerceTypes: boolean = true;
-
-/**
- * @constant
- * @default
- * @type {boolean}
- */
-export const removeAdditional: boolean = true;
-
-/** @type {boolean} */
-export const esm: boolean = true;
-
-/**
- * @constant
- * @default
- * @type {CodeOptions}
- */
-export const code: CodeOptions = { esm };
+const schemas: AnySchema[] = [Config];
 
 /**
  * @constant
  * @type {Ajv}
  */
-export const ajv: Ajv = new Ajv({
+const ajv: Ajv = new Ajv({
   useDefaults,
   coerceTypes,
   removeAdditional,
@@ -84,20 +63,9 @@ export const validateConfig: ValidateFunction = ajv.getSchema(
   "urn:jsonschema:config",
 ) as ValidateFunction;
 
-export const rootFileName = "index.html";
+const rootFileName = "index.html";
 
-export const debounce = 1000;
-
-/**
- * Модификатор для вотчера, указывает на проверку всех изменений в глубину
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const deep: boolean = true;
-
-export const configurable: boolean = true;
+const debounce = 1000;
 
 /**
  * Моментальный запуск вотчера
@@ -115,7 +83,7 @@ export const immediate: boolean = true;
  * @param {Function} beautify - Ф-ция форматирования кода
  * @returns {Promise<string>} Содержимое файла
  */
-export const getFile = async (
+const getFile = async (
   that: TPage,
   key: string,
   ext: string,
@@ -144,7 +112,7 @@ export const save = (that: TPage, key: string, ext: string, text: string) => {
   Reflect.defineProperty(that, "lastmod", { value });
 };
 
-export const debounceFn = useDebounceFn(save, debounce);
+const debounceFn = useDebounceFn(save, debounce);
 
 /**
  * @param {TPage} that - Текущий объект страницы
@@ -152,12 +120,7 @@ export const debounceFn = useDebounceFn(save, debounce);
  * @param {string} ext - Расширение файла
  * @param {string} value - Новое содержимое файла
  */
-export const setFile = (
-  that: TPage,
-  key: string,
-  ext: string,
-  value: string,
-) => {
+const setFile = (that: TPage, key: string, ext: string, value: string) => {
   Object.defineProperty(that, key, { value, configurable });
   debounceFn(that, key, ext, value);
 };
@@ -167,7 +130,7 @@ export const setFile = (
  *
  * @type {PropertyDescriptor}
  */
-export const htm: PropertyDescriptor = {
+const htm: PropertyDescriptor = {
   /**
    * Геттер шаблона страницы
    *
@@ -191,7 +154,7 @@ export const htm: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-export const html: PropertyDescriptor = {
+const html: PropertyDescriptor = {
   /**
    * Считывание исходного кода из структуры данных
    *
@@ -223,7 +186,7 @@ export const html: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-export const css: PropertyDescriptor = {
+const css: PropertyDescriptor = {
   /**
    * Геттер стилей страницы
    *
@@ -248,7 +211,7 @@ export const css: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-export const js: PropertyDescriptor = {
+const js: PropertyDescriptor = {
   /**
    * Геттер скриптов страницы
    *
@@ -273,7 +236,7 @@ export const js: PropertyDescriptor = {
  * @function fix
  * @param {TPage[]} siblings - Элементы массива страниц
  */
-export const fix = (siblings: TPage[]) => {
+const fix = (siblings: TPage[]) => {
   siblings.forEach((value) => {
     Object.defineProperties(value, { html, htm, css, js });
     fix(value.children ?? []);
@@ -301,7 +264,7 @@ watch(S3, async (value) => {
     });
 });
 
-export const { data } = useFetch("monolit/.vite/manifest.json", {
+const { data } = useFetch("monolit/.vite/manifest.json", {
   /**
    * Переводим в массив
    *
@@ -355,7 +318,7 @@ export const accessKeyId: Ref<string | null> = ref(null);
  * @default
  * @type {boolean}
  */
-export const mergeDefaults: boolean = true;
+const mergeDefaults: boolean = true;
 
 /**
  * Хранимая конфигурация приложения
@@ -373,7 +336,7 @@ export const config: RemovableRef<TConfig> = useStorage(
 
 export const rightDrawer: Ref<boolean | null> = ref(null);
 
-export const sitemap = computed(() => ({
+const sitemap = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
   urlset: {
     "@xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
@@ -385,6 +348,7 @@ export const sitemap = computed(() => ({
     })),
   },
 }));
+
 watchDebounced(
   sitemap,
   (value, oldValue) => {

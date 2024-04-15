@@ -102,6 +102,7 @@ import {
 
 import mimes from "@/assets/mimes.json";
 import templates from "@/assets/templates.json";
+import { immediate } from "@/stores/app";
 import { base, putFile } from "@/stores/s3";
 import { $, pages } from "~/monolit/src/stores/data";
 import { fonts } from "~/uno.config";
@@ -129,7 +130,6 @@ const inserted: Ref<string | null | undefined> = ref(null);
 const insertedObject = computed(() =>
   pages.value.find(({ id }) => id === inserted?.value),
 );
-const immediate = true;
 watch(
   () => $?.content ?? [],
   ([{ id }]) => {

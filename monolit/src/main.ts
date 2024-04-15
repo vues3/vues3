@@ -26,7 +26,7 @@ import type { Config } from "yandex-metrika-vue3/src/types";
 import vueApp from "@/App.vue";
 import type { TData, TSettings } from "@/stores/data";
 import { $, pages, validate } from "@/stores/data";
-import { fix } from "@/stores/monolit";
+import { cache, fix } from "@/stores/monolit";
 import defaults from "~/uno.config";
 
 window.console.info(
@@ -66,15 +66,6 @@ initUnocssRuntime({ autoPrefix, defaults, bypassDefined });
 const app: App = createApp(vueApp);
 
 app.config.globalProperties.mdi = mdi;
-
-/**
- * Настройка кеширования
- *
- * @constant
- * @default
- * @type {RequestCache}
- */
-const cache: RequestCache = "no-cache";
 
 (async () => {
   /**

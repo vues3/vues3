@@ -224,7 +224,7 @@ import types from "@/assets/types.json";
 import VInteractiveTree from "@/components/VInteractiveTree.vue";
 import VSourceCode from "@/components/VSourceCode.vue";
 import VWysiwyg from "@/components/VWysiwyg.vue";
-import { config, rightDrawer, save } from "@/stores/app";
+import { config, immediate, rightDrawer, save } from "@/stores/app";
 import { base, putFile } from "@/stores/s3";
 import type { TPage } from "~/monolit/src/stores/data";
 import { $, pages } from "~/monolit/src/stores/data";
@@ -276,7 +276,7 @@ watch(
     if (!config.value.content.expanded.length && id)
       config.value.content.expanded.push(id);
   },
-  { immediate: true },
+  { immediate },
 );
 const { files, open } = useFileDialog({
   multiple: false,

@@ -29,7 +29,7 @@ export const cache: RequestCache = "no-cache";
  * @default
  * @type {ModuleExport}
  */
-export const moduleCache: ModuleExport = {
+const moduleCache: ModuleExport = {
   vue,
   "vue-router": vueRouter,
   "@vueuse/core": vueuseCore,
@@ -46,7 +46,7 @@ export const moduleCache: ModuleExport = {
  * @param {string} type - Тип записи
  * @param {any[]} args - Содержимое записи
  */
-export const log = (type: string, ...args: any[]) => {
+const log = (type: string, ...args: any[]) => {
   (window.console[type as keyof Console] as Function)(...args);
 };
 
@@ -142,7 +142,7 @@ export const getAsyncComponent = ({
  * @param {string} ext - Расширение файла
  * @returns {Promise<string>} Содержимое файла
  */
-export const getFile = async (
+const getFile = async (
   that: TPage,
   key: string,
   ext: string,
@@ -178,7 +178,7 @@ export const getFile = async (
  *
  * @type {PropertyDescriptor}
  */
-export const htm: PropertyDescriptor = {
+const htm: PropertyDescriptor = {
   /**
    * Геттер шаблона страницы
    *
@@ -196,7 +196,7 @@ export const htm: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-export const css: PropertyDescriptor = {
+const css: PropertyDescriptor = {
   /**
    * Геттер стилей страницы
    *
@@ -214,7 +214,7 @@ export const css: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-export const js: PropertyDescriptor = {
+const js: PropertyDescriptor = {
   /**
    * Геттер скриптов страницы
    *

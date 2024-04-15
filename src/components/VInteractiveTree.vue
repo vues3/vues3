@@ -39,6 +39,7 @@ import { useQuasar } from "quasar";
 import type { ComputedRef } from "vue";
 import { computed, ref, watch } from "vue";
 
+import { immediate } from "@/stores/app";
 import type { TPage } from "~/monolit/src/stores/data";
 
 /**
@@ -77,15 +78,6 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
    */
   list: (): TPage[] => [],
 });
-
-/**
- * Немедленное выполнение вотчера
- *
- * @constant
- * @default
- * @type {boolean}
- */
-const immediate: boolean = true;
 
 /**
  * Объект текущей страницы

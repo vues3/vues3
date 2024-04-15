@@ -197,7 +197,7 @@ export const deep: boolean = true;
  * @default
  * @type {object[]}
  */
-export const schemas: object[] = [Resource, Page, Settings, Navbar, Data];
+const schemas: object[] = [Resource, Page, Settings, Navbar, Data];
 
 /**
  * Replace missing or undefined properties and items with the values from
@@ -253,7 +253,7 @@ export const code: object = { esm };
  * @default
  * @type {FuncKeywordDefinition[]}
  */
-export const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
+const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
 
 /**
  * Объект валидатора
@@ -261,7 +261,7 @@ export const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
  * @type {Ajv}
  * @see {@link https://ajv.js.org} см. документацию
  */
-export const ajv: Ajv = new Ajv({
+const ajv: Ajv = new Ajv({
   useDefaults,
   coerceTypes,
   removeAdditional,
@@ -306,7 +306,7 @@ export const configurable: boolean = true;
  * @param {TPage[]} pages - Элементы массива страниц
  * @returns {TPage[]} - Аддитивный массив страниц
  */
-export const getPages = (pages: TPage[]): TPage[] =>
+const getPages = (pages: TPage[]): TPage[] =>
   pages.flatMap((element) => [element, ...getPages(element.children ?? [])]);
 
 /**
@@ -314,7 +314,7 @@ export const getPages = (pages: TPage[]): TPage[] =>
  *
  * @type {PropertyDescriptor}
  */
-export const index: PropertyDescriptor = {
+const index: PropertyDescriptor = {
   /**
    * Геттер позиции в соседних объектах
    *
@@ -332,7 +332,7 @@ export const index: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-export const prev: PropertyDescriptor = {
+const prev: PropertyDescriptor = {
   /**
    * Геттер предыдущего объекта
    *
@@ -348,7 +348,7 @@ export const prev: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-export const next: PropertyDescriptor = {
+const next: PropertyDescriptor = {
   /**
    * Геттер следующего объекта
    *
@@ -364,7 +364,7 @@ export const next: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-export const branch: PropertyDescriptor = {
+const branch: PropertyDescriptor = {
   /**
    * Геттер ветви объектов
    *
@@ -400,7 +400,7 @@ export const branch: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-export const path: PropertyDescriptor = {
+const path: PropertyDescriptor = {
   /**
    * Геттер пути до объекта
    *
@@ -422,7 +422,7 @@ export const path: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-export const url: PropertyDescriptor = {
+const url: PropertyDescriptor = {
   /**
    * Геттер url ресурса
    *
@@ -442,7 +442,7 @@ export const url: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-export const name: PropertyDescriptor = {
+const name: PropertyDescriptor = {
   /**
    * Геттер названия страницы
    *
@@ -458,7 +458,7 @@ export const name: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-export const favicon: PropertyDescriptor = {
+const favicon: PropertyDescriptor = {
   /**
    * Геттер фавиконки страницы
    *
@@ -478,7 +478,7 @@ export const favicon: PropertyDescriptor = {
  * @param {{}} siblings - Объект для defineProperties
  * @param {TResource[]} siblings.value - Исходный массив
  */
-export const fixPlain = (siblings: { value: TResource[] }) => {
+const fixPlain = (siblings: { value: TResource[] }) => {
   siblings.value.forEach((element) => {
     Object.defineProperties(element, { siblings, index, prev, next });
   });
@@ -496,7 +496,7 @@ export const fixPlain = (siblings: { value: TResource[] }) => {
  * @param {TPage} parent.value - Родительский объект
  * @param {boolean} [parent.configurable] - Признак возможности конфигурации
  */
-export const fixDeep = (
+const fixDeep = (
   siblings: { value: TPage[]; configurable?: boolean },
   parent: { value: TPage | null; configurable?: boolean } = { value: null },
 ) => {
@@ -534,7 +534,7 @@ export const $: TData = reactive({} as TData);
  * @type {() => any}
  * @returns {TPage[]} - Страницы
  */
-export const get: () => any = (): TPage[] => getPages($.content ?? []);
+const get: () => any = (): TPage[] => getPages($.content ?? []);
 
 /**
  * Расчетный массив страниц
