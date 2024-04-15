@@ -11,6 +11,7 @@ import * as vueRouter from "vue-router";
 import type { ContentData, ModuleExport, Options } from "vue3-sfc-loader";
 import { loadModule } from "vue3-sfc-loader";
 
+import selectors from "@/assets/glightbox.json";
 import type { TPage } from "@/stores/data";
 
 /**
@@ -244,3 +245,35 @@ export const fix = (siblings: TPage[]) => {
     fix(value.children ?? []);
   });
 };
+
+/**
+ * Loop slides on end
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ * @see {@link https://github.com/biati-digital/glightbox} см. документацию
+ */
+export const loop: boolean = true;
+
+/**
+ * Enable or disable zoomable images you can also use data-zoomable="false" on
+ * individual nodes.
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ * @see {@link https://github.com/biati-digital/glightbox} см. документацию
+ */
+export const zoomable: boolean = false;
+
+/**
+ * Name of the selector for example '.glightbox' or 'data-glightbox' or
+ * '*[data-glightbox]'
+ *
+ * @constant
+ * @default
+ * @type {string}
+ * @see {@link https://github.com/biati-digital/glightbox} см. документацию
+ */
+export const selector: string = selectors.map((el) => `a[href${el}]`).join();

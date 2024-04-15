@@ -19,10 +19,9 @@ import { computed } from "vue";
 import type { RouteLocationNormalizedLoaded } from "vue-router";
 import { useRoute } from "vue-router";
 
-import selectors from "@/assets/glightbox.json";
 import type { TPage } from "@/stores/data";
 import { pages } from "@/stores/data";
-import { getAsyncComponent } from "@/stores/monolit";
+import { getAsyncComponent, loop, selector, zoomable } from "@/stores/monolit";
 
 /**
  * Текущий роут сайта
@@ -63,36 +62,4 @@ const the: ComputedRef<TPage | null> = computed(() => {
 const template: ComputedRef<object | null> = computed(
   () => the.value && getAsyncComponent(the.value),
 );
-
-/**
- * Loop slides on end
- *
- * @constant
- * @default
- * @type {boolean}
- * @see {@link https://github.com/biati-digital/glightbox} см. документацию
- */
-const loop: boolean = true;
-
-/**
- * Enable or disable zoomable images you can also use data-zoomable="false" on
- * individual nodes.
- *
- * @constant
- * @default
- * @type {boolean}
- * @see {@link https://github.com/biati-digital/glightbox} см. документацию
- */
-const zoomable: boolean = false;
-
-/**
- * Name of the selector for example '.glightbox' or 'data-glightbox' or
- * '*[data-glightbox]'
- *
- * @constant
- * @default
- * @type {string}
- * @see {@link https://github.com/biati-digital/glightbox} см. документацию
- */
-const selector: string = selectors.map((el) => `a[href${el}]`).join();
 </script>
