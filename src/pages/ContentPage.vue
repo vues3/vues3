@@ -10,7 +10,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
       v-interactive-tree(
         v-model:selected="config.content.selected",
         v-model:expanded="config.content.expanded",
-        :nodes="$?.content",
+        :nodes="$.content",
         :list="pages"
       )
     q-separator
@@ -131,7 +131,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
                 q-icon-picker(
                   v-model="the.icon",
                   v-model:model-pagination="iconPicker.pagination",
-                  :filter="iconPicker?.filter",
+                  :filter="iconPicker.filter",
                   :icons="icons",
                   tooltips,
                   dense
@@ -159,6 +159,9 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
             @click="delete the?.image"
           )
           .absolute-bottom.text-center the.image
+          template(#error)
+            .absolute-full.flex-center.flex
+              q-btn(label="Загрузить картинку", color="primary", @click="open")
         q-img.q-mt-md.rounded-borders(v-if="!the?.image", :ratio="16 / 9")
           .absolute-full.flex-center.flex
             q-btn(label="Загрузить картинку", color="primary", @click="open")
@@ -212,64 +215,92 @@ q-page.column.full-height
 <script setup lang="ts">
 // @ts-ignore
 import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
-import { get, useFileDialog } from "@vueuse/core";
-import mime from "mime";
-import { uid, useQuasar } from "quasar";
+import { useFileDialog } from "@vueuse/core";
+import type { QVueGlobals } from "quasar";
+import { useQuasar } from "quasar";
+import type { ComputedRef, Ref, WritableComputedRef } from "vue";
 import { computed, ref, watch } from "vue";
 
 import changefreq from "@/assets/changefreq.json";
-import mimes from "@/assets/mimes.json";
 import themes from "@/assets/themes.json";
 import types from "@/assets/types.json";
 import VInteractiveTree from "@/components/VInteractiveTree.vue";
 import VSourceCode from "@/components/VSourceCode.vue";
 import VWysiwyg from "@/components/VWysiwyg.vue";
-import { config, immediate, rightDrawer, save } from "@/stores/app";
-import { base, putFile } from "@/stores/s3";
+import {
+  accept,
+  capture,
+  config,
+  filter,
+  immediate,
+  multiple,
+  pagination,
+  putImage,
+  reset,
+  rightDrawer,
+  save,
+  show,
+} from "@/stores/app";
+import { base } from "@/stores/s3";
 import type { TPage } from "~/monolit/src/stores/data";
 import { $, pages } from "~/monolit/src/stores/data";
 
-const $q = useQuasar();
-const icons = ref(materialIcons.icons);
+/**
+ * Объект quasar
+ *
+ * @type {QVueGlobals}
+ */
+const $q: QVueGlobals = useQuasar();
+
+/** @type {Ref<object>} */
+const icons: Ref<object> = ref(materialIcons.icons);
 
 /**
+ * @function onUnmounted
  * @param {TPage} that - Текущий объект страницы
  * @param {string} key - Название свойства для хранения считанного файла
  * @param {string} ext - Расширение файла
- * @param {string} value - Новое содержимое файла
+ * @param {Promise<string> | string} value - Новое содержимое файла
  */
 const onUnmounted = async (
   that: TPage,
   key: string,
   ext: string,
-  value: string,
+  value: Promise<string> | string,
 ) => {
   if (that) save(that, key, ext, await value);
 };
 
-const the = computed(() =>
-  pages.value.find(({ id }) => id === config.value.content.selected),
+/** @type {ComputedRef<TPage | null>} */
+const the: ComputedRef<TPage | null> = computed(
+  () =>
+    pages.value.find(({ id }) => id === config.value.content.selected) ?? null,
 );
 
-const loc = computed({
-  /** @returns {string} - Постоянная ссылка */
-  get() {
-    return get(the)?.loc;
+/** @type {WritableComputedRef<string | null>} */
+const loc: WritableComputedRef<string | null> = computed({
+  /**
+   * @function get
+   * @returns {string | null} - Постоянная ссылка
+   */
+  get(): string | null {
+    return the.value?.loc ?? null;
   },
-  /** @param {string} value - Новое значение постоянной ссылки */
-  set(value) {
+
+  /**
+   * @function set
+   * @param {string | null} value - Новое значение постоянной ссылки
+   */
+  set(value: string | null) {
     if (the.value) the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
   },
 });
-const iconPicker = ref({
-  show: false,
-  filter: "",
-  pagination: {
-    itemsPerPage: 75,
-    page: 0,
-  },
-});
+
+/** @type {Ref<object>} */
+const iconPicker: Ref<object> = ref({ show, filter, pagination });
+
 rightDrawer.value = true;
+
 watch(
   () => $.content ?? [],
   ([{ id = null } = {}]) => {
@@ -278,28 +309,16 @@ watch(
   },
   { immediate },
 );
-const { files, open } = useFileDialog({
-  multiple: false,
-  accept: "image/*",
-  capture: "Выберите картинку",
-  reset: true,
-});
+
+const { files, open } = useFileDialog({ multiple, accept, capture, reset });
+
 watch(files, async (newFiles) => {
   const [file] = newFiles ?? [];
-  if (file)
-    try {
-      const { type } = file;
-      if (mimes.includes(type)) {
-        const filePath = `assets/${uid()}.${mime.getExtension(type)}`;
-        await putFile(filePath, type, file);
-        if (the.value) the.value.image = `/${filePath}`;
-      } else
-        throw new Error(
-          "Тип графического файла не подходит для использования в сети интернет",
-        );
-    } catch (err) {
-      const { message } = err as Error;
-      $q.notify({ message });
-    }
+  if (file && the.value) {
+    const { filePath, message } = await putImage(file);
+
+    if (message) $q.notify({ message });
+    else the.value.image = `/${filePath}`;
+  }
 });
 </script>

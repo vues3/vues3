@@ -67,7 +67,7 @@ div
             q-tree.col.scroll.full-width(
               v-if="$?.content",
               v-model:selected="inserted",
-              :nodes="$?.content",
+              :nodes="$.content",
               default-expand-all,
               node-key="id",
               no-selection-unset,
@@ -88,9 +88,9 @@ import "daisyui/dist/full.css";
 
 import { useFileDialog } from "@vueuse/core";
 import { html_beautify } from "js-beautify";
-import mime from "mime";
+import type { QVueGlobals } from "quasar";
 import { useQuasar } from "quasar";
-import type { Ref } from "vue";
+import type { ComputedRef, Ref } from "vue";
 import {
   computed,
   nextTick,
@@ -100,10 +100,10 @@ import {
   watchPostEffect,
 } from "vue";
 
-import mimes from "@/assets/mimes.json";
 import templates from "@/assets/templates.json";
-import { immediate } from "@/stores/app";
-import { base, putFile } from "@/stores/s3";
+import { accept, immediate, putImage } from "@/stores/app";
+import { base } from "@/stores/s3";
+import type { TPage } from "~/monolit/src/stores/data";
 import { $, pages } from "~/monolit/src/stores/data";
 import { fonts } from "~/uno.config";
 
@@ -118,50 +118,58 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
 });
 
 defineEmits(["update:modelValue"]);
+
+/** @type {Ref<string | null>} */
 const htm: Ref<string | null> = ref(null);
+
 watchEffect(async () => {
   htm.value = await props.modelValue;
 });
 
-const template = ref(false);
-const routerLink = ref(false);
-const $q = useQuasar();
+/** @type {Ref<boolean>} */
+const template: Ref<boolean> = ref(false);
+
+/** @type {Ref<boolean>} */
+const routerLink: Ref<boolean> = ref(false);
+
+/** @type {QVueGlobals} */
+const $q: QVueGlobals = useQuasar();
+
+/** @type {Ref<string | null | undefined>} */
 const inserted: Ref<string | null | undefined> = ref(null);
-const insertedObject = computed(() =>
-  pages.value.find(({ id }) => id === inserted?.value),
+
+/** @type {ComputedRef<TPage | null>} */
+const insertedObject: ComputedRef<TPage | null> = computed(
+  () => pages.value.find(({ id }) => id === inserted?.value) ?? null,
 );
+
 watch(
   () => $?.content ?? [],
-  ([{ id }]) => {
+  ([{ id = null } = {}]) => {
     inserted.value = id;
   },
   { immediate },
 );
-const editorRef = ref();
-const modalRef = ref();
+
+/** @type {Ref<any>} */
+const editorRef: Ref<any> = ref(null);
+
+/** @type {Ref<HTMLElement | null>} */
+const modalRef: Ref<any> = ref(null);
+
 /**
- * { @link
- * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#image_types
- * }
- *
+ * @function insertImage
  * @param {object} file - Файл
+ * @see {@link
+ * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#image_types}
  */
-const putImage = async (file: File) => {
-  try {
-    const { type } = file;
-    if (mimes?.includes(type)) {
-      const filePath = `assets/${crypto?.randomUUID()}.${mime?.getExtension(type)}`;
-      await putFile(filePath, type, file);
-      editorRef?.value?.runCmd("insertImage", `${base?.value}/${filePath}`);
-    } else
-      throw new Error(
-        "Тип графического файла не подходит для использования в сети интернет",
-      );
-  } catch (err) {
-    const { message } = err as Error;
-    $q?.notify({ message });
-  }
+const insertImage = async (file: File) => {
+  const { filePath, message } = await putImage(file);
+
+  if (message) $q.notify({ message });
+  else editorRef.value.runCmd("insertImage", `${base.value}/${filePath}`);
 };
+
 /** @param {object} evt - Объект события */
 const capture = (evt: ClipboardEvent | DragEvent) => {
   const { files = [] } =
@@ -171,16 +179,19 @@ const capture = (evt: ClipboardEvent | DragEvent) => {
   if (files.length) {
     evt.preventDefault();
     evt.stopPropagation();
-    Array.from(files).forEach(putImage);
+    Array.from(files).forEach(insertImage);
   }
 };
-const accept = "image/*";
+
 const { files, open } = useFileDialog({ accept });
+
 watch(files, (newFiles) => {
-  if (newFiles) [...newFiles]?.forEach(putImage);
+  if (newFiles) [...newFiles]?.forEach(insertImage);
 });
-const e = $q?.lang?.editor;
-const i = $q?.iconSet?.editor;
+
+const e = $q.lang.editor;
+const i = $q.iconSet.editor;
+
 const editorDef = {
   upload: {
     tip: "Загрузка картинки",

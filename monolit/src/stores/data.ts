@@ -553,7 +553,7 @@ watch($, (value) => {
 });
 
 watch(
-  () => $?.content ?? [],
+  () => $.content ?? [],
   (value) => {
     fixDeep({ value });
   },
@@ -561,7 +561,7 @@ watch(
 );
 
 watch(
-  () => $?.css ?? [],
+  () => $.css ?? [],
   (value) => {
     fixPlain({ value });
   },
@@ -569,7 +569,7 @@ watch(
 );
 
 watch(
-  () => $?.js ?? [],
+  () => $.js ?? [],
   (value) => {
     fixPlain({ value });
   },

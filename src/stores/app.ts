@@ -17,6 +17,7 @@ import { toXML } from "to-xml";
 import type { Ref } from "vue";
 import { computed, ref, watch } from "vue";
 
+import mimes from "@/assets/mimes.json";
 import Config from "@/schemas/config";
 import type { TData, TPage } from "~/monolit/src/stores/data";
 import {
@@ -31,7 +32,15 @@ import {
   validate,
 } from "~/monolit/src/stores/data";
 
-import { base, bucket, getObject, headObject, putObject, S3 } from "./s3";
+import {
+  base,
+  bucket,
+  getObject,
+  headObject,
+  putFile,
+  putObject,
+  S3,
+} from "./s3";
 
 export type TConfig = FromSchema<typeof Config>;
 
@@ -384,3 +393,119 @@ export const cancel: boolean = true;
  * @type {boolean}
  */
 export const persistent: boolean = true;
+
+/**
+ * Выбор иконок по умолчанию скрыт
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+export const show: boolean = false;
+
+/**
+ * Пустой фильтр иконок по умолчанию
+ *
+ * @constant
+ * @default
+ * @type {string}
+ */
+export const filter: string = "";
+
+/**
+ * 75 иконок на страницу
+ *
+ * @constant
+ * @default
+ * @type {number}
+ */
+const itemsPerPage: number = 75;
+
+/**
+ * Начальная страница иконок
+ *
+ * @constant
+ * @default
+ * @type {number}
+ */
+const page: number = 0;
+
+/**
+ * Настройки страниц при выборе иконок
+ *
+ * @constant
+ * @default
+ * @type {object}
+ */
+export const pagination: object = { itemsPerPage, page };
+
+/**
+ * Запрет мультивыбора файлов
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+export const multiple: boolean = false;
+
+/**
+ * Типы фалов для выбора
+ *
+ * @constant
+ * @default
+ * @type {string}
+ */
+export const accept: string = "image/*";
+
+/**
+ * Заголовок окна выбора файла
+ *
+ * @constant
+ * @default
+ * @type {string}
+ */
+export const capture: string = "Выберите картинку";
+
+/**
+ * Reset when open file dialog
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+export const reset: boolean = true;
+
+/**
+ * @function putImage
+ * @param {object} file - Файл
+ * @returns {Promise<{
+ *   [key: string]: string | null;
+ * }>} Возвращаем путь файла
+ *   или null в случае ошибки
+ * @see {@link
+ * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#image_types}
+ */
+export const putImage = async (
+  file: File,
+): Promise<{
+  [key: string]: string | null;
+}> => {
+  const { type } = file;
+
+  /** @type {string} */
+  const filePath: string = `assets/${crypto.randomUUID()}.${mime.getExtension(type)}`;
+
+  /** @type {string | null} */
+  let message: string | null = null;
+
+  try {
+    if (mimes.includes(type)) await putFile(filePath, type, file);
+    else
+      throw new Error(
+        "Тип графического файла не подходит для использования в сети интернет",
+      );
+  } catch (err) {
+    ({ message } = err as Error);
+  }
+  return { filePath, message };
+};

@@ -7,5 +7,5 @@
   "editor.codeActionsOnSave": ["source.fixAll.eslint"],
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
   "cSpell.language": "en,ru",
-  "cSpell.words": ["qiconpicker"]
+  "cSpell.words": ["autogrow", "changefreq", "qiconpicker", "vueuse"]
 }
