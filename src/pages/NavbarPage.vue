@@ -107,7 +107,7 @@ import { useQuasar } from "quasar";
 import themes from "@/assets/themes.json";
 import VSourceCode from "@/components/VSourceCode.vue";
 import Navbar from "@/schemas/navbar";
-import { config, rightDrawer } from "@/stores/app";
+import { cancel, config, persistent, rightDrawer } from "@/stores/app";
 import type { TNavbar } from "~/monolit/src/stores/data";
 import { $, validateNavbar } from "~/monolit/src/stores/data";
 
@@ -148,25 +148,6 @@ const type: SelectionPromptType = "checkbox";
 
 /** @type {[]} */
 const model: [] = [];
-
-/**
- * Props for a 'CANCEL' button
- *
- * @constant
- * @default
- * @type {boolean}
- */
-const cancel: boolean = true;
-
-/**
- * User cannot dismiss Dialog if clicking outside of it or hitting ESC key;
- * Also, an app route change won't dismiss it
- *
- * @constant
- * @default
- * @type {boolean}
- */
-const persistent: boolean = true;
 
 /**
  * Список элементов формы

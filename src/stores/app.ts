@@ -365,3 +365,22 @@ watch(
   },
   { immediate },
 );
+
+/**
+ * Props for a 'CANCEL' button
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+export const cancel: boolean = true;
+
+/**
+ * User cannot dismiss Dialog if clicking outside of it or hitting ESC key;
+ * Also, an app route change won't dismiss it
+ *
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+export const persistent: boolean = true;

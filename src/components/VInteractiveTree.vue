@@ -39,7 +39,7 @@ import { useQuasar } from "quasar";
 import type { ComputedRef } from "vue";
 import { computed, ref, watch } from "vue";
 
-import { immediate } from "@/stores/app";
+import { cancel, immediate, persistent } from "@/stores/app";
 import type { TPage } from "~/monolit/src/stores/data";
 
 /**
@@ -141,10 +141,6 @@ const newPage = () => {
 const title = "Подтверждение";
 
 const message = "Вы действительно хотите удалить?";
-
-const cancel = true;
-
-const persistent = true;
 
 /** Удаление текущей страницы */
 const deletePage = () => {

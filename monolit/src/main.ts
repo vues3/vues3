@@ -26,7 +26,7 @@ import type { Config } from "yandex-metrika-vue3/src/types";
 import vueApp from "@/App.vue";
 import type { TData, TSettings } from "@/stores/data";
 import { $, pages, validate } from "@/stores/data";
-import { cache, fix } from "@/stores/monolit";
+import { autoPrefix, bypassDefined, cache, fix, once } from "@/stores/monolit";
 import defaults from "~/uno.config";
 
 window.console.info(
@@ -35,26 +35,6 @@ window.console.info(
   `ver:${__APP_VERSION__}`,
   "https://vues3.ru",
 );
-
-/**
- * Enable css property auto prefixer
- *
- * @constant
- * @default
- * @type {boolean}
- */
-const autoPrefix: boolean = true;
-
-/**
- * When enabled, UnoCSS will look for the existing selectors defined in the
- * stylesheet and bypass them. This is useful when using the runtime alongwith
- * the build-time UnoCSS.
- *
- * @constant
- * @default
- * @type {boolean}
- */
-const bypassDefined: boolean = true;
 
 initUnocssRuntime({ autoPrefix, defaults, bypassDefined });
 
@@ -105,15 +85,6 @@ app.config.globalProperties.mdi = mdi;
  * @type {string | null}
  */
 const env: string | null = process.env.NODE_ENV ?? null;
-
-/**
- * Запуск вотчера единожды
- *
- * @constant
- * @default
- * @type {boolean}
- */
-const once: boolean = true;
 
 /**
  * Объект истории

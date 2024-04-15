@@ -88,16 +88,7 @@ import { useRoute, useRouter } from "vue-router";
 
 import type { TPage, TResource } from "@/stores/data";
 import { $, pages } from "@/stores/data";
-import { getAsyncComponent } from "@/stores/monolit";
-
-/**
- * Expose more controls
- *
- * @constant
- * @default
- * @type {boolean}
- */
-const controls: boolean = true;
+import { controls, favicon, getAsyncComponent, path } from "@/stores/monolit";
 
 const { ready, start } = useTimeout(1000, { controls });
 
@@ -113,13 +104,6 @@ const navigator: ComputedRef<object> = computed(() => {
    * @type {string}
    */
   const id: string = crypto.randomUUID();
-
-  /**
-   * Путь готового шаблона навбара
-   *
-   * @type {string}
-   */
-  const path: string = "~";
 
   const {
     template: htm,
@@ -181,16 +165,6 @@ const canonical: ComputedRef<string | false> = computed(
     the.value?.url.constructor === String &&
     `${window.location.origin}/${the.value.url}`,
 );
-
-/**
- * Уникальный ключ для favicon. Иначе иконка динамически не обновляется в chrome
- * при смене страницы
- *
- * @constant
- * @default
- * @type {string}
- */
-const favicon: string = crypto.randomUUID();
 
 /**
  * Ф-ция проверки ресурса

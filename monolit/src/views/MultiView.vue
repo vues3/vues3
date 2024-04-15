@@ -30,7 +30,16 @@ import { useRoute, useRouter } from "vue-router";
 
 import type { TPage } from "@/stores/data";
 import { pages } from "@/stores/data";
-import { getAsyncComponent, loop, selector, zoomable } from "@/stores/monolit";
+import {
+  behavior,
+  getAsyncComponent,
+  immediate,
+  loop,
+  rootMargin,
+  selector,
+  threshold,
+  zoomable,
+} from "@/stores/monolit";
 
 /**
  * Текущий роут сайта
@@ -100,26 +109,6 @@ const templates: ComputedRef<object> = computed(() =>
 );
 
 /**
- * Сдвиг области видимости
- *
- * @constant
- * @default
- * @type {string}
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin} см. документацию
- */
-const rootMargin: string = "-1% 0px -99%";
-
-/**
- * Процент площади объекта, который должен попасть в область видимости
- *
- * @constant
- * @default
- * @type {number}
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds} см. документацию
- */
-const threshold: number = 0;
-
-/**
  * Родительский элемент представления
  *
  * @type {Ref<HTMLElement>}
@@ -171,20 +160,6 @@ const callback: IntersectionObserverCallback = ([
  * @type {Ref<HTMLElement[]>}
  */
 const refs: Ref<HTMLElement[]> = ref([]);
-
-/**
- * Немедленное срабатывание смотрителя
- *
- * @type {boolean}
- */
-const immediate: boolean = true;
-
-/**
- * Быстрый скролл
- *
- * @type {ScrollBehavior}
- */
-const behavior: ScrollBehavior = "instant";
 
 /**
  * Процедура ожидания загрузки страниц
