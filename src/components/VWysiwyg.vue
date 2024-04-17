@@ -3,14 +3,15 @@ div
   q-editor.col.column.full-width(
     v-if="htm !== null",
     ref="editorRef",
+    paragraph-tag="div",
     :model-value="htm",
-    :dense="$q?.screen?.lt?.md",
-    :toolbar="editorTlb",
-    :fonts="fonts",
+    :dense="$q.screen.lt.md",
+    :toolbar,
+    :fonts,
     content-class="col prose max-w-none full-width text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
     flat,
     placeholder="Добавьте контент на вашу страницу...",
-    :definitions="editorDef",
+    :definitions,
     @paste="capture",
     @drop="capture",
     @update:model-value="$emit('update:modelValue', $event)",
@@ -189,10 +190,7 @@ watch(files, (newFiles) => {
   if (newFiles) [...newFiles]?.forEach(insertImage);
 });
 
-const e = $q.lang.editor;
-const i = $q.iconSet.editor;
-
-const editorDef = {
+const definitions = {
   upload: {
     tip: "Загрузка картинки",
     icon: "cloud_upload",
@@ -215,61 +213,39 @@ const editorDef = {
     },
   },
   h1: {
-    cmd: "formatBlock",
-    param: "H1",
-    icon: i.heading1 || i.heading,
-    tip: e.heading1,
-    htmlTip: `<span class="prose"><h1 class="no-margin">${e.heading1}</h1></span>`,
+    htmlTip: `<span class="prose"><h1 class="q-ma-none">${$q.lang.editor.heading1}</h1></span>`,
   },
   h2: {
-    cmd: "formatBlock",
-    param: "H2",
-    icon: i.heading2 || i.heading,
-    tip: e.heading2,
-    htmlTip: `<span class="prose"><h2 class="no-margin">${e.heading2}</h2></span>`,
+    htmlTip: `<span class="prose"><h2 class="q-ma-none">${$q.lang.editor.heading2}</h2></span>`,
   },
   h3: {
-    cmd: "formatBlock",
-    param: "H3",
-    icon: i.heading3 || i.heading,
-    tip: e.heading3,
-    htmlTip: `<span class="prose"><h3 class="no-margin">${e.heading3}</h3></span>`,
+    htmlTip: `<span class="prose"><h3 class="q-ma-none">${$q.lang.editor.heading3}</h3></span>`,
   },
   h4: {
-    cmd: "formatBlock",
-    param: "H4",
-    icon: i.heading4 || i.heading,
-    tip: e.heading4,
-    htmlTip: `<span class="prose"><h4 class="no-margin">${e.heading4}</h4></span>`,
+    htmlTip: `<span class="prose"><h4 class="q-ma-none">${$q.lang.editor.heading4}</h4></span>`,
   },
   p: {
-    cmd: "formatBlock",
-    param: "DIV",
-    icon: i.heading,
-    tip: e.paragraph,
+    htmlTip: `<span class="prose"><div>${$q.lang.editor.paragraph}</div></span>`,
   },
   code: {
-    cmd: "formatBlock",
-    param: "PRE",
-    icon: i.code,
-    htmlTip: `<span class="prose"><code>${e.code}</code></span>`,
+    htmlTip: `<span class="prose"><code>${$q.lang.editor.code}</code></span>`,
   },
 };
-const editorTlb = [
+const toolbar = [
   ["left", "center", "right", "justify"],
   ["bold", "italic", "strike", "underline", "subscript", "superscript"],
-  ["token", "hr", "link", "custom_btn"],
+  ["hr", "link"],
   ["print", "fullscreen"],
   [
     {
-      label: e.formatting,
-      icon: i.formatting,
+      label: $q.lang.editor.formatting,
+      icon: $q.iconSet.editor.formatting,
       list: "no-icons",
       options: ["p", "h1", "h2", "h3", "h4", "code"],
     },
     {
-      label: e.fontSize,
-      icon: i.fontSize,
+      label: $q.lang.editor.fontSize,
+      icon: $q.iconSet.editor.fontSize,
       fixedLabel: true,
       fixedIcon: true,
       list: "no-icons",
@@ -284,8 +260,8 @@ const editorTlb = [
       ],
     },
     {
-      label: e.defaultFont,
-      icon: i.font,
+      label: $q.lang.editor.defaultFont,
+      icon: $q.iconSet.editor.font,
       fixedIcon: true,
       list: "no-icons",
       options: ["default_font", ...Object.keys(fonts)],
