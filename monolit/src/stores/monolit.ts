@@ -322,13 +322,6 @@ export const behavior: ScrollBehavior = "instant";
 export const controls: true = true;
 
 /**
- * Путь готового шаблона навбара
- *
- * @type {string}
- */
-export const path: string = "~";
-
-/**
  * Уникальный ключ для favicon. Иначе иконка динамически не обновляется в chrome
  * при смене страницы
  *

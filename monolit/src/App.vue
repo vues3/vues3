@@ -88,9 +88,16 @@ import { useRoute, useRouter } from "vue-router";
 
 import type { TPage, TResource } from "@/stores/data";
 import { $, pages } from "@/stores/data";
-import { controls, favicon, getAsyncComponent, path } from "@/stores/monolit";
+import { controls, favicon, getAsyncComponent } from "@/stores/monolit";
 
 const { ready, start } = useTimeout(1000, { controls });
+
+/**
+ * Путь готового шаблона навбара
+ *
+ * @type {string}
+ */
+const path: string = "~";
 
 /**
  * Вычисление навбара

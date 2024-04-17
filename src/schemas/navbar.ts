@@ -3,7 +3,6 @@ import type { JSONSchema } from "json-schema-to-ts";
 const $id = "urn:jsonschema:navbar";
 const additionalProperties = false;
 const nullable = true;
-const type = "object";
 const properties = {
   theme: { type: "string", nullable, default: null, description: "Тема" },
   classes: {
@@ -76,6 +75,7 @@ const {
   setup: { type: "boolean", default: true, description: "" },
   scoped: { type: "boolean", default: true, description: "" },
 } as const;
+const type = "object";
 
 const Navbar = {
   $id,

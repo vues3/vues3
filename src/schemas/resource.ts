@@ -1,6 +1,5 @@
 const $id = "urn:jsonschema:resource";
 const additionalProperties = false;
-const type = "object";
 const id = "uuid";
 const dynamicDefaults = { id };
 const properties = {
@@ -8,6 +7,7 @@ const properties = {
   url: { type: "string", default: "" },
   enabled: { type: "boolean", default: true },
 } as const;
+const type = "object";
 
 /** Схема ресурсных записей */
 const Resource = {

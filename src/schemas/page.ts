@@ -3,7 +3,6 @@ import type { JSONSchema } from "json-schema-to-ts";
 const $id = "urn:jsonschema:page";
 const additionalProperties = false;
 const nullable = true;
-const type = "object";
 const id = "uuid";
 const dynamicDefaults = { id };
 const children = { type: "array", default: [], items: { $ref: "#" } } as const;
@@ -104,6 +103,7 @@ const properties = {
   scoped: { type: "boolean", default: true },
   contenteditable: { type: "boolean", default: false },
 } as const;
+const type = "object";
 
 export const plainPage = {
   $id,

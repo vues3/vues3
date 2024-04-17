@@ -2,7 +2,6 @@ import type { JSONSchema } from "json-schema-to-ts";
 
 const $id = "urn:jsonschema:data";
 const additionalProperties = false;
-const type = "object";
 const nullable = true;
 const content = {
   type: "array",
@@ -40,6 +39,7 @@ const properties = {
     default: {},
   },
 } as const;
+const type = "object";
 
 const plainData = {
   $id,
