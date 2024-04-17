@@ -60,7 +60,7 @@ v-head
       :data-theme="$.navbar?.theme"
     )
       .navbar
-        component(:is="navigator", :the="the")
+        component(:is="navigator", :the)
     router-view
   .drawer-side.z-50(v-if="pages[0]?.enabled")
     label.drawer-overlay(for="drawer")
