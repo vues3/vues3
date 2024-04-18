@@ -23,14 +23,8 @@ const extras: (QuasarIconSets | QuasarFonts)[] = [
   "material-icons",
 ];
 
-/**
- * @type {{
- *   [key: string]: string;
- * }}
- */
-const alias: {
-  [key: string]: string;
-} = {
+/** @type {Record<string, string>} */
+const alias: Record<string, string> = {
   "@": path.join(__dirname, "./src"),
   "~": __dirname,
 };
