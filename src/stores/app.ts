@@ -14,7 +14,7 @@ import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import { FromSchema } from "json-schema-to-ts";
 import mime from "mime";
 import { toXML } from "to-xml";
-import type { Ref } from "vue";
+import type { Ref, WatchOptions } from "vue";
 import { computed, ref, watch } from "vue";
 
 import mimes from "@/assets/mimes.json";
@@ -240,24 +240,22 @@ const js: PropertyDescriptor = {
 };
 
 /**
- * Рекурсивная функция ремонта страниц
+ * Adjust the callback's flush timing
  *
- * @function fix
- * @param {TPage[]} siblings - Элементы массива страниц
+ * @constant
+ * @default
+ * @type {WatchOptions["flush"]}
  */
-const fix = (siblings: TPage[]) => {
-  siblings.forEach((value) => {
-    Object.defineProperties(value, { html, htm, css, js });
-    fix(value.children ?? []);
-  });
-};
+const flush: WatchOptions["flush"] = "sync";
 
 watch(
-  () => $?.content ?? [],
-  (value) => {
-    fix(value);
+  pages,
+  (newValue) => {
+    newValue.forEach((value) => {
+      Object.defineProperties(value, { html, htm, css, js });
+    });
   },
-  { deep },
+  { flush },
 );
 
 watch(S3, async (value) => {
@@ -478,18 +476,14 @@ export const reset: boolean = true;
 /**
  * @function putImage
  * @param {object} file - Файл
- * @returns {Promise<{
- *   [key: string]: string | null;
- * }>} Возвращаем путь файла
- *   или null в случае ошибки
+ * @returns {Promise<Record<string, string | null>>} Возвращаем путь файла или
+ *   null в случае ошибки
  * @see {@link
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#image_types}
  */
 export const putImage = async (
   file: File,
-): Promise<{
-  [key: string]: string | null;
-}> => {
+): Promise<Record<string, string | null>> => {
   const { type } = file;
 
   /** @type {string} */

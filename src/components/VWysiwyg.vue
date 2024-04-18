@@ -89,7 +89,7 @@ import "daisyui/dist/full.css";
 
 import { useFileDialog } from "@vueuse/core";
 import { html_beautify } from "js-beautify";
-import type { QVueGlobals } from "quasar";
+import type { QuasarIconSet, QuasarLanguage, QVueGlobals } from "quasar";
 import { useQuasar } from "quasar";
 import type { ComputedRef, Ref } from "vue";
 import {
@@ -191,86 +191,77 @@ watch(files, (newFiles) => {
 });
 
 const definitions = {
-  upload: {
-    tip: "Загрузка картинки",
-    icon: "cloud_upload",
-    handler: open,
-  },
-  template: {
-    tip: "Выбор шаблона",
-    icon: "dashboard",
-    /** Открытие модального окна */
-    handler() {
-      template.value = true;
-    },
-  },
-  routerLink: {
-    tip: "Вставка внутренней ссылки",
-    icon: "share",
-    /** Открытие модального окна */
-    handler() {
-      routerLink.value = true;
-    },
-  },
-  h1: {
-    htmlTip: `<span class="prose"><h1 class="q-ma-none">${$q.lang.editor.heading1}</h1></span>`,
-  },
-  h2: {
-    htmlTip: `<span class="prose"><h2 class="q-ma-none">${$q.lang.editor.heading2}</h2></span>`,
-  },
-  h3: {
-    htmlTip: `<span class="prose"><h3 class="q-ma-none">${$q.lang.editor.heading3}</h3></span>`,
-  },
-  h4: {
-    htmlTip: `<span class="prose"><h4 class="q-ma-none">${$q.lang.editor.heading4}</h4></span>`,
-  },
-  p: {
-    htmlTip: `<span class="prose"><div>${$q.lang.editor.paragraph}</div></span>`,
-  },
-  code: {
-    htmlTip: `<span class="prose"><code>${$q.lang.editor.code}</code></span>`,
-  },
+  ...Object.fromEntries(
+    [
+      ["upload", "Загрузка картинки", open],
+      [
+        "dashboard",
+        "Выбор шаблона",
+        () => {
+          template.value = true;
+        },
+      ],
+      [
+        "share",
+        "Вставка внутренней ссылки",
+        () => {
+          routerLink.value = true;
+        },
+      ],
+    ].map(([icon, tip, handler]) => [icon, { tip, icon, handler }]),
+  ),
+  ...Object.fromEntries(
+    [
+      ...[...Array(4).keys()].map((key) => [
+        `h${key + 1}`,
+        `heading${key + 1}`,
+      ]),
+      ["p", "paragraph"],
+      ["code", "code"],
+    ].map(([key, value]) => [
+      key,
+      {
+        htmlTip: `<span class="prose"><${key} class="q-ma-none">${$q.lang.editor[value as keyof QuasarLanguage["editor"]]}</${key}></span>`,
+      },
+    ]),
+  ),
 };
+
+const list: string = "no-icons";
+
 const toolbar = [
   ["left", "center", "right", "justify"],
   ["bold", "italic", "strike", "underline", "subscript", "superscript"],
   ["hr", "link"],
   ["print", "fullscreen"],
   [
-    {
-      label: $q.lang.editor.formatting,
-      icon: $q.iconSet.editor.formatting,
-      list: "no-icons",
-      options: ["p", "h1", "h2", "h3", "h4", "code"],
-    },
-    {
-      label: $q.lang.editor.fontSize,
-      icon: $q.iconSet.editor.fontSize,
-      fixedLabel: true,
-      fixedIcon: true,
-      list: "no-icons",
-      options: [
-        "size-1",
-        "size-2",
-        "size-3",
-        "size-4",
-        "size-5",
-        "size-6",
-        "size-7",
+    ...[
+      [
+        "formatting",
+        ["p", ...[...Array(4).keys()].map((key) => `h${key + 1}`), "code"],
+        false,
+        false,
       ],
-    },
-    {
-      label: $q.lang.editor.defaultFont,
-      icon: $q.iconSet.editor.font,
-      fixedIcon: true,
-      list: "no-icons",
-      options: ["default_font", ...Object.keys(fonts)],
-    },
+      [
+        "fontSize",
+        [...Array(7).keys()].map((key) => `size-${key + 1}`),
+        true,
+        true,
+      ],
+      ["defaultFont", ["default_font", ...Object.keys(fonts)], false, true],
+    ].map(([key, options, fixedLabel, fixedIcon]) => ({
+      label: $q.lang.editor[key as keyof QuasarLanguage["editor"]],
+      icon: $q.iconSet.editor[key as keyof QuasarIconSet["editor"]],
+      list,
+      options,
+      fixedLabel,
+      fixedIcon,
+    })),
     "removeFormat",
   ],
   ["quote", "unordered", "ordered", "outdent", "indent"],
   ["undo", "redo"],
-  ["upload", "template", "routerLink"],
+  ["upload", "dashboard", "share"],
 ];
 watchPostEffect(() => {
   if (editorRef.value)

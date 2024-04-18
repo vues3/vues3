@@ -178,8 +178,8 @@ export type TData = FromSchema<
  *
  * @returns {DynamicDefaultFunc} Ф-ция динамического расчета uuid при валидации
  */
-dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => (): any =>
-  crypto.randomUUID();
+dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc =>
+  crypto.randomUUID as any;
 
 /**
  * Модификатор для вотчера, указывает на проверку всех изменений в глубину
