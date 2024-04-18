@@ -190,7 +190,13 @@ watch(files, (newFiles) => {
   if (newFiles) [...newFiles]?.forEach(insertImage);
 });
 
-const definitions = {
+/**
+ * Определения для редактора
+ *
+ * @constant
+ * @type {object}
+ */
+const definitions: object = {
   ...Object.fromEntries(
     [
       ["upload", "Загрузка картинки", open],
@@ -229,7 +235,13 @@ const definitions = {
 
 const list: string = "no-icons";
 
-const toolbar = [
+/**
+ * Конфигурация тулбара
+ *
+ * @constant
+ * @type {string | {}[][]}
+ */
+const toolbar: string | {}[][] = [
   ["left", "center", "right", "justify"],
   ["bold", "italic", "strike", "underline", "subscript", "superscript"],
   ["hr", "link"],
@@ -263,10 +275,12 @@ const toolbar = [
   ["undo", "redo"],
   ["upload", "dashboard", "share"],
 ];
+
 watchPostEffect(() => {
   if (editorRef.value)
     editorRef.value.getContentEl().dataset.theme = props.theme;
 });
+
 /** ShowDialog */
 const showDialog = () => {
   modalRef.value.dataset.theme = props.theme;
