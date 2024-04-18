@@ -55,16 +55,11 @@ const vitePlugins: PluginEntry[] = [
   ["vite-plugin-checker", { vueTsc, eslint }, { server }],
 ];
 
-/** @type {"terser"} */
-const minify: "terser" = "terser";
-
 /** @type {object} */
 const build: object = {
   alias,
   vueRouterMode,
-  // polyfillModulePreload,
   vitePlugins,
-  minify,
 };
 
 /** @type {boolean} */
