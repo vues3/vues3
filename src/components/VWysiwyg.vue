@@ -2,7 +2,7 @@
 div
   q-editor.col.column.full-width(
     v-if="htm !== null",
-    ref="editorRef",
+    ref="editor",
     paragraph-tag="div",
     :model-value="htm",
     :dense="$q.screen.lt.md",
@@ -15,150 +15,97 @@ div
     @paste="capture",
     @drop="capture",
     @update:model-value="$emit('update:modelValue', $event)",
-    @vue:mounted="nextTick(editorRef.focus)"
+    @vue:mounted="nextTick(editor.focus)"
   )
-  q-dialog(
-    v-model="template",
-    full-width,
-    full-height,
-    persistent,
-    @show="showDialog"
-  )
-    q-card.column.w-full
-      q-card-section.row.q-pb-none.items-center
-        .text-h6 Выбор компонента для вставки
-        q-space
-        q-btn(v-close-popup, icon="close", flat, round, dense)
-      q-card-section
-        q-select(
-          v-model="model",
-          filled,
-          :options="templates",
-          label="Компонент",
-          emit-value,
-          map-options
-        )
-      q-card-section.col.column.w-full
-        q-card.col.column.w-full(flat, bordered)
-          q-card-section.col.column.w-full
-            // eslint-disable vue/no-v-html
-            .col.prose.column.q-pa-xl.w-full.max-w-none.overflow-auto(
-              ref="modalRef",
-              class="[&>*]:m-auto [&>*]:!min-h-fit [&>*]:min-w-fit",
-              v-html="model"
-            )
-            // eslint-enable vue/no-v-html
-      q-card-actions.text-primary(align="right")
-        q-btn(v-close-popup, flat, label="Отмена")
-        q-btn(
-          v-close-popup,
-          flat,
-          label="Ok",
-          @click="editorRef.runCmd('insertHTML', html_beautify(model))"
-        )
-  q-dialog(v-model="routerLink", full-width, full-height, persistent)
-    q-card.column
-      q-card-section.row.q-pb-none.items-center
-        .text-h6 Выбор внутренней ссылки для вставки
-        q-space
-        q-btn(v-close-popup, icon="close", flat, round, dense)
-      q-card-section.col.column.full-width
-        q-card.col.column.full-width(flat, bordered)
-          q-card-section.col.column.full-width
-            q-tree.col.scroll.full-width(
-              v-if="$?.content",
-              v-model:selected="inserted",
-              :nodes="$.content",
-              default-expand-all,
-              node-key="id",
-              no-selection-unset,
-              selected-color="primary"
-            )
-      q-card-actions.text-primary(align="right")
-        q-btn(v-close-popup, flat, label="Отмена")
-        q-btn(
-          v-close-popup,
-          flat,
-          label="Ok",
-          @click="editorRef.runCmd('insertHTML', `<router-link to='/${insertedObject?.path}'>${insertedObject?.label}</router-link>`)"
-        )
+  v-template-dialog(v-model="showTemplateDialog", :theme, :editor)
+  v-link-dialog(v-model="showLinkDialog", :editor)
 </template>
 
 <script setup lang="ts">
 import "daisyui/dist/full.css";
 
 import { useFileDialog } from "@vueuse/core";
-import { html_beautify } from "js-beautify";
-import type { QuasarIconSet, QuasarLanguage, QVueGlobals } from "quasar";
+import type {
+  QEditor,
+  QuasarIconSetEditor,
+  QuasarLanguageEditorLabel,
+  QVueGlobals,
+  StringDictionary,
+} from "quasar";
 import { useQuasar } from "quasar";
-import type { ComputedRef, Ref } from "vue";
-import {
-  computed,
-  nextTick,
-  ref,
-  watch,
-  watchEffect,
-  watchPostEffect,
-} from "vue";
+import type { Ref } from "vue";
+import { nextTick, ref, toRefs, watch, watchPostEffect } from "vue";
 
-import templates from "@/assets/templates.json";
+import VLinkDialog from "@/components/VLinkDialog.vue";
+import VTemplateDialog from "@/components/VTemplateDialog.vue";
 import { accept, immediate, putImage } from "@/stores/app";
 import { base } from "@/stores/s3";
-import type { TPage } from "~/monolit/src/stores/data";
-import { $, pages } from "~/monolit/src/stores/data";
+import { $ } from "~/monolit/src/stores/data";
 import { fonts } from "~/uno.config";
 
+/**
+ * @type {IProps}
+ * @property {Promise<string> | string} modelValue - Контент для загрузки в
+ *   редактор
+ * @property {string | undefined} theme - Тема
+ */
 interface IProps {
   modelValue: Promise<string> | string;
-  theme: string | null;
+  theme: string | undefined;
 }
 
+/**
+ * Пропсы
+ *
+ * @type {IProps}
+ */
 const props: IProps = withDefaults(defineProps<IProps>(), {
   modelValue: "",
-  theme: null,
+  theme: undefined,
 });
+
+const { modelValue } = toRefs(props);
 
 defineEmits(["update:modelValue"]);
 
-/** @type {Ref<string | null>} */
+/**
+ * Текст для вставки в редактор
+ *
+ * @type {Ref<string | null>}
+ */
 const htm: Ref<string | null> = ref(null);
 
-watchEffect(async () => {
-  htm.value = await props.modelValue;
-});
-
-/** @type {Ref<boolean>} */
-const template: Ref<boolean> = ref(false);
-
-/** @type {Ref<boolean>} */
-const routerLink: Ref<boolean> = ref(false);
-
-/** @type {QVueGlobals} */
-const $q: QVueGlobals = useQuasar();
-
-/** @type {Ref<string | null | undefined>} */
-const inserted: Ref<string | null | undefined> = ref(null);
-
-/** @type {ComputedRef<TPage | null>} */
-const insertedObject: ComputedRef<TPage | null> = computed(
-  () => pages.value.find(({ id }) => id === inserted?.value) ?? null,
-);
-
-watch(
-  () => $?.content ?? [],
-  ([{ id = null } = {}]) => {
-    inserted.value = id;
-  },
-  { immediate },
-);
-
-/** @type {Ref<any>} */
-const editorRef: Ref<any> = ref(null);
-
-/** @type {Ref<HTMLElement | null>} */
-const modalRef: Ref<any> = ref(null);
+/**
+ * Флаг демонстрации модального окна для вставки шаблона
+ *
+ * @type {Ref<boolean>}
+ */
+const showTemplateDialog: Ref<boolean> = ref(false);
 
 /**
+ * Флаг демонстрации модального окна для вставки внутренних ссылок
+ *
+ * @type {Ref<boolean>}
+ */
+const showLinkDialog: Ref<boolean> = ref(false);
+
+/**
+ * Объект quasar
+ *
+ * @type {QVueGlobals}
+ */
+const $q: QVueGlobals = useQuasar();
+
+/**
+ * Экземпляр редактора
+ *
+ * @type {Ref<QEditor | undefined>}
+ */
+const editor: Ref<QEditor | undefined> = ref();
+
+/**
+ * Функция закачки картинки на сервер
+ *
  * @function insertImage
  * @param {object} file - Файл
  * @see {@link
@@ -168,27 +115,31 @@ const insertImage = async (file: File) => {
   const { filePath, message } = await putImage(file);
 
   if (message) $q.notify({ message });
-  else editorRef.value.runCmd("insertImage", `${base.value}/${filePath}`);
+  else editor.value?.runCmd("insertImage", `${base.value}/${filePath}`);
 };
 
-/** @param {object} evt - Объект события */
+/**
+ * Функция обработки вставки картинок через d'n'd и ctrl+v
+ *
+ * @function capture
+ * @param {ClipboardEvent | DragEvent} evt - Объект события
+ */
 const capture = (evt: ClipboardEvent | DragEvent) => {
   const { files = [] } =
     (evt as DragEvent)?.dataTransfer ??
     (evt as ClipboardEvent)?.clipboardData ??
     {};
+
   if (files.length) {
     evt.preventDefault();
+
     evt.stopPropagation();
-    Array.from(files).forEach(insertImage);
+
+    [...files].forEach(insertImage);
   }
 };
 
 const { files, open } = useFileDialog({ accept });
-
-watch(files, (newFiles) => {
-  if (newFiles) [...newFiles]?.forEach(insertImage);
-});
 
 /**
  * Определения для редактора
@@ -204,14 +155,14 @@ const definitions: object = {
         "dashboard",
         "Выбор шаблона",
         () => {
-          template.value = true;
+          showTemplateDialog.value = true;
         },
       ],
       [
         "share",
         "Вставка внутренней ссылки",
         () => {
-          routerLink.value = true;
+          if ($.content?.length) showLinkDialog.value = true;
         },
       ],
     ].map(([icon, tip, handler]) => [icon, { tip, icon, handler }]),
@@ -227,12 +178,19 @@ const definitions: object = {
     ].map(([key, value]) => [
       key,
       {
-        htmlTip: `<span class="prose"><${key} class="q-ma-none">${$q.lang.editor[value as keyof QuasarLanguage["editor"]]}</${key}></span>`,
+        htmlTip: `<span class="prose"><${key} class="q-ma-none">${$q.lang.editor[value as keyof StringDictionary<QuasarLanguageEditorLabel>]}</${key}></span>`,
       },
     ]),
   ),
-};
+} as const;
 
+/**
+ * Выпадающий список без иконок
+ *
+ * @constant
+ * @default
+ * @type {string}
+ */
 const list: string = "no-icons";
 
 /**
@@ -262,8 +220,13 @@ const toolbar: string | {}[][] = [
       ],
       ["defaultFont", ["default_font", ...Object.keys(fonts)], false, true],
     ].map(([key, options, fixedLabel, fixedIcon]) => ({
-      label: $q.lang.editor[key as keyof QuasarLanguage["editor"]],
-      icon: $q.iconSet.editor[key as keyof QuasarIconSet["editor"]],
+      label:
+        $q.lang.editor[
+          key as keyof StringDictionary<QuasarLanguageEditorLabel>
+        ],
+      icon: $q.iconSet.editor[
+        key as keyof StringDictionary<QuasarIconSetEditor>
+      ],
       list,
       options,
       fixedLabel,
@@ -274,19 +237,33 @@ const toolbar: string | {}[][] = [
   ["quote", "unordered", "ordered", "outdent", "indent"],
   ["undo", "redo"],
   ["upload", "dashboard", "share"],
-];
+] as const;
 
-watchPostEffect(() => {
-  if (editorRef.value)
-    editorRef.value.getContentEl().dataset.theme = props.theme;
+watch(files, (newFiles) => {
+  if (newFiles) [...newFiles].forEach(insertImage);
 });
 
-/** ShowDialog */
-const showDialog = () => {
-  modalRef.value.dataset.theme = props.theme;
-};
-const [{ value }] = templates;
-const model = ref(value);
+watch(
+  modelValue,
+  async (value) => {
+    htm.value = await value;
+  },
+  { immediate },
+);
+
+watchPostEffect(() => {
+  /**
+   * Элемент, в котором содержится контент редактора
+   *
+   * @constant
+   * @type {HTMLElement | undefined}
+   */
+  const contentEl: HTMLElement | undefined = editor.value?.getContentEl() as
+    | HTMLElement
+    | undefined;
+
+  if (contentEl) contentEl.dataset.theme = props.theme;
+});
 </script>
 <style lang="sass" scoped>
 :deep(router-link)

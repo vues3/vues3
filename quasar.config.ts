@@ -102,12 +102,6 @@ const electron: QuasarElectronConfiguration = {
   packager,
 };
 
-/** @type {string[]} */
-const contentScripts: string[] = ["my-content-script"];
-
-/** @type {object} */
-const bex: object = { contentScripts };
-
 export default configure(() => ({
   boot,
   css,
@@ -118,5 +112,4 @@ export default configure(() => ({
   cordova,
   capacitor,
   electron,
-  bex,
 }));
