@@ -59,6 +59,8 @@ export const configurable: boolean = true;
 /**
  * Задержка в мс
  *
+ * @constant
+ * @default
  * @type {number}
  */
 export const debounce: number = 1000;
