@@ -96,6 +96,8 @@ q-page.column.full-height
       )
 </template>
 <script setup lang="ts">
+import themes from "assets/themes.json";
+import VSourceCode from "components/VSourceCode.vue";
 import type {
   QDialogSelectionPrompt,
   QOptionGroupProps,
@@ -103,14 +105,11 @@ import type {
   SelectionPromptType,
 } from "quasar";
 import { useQuasar } from "quasar";
-
-import themes from "@/assets/themes.json";
-import VSourceCode from "@/components/VSourceCode.vue";
-import Navbar from "@/schemas/navbar";
-import { config, rightDrawer } from "@/stores/app";
-import type { TNavbar } from "@/stores/data";
-import { $, validateNavbar } from "@/stores/data";
-import { cancel, persistent } from "@/stores/defaults";
+import Navbar from "src/schemas/navbar";
+import { config, rightDrawer } from "stores/app";
+import type { TNavbar } from "stores/data";
+import { $, validateNavbar } from "stores/data";
+import { cancel, persistent } from "stores/defaults";
 
 /**
  * Объект quasar

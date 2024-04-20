@@ -19,7 +19,7 @@ import { css, html, js } from "js-beautify";
 import type { Ref } from "vue";
 import { nextTick, ref, toRefs, watch } from "vue";
 
-import { immediate } from "@/stores/defaults";
+import { immediate } from "stores/defaults";
 
 /**
  * @type {IProps}

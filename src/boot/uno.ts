@@ -3,8 +3,7 @@
 // import "virtual:uno.css";
 
 import initUnocssRuntime from "@unocss/runtime";
-
-import unocssConfig from "~/uno.config";
+import unocssConfig from "app/uno.config";
 
 /** InitUnocssRuntime */
 export default () => {

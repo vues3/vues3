@@ -4,6 +4,8 @@ import * as vueuseComponents from "@vueuse/components";
 import * as vueuseCore from "@vueuse/core";
 import { useStyleTag } from "@vueuse/core";
 import * as vueuseMath from "@vueuse/math";
+import type { TPage } from "app/src/stores/data";
+import { cache } from "app/src/stores/defaults";
 import type { AsyncComponentLoader } from "vue";
 import * as vue from "vue";
 import { defineAsyncComponent } from "vue";
@@ -11,9 +13,7 @@ import * as vueRouter from "vue-router";
 import type { ContentData, ModuleExport, Options } from "vue3-sfc-loader";
 import { loadModule } from "vue3-sfc-loader";
 
-import selectors from "@/assets/glightbox.json";
-import type { TPage } from "~/src/stores/data";
-import { cache } from "~/src/stores/defaults";
+import selectors from "../assets/glightbox.json";
 
 /**
  * Модули, передаваемые шаблону

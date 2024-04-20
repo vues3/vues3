@@ -2,15 +2,11 @@ import type { FuncKeywordDefinition, ValidateFunction } from "ajv";
 import Ajv from "ajv";
 import type { DynamicDefaultFunc } from "ajv-keywords/dist/definitions/dynamicDefaults";
 import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
-import { FromSchema } from "json-schema-to-ts";
-import type { ComputedRef } from "vue";
-import { computed, reactive, watch } from "vue";
-
-import Data, { plainData } from "~/src/schemas/data";
-import Navbar from "~/src/schemas/navbar";
-import Page, { plainPage } from "~/src/schemas/page";
-import Resource from "~/src/schemas/resource";
-import Settings from "~/src/schemas/settings";
+import Data, { plainData } from "app/src/schemas/data";
+import Navbar from "app/src/schemas/navbar";
+import Page, { plainPage } from "app/src/schemas/page";
+import Resource from "app/src/schemas/resource";
+import Settings from "app/src/schemas/settings";
 import {
   coerceTypes,
   configurable,
@@ -18,7 +14,10 @@ import {
   esm,
   removeAdditional,
   useDefaults,
-} from "~/src/stores/defaults";
+} from "app/src/stores/defaults";
+import { FromSchema } from "json-schema-to-ts";
+import type { ComputedRef } from "vue";
+import { computed, reactive, watch } from "vue";
 
 /**
  * @type {TPage}

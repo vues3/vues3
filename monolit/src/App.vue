@@ -81,15 +81,15 @@ v-head
 </template>
 <script setup lang="ts">
 import { useTimeout } from "@vueuse/core";
+import type { TPage, TResource } from "app/src/stores/data";
+import { $, pages } from "app/src/stores/data";
+import { controls } from "app/src/stores/defaults";
 import type { ComputedRef, Ref } from "vue";
 import { computed, ref } from "vue";
 import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
 
-import { favicon, getAsyncComponent } from "@/stores/monolit";
-import type { TPage, TResource } from "~/src/stores/data";
-import { $, pages } from "~/src/stores/data";
-import { controls } from "~/src/stores/defaults";
+import { favicon, getAsyncComponent } from "./stores/monolit";
 
 const { ready, start } = useTimeout(1000, { controls });
 

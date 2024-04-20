@@ -13,16 +13,16 @@
     )
 </template>
 <script setup lang="ts">
+import type { TPage } from "app/src/stores/data";
+import { pages } from "app/src/stores/data";
+import { loop, zoomable } from "app/src/stores/defaults";
 import GLightbox from "glightbox";
 import type { ComputedRef } from "vue";
 import { computed } from "vue";
 import type { RouteLocationNormalizedLoaded } from "vue-router";
 import { useRoute } from "vue-router";
 
-import { getAsyncComponent, selector } from "@/stores/monolit";
-import type { TPage } from "~/src/stores/data";
-import { pages } from "~/src/stores/data";
-import { loop, zoomable } from "~/src/stores/defaults";
+import { getAsyncComponent, selector } from "../stores/monolit";
 
 /**
  * Текущий роут сайта

@@ -58,8 +58,7 @@ const plugins: Array<any> = [
  * @type {object}
  */
 const alias: object = {
-  "@": fileURLToPath(new URL("./src", import.meta.url)),
-  "~": fileURLToPath(new URL("..", import.meta.url)),
+  app: fileURLToPath(new URL("..", import.meta.url)),
 };
 
 /**

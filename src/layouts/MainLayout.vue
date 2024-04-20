@@ -44,12 +44,11 @@ q-layout(view="hHh Lpr lff")
 
 <script setup lang="ts">
 import { get } from "@vueuse/core";
+import privateItems from "assets/private.json";
+import publicItems from "assets/public.json";
+import { rightDrawer } from "stores/app";
+import { S3 } from "stores/s3";
 import { computed, ref } from "vue";
-
-import privateItems from "@/assets/private.json";
-import publicItems from "@/assets/public.json";
-import { rightDrawer } from "@/stores/app";
-import { S3 } from "@/stores/s3";
 
 const leftDrawer = ref(false);
 const miniState = ref(true);

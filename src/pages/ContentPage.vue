@@ -216,20 +216,17 @@ q-page.column.full-height
 // @ts-ignore
 import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
 import { useFileDialog } from "@vueuse/core";
+import changefreq from "assets/changefreq.json";
+import themes from "assets/themes.json";
+import types from "assets/types.json";
+import VInteractiveTree from "components/VInteractiveTree.vue";
+import VSourceCode from "components/VSourceCode.vue";
+import VWysiwyg from "components/VWysiwyg.vue";
 import type { QVueGlobals } from "quasar";
 import { useQuasar } from "quasar";
-import type { ComputedRef, Ref, WritableComputedRef } from "vue";
-import { computed, ref, watch } from "vue";
-
-import changefreq from "@/assets/changefreq.json";
-import themes from "@/assets/themes.json";
-import types from "@/assets/types.json";
-import VInteractiveTree from "@/components/VInteractiveTree.vue";
-import VSourceCode from "@/components/VSourceCode.vue";
-import VWysiwyg from "@/components/VWysiwyg.vue";
-import { config, pagination, putImage, rightDrawer, save } from "@/stores/app";
-import type { TPage } from "@/stores/data";
-import { $, pages } from "@/stores/data";
+import { config, pagination, putImage, rightDrawer, save } from "stores/app";
+import type { TPage } from "stores/data";
+import { $, pages } from "stores/data";
 import {
   accept,
   capture,
@@ -238,8 +235,10 @@ import {
   multiple,
   reset,
   show,
-} from "@/stores/defaults";
-import { base } from "@/stores/s3";
+} from "stores/defaults";
+import { base } from "stores/s3";
+import type { ComputedRef, Ref, WritableComputedRef } from "vue";
+import { computed, ref, watch } from "vue";
 
 /**
  * Объект quasar

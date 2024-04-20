@@ -10,17 +10,13 @@ import {
 import { logicAnd } from "@vueuse/math";
 import type { AnySchema, ValidateFunction } from "ajv";
 import Ajv from "ajv";
+import mimes from "assets/mimes.json";
 import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import { FromSchema } from "json-schema-to-ts";
 import mime from "mime";
-import { toXML } from "to-xml";
-import type { Ref, WatchOptions } from "vue";
-import { computed, ref, watch } from "vue";
-
-import mimes from "@/assets/mimes.json";
-import Config from "@/schemas/config";
-import type { TData, TPage } from "@/stores/data";
-import { $, code, pages, validate } from "@/stores/data";
+import Config from "src/schemas/config";
+import type { TData, TPage } from "stores/data";
+import { $, code, pages, validate } from "stores/data";
 import {
   coerceTypes,
   configurable,
@@ -31,8 +27,7 @@ import {
   page,
   removeAdditional,
   useDefaults,
-} from "@/stores/defaults";
-
+} from "stores/defaults";
 import {
   base,
   bucket,
@@ -41,7 +36,10 @@ import {
   putFile,
   putObject,
   S3,
-} from "./s3";
+} from "stores/s3";
+import { toXML } from "to-xml";
+import type { Ref, WatchOptions } from "vue";
+import { computed, ref, watch } from "vue";
 
 export type TConfig = FromSchema<typeof Config>;
 

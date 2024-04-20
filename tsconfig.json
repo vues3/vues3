@@ -3,10 +3,6 @@
   "compilerOptions": {
     "lib": ["esnext", "dom", "dom.iterable"],
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*", "monolit/src/*"],
-      "~/*": ["*"]
-    },
     "types": ["vite/client", "node"]
   },
   "exclude": ["dist", ".quasar", "node_modules"]

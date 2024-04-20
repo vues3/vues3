@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import type { QuasarElectronConfiguration } from "@quasar/app-vite/types/configuration/electron-conf";
 import type {
   QuasarFonts,
@@ -22,21 +20,11 @@ const extras: (QuasarIconSets | QuasarFonts)[] = [
   "material-icons",
 ];
 
-/** @type {Record<string, string>} */
-const alias: Record<string, string> = {
-  "@": path.join(__dirname, "./src"),
-  "~": __dirname,
-};
-
 /** @type {"history"} */
 const vueRouterMode: "history" = "history";
 
-// /** @type {boolean} */
-// const polyfillModulePreload: boolean = true;
-
 /** @type {object} */
 const build: object = {
-  alias,
   vueRouterMode,
 };
 

@@ -10,6 +10,15 @@ import { createHead } from "@unhead/vue";
 import { Head } from "@unhead/vue/components";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
+import type { TData, TSettings } from "app/src/stores/data";
+import { $, pages, validate } from "app/src/stores/data";
+import {
+  autoPrefix,
+  bypassDefined,
+  cache,
+  once,
+} from "app/src/stores/defaults";
+import defaults from "app/uno.config";
 import type { App } from "vue";
 import { createApp, watch } from "vue";
 import VueGtag from "vue-gtag";
@@ -24,11 +33,8 @@ import { initYandexMetrika } from "yandex-metrika-vue3";
 import type { Config } from "yandex-metrika-vue3/src/types";
 
 import vueApp from "@/App.vue";
-import { fix } from "@/stores/monolit";
-import type { TData, TSettings } from "~/src/stores/data";
-import { $, pages, validate } from "~/src/stores/data";
-import { autoPrefix, bypassDefined, cache, once } from "~/src/stores/defaults";
-import defaults from "~/uno.config";
+
+import { fix } from "./stores/monolit";
 
 window.console.info(
   "👨‍🚀",

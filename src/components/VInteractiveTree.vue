@@ -37,11 +37,10 @@ q-btn-group.q-mx-xs(spread, flat)
 <script setup lang="ts">
 import type { QTree, QVueGlobals } from "quasar";
 import { useQuasar } from "quasar";
+import type { TPage } from "stores/data";
+import { cancel, immediate, persistent } from "stores/defaults";
 import type { ComputedRef, Ref } from "vue";
 import { computed, ref, watch } from "vue";
-
-import type { TPage } from "@/stores/data";
-import { cancel, immediate, persistent } from "@/stores/defaults";
 
 /**
  * @type {IProps}

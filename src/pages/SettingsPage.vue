@@ -52,8 +52,8 @@ q-page.column.full-height
             q-item-label В виде лендинга
 </template>
 <script setup lang="ts">
-import { rightDrawer } from "@/stores/app";
-import { $ } from "@/stores/data";
+import { rightDrawer } from "stores/app";
+import { $ } from "stores/data";
 
 rightDrawer.value = null;
 </script>

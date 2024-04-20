@@ -116,12 +116,11 @@ import { FetchHttpHandler } from "@smithy/fetch-http-handler";
 import type { RemovableRef } from "@vueuse/core";
 import { get, set, useStorage } from "@vueuse/core";
 import { useQuasar } from "quasar";
+import { accessKeyId, rightDrawer } from "stores/app";
+import { bucket, S3, wendpoint } from "stores/s3";
 import type { Ref } from "vue";
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
-
-import { accessKeyId, rightDrawer } from "@/stores/app";
-import { bucket, S3, wendpoint } from "@/stores/s3";
 
 interface IRegion {
   label: string;

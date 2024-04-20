@@ -22,15 +22,8 @@
 <script setup lang="ts">
 import { vIntersectionObserver } from "@vueuse/components";
 import { useParentElement } from "@vueuse/core";
-import GLightbox from "glightbox";
-import type { ComputedRef, Ref } from "vue";
-import { computed, ref, watch } from "vue";
-import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
-import { useRoute, useRouter } from "vue-router";
-
-import { getAsyncComponent, selector } from "@/stores/monolit";
-import type { TPage } from "~/src/stores/data";
-import { pages } from "~/src/stores/data";
+import type { TPage } from "app/src/stores/data";
+import { pages } from "app/src/stores/data";
 import {
   behavior,
   immediate,
@@ -38,7 +31,14 @@ import {
   rootMargin,
   threshold,
   zoomable,
-} from "~/src/stores/defaults";
+} from "app/src/stores/defaults";
+import GLightbox from "glightbox";
+import type { ComputedRef, Ref } from "vue";
+import { computed, ref, watch } from "vue";
+import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+
+import { getAsyncComponent, selector } from "../stores/monolit";
 
 /**
  * Текущий роут сайта

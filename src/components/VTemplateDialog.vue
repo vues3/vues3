@@ -34,12 +34,11 @@ q-dialog(v-model="model", full-width, full-height, persistent)
       )
 </template>
 <script setup lang="ts">
+import options from "assets/templates.json";
 import { html_beautify } from "js-beautify";
 import type { QEditor } from "quasar";
 import type { ModelRef, Ref } from "vue";
 import { ref, watch, watchPostEffect } from "vue";
-
-import options from "@/assets/templates.json";
 
 /**
  * @type {IProps}

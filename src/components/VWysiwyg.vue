@@ -25,6 +25,9 @@ div
 import "daisyui/dist/full.css";
 
 import { useFileDialog } from "@vueuse/core";
+import { fonts } from "app/uno.config";
+import VLinkDialog from "components/VLinkDialog.vue";
+import VTemplateDialog from "components/VTemplateDialog.vue";
 import type {
   QEditor,
   QuasarIconSetEditor,
@@ -33,16 +36,12 @@ import type {
   StringDictionary,
 } from "quasar";
 import { useQuasar } from "quasar";
+import { putImage } from "stores/app";
+import { $ } from "stores/data";
+import { accept, immediate } from "stores/defaults";
+import { base } from "stores/s3";
 import type { Ref } from "vue";
 import { nextTick, ref, toRefs, watch, watchPostEffect } from "vue";
-
-import VLinkDialog from "@/components/VLinkDialog.vue";
-import VTemplateDialog from "@/components/VTemplateDialog.vue";
-import { putImage } from "@/stores/app";
-import { $ } from "@/stores/data";
-import { accept, immediate } from "@/stores/defaults";
-import { base } from "@/stores/s3";
-import { fonts } from "~/uno.config";
 
 /**
  * @type {IProps}
