@@ -17,7 +17,7 @@ import "ace-builds/esm-resolver";
 import { ref, watch, nextTick, toRefs } from "vue";
 import type { Ref } from "vue";
 import { js, css, html } from "js-beautify";
-import { immediate } from "@/stores/app";
+import { immediate } from "@/stores/defaults";
 
 /**
  * @type {IProps}

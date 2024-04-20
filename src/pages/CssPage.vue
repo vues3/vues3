@@ -30,7 +30,7 @@ q-page.column.full-height
 import VInteractiveTree from "@/components/VInteractiveTree.vue";
 import VSourceCode from "@/components/VSourceCode.vue";
 import { config, rightDrawer } from "@/stores/app";
-import { $ } from "~/monolit/src/stores/data";
+import { $ } from "@/stores/data";
 
 rightDrawer.value = null;
 </script>

@@ -24,9 +24,10 @@ import { initYandexMetrika } from "yandex-metrika-vue3";
 import type { Config } from "yandex-metrika-vue3/src/types";
 
 import vueApp from "@/App.vue";
-import type { TData, TSettings } from "@/stores/data";
-import { $, pages, validate } from "@/stores/data";
-import { autoPrefix, bypassDefined, cache, fix, once } from "@/stores/monolit";
+import { fix } from "@/stores/monolit";
+import type { TData, TSettings } from "~/src/stores/data";
+import { $, pages, validate } from "~/src/stores/data";
+import { autoPrefix, bypassDefined, cache, once } from "~/src/stores/defaults";
 import defaults from "~/uno.config";
 
 window.console.info(

@@ -34,8 +34,8 @@ import type { QEditor } from "quasar";
 import type { ComputedRef, ModelRef, Ref } from "vue";
 import { computed, ref, watch } from "vue";
 
-import type { TPage } from "~/monolit/src/stores/data";
-import { $, pages } from "~/monolit/src/stores/data";
+import type { TPage } from "@/stores/data";
+import { $, pages } from "@/stores/data";
 
 /**
  * @type {IProps}

@@ -227,23 +227,19 @@ import types from "@/assets/types.json";
 import VInteractiveTree from "@/components/VInteractiveTree.vue";
 import VSourceCode from "@/components/VSourceCode.vue";
 import VWysiwyg from "@/components/VWysiwyg.vue";
+import { config, pagination, putImage, rightDrawer, save } from "@/stores/app";
+import type { TPage } from "@/stores/data";
+import { $, pages } from "@/stores/data";
 import {
   accept,
   capture,
-  config,
   filter,
   immediate,
   multiple,
-  pagination,
-  putImage,
   reset,
-  rightDrawer,
-  save,
   show,
-} from "@/stores/app";
+} from "@/stores/defaults";
 import { base } from "@/stores/s3";
-import type { TPage } from "~/monolit/src/stores/data";
-import { $, pages } from "~/monolit/src/stores/data";
 
 /**
  * Объект quasar

@@ -39,8 +39,8 @@ import { useQuasar } from "quasar";
 import type { ComputedRef } from "vue";
 import { computed, ref, watch } from "vue";
 
-import { cancel, immediate, persistent } from "@/stores/app";
-import type { TPage } from "~/monolit/src/stores/data";
+import type { TPage } from "@/stores/data";
+import { cancel, immediate, persistent } from "@/stores/defaults";
 
 /**
  * @type {IProps}

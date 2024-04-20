@@ -107,9 +107,10 @@ import { useQuasar } from "quasar";
 import themes from "@/assets/themes.json";
 import VSourceCode from "@/components/VSourceCode.vue";
 import Navbar from "@/schemas/navbar";
-import { cancel, config, persistent, rightDrawer } from "@/stores/app";
-import type { TNavbar } from "~/monolit/src/stores/data";
-import { $, validateNavbar } from "~/monolit/src/stores/data";
+import { config, rightDrawer } from "@/stores/app";
+import type { TNavbar } from "@/stores/data";
+import { $, validateNavbar } from "@/stores/data";
+import { cancel, persistent } from "@/stores/defaults";
 
 /**
  * Объект quasar

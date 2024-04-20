@@ -12,16 +12,8 @@ import type { ContentData, ModuleExport, Options } from "vue3-sfc-loader";
 import { loadModule } from "vue3-sfc-loader";
 
 import selectors from "@/assets/glightbox.json";
-import type { TPage } from "@/stores/data";
-
-/**
- * Настройка кеширования
- *
- * @constant
- * @default
- * @type {RequestCache}
- */
-export const cache: RequestCache = "no-cache";
+import type { TPage } from "~/src/stores/data";
+import { cache } from "~/src/stores/defaults";
 
 /**
  * Модули, передаваемые шаблону
@@ -86,7 +78,6 @@ export const getAsyncComponent = ({
      * Константа со скриптами
      *
      * @constant
-     * @default
      * @type {string}
      */
     const cntScript: string =
@@ -96,7 +87,6 @@ export const getAsyncComponent = ({
      * Константа с шаблоном
      *
      * @constant
-     * @default
      * @type {string}
      */
     const cntTemplate: string = template && `<template>${template}</template>`;
@@ -105,7 +95,6 @@ export const getAsyncComponent = ({
      * Константа со стилями
      *
      * @constant
-     * @default
      * @type {string}
      */
     const cntStyle: string =
@@ -153,7 +142,6 @@ const getFile = async (
      * Ответ сервера
      *
      * @constant
-     * @default
      * @type {Response}
      */
     const response: Response = await fetch(`/assets/${that.id}.${ext}`, {
@@ -164,7 +152,6 @@ const getFile = async (
      * Текстовые данные, полученные с сервера
      *
      * @constant
-     * @default
      * @type {string}
      */
     const value: string = response.ok ? await response.text() : "";
@@ -247,27 +234,6 @@ export const fix = (siblings: TPage[]) => {
 };
 
 /**
- * Loop slides on end
- *
- * @constant
- * @default
- * @type {boolean}
- * @see {@link https://github.com/biati-digital/glightbox} см. документацию
- */
-export const loop: boolean = true;
-
-/**
- * Enable or disable zoomable images you can also use data-zoomable="false" on
- * individual nodes.
- *
- * @constant
- * @default
- * @type {boolean}
- * @see {@link https://github.com/biati-digital/glightbox} см. документацию
- */
-export const zoomable: boolean = false;
-
-/**
  * Name of the selector for example '.glightbox' or 'data-glightbox' or
  * '*[data-glightbox]'
  *
@@ -279,83 +245,10 @@ export const zoomable: boolean = false;
 export const selector: string = selectors.map((el) => `a[href${el}]`).join();
 
 /**
- * Сдвиг области видимости
- *
- * @constant
- * @default
- * @type {string}
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin} см. документацию
- */
-export const rootMargin: string = "-1% 0px -99%";
-
-/**
- * Процент площади объекта, который должен попасть в область видимости
- *
- * @constant
- * @default
- * @type {number}
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds} см. документацию
- */
-export const threshold: number = 0;
-
-/**
- * Немедленное срабатывание смотрителя
- *
- * @type {boolean}
- */
-export const immediate: boolean = true;
-
-/**
- * Быстрый скролл
- *
- * @type {ScrollBehavior}
- */
-export const behavior: ScrollBehavior = "instant";
-
-/**
- * Expose more controls
- *
- * @constant
- * @default
- * @type {true}
- */
-export const controls: true = true;
-
-/**
  * Уникальный ключ для favicon. Иначе иконка динамически не обновляется в chrome
  * при смене страницы
  *
  * @constant
- * @default
  * @type {string}
  */
 export const favicon: string = crypto.randomUUID();
-
-/**
- * Enable css property auto prefixer
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const autoPrefix: boolean = true;
-
-/**
- * When enabled, UnoCSS will look for the existing selectors defined in the
- * stylesheet and bypass them. This is useful when using the runtime alongwith
- * the build-time UnoCSS.
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const bypassDefined: boolean = true;
-
-/**
- * Запуск вотчера единожды
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const once: boolean = true;

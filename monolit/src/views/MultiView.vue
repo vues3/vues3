@@ -28,18 +28,17 @@ import { computed, ref, watch } from "vue";
 import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
 
-import type { TPage } from "@/stores/data";
-import { pages } from "@/stores/data";
+import { getAsyncComponent, selector } from "@/stores/monolit";
+import type { TPage } from "~/src/stores/data";
+import { pages } from "~/src/stores/data";
 import {
   behavior,
-  getAsyncComponent,
   immediate,
   loop,
   rootMargin,
-  selector,
   threshold,
   zoomable,
-} from "@/stores/monolit";
+} from "~/src/stores/defaults";
 
 /**
  * Текущий роут сайта

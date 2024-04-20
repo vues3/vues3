@@ -53,7 +53,7 @@ q-page.column.full-height
 </template>
 <script setup lang="ts">
 import { rightDrawer } from "@/stores/app";
-import { $ } from "~/monolit/src/stores/data";
+import { $ } from "@/stores/data";
 
 rightDrawer.value = null;
 </script>

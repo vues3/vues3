@@ -38,9 +38,10 @@ import { nextTick, ref, toRefs, watch, watchPostEffect } from "vue";
 
 import VLinkDialog from "@/components/VLinkDialog.vue";
 import VTemplateDialog from "@/components/VTemplateDialog.vue";
-import { accept, immediate, putImage } from "@/stores/app";
+import { putImage } from "@/stores/app";
+import { $ } from "@/stores/data";
+import { accept, immediate } from "@/stores/defaults";
 import { base } from "@/stores/s3";
-import { $ } from "~/monolit/src/stores/data";
 import { fonts } from "~/uno.config";
 
 /**

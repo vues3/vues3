@@ -19,18 +19,19 @@ import { computed, ref, watch } from "vue";
 
 import mimes from "@/assets/mimes.json";
 import Config from "@/schemas/config";
-import type { TData, TPage } from "~/monolit/src/stores/data";
+import type { TData, TPage } from "@/stores/data";
+import { $, code, pages, validate } from "@/stores/data";
 import {
-  $,
-  code,
   coerceTypes,
   configurable,
+  debounce,
   deep,
-  pages,
+  immediate,
+  itemsPerPage,
+  page,
   removeAdditional,
   useDefaults,
-  validate,
-} from "~/monolit/src/stores/data";
+} from "@/stores/defaults";
 
 import {
   base,
@@ -73,17 +74,6 @@ export const validateConfig: ValidateFunction = ajv.getSchema(
 ) as ValidateFunction;
 
 const rootFileName = "index.html";
-
-const debounce = 1000;
-
-/**
- * Моментальный запуск вотчера
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const immediate: boolean = true;
 
 /**
  * @param {TPage} that - Текущий объект страницы
@@ -374,61 +364,6 @@ watch(
 );
 
 /**
- * Props for a 'CANCEL' button
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const cancel: boolean = true;
-
-/**
- * User cannot dismiss Dialog if clicking outside of it or hitting ESC key;
- * Also, an app route change won't dismiss it
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const persistent: boolean = true;
-
-/**
- * Выбор иконок по умолчанию скрыт
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const show: boolean = false;
-
-/**
- * Пустой фильтр иконок по умолчанию
- *
- * @constant
- * @default
- * @type {string}
- */
-export const filter: string = "";
-
-/**
- * 75 иконок на страницу
- *
- * @constant
- * @default
- * @type {number}
- */
-const itemsPerPage: number = 75;
-
-/**
- * Начальная страница иконок
- *
- * @constant
- * @default
- * @type {number}
- */
-const page: number = 0;
-
-/**
  * Настройки страниц при выборе иконок
  *
  * @constant
@@ -436,42 +371,6 @@ const page: number = 0;
  * @type {object}
  */
 export const pagination: object = { itemsPerPage, page };
-
-/**
- * Запрет мультивыбора файлов
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const multiple: boolean = false;
-
-/**
- * Типы фалов для выбора
- *
- * @constant
- * @default
- * @type {string}
- */
-export const accept: string = "image/*";
-
-/**
- * Заголовок окна выбора файла
- *
- * @constant
- * @default
- * @type {string}
- */
-export const capture: string = "Выберите картинку";
-
-/**
- * Reset when open file dialog
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const reset: boolean = true;
 
 /**
  * @function putImage

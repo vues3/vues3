@@ -19,9 +19,10 @@ import { computed } from "vue";
 import type { RouteLocationNormalizedLoaded } from "vue-router";
 import { useRoute } from "vue-router";
 
-import type { TPage } from "@/stores/data";
-import { pages } from "@/stores/data";
-import { getAsyncComponent, loop, selector, zoomable } from "@/stores/monolit";
+import { getAsyncComponent, selector } from "@/stores/monolit";
+import type { TPage } from "~/src/stores/data";
+import { pages } from "~/src/stores/data";
+import { loop, zoomable } from "~/src/stores/defaults";
 
 /**
  * Текущий роут сайта

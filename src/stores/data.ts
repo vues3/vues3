@@ -11,6 +11,14 @@ import Navbar from "~/src/schemas/navbar";
 import Page, { plainPage } from "~/src/schemas/page";
 import Resource from "~/src/schemas/resource";
 import Settings from "~/src/schemas/settings";
+import {
+  coerceTypes,
+  configurable,
+  deep,
+  esm,
+  removeAdditional,
+  useDefaults,
+} from "~/src/stores/defaults";
 
 /**
  * @type {TPage}
@@ -182,15 +190,6 @@ dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc =>
   crypto.randomUUID as any;
 
 /**
- * Модификатор для вотчера, указывает на проверку всех изменений в глубину
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const deep: boolean = true;
-
-/**
  * An array or object of schemas that will be added to the instance
  *
  * @constant
@@ -198,45 +197,6 @@ export const deep: boolean = true;
  * @type {object[]}
  */
 const schemas: object[] = [Resource, Page, Settings, Navbar, Data];
-
-/**
- * Replace missing or undefined properties and items with the values from
- * corresponding default keywords.
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const useDefaults: boolean = true;
-
-/**
- * Change data type of data to match type keyword
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const coerceTypes: boolean = true;
-
-/**
- * Remove additional properties
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const removeAdditional: boolean = true;
-
-/**
- * How functions should be exported - by default CJS is used, so the validate
- * function(s) file can be `required`. Set this value to true to export the
- * validate function(s) as ES Modules, enabling bundlers to do their job.
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const esm: boolean = true;
 
 /**
  * Code generation options
@@ -288,16 +248,6 @@ export const validate: ValidateFunction = ajv.getSchema(
 export const validateNavbar: ValidateFunction = ajv.getSchema(
   "urn:jsonschema:navbar",
 ) as ValidateFunction;
-
-/**
- * Равен true только в том случае, если тип этого дескриптора свойства может
- * быть изменён и если свойство может быть удалено из содержащего его объекта.
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const configurable: boolean = true;
 
 /**
  * Рекурсивная функция преобразования древовидного объекта в массив страниц

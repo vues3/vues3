@@ -86,9 +86,10 @@ import { computed, ref } from "vue";
 import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
 
-import type { TPage, TResource } from "@/stores/data";
-import { $, pages } from "@/stores/data";
-import { controls, favicon, getAsyncComponent } from "@/stores/monolit";
+import { favicon, getAsyncComponent } from "@/stores/monolit";
+import type { TPage, TResource } from "~/src/stores/data";
+import { $, pages } from "~/src/stores/data";
+import { controls } from "~/src/stores/defaults";
 
 const { ready, start } = useTimeout(1000, { controls });
 
