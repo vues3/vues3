@@ -7,7 +7,6 @@ const content = {
   type: "array",
   default: [{}],
   items: { $ref: "urn:jsonschema:page" },
-  minItems: 1,
 } as const;
 const properties = {
   settings: {
@@ -23,14 +22,12 @@ const properties = {
     type: "array",
     default: [{}],
     items: { $ref: "urn:jsonschema:resource" },
-    minItems: 1,
   },
   js: {
     nullable,
     type: "array",
     default: [{}],
     items: { $ref: "urn:jsonschema:resource" },
-    minItems: 1,
   },
   navbar: {
     type: "object",

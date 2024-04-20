@@ -185,8 +185,8 @@ export type TData = FromSchema<
  *
  * @returns {DynamicDefaultFunc} Ф-ция динамического расчета uuid при валидации
  */
-dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc =>
-  crypto.randomUUID as any;
+dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => () =>
+  crypto.randomUUID() as any;
 
 /**
  * An array or object of schemas that will be added to the instance
@@ -497,10 +497,6 @@ export const pages: ComputedRef<TPage[]> = computed(() =>
   }),
 );
 
-watch($, (value) => {
-  if (Object.keys(value).length) validate?.(value);
-});
-
 watch(
   () => $.content ?? [],
   (value) => {
@@ -524,3 +520,20 @@ watch(
   },
   { deep },
 );
+
+/**
+ * Значение для выключаемых свойств
+ *
+ * @type {undefined}
+ */
+const value: undefined = undefined;
+
+watch($, (newValue) => {
+  if (Object.keys(newValue).length) {
+    ["content", "css", "js"].forEach((key) => {
+      if (!(newValue[key as keyof TData] as TPage[] | TResource[])?.length)
+        Reflect.defineProperty(newValue, key, { value });
+    });
+    validate?.(newValue);
+  }
+});

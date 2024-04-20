@@ -6,6 +6,7 @@ const properties = {
   id: { type: "string" },
   url: { type: "string", default: "" },
   enabled: { type: "boolean", default: true },
+  contenteditable: { type: "boolean", default: false },
 } as const;
 const type = "object";
 

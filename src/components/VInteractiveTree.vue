@@ -40,7 +40,7 @@ import { useQuasar } from "quasar";
 import type { TPage } from "stores/data";
 import { cancel, immediate, persistent } from "stores/defaults";
 import type { ComputedRef, Ref } from "vue";
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 
 /**
  * @type {IProps}
@@ -97,11 +97,11 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
 /**
  * Объект текущей страницы
  *
- * @type {ComputedRef<TPage | undefined>}
+ * @type {ComputedRef<TPage | null | undefined>}
  */
-const the: ComputedRef<TPage | undefined> = computed(() =>
+const the: ComputedRef<TPage | null | undefined> = computed(() =>
   props.list.length
-    ? props.list.find(({ id }) => id === props.selected)
+    ? props.list.find(({ id }) => id === props.selected) ?? null
     : undefined,
 );
 
@@ -112,12 +112,22 @@ const the: ComputedRef<TPage | undefined> = computed(() =>
  */
 const emits: IEmits = defineEmits<IEmits>();
 
-/** @param value */
+/**
+ * Обновление массива открытых нод
+ *
+ * @function updateExpanded
+ * @param {string[]} value - Массив открытых нод
+ */
 const updateExpanded = (value: string[]) => {
   emits("update:expanded", value);
 };
 
-/** @param value */
+/**
+ * Обновление идентификатора выбранной ноды
+ *
+ * @function updateExpanded
+ * @param {string | undefined} value - Идентификатор выбранной ноды
+ */
 const updateSelected = (value: string | undefined) => {
   emits("update:selected", value);
 };
@@ -136,23 +146,28 @@ const $q: QVueGlobals = useQuasar();
  */
 const tree: Ref<QTree | undefined> = ref();
 
-const value = false;
+/**
+ * Значение для свойства contenteditable
+ *
+ * @type {boolean}
+ */
+const value: boolean = false;
 
-watch(
-  the,
-  (newVal, oldVal) => {
-    if (!newVal && props.list.length) updateSelected(props.list[0].id);
-    if (oldVal) Reflect.defineProperty(oldVal, "contenteditable", { value });
-  },
-  { immediate },
-);
-
-/** Добавление новой страницы */
+/**
+ * Добавление новой страницы
+ *
+ * @function newPage
+ */
 const newPage = () => {
   if (the.value) {
     const { parent, children, index, siblings } = the.value;
 
-    const id = crypto.randomUUID();
+    /**
+     * Идентификатор нового нода
+     *
+     * @type {string}
+     */
+    const id: string = crypto.randomUUID();
 
     switch (true) {
       case !!parent:
@@ -175,48 +190,70 @@ const newPage = () => {
   }
 };
 
-const title = "Подтверждение";
+/**
+ * Заголовок диалога
+ *
+ * @type {string}
+ */
+const title: string = "Подтверждение";
 
-const message = "Вы действительно хотите удалить?";
+/**
+ * Сообщение диалога
+ *
+ * @type {string}
+ */
+const message: string = "Вы действительно хотите удалить?";
 
-/** Удаление текущей страницы */
+/**
+ * Удаление текущей страницы
+ *
+ * @function deletePage
+ */
 const deletePage = () => {
   if (the.value) {
-    const { parent, children, prev, next, siblings, index, url } = the.value;
+    const { parent, prev, next, siblings, index } = the.value;
 
-    if (
-      parent ||
-      (url && !(siblings.length - 1)) ||
-      (!(parent || children) && siblings.length - 1)
-    )
-      $q.dialog({ title, message, cancel, persistent }).onOk(() => {
-        let id: string | undefined = crypto.randomUUID();
+    $q.dialog({ title, message, cancel, persistent }).onOk(async () => {
+      /**
+       * Идентификатор страницы, выбираемой после удаления
+       *
+       * @type {string}
+       */
+      let id: string | undefined;
 
-        switch (true) {
-          case !!next:
-            ({ id } = next);
+      switch (true) {
+        case !!next:
+          ({ id } = next);
 
-            break;
+          break;
 
-          case !!prev:
-            ({ id } = prev);
+        case !!prev:
+          ({ id } = prev);
 
-            break;
+          break;
 
-          default:
-            ({ id } = parent ?? { id });
-        }
+        default:
+          ({ id } = parent ?? { id });
+      }
 
-        siblings.splice(index, 1);
+      siblings.splice(index, 1);
 
-        if (!siblings.length && !parent) siblings.push({ id } as TPage);
+      if (!id) {
+        await nextTick();
 
-        updateSelected(id);
-      });
+        [{ id }] = props.list;
+      }
+
+      updateSelected(id);
+    });
   }
 };
 
-/** Перемещение страницы вверх на одну позицию */
+/**
+ * Перемещение страницы вверх на одну позицию
+ *
+ * @function upPage
+ */
 const upPage = () => {
   if (the.value) {
     const { index, siblings } = the.value;
@@ -229,7 +266,11 @@ const upPage = () => {
   }
 };
 
-/** Перемещение страницы вниз на одну позицию */
+/**
+ * Перемещение страницы вниз на одну позицию
+ *
+ * @function downPage
+ */
 const downPage = () => {
   if (the.value) {
     const { index, siblings } = the.value;
@@ -242,7 +283,11 @@ const downPage = () => {
   }
 };
 
-/** Перемещение страницы вправо на одну позицию */
+/**
+ * Перемещение страницы вправо на одну позицию
+ *
+ * @function rightPage
+ */
 const rightPage = () => {
   if (the.value) {
     const { index, siblings, prev } = the.value;
@@ -257,10 +302,15 @@ const rightPage = () => {
   }
 };
 
-/** Перемещение страницы влево на одну позицию */
+/**
+ * Перемещение страницы влево на одну позицию
+ *
+ * @function leftPage
+ */
 const leftPage = () => {
   if (the.value) {
     const { index, parent } = the.value;
+
     if (parent) {
       const {
         index: parIndex,
@@ -269,13 +319,25 @@ const leftPage = () => {
         children,
         id,
       } = parent;
+
       if (parParent) {
         tree.value?.setExpanded(id, false);
+
         siblings.splice(parIndex + 1, 0, ...children.splice(index, 1));
       }
     }
   }
 };
+
+watch(
+  the,
+  (newVal, oldVal) => {
+    if (!newVal && props.list.length) updateSelected(props.list[0].id);
+
+    if (oldVal) Reflect.defineProperty(oldVal, "contenteditable", { value });
+  },
+  { immediate },
+);
 </script>
 <style lang="sass" scoped>
 .min-w-96
