@@ -9,14 +9,14 @@ q-btn-group.q-mx-xs(spread, flat)
 .scroll.col
   q-tree.q-ma-xs(
     ref="tree",
-    :selected="selected",
-    :expanded="expanded",
+    :selected,
+    :expanded,
     :nodes="nodes ?? list",
     node-key="id",
     no-selection-unset,
     accordion,
-    @update:selected="$emit('update:selected', $event)",
-    @update:expanded="$emit('update:expanded', $event)"
+    @update:selected="updateSelected($event)",
+    @update:expanded="updateExpanded($event)"
   )
     template(#default-header="prop")
       .row.no-wrap.full-width.items-center(
@@ -27,16 +27,17 @@ q-btn-group.q-mx-xs(spread, flat)
           v-model.trim="prop.node[type === 'text' ? 'label' : type]",
           dense,
           :readonly="!prop.node.contenteditable",
-          :type="type",
+          :type,
           outlined,
           :bg-color="prop.node.id === selected ? 'primary' : undefined",
-          @click.stop="$emit('update:selected', prop.node.id)",
+          @click.stop="updateSelected(prop.node.id)",
           @keyup.enter="prop.node.contenteditable = false"
         )
 </template>
 <script setup lang="ts">
+import type { QTree, QVueGlobals } from "quasar";
 import { useQuasar } from "quasar";
-import type { ComputedRef } from "vue";
+import type { ComputedRef, Ref } from "vue";
 import { computed, ref, watch } from "vue";
 
 import type { TPage } from "@/stores/data";
@@ -57,6 +58,17 @@ interface IProps {
   nodes?: TPage[];
   list: TPage[];
 }
+/**
+ * @type {IEmits}
+ * @see {@link https://github.com/vuejs/language-tools/issues/3169}
+ * @see {@link https://vuejs.org/api/sfc-script-setup.html#type-only-props-emit-declarations}
+ * @todo Переписать в нормальный вид, после обновления vue-tsc. Пока quasar не
+ *   работает со второй версией vue-tsc
+ */
+interface IEmits {
+  (e: "update:expanded", value: string[]): void;
+  (e: "update:selected", value: string | undefined): void;
+}
 
 /**
  * Пропсы
@@ -67,12 +79,16 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
   selected: "",
   type: "text",
   /**
+   * Пустой массив по умолчанию
+   *
    * @function expanded
    * @returns {string[]} - Пустой массив
    */
   expanded: (): string[] => [],
   nodes: undefined,
   /**
+   * Пустой массив по умолчанию
+   *
    * @function list
    * @returns {TPage[]} - Пустой массив
    */
@@ -82,29 +98,51 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
 /**
  * Объект текущей страницы
  *
- * @type {ComputedRef<TPage>}
+ * @type {ComputedRef<TPage | undefined>}
  */
-const the: ComputedRef<TPage | null | undefined> = computed(() =>
+const the: ComputedRef<TPage | undefined> = computed(() =>
   props.list.length
-    ? props.list.find(({ id }) => id === props.selected) ?? null
+    ? props.list.find(({ id }) => id === props.selected)
     : undefined,
 );
 
-/** Эмиттеры */
-const emits = defineEmits(["update:expanded", "update:selected"]);
+/**
+ * Эмиттеры
+ *
+ * @type {IEmits}
+ */
+const emits: IEmits = defineEmits<IEmits>();
 
-const $q = useQuasar();
+/** @param value */
+const updateExpanded = (value: string[]) => {
+  emits("update:expanded", value);
+};
 
-const tree = ref();
+/** @param value */
+const updateSelected = (value: string | undefined) => {
+  emits("update:selected", value);
+};
 
-const updateSelected = "update:selected";
+/**
+ * Объект quasar
+ *
+ * @type {QVueGlobals}
+ */
+const $q: QVueGlobals = useQuasar();
+
+/**
+ * Экземпляр дерева
+ *
+ * @type {Ref<QTree | undefined>}
+ */
+const tree: Ref<QTree | undefined> = ref();
 
 const value = false;
 
 watch(
   the,
   (newVal, oldVal) => {
-    if (!newVal && props.list.length) emits(updateSelected, props.list[0].id);
+    if (!newVal && props.list.length) updateSelected(props.list[0].id);
     if (oldVal) Reflect.defineProperty(oldVal, "contenteditable", { value });
   },
   { immediate },
@@ -134,7 +172,7 @@ const newPage = () => {
         break;
     }
 
-    emits(updateSelected, id);
+    updateSelected(id);
   }
 };
 
@@ -174,7 +212,7 @@ const deletePage = () => {
 
         if (!siblings.length && !parent) siblings.push({ id } as TPage);
 
-        emits(updateSelected, id);
+        updateSelected(id);
       });
   }
 };
@@ -215,7 +253,7 @@ const rightPage = () => {
 
       prev.children = [...children, ...siblings.splice(index, 1)];
 
-      tree.value.setExpanded(id, true);
+      tree.value?.setExpanded(id, true);
     }
   }
 };
@@ -233,7 +271,7 @@ const leftPage = () => {
         id,
       } = parent;
       if (parParent) {
-        tree.value.setExpanded(id, false);
+        tree.value?.setExpanded(id, false);
         siblings.splice(parIndex + 1, 0, ...children.splice(index, 1));
       }
     }

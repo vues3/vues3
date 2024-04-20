@@ -18,11 +18,8 @@ module.exports = {
     "plugin:vue/vue3-recommended",
     "plugin:vue-pug/vue3-recommended",
     "@vue/eslint-config-airbnb-with-typescript",
-    "@vue/eslint-config-airbnb-with-typescript/allow-js-in-vue",
     "plugin:jsdoc/recommended",
     "plugin:sonarjs/recommended",
-    "plugin:optimize-regex/recommended",
-    "plugin:regexp/recommended",
     "@vue/eslint-config-prettier",
   ],
 

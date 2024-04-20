@@ -42,7 +42,7 @@ q-layout(view="hHh Lpr lff")
     router-view
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { get } from "@vueuse/core";
 import { computed, ref } from "vue";
 

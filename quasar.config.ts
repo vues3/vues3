@@ -1,6 +1,5 @@
 import path from "node:path";
 
-import type { PluginEntry } from "@quasar/app-vite/types/configuration/build";
 import type { QuasarElectronConfiguration } from "@quasar/app-vite/types/configuration/electron-conf";
 import type {
   QuasarFonts,
@@ -35,31 +34,10 @@ const vueRouterMode: "history" = "history";
 // /** @type {boolean} */
 // const polyfillModulePreload: boolean = true;
 
-/** @type {string} */
-const tsconfigPath: string = "tsconfig.vue-tsc.json";
-
-/** @type {object} */
-const vueTsc: object = { tsconfigPath };
-
-/** @type {string} */
-const lintCommand: string = 'eslint "./**/*.{js,ts,mjs,cjs,vue}"';
-
-/** @type {object} */
-const eslint: object = { lintCommand };
-
-/** @type {boolean} */
-const server: boolean = false;
-
-/** @type {PluginEntry[]} */
-const vitePlugins: PluginEntry[] = [
-  ["vite-plugin-checker", { vueTsc, eslint }, { server }],
-];
-
 /** @type {object} */
 const build: object = {
   alias,
   vueRouterMode,
-  vitePlugins,
 };
 
 /** @type {boolean} */

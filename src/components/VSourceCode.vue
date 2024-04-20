@@ -14,9 +14,11 @@ v-ace-editor(
 // eslint-disable-next-line simple-import-sort/imports
 import { VAceEditor } from "vue3-ace-editor";
 import "ace-builds/esm-resolver";
-import { ref, watch, nextTick, toRefs } from "vue";
+
+import { css, html, js } from "js-beautify";
 import type { Ref } from "vue";
-import { js, css, html } from "js-beautify";
+import { nextTick, ref, toRefs, watch } from "vue";
+
 import { immediate } from "@/stores/defaults";
 
 /**

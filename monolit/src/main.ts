@@ -1,8 +1,8 @@
-import "glightbox/dist/css/glightbox.css";
-import "./style.sass";
 import "@unocss/reset/tailwind.css";
 import "daisyui/dist/full.css";
+import "glightbox/dist/css/glightbox.css";
 import "virtual:uno.css";
+import "./style.sass";
 
 import * as mdi from "@mdi/js";
 import Tres from "@tresjs/core";
