@@ -35,7 +35,6 @@ import type { TPage } from "stores/data";
 import { $, pages } from "stores/data";
 import type { ComputedRef, ModelRef, Ref } from "vue";
 import { computed, ref, watch } from "vue";
-
 /**
  * @type {IProps}
  * @property {QEditor | null} editor - Экземпляр редактора
@@ -43,25 +42,21 @@ import { computed, ref, watch } from "vue";
 interface IProps {
   editor: QEditor | null;
 }
-
 withDefaults(defineProps<IProps>(), {
   editor: null,
 });
-
 /**
  * Флаг открытия модального окна
  *
  * @type {ModelRef<boolean>}
  */
 const model: ModelRef<boolean> = defineModel<boolean>({ default: false });
-
 /**
  * Идентификатор выбранной страницы
  *
  * @type {Ref<string | null>}
  */
 const selected: Ref<string | null> = ref(null);
-
 /**
  * Выбранный объект страницы
  *
