@@ -74,53 +74,50 @@ export const validateConfig: ValidateFunction = ajv.getSchema(
 const rootFileName = "index.html";
 
 /**
- * @param {TPage} that - Текущий объект страницы
  * @param {string} key - Название свойства для хранения считанного файла
  * @param {string} ext - Расширение файла
  * @param {Function} beautify - Ф-ция форматирования кода
  * @returns {Promise<string>} Содержимое файла
  */
-const getFile = async (
-  that: TPage,
-  key: string,
+async function getFile(
+  this: TPage,
+  key: keyof TPage,
   ext: string,
   beautify: Function,
-): Promise<string> => {
-  if (that[key as keyof TPage] == null) {
-    const value = beautify((await getObject(`assets/${that.id}.${ext}`)) ?? "");
-    Object.defineProperty(that, key, { value, configurable });
+): Promise<string> {
+  if (this[key] == null) {
+    const value = beautify((await getObject(`assets/${this.id}.${ext}`)) ?? "");
+    Object.defineProperty(this, key, { value, configurable });
   }
-  return that[key as keyof TPage] as string;
-};
+  return this[key] as string;
+}
 
 /**
- * @param {TPage} that - Текущий объект страницы
  * @param {string} key - Название свойства для хранения считанного файла
  * @param {string} ext - Расширение файла
  * @param {string} text - Новое содержимое файла
  */
-export const save = (that: TPage, key: string, ext: string, text: string) => {
+export function save(this: TPage, key: string, ext: string, text: string) {
   putObject(
-    `assets/${that.id}.${ext}`,
+    `assets/${this.id}.${ext}`,
     mime.getType(ext) ?? "text/plain",
     text,
   );
   const value = new Date().toISOString();
-  Reflect.defineProperty(that, "lastmod", { value });
-};
+  Reflect.defineProperty(this, "lastmod", { value });
+}
 
 const debounceFn = useDebounceFn(save, debounce);
 
 /**
- * @param {TPage} that - Текущий объект страницы
  * @param {string} key - Название свойства для хранения считанного файла
  * @param {string} ext - Расширение файла
  * @param {string} value - Новое содержимое файла
  */
-const setFile = (that: TPage, key: string, ext: string, value: string) => {
-  Object.defineProperty(that, key, { value, configurable });
-  debounceFn(that, key, ext, value);
-};
+function setFile(this: TPage, key: string, ext: string, value: string) {
+  Object.defineProperty(this, key, { value, configurable });
+  debounceFn.call(this, key, ext, value);
+}
 
 /**
  * Объект, на котором определяется загрузка шаблона страницы
@@ -134,7 +131,7 @@ const htm: PropertyDescriptor = {
    * @returns {Promise<string>} - Шаблон страницы
    */
   get(): Promise<string> {
-    return getFile(this as TPage, "template", "htm", html_beautify);
+    return getFile.call(this as TPage, "template", "htm", html_beautify);
   },
   /**
    * Сеттер шаблона страницы
@@ -142,7 +139,7 @@ const htm: PropertyDescriptor = {
    * @param {string} value - Передаваемый шаблон страницы
    */
   set(value: string) {
-    setFile(this as TPage, "template", "htm", value);
+    setFile.call(this as TPage, "template", "htm", value);
   },
 };
 
@@ -190,7 +187,7 @@ const css: PropertyDescriptor = {
    * @returns {Promise<string>} - Стили страницы
    */
   get(): Promise<string> {
-    return getFile(this as TPage, "style", "css", css_beautify);
+    return getFile.call(this as TPage, "style", "css", css_beautify);
   },
 
   /**
@@ -199,7 +196,7 @@ const css: PropertyDescriptor = {
    * @param {string} value - Передаваемые стили страницы
    */
   set(value: string) {
-    setFile(this as TPage, "style", "css", value);
+    setFile.call(this as TPage, "style", "css", value);
   },
 };
 
@@ -215,7 +212,7 @@ const js: PropertyDescriptor = {
    * @returns {Promise<string>} - Скрипты страницы
    */
   async get(): Promise<string> {
-    return getFile(this as TPage, "script", "js", js_beautify);
+    return getFile.call(this as TPage, "script", "js", js_beautify);
   },
   /**
    * Сеттер скриптов страницы
@@ -223,7 +220,7 @@ const js: PropertyDescriptor = {
    * @param {string} value - Передаваемые скрипты страницы
    */
   set(value: string) {
-    setFile(this as TPage, "script", "js", value);
+    setFile.call(this as TPage, "script", "js", value);
   },
 };
 
