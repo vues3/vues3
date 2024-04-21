@@ -42,18 +42,14 @@ window.console.info(
   `ver:${__APP_VERSION__}`,
   "https://vues3.ru",
 );
-
 initUnocssRuntime({ autoPrefix, defaults, bypassDefined });
-
 /**
  * Приложение vue
  *
  * @type {App}
  */
 const app: App = createApp(vueApp);
-
 app.config.globalProperties.mdi = mdi;
-
 (async () => {
   /**
    * Ответ на считывание data.json
@@ -65,7 +61,6 @@ app.config.globalProperties.mdi = mdi;
   const response: Response = await fetch("/assets/data.json", {
     cache,
   });
-
   /**
    * Объект данных, полученный с сервера
    *
@@ -74,16 +69,12 @@ app.config.globalProperties.mdi = mdi;
    * @type {TData}
    */
   const data: TData = response.ok ? await response.json() : {};
-
   validate?.(data);
-
   Object.keys(data).forEach((key) => {
     $[key as keyof TData] = data[key as keyof {}];
   });
-
   fix($.content ?? []);
 })();
-
 /**
  * Перевод яндекс метрики в продуктовый режим
  *
@@ -92,28 +83,24 @@ app.config.globalProperties.mdi = mdi;
  * @type {string | null}
  */
 const env: string | null = process.env.NODE_ENV ?? null;
-
 /**
  * Объект истории
  *
  * @type {RouterHistory}
  */
 const history: RouterHistory = createWebHistory(import.meta.env.BASE_URL);
-
 /**
  * Роуты
  *
  * @type {RouteRecordRaw[]}
  */
 const routes: RouteRecordRaw[] = [];
-
 /**
  * Роутер
  *
  * @type {Router}
  */
 const router: Router = createRouter({ history, routes });
-
 watch(
   pages,
   (value) => {
@@ -126,7 +113,6 @@ watch(
        * @type {string}
        */
       const alias: string = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
-
       router.addRoute({
         name,
         path: `/${path}`,
@@ -146,7 +132,6 @@ watch(
         },
       });
     });
-
     /**
      * Все неучтенные пути
      *
@@ -155,7 +140,6 @@ watch(
      * @type {string}
      */
     const path: string = "/:catchAll(.*)*";
-
     router.addRoute({
       path,
       /**
@@ -168,7 +152,6 @@ watch(
         return import("@/views/NotFoundView.vue");
       },
     });
-
     router.replace(router.currentRoute.value.fullPath);
   },
   { once },
@@ -185,7 +168,6 @@ watch(
        * @type {string}
        */
       const id: string = metrika;
-
       app.use(initYandexMetrika, { id, router, env } as Config);
     }
     if (analytics) {
@@ -197,7 +179,6 @@ watch(
        * @type {string}
        */
       const id: string = analytics;
-
       /**
        * Подготовленный конфиг
        *
@@ -206,21 +187,14 @@ watch(
        * @type {{ id: string }}
        */
       const config: { id: string } = { id };
-
       app.use(VueGtag, { config }, router);
     }
   },
   { once },
 );
-
 app.use(router);
-
 app.use(createHead());
-
 app.use(Tres);
-
 app.use(MotionPlugin);
-
 app.component("VHead", Head);
-
 app.mount("#app");
