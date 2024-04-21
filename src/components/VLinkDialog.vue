@@ -70,10 +70,8 @@ const selected: Ref<string | null> = ref(null);
 const the: ComputedRef<TPage | null> = computed(
   () => pages.value.find(({ id }) => id === selected.value) ?? null,
 );
-
-const [{ id }] = $.content ?? [];
-
 watch(model, (show) => {
+  const [{ id }] = $.content ?? [];
   if (show) selected.value = id ?? null;
 });
 </script>
