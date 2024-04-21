@@ -23,14 +23,12 @@ import type { RouteLocationNormalizedLoaded } from "vue-router";
 import { useRoute } from "vue-router";
 
 import { getAsyncComponent, selector } from "../stores/monolit";
-
 /**
  * Текущий роут сайта
  *
  * @type {RouteLocationNormalizedLoaded}
  */
 const route: RouteLocationNormalizedLoaded = useRoute();
-
 /**
  * Вычисление текущего объекта с учетом переадресации корневого объекта страницы
  * на первый доступный объект страницы
@@ -44,17 +42,14 @@ const the: ComputedRef<TPage | null> = computed(() => {
    * @type {number}
    */
   const index: number = pages.value.findIndex(({ id }) => id === route.name);
-
   /**
    * Вычисленный текущий объект
    *
    * @type {TPage}
    */
   const ret: TPage = pages.value[index];
-
   return index ? ret : ret.children[0] ?? null;
 });
-
 /**
  * Вычисление объекта загруженных шаблонов
  *
