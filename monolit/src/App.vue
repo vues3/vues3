@@ -92,14 +92,12 @@ import { useRoute, useRouter } from "vue-router";
 import { favicon, getAsyncComponent } from "./stores/monolit";
 
 const { ready, start } = useTimeout(1000, { controls });
-
 /**
  * Путь готового шаблона навбара
  *
  * @type {string}
  */
 const path: string = "~";
-
 /**
  * Вычисление навбара
  *
@@ -112,7 +110,6 @@ const navigator: ComputedRef<object> = computed(() => {
    * @type {string}
    */
   const id: string = crypto.randomUUID();
-
   const {
     template: htm,
     script: js,
@@ -120,24 +117,20 @@ const navigator: ComputedRef<object> = computed(() => {
     setup,
     scoped,
   } = $.navbar ?? {};
-
   return getAsyncComponent({ id, htm, js, css, setup, scoped, path } as TPage);
 });
-
 /**
  * Текущий роут сайта
  *
  * @type {RouteLocationNormalizedLoaded}
  */
 const route: RouteLocationNormalizedLoaded = useRoute();
-
 /**
  * Роутер сайта
  *
  * @type {Router}
  */
 const router: Router = useRouter();
-
 /**
  * Вычисление шаблона корневой страницы
  *
@@ -146,7 +139,6 @@ const router: Router = useRouter();
 const root: ComputedRef<object> = computed(() =>
   getAsyncComponent(pages.value[0]),
 );
-
 /**
  * Поиск текущего объекта страницы
  *
@@ -155,14 +147,12 @@ const root: ComputedRef<object> = computed(() =>
 const the: ComputedRef<TPage | null> = computed(
   () => pages.value.find(({ id }) => id === route.name) ?? null,
 );
-
 /**
  * Ссылка на переключатель панели
  *
  * @type {Ref<boolean>}
  */
 const drawer: Ref<boolean> = ref(false);
-
 /**
  * Вычисление канонического пути
  *
@@ -173,7 +163,6 @@ const canonical: ComputedRef<string | false> = computed(
     the.value?.url.constructor === String &&
     `${window.location.origin}/${the.value.url}`,
 );
-
 /**
  * Ф-ция проверки ресурса
  *
@@ -184,7 +173,6 @@ const canonical: ComputedRef<string | false> = computed(
  * @returns {boolean} - Флаг проверки ресурса
  */
 const alive = ({ enabled, url }: TResource): boolean => !!(enabled && url);
-
 /**
  * Фильтр глобальных скриптов по видимости
  *
@@ -193,16 +181,14 @@ const alive = ({ enabled, url }: TResource): boolean => !!(enabled && url);
 const theJS: ComputedRef<TResource[]> = computed(
   () => $.js?.filter(alive) ?? [],
 );
-
 /**
  * Фильтр глобальных стилей по видимости
  *
  * @type {ComputedRef<TResource[]>}
  */
 const theCSS: ComputedRef<TResource[]> = computed(
-  () => $?.css?.filter(alive) ?? [],
+  () => $.css?.filter(alive) ?? [],
 );
-
 router.beforeEach(() => {
   drawer.value = false;
 });
