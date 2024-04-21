@@ -263,7 +263,7 @@ const onUnmounted = async (
   ext: string,
   value: Promise<string> | string,
 ) => {
-  if (that) save(that, key, ext, await value);
+  if (that) save.call(that, key, ext, await value);
 };
 
 /** @type {ComputedRef<TPage | null>} */
