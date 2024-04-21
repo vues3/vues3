@@ -1,8 +1,7 @@
+import { additionalProperties, nullable, type } from "app/src/stores/defaults";
 import type { JSONSchema } from "json-schema-to-ts";
 
 const $id = "urn:jsonschema:navbar";
-const additionalProperties = false;
-const nullable = true;
 const properties = {
   theme: { type: "string", nullable, default: null, description: "Тема" },
   classes: {
@@ -75,13 +74,9 @@ const {
   setup: { type: "boolean", default: true, description: "" },
   scoped: { type: "boolean", default: true, description: "" },
 } as const;
-const type = "object";
-
-const Navbar = {
+export default {
   $id,
   type,
   properties,
   additionalProperties,
 } as const satisfies JSONSchema;
-
-export default Navbar;

@@ -1,3 +1,4 @@
+import type { JSONSchemaType } from "json-schema-to-ts/lib/types/definitions/jsonSchema";
 /**
  * Модификатор для вотчера, указывает на проверку всех изменений в глубину
  *
@@ -6,7 +7,6 @@
  * @type {boolean}
  */
 export const deep: boolean = true;
-
 /**
  * Replace missing or undefined properties and items with the values from
  * corresponding default keywords.
@@ -16,7 +16,6 @@ export const deep: boolean = true;
  * @type {boolean}
  */
 export const useDefaults: boolean = true;
-
 /**
  * Change data type of data to match type keyword
  *
@@ -25,7 +24,6 @@ export const useDefaults: boolean = true;
  * @type {boolean}
  */
 export const coerceTypes: boolean = true;
-
 /**
  * Remove additional properties
  *
@@ -34,7 +32,6 @@ export const coerceTypes: boolean = true;
  * @type {boolean}
  */
 export const removeAdditional: boolean = true;
-
 /**
  * How functions should be exported - by default CJS is used, so the validate
  * function(s) file can be `required`. Set this value to true to export the
@@ -45,7 +42,6 @@ export const removeAdditional: boolean = true;
  * @type {boolean}
  */
 export const esm: boolean = true;
-
 /**
  * Равен true только в том случае, если тип этого дескриптора свойства может
  * быть изменён и если свойство может быть удалено из содержащего его объекта.
@@ -55,7 +51,6 @@ export const esm: boolean = true;
  * @type {boolean}
  */
 export const configurable: boolean = true;
-
 /**
  * Задержка в мс
  *
@@ -64,7 +59,6 @@ export const configurable: boolean = true;
  * @type {number}
  */
 export const debounce: number = 1000;
-
 /**
  * Моментальный запуск вотчера
  *
@@ -73,7 +67,6 @@ export const debounce: number = 1000;
  * @type {boolean}
  */
 export const immediate: boolean = true;
-
 /**
  * Props for a 'CANCEL' button
  *
@@ -82,7 +75,6 @@ export const immediate: boolean = true;
  * @type {boolean}
  */
 export const cancel: boolean = true;
-
 /**
  * User cannot dismiss Dialog if clicking outside of it or hitting ESC key;
  * Also, an app route change won't dismiss it
@@ -92,7 +84,6 @@ export const cancel: boolean = true;
  * @type {boolean}
  */
 export const persistent: boolean = true;
-
 /**
  * Выбор иконок по умолчанию скрыт
  *
@@ -101,7 +92,6 @@ export const persistent: boolean = true;
  * @type {boolean}
  */
 export const show: boolean = false;
-
 /**
  * Пустой фильтр иконок по умолчанию
  *
@@ -110,7 +100,6 @@ export const show: boolean = false;
  * @type {string}
  */
 export const filter: string = "";
-
 /**
  * 75 иконок на страницу
  *
@@ -119,7 +108,6 @@ export const filter: string = "";
  * @type {number}
  */
 export const itemsPerPage: number = 75;
-
 /**
  * Начальная страница иконок
  *
@@ -128,7 +116,6 @@ export const itemsPerPage: number = 75;
  * @type {number}
  */
 export const page: number = 0;
-
 /**
  * Запрет мультивыбора файлов
  *
@@ -137,7 +124,6 @@ export const page: number = 0;
  * @type {boolean}
  */
 export const multiple: boolean = false;
-
 /**
  * Типы фалов для выбора
  *
@@ -146,7 +132,6 @@ export const multiple: boolean = false;
  * @type {string}
  */
 export const accept: string = "image/*";
-
 /**
  * Заголовок окна выбора файла
  *
@@ -155,7 +140,6 @@ export const accept: string = "image/*";
  * @type {string}
  */
 export const capture: string = "Выберите картинку";
-
 /**
  * Reset when open file dialog
  *
@@ -164,7 +148,6 @@ export const capture: string = "Выберите картинку";
  * @type {boolean}
  */
 export const reset: boolean = true;
-
 /**
  * Настройка кеширования
  *
@@ -173,7 +156,6 @@ export const reset: boolean = true;
  * @type {RequestCache}
  */
 export const cache: RequestCache = "no-cache";
-
 /**
  * Loop slides on end
  *
@@ -183,7 +165,6 @@ export const cache: RequestCache = "no-cache";
  * @see {@link https://github.com/biati-digital/glightbox} см. документацию
  */
 export const loop: boolean = true;
-
 /**
  * Enable or disable zoomable images you can also use data-zoomable="false" on
  * individual nodes.
@@ -194,7 +175,6 @@ export const loop: boolean = true;
  * @see {@link https://github.com/biati-digital/glightbox} см. документацию
  */
 export const zoomable: boolean = false;
-
 /**
  * Сдвиг области видимости
  *
@@ -204,7 +184,6 @@ export const zoomable: boolean = false;
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin} см. документацию
  */
 export const rootMargin: string = "-1% 0px -99%";
-
 /**
  * Процент площади объекта, который должен попасть в область видимости
  *
@@ -214,14 +193,12 @@ export const rootMargin: string = "-1% 0px -99%";
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds} см. документацию
  */
 export const threshold: number = 0;
-
 /**
  * Быстрый скролл
  *
  * @type {ScrollBehavior}
  */
 export const behavior: ScrollBehavior = "instant";
-
 /**
  * Expose more controls
  *
@@ -230,7 +207,6 @@ export const behavior: ScrollBehavior = "instant";
  * @type {true}
  */
 export const controls: true = true;
-
 /**
  * Enable css property auto prefixer
  *
@@ -239,7 +215,6 @@ export const controls: true = true;
  * @type {boolean}
  */
 export const autoPrefix: boolean = true;
-
 /**
  * When enabled, UnoCSS will look for the existing selectors defined in the
  * stylesheet and bypass them. This is useful when using the runtime alongwith
@@ -250,7 +225,6 @@ export const autoPrefix: boolean = true;
  * @type {boolean}
  */
 export const bypassDefined: boolean = true;
-
 /**
  * Запуск вотчера единожды
  *
@@ -259,3 +233,27 @@ export const bypassDefined: boolean = true;
  * @type {boolean}
  */
 export const once: boolean = true;
+/**
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+export const additionalProperties: boolean = false;
+/**
+ * @constant
+ * @default
+ * @type {string}
+ */
+export const type: JSONSchemaType = "object";
+/**
+ * @constant
+ * @default
+ * @type {boolean}
+ */
+export const nullable: boolean = true;
+/**
+ * @constant
+ * @default
+ * @type {string}
+ */
+export const id: string = "uuid";

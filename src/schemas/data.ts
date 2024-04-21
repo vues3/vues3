@@ -1,8 +1,7 @@
+import { additionalProperties, nullable, type } from "app/src/stores/defaults";
 import type { JSONSchema } from "json-schema-to-ts";
 
 const $id = "urn:jsonschema:data";
-const additionalProperties = false;
-const nullable = true;
 const content = {
   type: "array",
   default: [{}],
@@ -36,21 +35,15 @@ const properties = {
     default: {},
   },
 } as const;
-const type = "object";
-
-const plainData = {
+export const plainData = {
   $id,
   type,
   properties,
   additionalProperties,
 } as const satisfies JSONSchema;
-
-const Data = {
+export default {
   $id,
   type,
   properties: { content, ...properties },
   additionalProperties,
 } as const satisfies JSONSchema;
-
-export { plainData };
-export default Data;
