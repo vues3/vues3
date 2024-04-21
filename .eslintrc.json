@@ -1,0 +1,30 @@
+{
+  "root": true,
+  "extends": [
+    "plugin:vue/vue3-recommended",
+    "plugin:vue-pug/vue3-recommended",
+    "@vue/eslint-config-airbnb-with-typescript",
+    "plugin:jsdoc/recommended",
+    "plugin:sonarjs/recommended",
+    "@vue/eslint-config-prettier"
+  ],
+  "plugins": ["simple-import-sort"],
+  "rules": {
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    "jsdoc/tag-lines": 0,
+    "jsdoc/require-jsdoc": [
+      "error",
+      {
+        "require": {
+          "FunctionDeclaration": true,
+          "MethodDefinition": true,
+          "ClassDeclaration": true,
+          "ClassExpression": true,
+          "ArrowFunctionExpression": true,
+          "FunctionExpression": true
+        }
+      }
+    ]
+  }
+}

@@ -288,8 +288,10 @@ const newPage = () => {
 watch(
   the,
   (newVal, oldVal) => {
-    const [{ id }] = props.list;
-    if (!newVal && props.list.length) updateSelected(id);
+    if (!newVal && props.list.length) {
+      const [{ id }] = props.list;
+      updateSelected(id);
+    }
     if (oldVal) Reflect.defineProperty(oldVal, "contenteditable", { value });
   },
   { immediate },

@@ -9,18 +9,17 @@ v-ace-editor(
   @vue:mounted="beautify(value); nextTick(editor.focus)"
 )
 </template>
-
 <script setup lang="ts">
-// eslint-disable-next-line simple-import-sort/imports
-import { VAceEditor } from "vue3-ace-editor";
+// eslint-disable-next-line import/no-duplicates
+import "vue3-ace-editor";
 import "ace-builds/esm-resolver";
 
 import { css, html, js } from "js-beautify";
+import { immediate } from "stores/defaults";
 import type { Ref } from "vue";
 import { nextTick, ref, toRefs, watch } from "vue";
-
-import { immediate } from "stores/defaults";
-
+// eslint-disable-next-line no-duplicate-imports, import/no-duplicates
+import { VAceEditor } from "vue3-ace-editor";
 /**
  * @type {IProps}
  * @property {object} [options] - Свойства редактора
@@ -32,7 +31,6 @@ interface IProps {
   lang?: string;
   modelValue: Promise<string> | string;
 }
-
 /**
  * Пропсы
  *
@@ -49,11 +47,8 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
   lang: "html",
   modelValue: "",
 });
-
 const { modelValue } = toRefs(props);
-
 const emit = defineEmits(["update:modelValue"]);
-
 /**
  * Функция форматирования кода в зависимости от его типа
  *
@@ -65,36 +60,28 @@ const beautify = (value: string) => {
   switch (props.lang) {
     case "javascript":
       code = js(value);
-
       break;
-
     case "css":
       code = css(value);
-
       break;
-
     default:
       code = html(value);
-
       break;
   }
   emit("update:modelValue", code);
 };
-
 /**
  * Экземпляр редактора
  *
  * @type {Ref<HTMLElement | null>}
  */
 const editor: Ref<HTMLElement | null> = ref(null);
-
 /**
  * Текст для вставки в редактор
  *
  * @type {Ref<string | null>}
  */
 const value: Ref<string | null> = ref(null);
-
 watch(
   modelValue,
   async (model) => {

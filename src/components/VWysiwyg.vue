@@ -20,7 +20,6 @@ div
   v-template-dialog(v-model="showTemplateDialog", :theme, :editor)
   v-link-dialog(v-model="showLinkDialog", :editor)
 </template>
-
 <script setup lang="ts">
 import "daisyui/dist/full.css";
 
@@ -42,7 +41,6 @@ import { accept, immediate } from "stores/defaults";
 import { base } from "stores/s3";
 import type { Ref } from "vue";
 import { nextTick, ref, toRefs, watch, watchPostEffect } from "vue";
-
 /**
  * @type {IProps}
  * @property {Promise<string> | string} modelValue - Контент для загрузки в
@@ -53,7 +51,6 @@ interface IProps {
   modelValue: Promise<string> | string;
   theme: string | undefined;
 }
-
 /**
  * Пропсы
  *
@@ -63,46 +60,38 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
   modelValue: "",
   theme: undefined,
 });
-
 const { modelValue } = toRefs(props);
-
 defineEmits(["update:modelValue"]);
-
 /**
  * Текст для вставки в редактор
  *
  * @type {Ref<string | null>}
  */
 const htm: Ref<string | null> = ref(null);
-
 /**
  * Флаг демонстрации модального окна для вставки шаблона
  *
  * @type {Ref<boolean>}
  */
 const showTemplateDialog: Ref<boolean> = ref(false);
-
 /**
  * Флаг демонстрации модального окна для вставки внутренних ссылок
  *
  * @type {Ref<boolean>}
  */
 const showLinkDialog: Ref<boolean> = ref(false);
-
 /**
  * Объект quasar
  *
  * @type {QVueGlobals}
  */
 const $q: QVueGlobals = useQuasar();
-
 /**
  * Экземпляр редактора
  *
  * @type {Ref<QEditor | undefined>}
  */
 const editor: Ref<QEditor | undefined> = ref();
-
 /**
  * Функция закачки картинки на сервер
  *
@@ -117,7 +106,6 @@ const insertImage = async (file: File) => {
   if (message) $q.notify({ message });
   else editor.value?.runCmd("insertImage", `${base.value}/${filePath}`);
 };
-
 /**
  * Функция обработки вставки картинок через d'n'd и ctrl+v
  *
@@ -129,18 +117,13 @@ const capture = (evt: ClipboardEvent | DragEvent) => {
     (evt as DragEvent)?.dataTransfer ??
     (evt as ClipboardEvent)?.clipboardData ??
     {};
-
   if (files.length) {
     evt.preventDefault();
-
     evt.stopPropagation();
-
     [...files].forEach(insertImage);
   }
 };
-
 const { files, open } = useFileDialog({ accept });
-
 /**
  * Определения для редактора
  *
@@ -183,7 +166,6 @@ const definitions: object = {
     ]),
   ),
 } as const;
-
 /**
  * Выпадающий список без иконок
  *
@@ -192,7 +174,6 @@ const definitions: object = {
  * @type {string}
  */
 const list: string = "no-icons";
-
 /**
  * Конфигурация тулбара
  *
@@ -238,11 +219,9 @@ const toolbar: string | {}[][] = [
   ["undo", "redo"],
   ["upload", "dashboard", "share"],
 ] as const;
-
 watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });
-
 watch(
   modelValue,
   async (value) => {
@@ -250,7 +229,6 @@ watch(
   },
   { immediate },
 );
-
 watchPostEffect(() => {
   /**
    * Элемент, в котором содержится контент редактора
@@ -261,7 +239,6 @@ watchPostEffect(() => {
   const contentEl: HTMLElement | undefined = editor.value?.getContentEl() as
     | HTMLElement
     | undefined;
-
   if (contentEl) contentEl.dataset.theme = props.theme;
 });
 </script>

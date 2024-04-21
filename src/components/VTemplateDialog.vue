@@ -39,7 +39,6 @@ import { html_beautify } from "js-beautify";
 import type { QEditor } from "quasar";
 import type { ModelRef, Ref } from "vue";
 import { ref, watch, watchPostEffect } from "vue";
-
 /**
  * @type {IProps}
  * @property {QEditor | null} editor - Экземпляр редактора
@@ -49,7 +48,6 @@ interface IProps {
   editor: QEditor | null;
   theme: string | undefined;
 }
-
 /**
  * Пропсы
  *
@@ -59,34 +57,28 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
   editor: null,
   theme: undefined,
 });
-
 /**
  * Флаг открытия модального окна
  *
  * @type {ModelRef<boolean>}
  */
 const model: ModelRef<boolean> = defineModel<boolean>({ default: false });
-
 /**
  * Шаблон для вставки
  *
  * @type {Ref<string | null>}
  */
 const html: Ref<string | null> = ref(null);
-
 const [{ value }] = options;
-
 watch(model, (show) => {
   if (show) html.value = value;
 });
-
 /**
  * Элемент для демонстрации шаблона
  *
  * @type {Ref<HTMLElement | null>}
  */
 const element: Ref<HTMLElement | null> = ref(null);
-
 watchPostEffect(() => {
   if (element.value) element.value.dataset.theme = props.theme;
 });
