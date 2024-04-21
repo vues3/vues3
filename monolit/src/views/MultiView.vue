@@ -39,21 +39,18 @@ import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
 
 import { getAsyncComponent, selector } from "../stores/monolit";
-
 /**
  * Текущий роут сайта
  *
  * @type {RouteLocationNormalizedLoaded}
  */
 const route: RouteLocationNormalizedLoaded = useRoute();
-
 /**
  * Роутер сайта
  *
  * @type {Router}
  */
 const router: Router = useRouter();
-
 /**
  * Вычисление текущего объекта с учетом переадресации корневого объекта страницы
  * на первый доступный объект страницы
@@ -67,17 +64,14 @@ const the: ComputedRef<TPage | null> = computed(() => {
    * @type {number}
    */
   const index: number = pages.value.findIndex(({ id }) => id === route.name);
-
   /**
    * Вычисленный текущий объект
    *
    * @type {TPage}
    */
   const ret: TPage = pages.value[index];
-
   return index ? ret : ret.children[0] ?? null;
 });
-
 /**
  * Вычисление массива видимых объектов страниц с одинаковым предком
  *
@@ -86,7 +80,6 @@ const the: ComputedRef<TPage | null> = computed(() => {
 const siblings: ComputedRef<TPage[]> = computed(
   () => the.value?.siblings.filter(({ enabled }) => enabled) ?? [],
 );
-
 /**
  * Вычисление идентифицированного объекта промисов
  *
@@ -97,7 +90,6 @@ const promises: ComputedRef<object> = computed(() =>
     siblings.value.map(({ id }) => [id, Promise.withResolvers()]),
   ),
 );
-
 /**
  * Вычисление массива загруженных шаблонов
  *
@@ -106,7 +98,6 @@ const promises: ComputedRef<object> = computed(() =>
 const templates: ComputedRef<object> = computed(() =>
   Object.fromEntries(siblings.value.map((a) => [a.id, getAsyncComponent(a)])),
 );
-
 /**
  * Родительский элемент представления
  *
@@ -114,7 +105,6 @@ const templates: ComputedRef<object> = computed(() =>
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root} см. документацию
  */
 const root: Ref<HTMLElement> = useParentElement() as Ref<HTMLElement>;
-
 /**
  * Флаг постановки проверки пересечения страницы с областью видимости на паузу
  *
@@ -123,7 +113,6 @@ const root: Ref<HTMLElement> = useParentElement() as Ref<HTMLElement>;
  * @type {boolean}
  */
 let pause: boolean = true;
-
 /**
  * Флаг условия изменения роута
  *
@@ -132,7 +121,6 @@ let pause: boolean = true;
  * @type {boolean}
  */
 let push: boolean = false;
-
 /**
  * Процедура обновления роутера, если страница появилась в области видимости
  *
@@ -152,14 +140,12 @@ const callback: IntersectionObserverCallback = ([
     router.push({ name });
   }
 };
-
 /**
  * Массив страниц, отображаемых на экране
  *
  * @type {Ref<HTMLElement[]>}
  */
 const refs: Ref<HTMLElement[]> = ref([]);
-
 /**
  * Процедура ожидания загрузки страниц
  *
@@ -171,29 +157,23 @@ const all = async () => {
     Object.values(promises.value).map(({ promise }) => promise),
   );
 };
-
 watch(
   siblings,
   async () => {
     await all();
-
     GLightbox({ loop, zoomable, selector });
   },
   { immediate },
 );
-
 watch(
   route,
   async () => {
     if (!push) {
       await all();
-
       pause = true;
-
       refs.value
         .find(({ id }) => id === the.value?.id)
         ?.scrollIntoView({ behavior });
-
       pause = false;
     } else push = false;
   },
