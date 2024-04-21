@@ -239,17 +239,14 @@ import {
 import { base } from "stores/s3";
 import type { ComputedRef, Ref, WritableComputedRef } from "vue";
 import { computed, ref, watch } from "vue";
-
 /**
  * Объект quasar
  *
  * @type {QVueGlobals}
  */
 const $q: QVueGlobals = useQuasar();
-
 /** @type {Ref<object>} */
 const icons: Ref<object> = ref(materialIcons.icons);
-
 /**
  * @function onUnmounted
  * @param {TPage} that - Текущий объект страницы
@@ -265,13 +262,11 @@ const onUnmounted = async (
 ) => {
   if (that) save.call(that, key, ext, await value);
 };
-
 /** @type {ComputedRef<TPage | null>} */
 const the: ComputedRef<TPage | null> = computed(
   () =>
     pages.value.find(({ id }) => id === config.value.content.selected) ?? null,
 );
-
 /** @type {WritableComputedRef<string | null>} */
 const loc: WritableComputedRef<string | null> = computed({
   /**
@@ -281,7 +276,6 @@ const loc: WritableComputedRef<string | null> = computed({
   get(): string | null {
     return the.value?.loc ?? null;
   },
-
   /**
    * @function set
    * @param {string | null} value - Новое значение постоянной ссылки
@@ -290,12 +284,9 @@ const loc: WritableComputedRef<string | null> = computed({
     if (the.value) the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
   },
 });
-
 /** @type {Ref<object>} */
 const iconPicker: Ref<object> = ref({ show, filter, pagination });
-
 rightDrawer.value = true;
-
 watch(
   () => $.content ?? [],
   ([{ id = null } = {}]) => {
@@ -304,14 +295,11 @@ watch(
   },
   { immediate },
 );
-
 const { files, open } = useFileDialog({ multiple, accept, capture, reset });
-
 watch(files, async (newFiles) => {
   const [file] = newFiles ?? [];
   if (file && the.value) {
     const { filePath, message } = await putImage(file);
-
     if (message) $q.notify({ message });
     else the.value.image = `/${filePath}`;
   }
