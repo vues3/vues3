@@ -14,7 +14,6 @@ import type { ContentData, ModuleExport, Options } from "vue3-sfc-loader";
 import { loadModule } from "vue3-sfc-loader";
 
 import selectors from "../assets/glightbox.json";
-
 /**
  * Модули, передаваемые шаблону
  *
@@ -31,7 +30,6 @@ const moduleCache: ModuleExport = {
   "@tresjs/core": tresjsCore,
   "@tresjs/cientos": tresjsCientos,
 };
-
 /**
  * Процедура логирования ошибок
  *
@@ -42,7 +40,6 @@ const moduleCache: ModuleExport = {
 const log = (type: string, ...args: any[]) => {
   (window.console[type as keyof Console] as Function)(...args);
 };
-
 /**
  * Функция, возвращающая Promise на сконструированный шаблон
  *
@@ -73,7 +70,6 @@ export const getAsyncComponent = ({
    */
   const getFile = async (): Promise<ContentData> => {
     const [template, script, style] = await Promise.all([htm, js, css]);
-
     /**
      * Константа со скриптами
      *
@@ -82,7 +78,6 @@ export const getAsyncComponent = ({
      */
     const cntScript: string =
       script && `<script${setup ? " setup" : ""}>${script}</script>`;
-
     /**
      * Константа с шаблоном
      *
@@ -90,7 +85,6 @@ export const getAsyncComponent = ({
      * @type {string}
      */
     const cntTemplate: string = template && `<template>${template}</template>`;
-
     /**
      * Константа со стилями
      *
@@ -99,7 +93,6 @@ export const getAsyncComponent = ({
      */
     const cntStyle: string =
       style && `<style${scoped ? " scoped" : ""}>${style}</style>`;
-
     return `${cntScript}${cntTemplate}${cntStyle}`;
   };
 
@@ -112,7 +105,6 @@ export const getAsyncComponent = ({
   const addStyle = (styles: string) => {
     useStyleTag(styles);
   };
-
   return defineAsyncComponent((() =>
     loadModule(`${["", "~"].includes(path) ? "" : "/"}${path}/view.vue`, {
       moduleCache,
@@ -121,33 +113,30 @@ export const getAsyncComponent = ({
       log,
     } as unknown as Options)) as AsyncComponentLoader);
 };
-
 /**
  * Запрос на сервер за контентом
  *
  * @async
- * @function getFile
- * @param {TPage} that - Текущий объект страницы
+ * @function getResource
  * @param {string} key - Название свойства для хранения считанного файла
  * @param {string} ext - Расширение файла
  * @returns {Promise<string>} Содержимое файла
  */
-const getFile = async (
-  that: TPage,
-  key: string,
+async function getResource(
+  this: TPage,
+  key: keyof TPage,
   ext: string,
-): Promise<string> => {
-  if (that[key as keyof TPage] == null) {
+): Promise<string> {
+  if (this[key] == null) {
     /**
      * Ответ сервера
      *
      * @constant
      * @type {Response}
      */
-    const response: Response = await fetch(`/assets/${that.id}.${ext}`, {
+    const response: Response = await fetch(`/assets/${this.id}.${ext}`, {
       cache,
     });
-
     /**
      * Текстовые данные, полученные с сервера
      *
@@ -155,12 +144,10 @@ const getFile = async (
      * @type {string}
      */
     const value: string = response.ok ? await response.text() : "";
-
-    Object.defineProperty(that, key, { value });
+    Object.defineProperty(this, key, { value });
   }
-  return that[key as keyof TPage] as string;
-};
-
+  return this[key] as string;
+}
 /**
  * Объект, на котором определяется загрузка шаблона страницы
  *
@@ -175,10 +162,9 @@ const htm: PropertyDescriptor = {
    * @returns {Promise<string>} - Шаблон страницы
    */
   async get(): Promise<string> {
-    return getFile(this as TPage, "template", "htm");
+    return getResource.call(this as TPage, "template", "htm");
   },
 };
-
 /**
  * Объект, на котором определяется загрузка стилей страницы
  *
@@ -193,10 +179,9 @@ const css: PropertyDescriptor = {
    * @returns {Promise<string>} - Стили страницы
    */
   async get(): Promise<string> {
-    return getFile(this as TPage, "style", "css");
+    return getResource.call(this as TPage, "style", "css");
   },
 };
-
 /**
  * Объект, на котором определяется загрузка скриптов страницы
  *
@@ -211,10 +196,9 @@ const js: PropertyDescriptor = {
    * @returns {Promise<string>} - Скрипты страницы
    */
   async get(): Promise<string> {
-    return getFile(this as TPage, "script", "js");
+    return getResource.call(this as TPage, "script", "js");
   },
 };
-
 /**
  * Рекурсивная функция ремонта страниц
  *
@@ -228,11 +212,9 @@ export const fix = (siblings: TPage[]) => {
       css,
       js,
     });
-
     fix(value.children ?? []);
   });
 };
-
 /**
  * Name of the selector for example '.glightbox' or 'data-glightbox' or
  * '*[data-glightbox]'
@@ -243,7 +225,6 @@ export const fix = (siblings: TPage[]) => {
  * @see {@link https://github.com/biati-digital/glightbox} см. документацию
  */
 export const selector: string = selectors.map((el) => `a[href${el}]`).join();
-
 /**
  * Уникальный ключ для favicon. Иначе иконка динамически не обновляется в chrome
  * при смене страницы
