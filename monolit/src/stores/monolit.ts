@@ -34,11 +34,11 @@ const moduleCache: ModuleExport = {
  * Процедура логирования ошибок
  *
  * @function log
- * @param {string} type - Тип записи
+ * @param {keyof Console} type - Тип записи
  * @param {any[]} args - Содержимое записи
  */
-const log = (type: string, ...args: any[]) => {
-  (window.console[type as keyof Console] as Function)(...args);
+const log = (type: keyof Console, ...args: any[]) => {
+  (window.console[type] as Function)(...args);
 };
 /**
  * Функция, возвращающая Promise на сконструированный шаблон
