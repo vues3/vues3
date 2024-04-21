@@ -41,7 +41,6 @@ import type { TPage } from "stores/data";
 import { cancel, immediate, persistent } from "stores/defaults";
 import type { ComputedRef, Ref } from "vue";
 import { computed, nextTick, ref, watch } from "vue";
-
 /**
  * @type {IProps}
  * @property {string} selected - Идентификатор выбранного элемента
@@ -68,7 +67,6 @@ interface IEmits {
   (e: "update:expanded", value: string[]): void;
   (e: "update:selected", value: string | undefined): void;
 }
-
 /**
  * Пропсы
  *
@@ -93,7 +91,6 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
    */
   list: (): TPage[] => [],
 });
-
 /**
  * Объект текущей страницы
  *
@@ -104,14 +101,12 @@ const the: ComputedRef<TPage | null | undefined> = computed(() =>
     ? props.list.find(({ id }) => id === props.selected) ?? null
     : undefined,
 );
-
 /**
  * Эмиттеры
  *
  * @type {IEmits}
  */
 const emits: IEmits = defineEmits<IEmits>();
-
 /**
  * Обновление массива открытых нод
  *
@@ -121,7 +116,6 @@ const emits: IEmits = defineEmits<IEmits>();
 const updateExpanded = (value: string[]) => {
   emits("update:expanded", value);
 };
-
 /**
  * Обновление идентификатора выбранной ноды
  *
@@ -131,79 +125,30 @@ const updateExpanded = (value: string[]) => {
 const updateSelected = (value: string | undefined) => {
   emits("update:selected", value);
 };
-
 /**
  * Объект quasar
  *
  * @type {QVueGlobals}
  */
 const $q: QVueGlobals = useQuasar();
-
 /**
  * Экземпляр дерева
  *
  * @type {Ref<QTree | undefined>}
  */
 const tree: Ref<QTree | undefined> = ref();
-
-/**
- * Значение для свойства contenteditable
- *
- * @type {boolean}
- */
-const value: boolean = false;
-
-/**
- * Добавление новой страницы
- *
- * @function newPage
- */
-const newPage = () => {
-  if (the.value) {
-    const { parent, children, index, siblings } = the.value;
-
-    /**
-     * Идентификатор нового нода
-     *
-     * @type {string}
-     */
-    const id: string = crypto.randomUUID();
-
-    switch (true) {
-      case !!parent:
-        siblings.splice(index + 1, 0, { id } as TPage);
-
-        break;
-
-      case !!children:
-        children.unshift({ id } as TPage);
-
-        break;
-
-      default:
-        siblings.splice(index + 1, 0, { id } as TPage);
-
-        break;
-    }
-
-    updateSelected(id);
-  }
-};
-
 /**
  * Заголовок диалога
  *
  * @type {string}
  */
 const title: string = "Подтверждение";
-
 /**
  * Сообщение диалога
  *
  * @type {string}
  */
 const message: string = "Вы действительно хотите удалить?";
-
 /**
  * Удаление текущей страницы
  *
@@ -212,7 +157,6 @@ const message: string = "Вы действительно хотите удали
 const deletePage = () => {
   if (the.value) {
     const { parent, prev, next, siblings, index } = the.value;
-
     $q.dialog({ title, message, cancel, persistent }).onOk(async () => {
       /**
        * Идентификатор страницы, выбираемой после удаления
@@ -220,35 +164,25 @@ const deletePage = () => {
        * @type {string}
        */
       let id: string | undefined;
-
       switch (true) {
         case !!next:
           ({ id } = next);
-
           break;
-
         case !!prev:
           ({ id } = prev);
-
           break;
-
         default:
-          ({ id } = parent ?? { id });
+          ({ id } = parent ?? {});
       }
-
       siblings.splice(index, 1);
-
       if (!id) {
         await nextTick();
-
         [{ id }] = props.list;
       }
-
       updateSelected(id);
     });
   }
 };
-
 /**
  * Перемещение страницы вверх на одну позицию
  *
@@ -257,7 +191,6 @@ const deletePage = () => {
 const upPage = () => {
   if (the.value) {
     const { index, siblings } = the.value;
-
     if (index)
       [siblings[index - 1], siblings[index]] = [
         siblings[index],
@@ -265,7 +198,6 @@ const upPage = () => {
       ];
   }
 };
-
 /**
  * Перемещение страницы вниз на одну позицию
  *
@@ -274,7 +206,6 @@ const upPage = () => {
 const downPage = () => {
   if (the.value) {
     const { index, siblings } = the.value;
-
     if (index < siblings.length - 1)
       [siblings[index], siblings[index + 1]] = [
         siblings[index + 1],
@@ -282,7 +213,6 @@ const downPage = () => {
       ];
   }
 };
-
 /**
  * Перемещение страницы вправо на одну позицию
  *
@@ -291,17 +221,13 @@ const downPage = () => {
 const rightPage = () => {
   if (the.value) {
     const { index, siblings, prev } = the.value;
-
     if (prev) {
       const { children = [], id } = prev;
-
       prev.children = [...children, ...siblings.splice(index, 1)];
-
       tree.value?.setExpanded(id, true);
     }
   }
 };
-
 /**
  * Перемещение страницы влево на одну позицию
  *
@@ -310,30 +236,60 @@ const rightPage = () => {
 const leftPage = () => {
   if (the.value) {
     const { index, parent } = the.value;
-
     if (parent) {
       const {
-        index: parIndex,
-        parent: parParent,
+        index: grandindex,
+        parent: grandparent,
         siblings,
         children,
         id,
       } = parent;
-
-      if (parParent) {
+      if (grandparent) {
         tree.value?.setExpanded(id, false);
-
-        siblings.splice(parIndex + 1, 0, ...children.splice(index, 1));
+        siblings.splice(grandindex + 1, 0, ...children.splice(index, 1));
       }
     }
   }
 };
-
+/**
+ * Значение для свойства contenteditable
+ *
+ * @type {boolean}
+ */
+const value: boolean = false;
+/**
+ * Добавление новой страницы
+ *
+ * @function newPage
+ */
+const newPage = () => {
+  if (the.value) {
+    const { parent, children, index, siblings } = the.value;
+    /**
+     * Идентификатор нового нода
+     *
+     * @type {string}
+     */
+    const id: string = crypto.randomUUID();
+    switch (true) {
+      case !!parent:
+        siblings.splice(index + 1, 0, { id } as TPage);
+        break;
+      case !!children:
+        children.unshift({ id } as TPage);
+        break;
+      default:
+        siblings.splice(index + 1, 0, { id } as TPage);
+        break;
+    }
+    updateSelected(id);
+  }
+};
 watch(
   the,
   (newVal, oldVal) => {
-    if (!newVal && props.list.length) updateSelected(props.list[0].id);
-
+    const [{ id }] = props.list;
+    if (!newVal && props.list.length) updateSelected(id);
     if (oldVal) Reflect.defineProperty(oldVal, "contenteditable", { value });
   },
   { immediate },
