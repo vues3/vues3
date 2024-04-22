@@ -6,7 +6,7 @@
     "@vue/eslint-config-airbnb-with-typescript",
     "plugin:jsdoc/recommended",
     "plugin:sonarjs/recommended",
-    "@vue/eslint-config-prettier"
+    "plugin:prettier/recommended"
   ],
   "plugins": ["simple-import-sort"],
   "rules": {
