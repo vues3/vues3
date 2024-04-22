@@ -9,7 +9,6 @@
   "scripts": {
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.cjs,.mjs --ignore-path .gitignore",
     "format": "prettier --write \"**/*.{js,ts,vue,css,scss,html,htm,md,json}\" --ignore-path .gitignore",
-    "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build:monolit": "vite build monolit --emptyOutDir",
     "build:vues3": "quasar build",
