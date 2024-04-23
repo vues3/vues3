@@ -114,7 +114,7 @@ import type { S3ClientConfig } from "@aws-sdk/client-s3";
 import { HeadBucketCommand, S3Client } from "@aws-sdk/client-s3";
 import { FetchHttpHandler } from "@smithy/fetch-http-handler";
 import type { RemovableRef } from "@vueuse/core";
-import { get, set, useStorage } from "@vueuse/core";
+import { set, useStorage } from "@vueuse/core";
 import { useQuasar } from "quasar";
 import { accessKeyId, rightDrawer } from "stores/app";
 import { bucket, S3, wendpoint } from "stores/s3";
@@ -184,7 +184,7 @@ const providers: IRegion[] = [
     endpoint: "",
     /** @returns {string} - Wendpoint */
     get wendpoint() {
-      return `https://s3.${get(region)}.amazonaws.com`;
+      return `https://s3.${region.value}.amazonaws.com`;
     },
   },
   {
@@ -211,7 +211,7 @@ watch(provider, (value) => {
   }
 });
 watch(region, () => {
-  if (get(provider)) set(wendpoint, provider.value?.wendpoint);
+  if (provider.value) set(wendpoint, provider.value?.wendpoint);
   else set(wendpoint, "");
 });
 watch(cred, (value) => {
@@ -251,8 +251,8 @@ const login = async () => {
         requestHandler: new FetchHttpHandler({ keepAlive: false }),
       } as S3ClientConfig);
       set(creds, [
-        ...get(creds).filter(({ label }) => label !== get(bucket)),
-        ...(get(remember)
+        ...creds.value.filter(({ label }) => label !== bucket.value),
+        ...(remember.value
           ? [
               {
                 label: bucket.value,
@@ -268,7 +268,7 @@ const login = async () => {
       ]);
       await s3Client.send(
         new HeadBucketCommand({
-          Bucket: get(bucket),
+          Bucket: bucket.value,
         }),
       );
       set(S3, s3Client);

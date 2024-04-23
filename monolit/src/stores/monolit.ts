@@ -161,8 +161,8 @@ const htm: PropertyDescriptor = {
    * @function get
    * @returns {Promise<string>} - Шаблон страницы
    */
-  async get(): Promise<string> {
-    return getResource.call(this as TPage, "template", "htm");
+  async get(this: TPage): Promise<string> {
+    return getResource.call(this, "template", "htm");
   },
 };
 /**
@@ -178,8 +178,8 @@ const css: PropertyDescriptor = {
    * @function get
    * @returns {Promise<string>} - Стили страницы
    */
-  async get(): Promise<string> {
-    return getResource.call(this as TPage, "style", "css");
+  async get(this: TPage): Promise<string> {
+    return getResource.call(this, "style", "css");
   },
 };
 /**
@@ -195,8 +195,8 @@ const js: PropertyDescriptor = {
    * @function get
    * @returns {Promise<string>} - Скрипты страницы
    */
-  async get(): Promise<string> {
-    return getResource.call(this as TPage, "script", "js");
+  async get(this: TPage): Promise<string> {
+    return getResource.call(this, "script", "js");
   },
 };
 /**

@@ -5,7 +5,6 @@ import {
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
 import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
-import { get, isDefined } from "@vueuse/core";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
 
@@ -37,8 +36,8 @@ export const S3: Ref<S3Client | undefined> = ref();
  * @returns {object} Заголовок файла
  */
 export const headObject = (Key: string) => {
-  const Bucket = get(bucket);
-  return get(S3)?.send(new HeadObjectCommand({ Bucket, Key }));
+  const Bucket = bucket.value;
+  return S3.value?.send(new HeadObjectCommand({ Bucket, Key }));
 };
 
 /**
@@ -53,9 +52,11 @@ export const putObject = async (
   ContentType: string,
   body: StreamingBlobPayloadInputTypes,
 ) => {
-  const Bucket = get(bucket);
+  const Bucket = bucket.value;
   const Body = typeof body === "string" ? new TextEncoder().encode(body) : body;
-  await get(S3)?.send(new PutObjectCommand({ Bucket, Key, ContentType, Body }));
+  await S3.value?.send(
+    new PutObjectCommand({ Bucket, Key, ContentType, Body }),
+  );
 };
 
 /**
@@ -76,13 +77,13 @@ export const putFile = async (Key: string, ContentType: string, file: File) => {
  * @returns {Promise<string | null>} Тело файла
  */
 export const getObject = async (Key: string): Promise<string | null> => {
-  const Bucket = get(bucket);
+  const Bucket = bucket.value;
   const ResponseCacheControl = "no-store";
   const textDecoder = new TextDecoder();
   let ret: string | null = null;
-  if (isDefined(S3))
+  if (S3.value)
     try {
-      const { Body } = await get(S3).send(
+      const { Body } = await S3.value.send(
         new GetObjectCommand({ ResponseCacheControl, Bucket, Key }),
       );
       const reader = (Body as ReadableStream)?.getReader();
@@ -105,5 +106,5 @@ export const getObject = async (Key: string): Promise<string | null> => {
 export const base = computed(
   () =>
     S3?.value &&
-    `${isDefined(wendpoint) ? get(wendpoint) : "https:/"}/${get(bucket)}`,
+    `${wendpoint.value ? wendpoint.value : "https:/"}/${bucket.value}`,
 );

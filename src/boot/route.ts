@@ -1,4 +1,3 @@
-import { isDefined, set } from "@vueuse/core";
 import privateItems from "assets/private.json";
 import publicItems from "assets/public.json";
 import { S3 } from "stores/s3";
@@ -13,11 +12,11 @@ export default ({ router }: { router: Router }) => {
 
   router.beforeEach(({ path }, from, next) => {
     if (
-      (isDefined(S3) && !privateTo.includes(path)) ||
-      (!isDefined(S3) && !publicTo.includes(path))
+      (S3.value && !privateTo.includes(path)) ||
+      (!S3.value && !publicTo.includes(path))
     )
       next("/");
     else next();
-    if (path === "/") set(S3, undefined);
+    if (path === "/") S3.value = undefined;
   });
 };

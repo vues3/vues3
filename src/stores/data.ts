@@ -269,10 +269,8 @@ const index: PropertyDescriptor = {
    *
    * @returns {number} - Позиция в соседних объектах
    */
-  get(): number {
-    return (<TPage>this).siblings.findIndex(
-      ({ id }) => (<TPage>this).id === id,
-    );
+  get(this: TPage): number {
+    return this.siblings.findIndex(({ id }) => this.id === id);
   },
 };
 
@@ -287,8 +285,8 @@ const prev: PropertyDescriptor = {
    *
    * @returns {TPage | null} - Предыдущий объект
    */
-  get(): TPage | null {
-    return (<TPage>this).siblings[(<TPage>this).index - 1] ?? null;
+  get(this: TPage): TPage | null {
+    return this.siblings[this.index - 1] ?? null;
   },
 };
 
@@ -303,8 +301,8 @@ const next: PropertyDescriptor = {
    *
    * @returns {TPage | null} - Следующий объект
    */
-  get(): TPage | null {
-    return (<TPage>this).siblings[(<TPage>this).index + 1] ?? null;
+  get(this: TPage): TPage | null {
+    return this.siblings[this.index + 1] ?? null;
   },
 };
 
@@ -319,27 +317,23 @@ const branch: PropertyDescriptor = {
    *
    * @returns {TPage[]} - Ветвь объектов
    */
-  get(): TPage[] {
+  get(this: TPage): TPage[] {
     /**
      * Результирующий массив для записи ветви
      *
      * @type {TPage[]}
      */
     const ret: TPage[] = [];
-
     /**
      * Родительский объект
      *
      * @type {TPage | null}
      */
-    let parent: TPage | null = <TPage>this;
-
+    let parent: TPage | null = this;
     do {
       ret.unshift(parent);
-
       ({ parent = null } = parent);
     } while (parent);
-
     return ret;
   },
 };
@@ -355,8 +349,8 @@ const path: PropertyDescriptor = {
    *
    * @returns {string | null} - Путь до объекта
    */
-  get(): string | null {
-    return (<TPage>this).branch
+  get(this: TPage): string | null {
+    return this.branch
       .map(
         ({ label, id }) =>
           encodeURIComponent(label?.replace(" ", "_") ?? "") || id,
@@ -377,11 +371,9 @@ const url: PropertyDescriptor = {
    *
    * @returns {string} - Url ресурса
    */
-  get(): string {
+  get(this: TPage): string {
     return (
-      ((<TPage>this).loc &&
-        encodeURI((<TPage>this).loc?.replace(" ", "_") ?? "")) ||
-      (<TPage>this).path
+      (this.loc && encodeURI(this.loc?.replace(" ", "_") ?? "")) || this.path
     );
   },
 };
@@ -397,8 +389,8 @@ const name: PropertyDescriptor = {
    *
    * @returns {string | null} - Название страницы
    */
-  get(): string | null {
-    return (<TPage>this).title ?? (<TPage>this).label ?? null;
+  get(this: TPage): string | null {
+    return this.title ?? this.label ?? null;
   },
 };
 
@@ -413,10 +405,8 @@ const favicon: PropertyDescriptor = {
    *
    * @returns {string | null} - Фавиконка страницы
    */
-  get(): string | null {
-    return (
-      (<TPage>this).icon?.replace(/-./g, (x) => x[1].toUpperCase()) ?? null
-    );
+  get(this: TPage): string | null {
+    return this.icon?.replace(/-./g, (x) => x[1].toUpperCase()) ?? null;
   },
 };
 

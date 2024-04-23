@@ -1,6 +1,5 @@
 import type { RemovableRef } from "@vueuse/core";
 import {
-  get,
   useDebounceFn,
   useFetch,
   useStorage,
@@ -130,16 +129,16 @@ const htm: PropertyDescriptor = {
    *
    * @returns {Promise<string>} - Шаблон страницы
    */
-  get(): Promise<string> {
-    return getFile.call(this as TPage, "template", "htm", html_beautify);
+  get(this: TPage): Promise<string> {
+    return getFile.call(this, "template", "htm", html_beautify);
   },
   /**
    * Сеттер шаблона страницы
    *
    * @param {string} value - Передаваемый шаблон страницы
    */
-  set(value: string) {
-    setFile.call(this as TPage, "template", "htm", value);
+  set(this: TPage, value: string) {
+    setFile.call(this, "template", "htm", value);
   },
 };
 
@@ -154,9 +153,9 @@ const html: PropertyDescriptor = {
    *
    * @returns {Promise<string>} - Template
    */
-  async get(): Promise<string> {
-    const baseUrl = `${get(base)}/`;
-    return (await (<TPage>this).htm).replace(
+  async get(this: TPage): Promise<string> {
+    const baseUrl = `${base.value}/`;
+    return (await this.htm).replace(
       /(["'(;])([^"'(;:]*?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>))/gi,
       (match, p1, p2) => `${p1}${new URL(p2.replace(/^\//, ""), baseUrl).href}`,
     );
@@ -166,9 +165,9 @@ const html: PropertyDescriptor = {
    *
    * @param {string} value - Template
    */
-  set(value: string) {
-    const regexp = new RegExp(`^${get(base)}`);
-    (<TPage>this).htm = value.replace(
+  set(this: TPage, value: string) {
+    const regexp = new RegExp(`^${base.value}`);
+    this.htm = value.replace(
       /[^"'(;]+?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>)/gi,
       (match) => match.replace(regexp, ""),
     );
@@ -186,8 +185,8 @@ const css: PropertyDescriptor = {
    *
    * @returns {Promise<string>} - Стили страницы
    */
-  get(): Promise<string> {
-    return getFile.call(this as TPage, "style", "css", css_beautify);
+  get(this: TPage): Promise<string> {
+    return getFile.call(this, "style", "css", css_beautify);
   },
 
   /**
@@ -195,8 +194,8 @@ const css: PropertyDescriptor = {
    *
    * @param {string} value - Передаваемые стили страницы
    */
-  set(value: string) {
-    setFile.call(this as TPage, "style", "css", value);
+  set(this: TPage, value: string) {
+    setFile.call(this, "style", "css", value);
   },
 };
 
@@ -211,16 +210,16 @@ const js: PropertyDescriptor = {
    *
    * @returns {Promise<string>} - Скрипты страницы
    */
-  async get(): Promise<string> {
-    return getFile.call(this as TPage, "script", "js", js_beautify);
+  async get(this: TPage): Promise<string> {
+    return getFile.call(this, "script", "js", js_beautify);
   },
   /**
    * Сеттер скриптов страницы
    *
    * @param {string} value - Передаваемые скрипты страницы
    */
-  set(value: string) {
-    setFile.call(this as TPage, "script", "js", value);
+  set(this: TPage, value: string) {
+    setFile.call(this, "script", "js", value);
   },
 };
 
@@ -287,7 +286,7 @@ whenever(logicAnd(S3, data), () => {
       putObject(pAsset, body.type, body);
     }
   };
-  get(data).reduce(async (promise: any, asset: any, currentIndex: any) => {
+  data.value.reduce(async (promise: any, asset: any, currentIndex: any) => {
     if (currentIndex % 2) await promise;
     await headPutObject(asset);
   }, Promise.resolve());
@@ -332,8 +331,8 @@ const sitemap = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
   urlset: {
     "@xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
-    url: get(pages).map(({ url, lastmod, changefreq, priority }) => ({
-      loc: `https://${get(bucket)}/${url}`,
+    url: pages.value.map(({ url, lastmod, changefreq, priority }) => ({
+      loc: `https://${bucket.value}/${url}`,
       lastmod,
       changefreq,
       priority,
