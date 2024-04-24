@@ -18,7 +18,6 @@ import {
 import { FromSchema } from "json-schema-to-ts";
 import type { ComputedRef } from "vue";
 import { computed, reactive, watch } from "vue";
-
 /**
  * @type {TPage}
  * @property {string} [id] - Идентификатор страницы, значения по умолчанию
@@ -128,7 +127,6 @@ export type TPage = FromSchema<typeof plainPage> & {
   script: string;
   template: string;
 };
-
 /**
  * @type {TResource}
  * @property {string} [id] - Id ресурса, вычисляется динамически
@@ -136,7 +134,6 @@ export type TPage = FromSchema<typeof plainPage> & {
  * @property {string} url - Url ресурса
  */
 export type TResource = FromSchema<typeof Resource>;
-
 /**
  * @type {TSettings}
  * @property {string | null} yandex - Id яндекса
@@ -146,7 +143,6 @@ export type TResource = FromSchema<typeof Resource>;
  * @property {boolean} landing - Признак формирования сайта в виде лендинга
  */
 export type TSettings = FromSchema<typeof Settings>;
-
 /**
  * @type {TNavbar}
  * @property {string | null} [theme=null] - Тема daisyui, @see
@@ -163,7 +159,6 @@ export type TSettings = FromSchema<typeof Settings>;
  * @property {string} [style] - Сохраненные стили страницы
  */
 export type TNavbar = FromSchema<typeof Navbar>;
-
 /**
  * @type {TData}
  * @property {TSettings} settings - Настройки сайта
@@ -178,7 +173,6 @@ export type TData = FromSchema<
   typeof plainData,
   { references: [typeof Settings, typeof Resource, typeof Navbar] }
 > & { content: TPage[] };
-
 /**
  * Динамический расчет uuid при валидации
  *
@@ -186,7 +180,6 @@ export type TData = FromSchema<
  */
 dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => () =>
   crypto.randomUUID() as any;
-
 /**
  * An array or object of schemas that will be added to the instance
  *
@@ -195,7 +188,6 @@ dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => () =>
  * @type {object[]}
  */
 const schemas: object[] = [Resource, Page, Settings, Navbar, Data];
-
 /**
  * Code generation options
  *
@@ -203,7 +195,6 @@ const schemas: object[] = [Resource, Page, Settings, Navbar, Data];
  * @type {object}
  */
 export const code: object = { esm };
-
 /**
  * An array of keyword definitions or strings
  *
@@ -212,7 +203,6 @@ export const code: object = { esm };
  * @type {FuncKeywordDefinition[]}
  */
 const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
-
 /**
  * Объект валидатора
  *
@@ -227,7 +217,6 @@ const ajv: Ajv = new Ajv({
   code,
   keywords,
 });
-
 /**
  * Скомпилированная схема для валидации данных
  *
@@ -236,7 +225,6 @@ const ajv: Ajv = new Ajv({
 export const validate: ValidateFunction = ajv.getSchema(
   "urn:jsonschema:data",
 ) as ValidateFunction;
-
 /**
  * Функция проверки навбара
  *
@@ -246,7 +234,6 @@ export const validate: ValidateFunction = ajv.getSchema(
 export const validateNavbar: ValidateFunction = ajv.getSchema(
   "urn:jsonschema:navbar",
 ) as ValidateFunction;
-
 /**
  * Рекурсивная функция преобразования древовидного объекта в массив страниц
  *
@@ -256,7 +243,6 @@ export const validateNavbar: ValidateFunction = ajv.getSchema(
  */
 const getPages = (pages: TPage[]): TPage[] =>
   pages.flatMap((element) => [element, ...getPages(element.children ?? [])]);
-
 /**
  * Объект, на котором определяется свойство позиции в соседних объектах
  *
@@ -272,7 +258,6 @@ const index: PropertyDescriptor = {
     return this.siblings.findIndex(({ id }) => this.id === id);
   },
 };
-
 /**
  * Объект, на котором определяется свойство предыдущего объекта
  *
@@ -288,7 +273,6 @@ const prev: PropertyDescriptor = {
     return this.siblings[this.index - 1];
   },
 };
-
 /**
  * Объект, на котором определяется свойство следующего объекта
  *
@@ -304,7 +288,6 @@ const next: PropertyDescriptor = {
     return this.siblings[this.index + 1];
   },
 };
-
 /**
  * Объект, на котором определяется свойство ветви объектов
  *
@@ -336,7 +319,6 @@ const branch: PropertyDescriptor = {
     return ret;
   },
 };
-
 /**
  * Объект, на котором определяется путь до объекта
  *
@@ -358,7 +340,6 @@ const path: PropertyDescriptor = {
       .join("/");
   },
 };
-
 /**
  * Объект, на котором определяется url ресурса
  *
@@ -376,7 +357,6 @@ const url: PropertyDescriptor = {
     );
   },
 };
-
 /**
  * Объект, на котором определяется название страницы
  *
@@ -392,7 +372,6 @@ const name: PropertyDescriptor = {
     return this.title ?? this.label;
   },
 };
-
 /**
  * Объект, на котором определяется фавиконка страницы
  *
@@ -408,7 +387,6 @@ const favicon: PropertyDescriptor = {
     return this.icon?.replace(/-./g, (x) => x[1].toUpperCase());
   },
 };
-
 /**
  * Функция ремонта плоских массивов js & css
  *
@@ -421,7 +399,6 @@ const fixPlain = (siblings: { value: TResource[] }) => {
     Object.defineProperties(element, { siblings, index, prev, next });
   });
 };
-
 /**
  * Рекурсивная функция ремонта страниц
  *
@@ -451,21 +428,18 @@ const fixDeep = (
       url,
       favicon,
     });
-
     fixDeep(
       { value: value.children ?? [], configurable },
       { value, configurable },
     );
   });
 };
-
 /**
  * Главный реактивный объект данных
  *
  * @type {TData}
  */
 export const $: TData = reactive({} as TData);
-
 /**
  * Функция для вызова расчета массива страниц
  *
@@ -473,7 +447,6 @@ export const $: TData = reactive({} as TData);
  * @returns {TPage[]} - Страницы
  */
 const get: () => any = (): TPage[] => getPages($.content ?? []);
-
 /**
  * Расчетный массив страниц
  *
@@ -485,7 +458,6 @@ export const pages: ComputedRef<TPage[]> = computed(() =>
     return value;
   }),
 );
-
 watch(
   () => $.content ?? [],
   (value) => {
@@ -493,7 +465,6 @@ watch(
   },
   { deep },
 );
-
 watch(
   () => $.css ?? [],
   (value) => {
@@ -501,7 +472,6 @@ watch(
   },
   { deep },
 );
-
 watch(
   () => $.js ?? [],
   (value) => {
@@ -509,14 +479,12 @@ watch(
   },
   { deep },
 );
-
 /**
  * Значение для выключаемых свойств
  *
  * @type {undefined}
  */
 const value: undefined = undefined;
-
 watch($, (newValue) => {
   if (Object.keys(newValue).length) {
     ["content", "css", "js"].forEach((key) => {

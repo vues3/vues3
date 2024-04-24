@@ -1,4 +1,3 @@
-import type { JSONSchemaType } from "json-schema-to-ts/lib/types/definitions/jsonSchema";
 /**
  * Модификатор для вотчера, указывает на проверку всех изменений в глубину
  *
@@ -234,26 +233,10 @@ export const bypassDefined: boolean = true;
  */
 export const once: boolean = true;
 /**
+ * Смешивание сохраненного объекта с объектом по умолчанию
+ *
  * @constant
  * @default
  * @type {boolean}
  */
-export const additionalProperties: boolean = false;
-/**
- * @constant
- * @default
- * @type {string}
- */
-export const type: JSONSchemaType = "object";
-/**
- * @constant
- * @default
- * @type {boolean}
- */
-export const nullable: boolean = true;
-/**
- * @constant
- * @default
- * @type {string}
- */
-export const id: string = "uuid";
+export const mergeDefaults: boolean = true;
