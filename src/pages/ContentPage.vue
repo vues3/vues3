@@ -14,7 +14,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         :list="pages"
       )
     q-separator
-    q-card(v-if="the", flat)
+    q-card(flat)
       q-item.text-teal
         q-item-section(avatar)
           q-icon(name="travel_explore")
@@ -22,6 +22,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
           q-item-label Настройки слоя
       q-card-section
         q-select(
+          v-if="'theme' in (the ?? {})",
           v-model="the.theme",
           label="Цветовая тема",
           :options="themes",
@@ -34,19 +35,22 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
           q-list
             q-item(v-ripple, tag="label")
               q-item-section(avatar)
-                q-checkbox(v-model="the.full")
+                q-checkbox(v-if="'full' in (the ?? {})", v-model="the.full")
               q-item-section
                 q-item-label Полный экран
                 q-item-label(caption) the.full
             q-item(v-ripple, tag="label")
               q-item-section(avatar)
-                q-checkbox(v-model="the.setup")
+                q-checkbox(v-if="'setup' in (the ?? {})", v-model="the.setup")
               q-item-section
                 q-item-label script setup
                 q-item-label(caption) the.setup
             q-item(v-ripple, tag="label")
               q-item-section(avatar)
-                q-checkbox(v-model="the.scoped")
+                q-checkbox(
+                  v-if="'scoped' in (the ?? {})",
+                  v-model="the.scoped"
+                )
               q-item-section
                 q-item-label style scoped
                 q-item-label(caption) the.scoped
@@ -59,6 +63,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
           q-item-label Настройки SEO
       q-card-section
         q-select(
+          v-if="'type' in (the ?? {})",
           v-model="the.type",
           :options="types",
           label="Тип содержимого страницы",
@@ -66,11 +71,13 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
           hint="the.type"
         )
         q-input(
+          v-if="'title' in (the ?? {})",
           v-model.trim="the.title",
           label="Заголовок страницы",
           hint="the.title"
         )
         q-input(
+          v-if="'description' in (the ?? {})",
           v-model.trim="the.description",
           type="textarea",
           autogrow,
@@ -78,6 +85,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
           hint="the.description"
         )
         q-select(
+          v-if="'keywords' in (the ?? {})",
           v-model.trim="the.keywords",
           multiple,
           use-chips,
@@ -96,6 +104,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
           hint="the.loc"
         )
         q-select(
+          v-if="'changefreq' in (the ?? {})",
           v-model="the.changefreq",
           :options="changefreq",
           label="Частота обновления",
@@ -103,6 +112,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
           hint="the.changefreq"
         )
         q-input(
+          v-if="'priority' in (the ?? {})",
           v-model.number="the.priority",
           label="Приоритет",
           type="number",
@@ -112,6 +122,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
           hint="the.priority"
         )
         q-input(
+          v-if="'icon' in (the ?? {})",
           v-model.trim="the.icon",
           label="Иконка",
           clearable,
@@ -129,6 +140,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
                   dense
                 )
                 q-icon-picker(
+                  v-if="'icon' in (the ?? {})",
                   v-model="the.icon",
                   v-model:model-pagination="iconPicker.pagination",
                   :filter="iconPicker.filter",
@@ -137,6 +149,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
                   dense
                 )
         q-input(
+          v-if="'alt' in (the ?? {})",
           v-model.trim="the.alt",
           type="textarea",
           autogrow,
@@ -145,7 +158,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         )
         q-img.q-mt-md.rounded-borders(
           v-if="the?.image",
-          :src="`${base}${the?.image}`",
+          :src="`${base}${the.image}`",
           :ratio="16 / 9"
         )
           q-btn.all-pointer-events.absolute(
@@ -182,34 +195,34 @@ q-page.column.full-height
   q-tab-panels.full-width.col(v-model="config.content.tab")
     q-tab-panel.column(name="wysiwyg")
       v-wysiwyg.full-width.col.column(
-        v-if="the",
+        v-if="'html' in (the ?? {})",
         :key="the.id",
         v-model="the.html",
         :theme="the.theme",
-        @vue:unmounted="onUnmounted(the, 'template', 'htm', the?.html)"
+        @vue:unmounted="onUnmounted(the, 'template', 'htm', the.html)"
       )
     q-tab-panel.column(name="template")
       v-source-code.col(
-        v-if="the",
+        v-if="'htm' in (the ?? {})",
         :key="the.id",
         v-model="the.htm",
-        @vue:unmounted="onUnmounted(the, 'template', 'htm', the?.htm)"
+        @vue:unmounted="onUnmounted(the, 'template', 'htm', the.htm)"
       )
     q-tab-panel.column(name="script")
       v-source-code.col(
-        v-if="the",
+        v-if="'js' in (the ?? {})",
         :key="the.id",
         v-model="the.js",
         lang="javascript",
-        @vue:unmounted="onUnmounted(the, 'script', 'js', the?.js)"
+        @vue:unmounted="onUnmounted(the, 'script', 'js', the.js)"
       )
     q-tab-panel.column(name="style")
       v-source-code.col(
-        v-if="the",
+        v-if="'css' in (the ?? {})",
         :key="the.id",
         v-model="the.css",
         lang="css",
-        @vue:unmounted="onUnmounted(the, 'style', 'css', the?.css)"
+        @vue:unmounted="onUnmounted(the, 'style', 'css', the.css)"
       )
 </template>
 <script setup lang="ts">
@@ -245,9 +258,16 @@ import { computed, ref, watch } from "vue";
  * @type {QVueGlobals}
  */
 const $q: QVueGlobals = useQuasar();
-/** @type {Ref<object>} */
+/**
+ * Иконки для выбора
+ *
+ * @type {Ref<object>}
+ */
 const icons: Ref<object> = ref(materialIcons.icons);
 /**
+ * Функция экстренной записи при размонтировании
+ *
+ * @async
  * @function onUnmounted
  * @param {TPage} that - Текущий объект страницы
  * @param {string} key - Название свойства для хранения считанного файла
@@ -262,14 +282,23 @@ const onUnmounted = async (
 ) => {
   if (that) save.call(that, key, ext, await value);
 };
-/** @type {ComputedRef<TPage | null>} */
-const the: ComputedRef<TPage | null> = computed(
-  () =>
-    pages.value.find(({ id }) => id === config.value.content.selected) ?? null,
+/**
+ * Выбранный объект страницы
+ *
+ * @type {ComputedRef<TPage | undefined>}
+ */
+const the: ComputedRef<TPage | undefined> = computed(() =>
+  pages.value.find(({ id }) => id === config.value.content.selected),
 );
-/** @type {WritableComputedRef<string | null>} */
+/**
+ * Значение постоянной ссылки
+ *
+ * @type {WritableComputedRef<string | null>}
+ */
 const loc: WritableComputedRef<string | null> = computed({
   /**
+   * Получение постоянной ссылки
+   *
    * @function get
    * @returns {string | null} - Постоянная ссылка
    */
@@ -277,6 +306,8 @@ const loc: WritableComputedRef<string | null> = computed({
     return the.value?.loc ?? null;
   },
   /**
+   * Запись постоянной ссылки
+   *
    * @function set
    * @param {string | null} value - Новое значение постоянной ссылки
    */
@@ -284,7 +315,11 @@ const loc: WritableComputedRef<string | null> = computed({
     if (the.value) the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
   },
 });
-/** @type {Ref<object>} */
+/**
+ * Объект для виджета выбора иконки
+ *
+ * @type {Ref<object>}
+ */
 const iconPicker: Ref<object> = ref({ show, filter, pagination });
 rightDrawer.value = true;
 watch(
