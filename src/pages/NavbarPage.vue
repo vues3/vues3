@@ -8,7 +8,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         q-item-label Настройки панели навигации
     q-card-section
       q-select(
-        v-if="$.navbar?.theme !== undefined",
+        v-if="'theme' in ($.navbar ?? {})",
         v-model="$.navbar.theme",
         label="Цветовая тема",
         :options="themes",
@@ -21,7 +21,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
           q-item(v-ripple, tag="label")
             q-item-section(avatar)
               q-checkbox(
-                v-if="$.navbar?.setup !== undefined",
+                v-if="'setup' in ($.navbar ?? {})",
                 v-model="$.navbar.setup"
               )
             q-item-section
@@ -29,13 +29,13 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
           q-item(v-ripple, tag="label")
             q-item-section(avatar)
               q-checkbox(
-                v-if="$.navbar?.scoped !== undefined",
+                v-if="'scoped' in ($.navbar ?? {})",
                 v-model="$.navbar.scoped"
               )
             q-item-section
               q-item-label style scoped
       q-select(
-        v-if="$.navbar?.classes !== undefined",
+        v-if="'classes' in ($.navbar ?? {})",
         v-model.trim="$.navbar.classes",
         multiple,
         use-chips,
@@ -46,7 +46,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         label="Классы навигатора"
       )
       q-select(
-        v-if="$.navbar?.scrollClasses !== undefined",
+        v-if="'scrollClasses' in ($.navbar ?? {})",
         v-model.trim="$.navbar.scrollClasses",
         multiple,
         use-chips,
@@ -79,18 +79,18 @@ q-page.column.full-height
   q-tab-panels.full-width.col(v-model="config.navbar.tab")
     q-tab-panel.column(name="template")
       v-source-code.col(
-        v-if="$.navbar?.template !== undefined",
+        v-if="'template' in ($.navbar ?? {})",
         v-model="$.navbar.template"
       )
     q-tab-panel.column(name="script")
       v-source-code.col(
-        v-if="$.navbar?.script !== undefined",
+        v-if="'script' in ($.navbar ?? {})",
         v-model="$.navbar.script",
         lang="javascript"
       )
     q-tab-panel.column(name="style")
       v-source-code.col(
-        v-if="$.navbar?.style !== undefined",
+        v-if="'style' in ($.navbar ?? {})",
         v-model="$.navbar.style",
         lang="css"
       )

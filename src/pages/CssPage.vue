@@ -13,14 +13,9 @@ q-page.column.full-height
   q-separator
   q-tab-panels.full-width.col(v-model="config.css.tab")
     q-tab-panel.column(name="style")
-      v-source-code.col(
-        v-if="$.style !== undefined",
-        v-model="$.style",
-        lang="css"
-      )
+      v-source-code.col(v-if="'style' in $", v-model="$.style", lang="css")
     q-tab-panel.column(name="css")
       v-interactive-tree(
-        v-if="$.css !== undefined",
         v-model:selected="config.css.selected",
         type="url",
         :list="$.css"

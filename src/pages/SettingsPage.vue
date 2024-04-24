@@ -6,14 +6,14 @@ q-page.column.full-height
     q-separator
     q-card-section
       q-input(
-        v-if="$.settings?.yandex !== undefined",
+        v-if="'yandex' in ($.settings ?? {})",
         v-model.trim="$.settings.yandex",
         label="yandex verification id"
       )
         template(#prepend)
           q-icon(name="mdi-alpha-y-circle-outline")
       q-input(
-        v-if="$.settings?.metrika !== undefined",
+        v-if="'metrika' in ($.settings ?? {})",
         v-model.trim="$.settings.metrika",
         label="yandex metrika id"
       )
@@ -24,14 +24,14 @@ q-page.column.full-height
     q-separator
     q-card-section
       q-input(
-        v-if="$.settings?.google !== undefined",
+        v-if="'google' in ($.settings ?? {})",
         v-model.trim="$.settings.google",
         label="google verification id"
       )
         template(#prepend)
           q-icon(name="mdi-google")
       q-input(
-        v-if="$.settings?.analytics !== undefined",
+        v-if="'analytics' in ($.settings ?? {})",
         v-model.trim="$.settings.analytics",
         label="google analytics id"
       )
@@ -45,7 +45,7 @@ q-page.column.full-height
         q-item(v-ripple, tag="label")
           q-item-section(avatar)
             q-checkbox(
-              v-if="$.settings?.landing !== undefined",
+              v-if="'landing' in ($.settings ?? {})",
               v-model="$.settings.landing"
             )
           q-item-section

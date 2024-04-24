@@ -14,13 +14,12 @@ q-page.column.full-height
   q-tab-panels.full-width.col(v-model="config.js.tab")
     q-tab-panel.column(name="script")
       v-source-code.col(
-        v-if="$.script !== undefined",
+        v-if="'script' in $",
         v-model="$.script",
         lang="javascript"
       )
     q-tab-panel.column(name="js")
       v-interactive-tree(
-        v-if="$.js !== undefined",
         v-model:selected="config.js.selected",
         type="url",
         :list="$.js"
