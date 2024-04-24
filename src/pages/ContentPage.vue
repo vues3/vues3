@@ -55,7 +55,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
                 q-item-label style scoped
                 q-item-label(caption) the.scoped
     q-separator
-    q-card(v-if="the", flat)
+    q-card(flat)
       q-item.text-teal
         q-item-section(avatar)
           q-icon(name="travel_explore")
