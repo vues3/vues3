@@ -37,13 +37,13 @@ import type { ComputedRef, ModelRef, Ref } from "vue";
 import { computed, ref, watch } from "vue";
 /**
  * @type {IProps}
- * @property {QEditor | null} editor - Экземпляр редактора
+ * @property {QEditor | undefined} editor - Экземпляр редактора
  */
 interface IProps {
-  editor: QEditor | null;
+  editor?: QEditor;
 }
 withDefaults(defineProps<IProps>(), {
-  editor: null,
+  editor: undefined,
 });
 /**
  * Флаг открытия модального окна
@@ -54,19 +54,19 @@ const model: ModelRef<boolean> = defineModel<boolean>({ default: false });
 /**
  * Идентификатор выбранной страницы
  *
- * @type {Ref<string | null>}
+ * @type {Ref<string | undefined>}
  */
-const selected: Ref<string | null> = ref(null);
+const selected: Ref<string | undefined> = ref();
 /**
  * Выбранный объект страницы
  *
- * @type {ComputedRef<TPage | null>}
+ * @type {ComputedRef<TPage | undefined>}
  */
-const the: ComputedRef<TPage | null> = computed(
-  () => pages.value.find(({ id }) => id === selected.value) ?? null,
+const the: ComputedRef<TPage | undefined> = computed(() =>
+  pages.value.find(({ id }) => id === selected.value),
 );
 watch(model, (show) => {
   const [{ id }] = $.content ?? [];
-  if (show) selected.value = id ?? null;
+  if (show) selected.value = id;
 });
 </script>

@@ -41,12 +41,12 @@ import type { ModelRef, Ref } from "vue";
 import { ref, watch, watchPostEffect } from "vue";
 /**
  * @type {IProps}
- * @property {QEditor | null} editor - Экземпляр редактора
+ * @property {QEditor | undefined} editor - Экземпляр редактора
  * @property {string | undefined} theme - Тема
  */
 interface IProps {
-  editor: QEditor | null;
-  theme: string | undefined;
+  editor?: QEditor;
+  theme?: string;
 }
 /**
  * Пропсы
@@ -54,7 +54,7 @@ interface IProps {
  * @type {IProps}
  */
 const props: IProps = withDefaults(defineProps<IProps>(), {
-  editor: null,
+  editor: undefined,
   theme: undefined,
 });
 /**
@@ -66,9 +66,9 @@ const model: ModelRef<boolean> = defineModel<boolean>({ default: false });
 /**
  * Шаблон для вставки
  *
- * @type {Ref<string | null>}
+ * @type {Ref<string | undefined>}
  */
-const html: Ref<string | null> = ref(null);
+const html: Ref<string | undefined> = ref();
 const [{ value }] = options;
 watch(model, (show) => {
   if (show) html.value = value;
@@ -76,9 +76,9 @@ watch(model, (show) => {
 /**
  * Элемент для демонстрации шаблона
  *
- * @type {Ref<HTMLElement | null>}
+ * @type {Ref<HTMLElement | undefined>}
  */
-const element: Ref<HTMLElement | null> = ref(null);
+const element: Ref<HTMLElement | undefined> = ref();
 watchPostEffect(() => {
   if (element.value) element.value.dataset.theme = props.theme;
 });

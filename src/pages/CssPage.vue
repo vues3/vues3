@@ -27,5 +27,5 @@ import VSourceCode from "components/VSourceCode.vue";
 import { config, rightDrawer } from "stores/app";
 import { $ } from "stores/data";
 
-rightDrawer.value = null;
+rightDrawer.value = undefined;
 </script>

@@ -142,10 +142,10 @@ const root: ComputedRef<object> = computed(() =>
 /**
  * Поиск текущего объекта страницы
  *
- * @type {ComputedRef<TPage | null>}
+ * @type {ComputedRef<TPage | undefined>}
  */
-const the: ComputedRef<TPage | null> = computed(
-  () => pages.value.find(({ id }) => id === route.name) ?? null,
+const the: ComputedRef<TPage | undefined> = computed(() =>
+  pages.value.find(({ id }) => id === route.name),
 );
 /**
  * Ссылка на переключатель панели

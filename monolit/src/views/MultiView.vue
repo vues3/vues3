@@ -11,7 +11,7 @@
     v-cloak,
     class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
     :data-theme="a.theme",
-    :role="a.id === the.id ? 'main' : null"
+    :role="a.id === the.id ? 'main' : undefined"
   )
     component(
       :is="templates[a.id]",
@@ -55,9 +55,9 @@ const router: Router = useRouter();
  * Вычисление текущего объекта с учетом переадресации корневого объекта страницы
  * на первый доступный объект страницы
  *
- * @type {ComputedRef<TPage | null>}
+ * @type {ComputedRef<TPage | undefined>}
  */
-const the: ComputedRef<TPage | null> = computed(() => {
+const the: ComputedRef<TPage | undefined> = computed(() => {
   /**
    * Позиция текущей страницы в массиве страниц
    *
@@ -70,7 +70,7 @@ const the: ComputedRef<TPage | null> = computed(() => {
    * @type {TPage}
    */
   const ret: TPage = pages.value[index];
-  return index ? ret : ret.children[0] ?? null;
+  return index ? ret : ret.children[0];
 });
 /**
  * Вычисление массива видимых объектов страниц с одинаковым предком

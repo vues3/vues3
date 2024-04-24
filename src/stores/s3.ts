@@ -74,13 +74,13 @@ export const putFile = async (Key: string, ContentType: string, file: File) => {
  * Считывание объекта
  *
  * @param {string} Key Имя файла
- * @returns {Promise<string | null>} Тело файла
+ * @returns {Promise<string | undefined>} Тело файла
  */
-export const getObject = async (Key: string): Promise<string | null> => {
+export const getObject = async (Key: string): Promise<string | undefined> => {
   const Bucket = bucket.value;
   const ResponseCacheControl = "no-store";
   const textDecoder = new TextDecoder();
-  let ret: string | null = null;
+  let ret: string | undefined;
   if (S3.value)
     try {
       const { Body } = await S3.value.send(

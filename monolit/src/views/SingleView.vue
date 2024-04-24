@@ -33,9 +33,9 @@ const route: RouteLocationNormalizedLoaded = useRoute();
  * Вычисление текущего объекта с учетом переадресации корневого объекта страницы
  * на первый доступный объект страницы
  *
- * @type {ComputedRef<TPage | null>}
+ * @type {ComputedRef<TPage | undefined>}
  */
-const the: ComputedRef<TPage | null> = computed(() => {
+const the: ComputedRef<TPage | undefined> = computed(() => {
   /**
    * Позиция текущей страницы в массиве страниц
    *
@@ -48,14 +48,14 @@ const the: ComputedRef<TPage | null> = computed(() => {
    * @type {TPage}
    */
   const ret: TPage = pages.value[index];
-  return index ? ret : ret.children[0] ?? null;
+  return index ? ret : ret.children[0];
 });
 /**
  * Вычисление объекта загруженных шаблонов
  *
- * @type {ComputedRef<object | null>}
+ * @type {ComputedRef<object | undefined>}
  */
-const template: ComputedRef<object | null> = computed(
+const template: ComputedRef<object | undefined> = computed(
   () => the.value && getAsyncComponent(the.value),
 );
 </script>

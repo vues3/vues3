@@ -300,7 +300,7 @@ watchDebounced(
   { deep, debounce },
 );
 
-export const accessKeyId: Ref<string | null> = ref(null);
+export const accessKeyId: Ref<string | undefined> = ref();
 
 /**
  * Смешивание сохраненного объекта с объектом по умолчанию
@@ -325,7 +325,7 @@ export const config: RemovableRef<TConfig> = useStorage(
   },
 );
 
-export const rightDrawer: Ref<boolean | null> = ref(null);
+export const rightDrawer: Ref<boolean | undefined> = ref();
 
 const sitemap = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
@@ -369,21 +369,21 @@ export const pagination: object = { itemsPerPage, page };
 /**
  * @function putImage
  * @param {object} file - Файл
- * @returns {Promise<Record<string, string | null>>} Возвращаем путь файла или
- *   null в случае ошибки
+ * @returns {Promise<Record<string, string | undefined>>} Возвращаем путь файла
+ *   или undefined в случае ошибки
  * @see {@link
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#image_types}
  */
 export const putImage = async (
   file: File,
-): Promise<Record<string, string | null>> => {
+): Promise<Record<string, string | undefined>> => {
   const { type } = file;
 
   /** @type {string} */
   const filePath: string = `assets/${crypto.randomUUID()}.${mime.getExtension(type)}`;
 
-  /** @type {string | null} */
-  let message: string | null = null;
+  /** @type {string | undefined} */
+  let message: string | undefined;
 
   try {
     if (mimes.includes(type)) await putFile(filePath, type, file);

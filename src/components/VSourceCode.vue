@@ -73,9 +73,9 @@ const beautify = (value: string) => {
 /**
  * Экземпляр редактора
  *
- * @type {Ref<HTMLElement | null>}
+ * @type {Ref<HTMLElement | undefined>}
  */
-const editor: Ref<HTMLElement | null> = ref(null);
+const editor: Ref<HTMLElement | undefined> = ref();
 /**
  * Текст для вставки в редактор
  *

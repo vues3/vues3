@@ -55,5 +55,5 @@ q-page.column.full-height
 import { rightDrawer } from "stores/app";
 import { $ } from "stores/data";
 
-rightDrawer.value = null;
+rightDrawer.value = undefined;
 </script>

@@ -7,7 +7,7 @@ q-layout(view="hHh Lpr lff")
         q-avatar(icon="rocket_launch", size="xl")
         | Vue.S3
       q-btn(
-        v-if="rightDrawer !== null",
+        v-if="rightDrawer !== undefined",
         flat,
         dense,
         round,

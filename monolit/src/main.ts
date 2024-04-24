@@ -80,9 +80,9 @@ app.config.globalProperties.mdi = mdi;
  *
  * @constant
  * @default
- * @type {string | null}
+ * @type {string}
  */
-const env: string | null = process.env.NODE_ENV ?? null;
+const env: string = process.env.NODE_ENV;
 /**
  * Объект истории
  *

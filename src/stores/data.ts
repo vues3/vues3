@@ -79,14 +79,14 @@ import { computed, reactive, watch } from "vue";
  * @property {boolean} [contenteditable=false] - Признак редактирования свойства
  *   {@link label}. Default is `false`
  * @property {TPage[]} children - Массив дочерних страниц
- * @property {TPage | null} parent - Родительская страница
+ * @property {TPage | undefined} parent - Родительская страница
  * @property {TPage[]} siblings - Массив одноуровневых страниц
  * @property {TPage[]} branch - Массив объектов, определяющий путь до страницы,
  *   проще говоря, ветка в дереве
- * @property {TPage | null} prev - Предыдущая страница в массиве одноуровневых
- *   страниц
- * @property {TPage | null} next - Последующая страница в массиве одноуровневых
- *   станиц
+ * @property {TPage | undefined} prev - Предыдущая страница в массиве
+ *   одноуровневых страниц
+ * @property {TPage | undefined} next - Последующая страница в массиве
+ *   одноуровневых станиц
  * @property {TPage[]} pages - Плоский массив всех объектов страниц
  * @property {Promise<string> | string} html - Обещание на содержимое шаблона
  *   страницы с исправленными путями картинок
@@ -100,34 +100,33 @@ import { computed, reactive, watch } from "vue";
  *   строке браузера
  * @property {number} index - Порядковый номер страницы в массиве одноуровневых
  *   страниц
- * @property {string | null} name - Вычисленное имя страницы, предпочтительно
- *   полное
+ * @property {string} name - Вычисленное имя страницы, предпочтительно полное
  * @property {string} url - Если введен loc - значит loc. Иначе возвращает path
- * @property {string | null} favicon - Название фавиконки из набора mdi
+ * @property {string} favicon - Название фавиконки из набора mdi
  * @property {string} [style] - Сохраненные стили страницы
  * @property {string} [script] - Сохраненные скрипты страницы
  * @property {string} [template] - Сохраненный шаблон страницы
  */
 export type TPage = FromSchema<typeof plainPage> & {
   children: TPage[];
-  parent: TPage | null;
+  parent?: TPage;
   siblings: TPage[];
   branch: TPage[];
-  prev: TPage | null;
-  next: TPage | null;
+  prev?: TPage;
+  next?: TPage;
   pages: TPage[];
-  html?: Promise<string> | string;
+  html: Promise<string> | string;
   htm: Promise<string> | string;
   js: Promise<string> | string;
   css: Promise<string> | string;
   path: string;
   index: number;
-  name: string | null;
+  name: string;
   url: string;
-  favicon: string | null;
-  style?: string | null;
-  script?: string | null;
-  template?: string | null;
+  favicon: string;
+  style: string;
+  script: string;
+  template: string;
 };
 
 /**
@@ -178,7 +177,7 @@ export type TNavbar = FromSchema<typeof Navbar>;
 export type TData = FromSchema<
   typeof plainData,
   { references: [typeof Settings, typeof Resource, typeof Navbar] }
-> & { content: TPage[] | null };
+> & { content: TPage[] };
 
 /**
  * Динамический расчет uuid при валидации
@@ -283,10 +282,10 @@ const prev: PropertyDescriptor = {
   /**
    * Геттер предыдущего объекта
    *
-   * @returns {TPage | null} - Предыдущий объект
+   * @returns {TPage | undefined} - Предыдущий объект
    */
-  get(this: TPage): TPage | null {
-    return this.siblings[this.index - 1] ?? null;
+  get(this: TPage): TPage | undefined {
+    return this.siblings[this.index - 1];
   },
 };
 
@@ -299,10 +298,10 @@ const next: PropertyDescriptor = {
   /**
    * Геттер следующего объекта
    *
-   * @returns {TPage | null} - Следующий объект
+   * @returns {TPage | undefined} - Следующий объект
    */
-  get(this: TPage): TPage | null {
-    return this.siblings[this.index + 1] ?? null;
+  get(this: TPage): TPage | undefined {
+    return this.siblings[this.index + 1];
   },
 };
 
@@ -327,12 +326,12 @@ const branch: PropertyDescriptor = {
     /**
      * Родительский объект
      *
-     * @type {TPage | null}
+     * @type {TPage | undefined}
      */
-    let parent: TPage | null = this;
+    let parent: TPage | undefined = this;
     do {
       ret.unshift(parent);
-      ({ parent = null } = parent);
+      ({ parent } = parent);
     } while (parent);
     return ret;
   },
@@ -347,9 +346,9 @@ const path: PropertyDescriptor = {
   /**
    * Геттер пути до объекта
    *
-   * @returns {string | null} - Путь до объекта
+   * @returns {string} - Путь до объекта
    */
-  get(this: TPage): string | null {
+  get(this: TPage): string {
     return this.branch
       .map(
         ({ label, id }) =>
@@ -390,7 +389,7 @@ const name: PropertyDescriptor = {
    * @returns {string | null} - Название страницы
    */
   get(this: TPage): string | null {
-    return this.title ?? this.label ?? null;
+    return this.title ?? this.label;
   },
 };
 
@@ -403,10 +402,10 @@ const favicon: PropertyDescriptor = {
   /**
    * Геттер фавиконки страницы
    *
-   * @returns {string | null} - Фавиконка страницы
+   * @returns {string | undefined} - Фавиконка страницы
    */
-  get(this: TPage): string | null {
-    return this.icon?.replace(/-./g, (x) => x[1].toUpperCase()) ?? null;
+  get(this: TPage): string | undefined {
+    return this.icon?.replace(/-./g, (x) => x[1].toUpperCase());
   },
 };
 
@@ -437,7 +436,7 @@ const fixPlain = (siblings: { value: TResource[] }) => {
  */
 const fixDeep = (
   siblings: { value: TPage[]; configurable?: boolean },
-  parent: { value: TPage | null; configurable?: boolean } = { value: null },
+  parent: { value?: TPage; configurable?: boolean } = { value: undefined },
 ) => {
   siblings.value.forEach((value) => {
     Object.defineProperties(value, {

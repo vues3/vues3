@@ -142,10 +142,10 @@ interface ICred {
 
 const router = useRouter();
 const $q = useQuasar();
-accessKeyId.value = null;
+accessKeyId.value = undefined;
 bucket.value = "";
 wendpoint.value = "";
-rightDrawer.value = null;
+rightDrawer.value = undefined;
 const secretAccessKey = ref("");
 const region = ref("");
 const endpoint = ref("");
@@ -195,10 +195,10 @@ const providers: IRegion[] = [
     wendpoint: "https://website.yandexcloud.net",
   },
 ];
-const provider: Ref<IRegion | null> = ref(null);
+const provider: Ref<IRegion | undefined> = ref();
 const regions = ref([]);
 const creds: RemovableRef<ICred[]> = useStorage("vues3", []);
-const cred: Ref<ICred | null> = ref(null);
+const cred: Ref<ICred | undefined> = ref();
 watch(provider, (value) => {
   if (value) {
     set(regions, value.regions);
@@ -230,13 +230,13 @@ watch(cred, (value) => {
     set(bucket, "");
     set(accessKeyId, "");
     set(secretAccessKey, "");
-    set(provider, null);
+    set(provider, undefined);
     set(region, "");
     set(endpoint, "");
     set(wendpoint, "");
   }
 });
-let s3Client: S3Client | null = null;
+let s3Client: S3Client | undefined;
 /** { @link https://fetch.spec.whatwg.org/#http-network-or-cache-fetch } */
 const login = async () => {
   if (!s3Client)
@@ -274,7 +274,7 @@ const login = async () => {
       set(S3, s3Client);
       router.push("/content");
     } catch (err) {
-      s3Client = null;
+      s3Client = undefined;
       const { message } = err as Error;
       $q.notify({ message });
     }
