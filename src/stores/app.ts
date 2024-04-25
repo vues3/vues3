@@ -1,10 +1,5 @@
-import type { AfterFetchContext, RemovableRef } from "@vueuse/core";
-import {
-  useDebounceFn,
-  useFetch,
-  useStorage,
-  watchDebounced,
-} from "@vueuse/core";
+import type { RemovableRef } from "@vueuse/core";
+import { useDebounceFn, useStorage, watchDebounced } from "@vueuse/core";
 import type { AnySchema, ValidateFunction } from "ajv";
 import Ajv from "ajv";
 import mimes from "assets/mimes.json";
@@ -57,12 +52,6 @@ const ajv: Ajv = new Ajv({
 export const validateConfig: ValidateFunction = ajv.getSchema(
   "urn:jsonschema:config",
 ) as ValidateFunction;
-/**
- * @constant
- * @default
- * @type {string}
- */
-const rootFileName: string = "index.html";
 /**
  * @function getFile
  * @param {keyof TPage} key - Название свойства для хранения считанного файла
@@ -244,59 +233,42 @@ watch(S3, async (value) => {
       delete $[key as keyof {}];
     });
 });
-const { data } = useFetch("monolit/.vite/manifest.json", {
-  /**
-   * Переводим в коллекцию значений
-   *
-   * @param {AfterFetchContext} ctx - Возвращаемый объект
-   * @returns {Partial<AfterFetchContext>} - Трансформируемая возвращаемая
-   *   коллекция значений
-   */
-  afterFetch(ctx: AfterFetchContext): Partial<AfterFetchContext> {
-    ctx.data = new Set(
-      [
-        rootFileName,
-        ".vite/manifest.json",
-        "robots.txt",
-        ...(Object.values(ctx.data) as { file: string }[]).map(
-          ({ file }) => file,
-        ),
-        ...(ctx.data[rootFileName]?.css ?? []),
-      ].filter(Boolean),
-    );
-    return ctx;
-  },
-}).json();
-watch(
-  () => S3.value && data.value,
-  async () => {
-    /**
-     * Манифест, сохраненный на сервере
-     *
-     * @type {Record<string, Record<string, string | string[]>>}
-     * @todo СтОит сделать полноценную валидацию, да где вот на манифест найти
-     *   схему?
-     */
-    const manifest: Record<
-      string,
-      Record<string, string | string[]>
-    > = JSON.parse((await getObject(".vite/manifest.json")) ?? "{}");
-    [
-      ...data.value.difference(
+watch(S3, async (newValue) => {
+  if (newValue) {
+    const [localManifest, serverManifest] = (
+      (await Promise.all([
+        (await fetch("monolit/.vite/manifest.json")).json(),
+        new Promise((resolve) => {
+          getObject(".vite/manifest.json").then((value = "{}") => {
+            try {
+              resolve(JSON.parse(value));
+            } catch (e) {
+              resolve({});
+            }
+          });
+        }),
+      ])) as Record<string, Record<string, string | string[]>>[]
+    ).map(
+      (value) =>
         new Set(
           [
-            ...Object.values(manifest).map(({ file }) => file),
-            ...(manifest[rootFileName]?.css ?? []),
+            ...Object.values(value).map(({ file }) => file),
+            ...(value["index.html"]?.css ?? []),
           ].filter(Boolean),
         ),
-      ),
-    ].reduce(async (promise: Promise<string>, asset: string, index: number) => {
-      if (index % 2) await promise;
-      const body = await (await fetch(`monolit/${asset}`)).blob();
-      putObject(asset, body.type, body);
-    }, Promise.resolve());
-  },
-);
+    );
+    localManifest
+      .add("index.html")
+      .add(".vite/manifest.json")
+      .add("robots.txt")
+      // @ts-ignore
+      .difference(serverManifest)
+      .forEach(async (value: string) => {
+        const body = await (await fetch(`monolit/${value}`)).blob();
+        putObject(value, body.type, body);
+      });
+  }
+});
 watchDebounced(
   $,
   (value, oldValue) => {

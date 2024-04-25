@@ -157,7 +157,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
           hint="the.alt"
         )
         q-img.q-mt-md.rounded-borders(
-          v-if="the?.image",
+          v-if="'image' in (the ?? {}) && the.image",
           :src="`${base}${the.image}`",
           :ratio="16 / 9"
         )
@@ -175,7 +175,10 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
           template(#error)
             .absolute-full.flex-center.flex
               q-btn(label="Загрузить картинку", color="primary", @click="open")
-        q-img.q-mt-md.rounded-borders(v-if="!the?.image", :ratio="16 / 9")
+        q-img.q-mt-md.rounded-borders(
+          v-if="'image' in (the ?? {}) && !the.image",
+          :ratio="16 / 9"
+        )
           .absolute-full.flex-center.flex
             q-btn(label="Загрузить картинку", color="primary", @click="open")
 q-page.column.full-height
@@ -199,14 +202,14 @@ q-page.column.full-height
         :key="the.id",
         v-model="the.html",
         :theme="the.theme",
-        @vue:unmounted="onUnmounted(the, 'template', 'htm', the.html)"
+        @vue:unmounted="onUnmounted(the, 'template', 'htm', the?.html)"
       )
     q-tab-panel.column(name="template")
       v-source-code.col(
         v-if="'htm' in (the ?? {})",
         :key="the.id",
         v-model="the.htm",
-        @vue:unmounted="onUnmounted(the, 'template', 'htm', the.htm)"
+        @vue:unmounted="onUnmounted(the, 'template', 'htm', the?.htm)"
       )
     q-tab-panel.column(name="script")
       v-source-code.col(
@@ -214,7 +217,7 @@ q-page.column.full-height
         :key="the.id",
         v-model="the.js",
         lang="javascript",
-        @vue:unmounted="onUnmounted(the, 'script', 'js', the.js)"
+        @vue:unmounted="onUnmounted(the, 'script', 'js', the?.js)"
       )
     q-tab-panel.column(name="style")
       v-source-code.col(
@@ -222,7 +225,7 @@ q-page.column.full-height
         :key="the.id",
         v-model="the.css",
         lang="css",
-        @vue:unmounted="onUnmounted(the, 'style', 'css', the.css)"
+        @vue:unmounted="onUnmounted(the, 'style', 'css', the?.css)"
       )
 </template>
 <script setup lang="ts">
