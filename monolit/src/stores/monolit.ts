@@ -3,7 +3,6 @@ import * as tresjsCore from "@tresjs/core";
 import * as vueuseComponents from "@vueuse/components";
 import * as vueuseCore from "@vueuse/core";
 import { useStyleTag } from "@vueuse/core";
-import * as vueuseMath from "@vueuse/math";
 import type { TPage } from "app/src/stores/data";
 import { cache } from "app/src/stores/defaults";
 import type { AsyncComponentLoader } from "vue";
@@ -25,7 +24,6 @@ const moduleCache: ModuleExport = {
   vue,
   "vue-router": vueRouter,
   "@vueuse/core": vueuseCore,
-  "@vueuse/math": vueuseMath,
   "@vueuse/components": vueuseComponents,
   "@tresjs/core": tresjsCore,
   "@tresjs/cientos": tresjsCientos,
