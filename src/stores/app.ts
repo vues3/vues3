@@ -25,6 +25,12 @@ import { base, bucket, getObject, putFile, putObject, S3 } from "stores/s3";
 import { toXML } from "to-xml";
 import type { ComputedRef, Ref, WatchOptions } from "vue";
 import { computed, ref, watch } from "vue";
+/**
+ * Объект для парсинга
+ *
+ * @type {DOMParser}
+ */
+const parser: DOMParser = new DOMParser();
 /** @type {TConfig} */
 export type TConfig = FromSchema<typeof Config>;
 /**
@@ -147,11 +153,15 @@ const html: PropertyDescriptor = {
    * @returns {Promise<string>} - Template
    */
   async get(this: TPage): Promise<string> {
-    const baseUrl = `${base.value}/`;
-    return (await this.htm).replace(
-      /(["'(;])([^"'(;:]*?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>))/gi,
-      (match, p1, p2) => `${p1}${new URL(p2.replace(/^\//, ""), baseUrl).href}`,
+    const doc = parser.parseFromString(
+      `<head><base href="${base.value}/"></head><body>${await this.htm}</body>`,
+      "text/html",
     );
+    [...doc.images].forEach((image) => {
+      const element = image;
+      element.src = image.src;
+    });
+    return doc.body.innerHTML;
   },
   /**
    * Запись исходного кода страницы в структуры данных
@@ -161,10 +171,15 @@ const html: PropertyDescriptor = {
    */
   set(this: TPage, value: string) {
     const regexp = new RegExp(`^${base.value}`);
-    this.htm = value.replace(
-      /[^"'(;]+?\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp)[^'")&]?(?=[^<]+?>)/gi,
-      (match) => match.replace(regexp, ""),
+    const doc = parser.parseFromString(
+      `<head><base href="${base.value}/"></head><body>${value}</body>`,
+      "text/html",
     );
+    [...doc.images].forEach((image) => {
+      const element = image;
+      element.src = image.src.replace(regexp, "");
+    });
+    this.htm = doc.body.innerHTML;
   },
 };
 /**
