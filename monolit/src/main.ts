@@ -58,7 +58,7 @@ app.config.globalProperties.mdi = mdi;
    * @default
    * @type {Response}
    */
-  const response: Response = await fetch("/assets/data.json", {
+  const response: Response = await fetch("/data.json", {
     cache,
   });
   /**

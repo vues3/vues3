@@ -236,9 +236,7 @@ const js: PropertyDescriptor = {
 watch(S3, async (value) => {
   if (value) {
     /** @type {object} */
-    const data: object = JSON.parse(
-      (await getObject("assets/data.json")) ?? "{}",
-    );
+    const data: object = JSON.parse((await getObject("data.json")) ?? "{}");
     validate?.(data);
     Object.keys(data).forEach((key) => {
       $[key as keyof TData] = data[key as keyof {}];
@@ -288,7 +286,7 @@ watchDebounced(
   $,
   (value, oldValue) => {
     if (value && oldValue)
-      putObject("assets/data.json", "application/json", JSON.stringify(value));
+      putObject("data.json", "application/json", JSON.stringify(value));
   },
   { deep, debounce },
 );
