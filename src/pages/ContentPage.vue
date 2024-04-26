@@ -11,7 +11,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         v-model:selected="config.content.selected",
         v-model:expanded="config.content.expanded",
         :nodes="$.content",
-        :list="pages"
+        :list="views"
       )
     q-separator
     q-card(flat)
@@ -241,8 +241,8 @@ import VWysiwyg from "components/VWysiwyg.vue";
 import type { QVueGlobals } from "quasar";
 import { useQuasar } from "quasar";
 import { config, pagination, putImage, rightDrawer, save } from "stores/app";
-import type { TPage } from "stores/data";
-import { $, pages } from "stores/data";
+import type { TView } from "stores/data";
+import { $, views } from "stores/data";
 import {
   accept,
   capture,
@@ -270,10 +270,10 @@ const icons: Ref<object> = ref(materialIcons.icons);
 /**
  * Выбранный объект страницы
  *
- * @type {ComputedRef<TPage | undefined>}
+ * @type {ComputedRef<TView | undefined>}
  */
-const the: ComputedRef<TPage | undefined> = computed(() =>
-  pages.value.find(({ id }) => id === config.value.content.selected),
+const the: ComputedRef<TView | undefined> = computed(() =>
+  views.value.find(({ id }) => id === config.value.content.selected),
 );
 /**
  * Функция экстренной записи при размонтировании
@@ -281,9 +281,9 @@ const the: ComputedRef<TPage | undefined> = computed(() =>
  * @async
  * @function onUnmounted
  * @param {string} ext - Расширение файла
- * @param {keyof TPage} key - Новое содержимое файла
+ * @param {keyof TView} key - Новое содержимое файла
  */
-const onUnmounted = async (ext: string, key: keyof TPage) => {
+const onUnmounted = async (ext: string, key: keyof TView) => {
   save.call(the.value, ext, (await the.value?.[key]) as string);
 };
 /**

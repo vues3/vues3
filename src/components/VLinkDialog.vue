@@ -31,8 +31,8 @@ q-dialog(v-model="model", full-width, full-height, persistent)
 </template>
 <script setup lang="ts">
 import type { QEditor } from "quasar";
-import type { TPage } from "stores/data";
-import { $, pages } from "stores/data";
+import type { TView } from "stores/data";
+import { $, views } from "stores/data";
 import type { ComputedRef, ModelRef, Ref } from "vue";
 import { computed, ref, watch } from "vue";
 /**
@@ -60,10 +60,10 @@ const selected: Ref<string | undefined> = ref();
 /**
  * Выбранный объект страницы
  *
- * @type {ComputedRef<TPage | undefined>}
+ * @type {ComputedRef<TView | undefined>}
  */
-const the: ComputedRef<TPage | undefined> = computed(() =>
-  pages.value.find(({ id }) => id === selected.value),
+const the: ComputedRef<TView | undefined> = computed(() =>
+  views.value.find(({ id }) => id === selected.value),
 );
 watch(model, (show) => {
   const [{ id }] = $.content ?? [];

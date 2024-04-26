@@ -4,9 +4,9 @@ import type { DynamicDefaultFunc } from "ajv-keywords/dist/definitions/dynamicDe
 import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
 import Data, { plainData } from "app/src/schemas/data";
 import Navbar from "app/src/schemas/navbar";
-import Page, { plainPage } from "app/src/schemas/page";
 import Resource from "app/src/schemas/resource";
 import Settings from "app/src/schemas/settings";
+import View, { plainView } from "app/src/schemas/view";
 import {
   coerceTypes,
   configurable,
@@ -19,7 +19,7 @@ import { FromSchema } from "json-schema-to-ts";
 import type { ComputedRef } from "vue";
 import { computed, reactive, watch } from "vue";
 /**
- * @type {TPage}
+ * @type {TView}
  * @property {string} [id] - Идентификатор страницы, значения по умолчанию
  *   вычисляются динамически
  * @property {string | null} [changefreq=null] - Вероятная частота изменения
@@ -77,16 +77,16 @@ import { computed, reactive, watch } from "vue";
  *   Default is `true`
  * @property {boolean} [contenteditable=false] - Признак редактирования свойства
  *   {@link label}. Default is `false`
- * @property {TPage[]} children - Массив дочерних страниц
- * @property {TPage | undefined} parent - Родительская страница
- * @property {TPage[]} siblings - Массив одноуровневых страниц
- * @property {TPage[]} branch - Массив объектов, определяющий путь до страницы,
+ * @property {TView[]} children - Массив дочерних страниц
+ * @property {TView | undefined} parent - Родительская страница
+ * @property {TView[]} siblings - Массив одноуровневых страниц
+ * @property {TView[]} branch - Массив объектов, определяющий путь до страницы,
  *   проще говоря, ветка в дереве
- * @property {TPage | undefined} prev - Предыдущая страница в массиве
+ * @property {TView | undefined} prev - Предыдущая страница в массиве
  *   одноуровневых страниц
- * @property {TPage | undefined} next - Последующая страница в массиве
+ * @property {TView | undefined} next - Последующая страница в массиве
  *   одноуровневых станиц
- * @property {TPage[]} pages - Плоский массив всех объектов страниц
+ * @property {TView[]} views - Плоский массив всех объектов страниц
  * @property {Promise<string> | string} html - Обещание на содержимое шаблона
  *   страницы с исправленными путями картинок
  * @property {Promise<string> | string} htm - Обещание на содержимое шаблона
@@ -106,14 +106,14 @@ import { computed, reactive, watch } from "vue";
  * @property {string} [script] - Сохраненные скрипты страницы
  * @property {string} [template] - Сохраненный шаблон страницы
  */
-export type TPage = FromSchema<typeof plainPage> & {
-  children: TPage[];
-  parent?: TPage;
-  siblings: TPage[];
-  branch: TPage[];
-  prev?: TPage;
-  next?: TPage;
-  pages: TPage[];
+export type TView = FromSchema<typeof plainView> & {
+  children: TView[];
+  parent?: TView;
+  siblings: TView[];
+  branch: TView[];
+  prev?: TView;
+  next?: TView;
+  views: TView[];
   html: Promise<string> | string;
   htm: string;
   js: string;
@@ -167,12 +167,12 @@ export type TNavbar = FromSchema<typeof Navbar>;
  * @property {TResource[]} css - Подключаемые общие стили сайта
  * @property {TResource[]} js - Подключаемые общие скрипты сайта
  * @property {TNavbar} navbar - Навигационная плашка сайта
- * @property {TPage[]} content - Дерево объектов страниц сайта
+ * @property {TView[]} content - Дерево объектов страниц сайта
  */
 export type TData = FromSchema<
   typeof plainData,
   { references: [typeof Settings, typeof Resource, typeof Navbar] }
-> & { content: TPage[] };
+> & { content: TView[] };
 /**
  * Динамический расчет uuid при валидации
  *
@@ -187,7 +187,7 @@ dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => () =>
  * @default
  * @type {object[]}
  */
-const schemas: object[] = [Resource, Page, Settings, Navbar, Data];
+const schemas: object[] = [Resource, View, Settings, Navbar, Data];
 /**
  * Code generation options
  *
@@ -237,12 +237,12 @@ export const validateNavbar: ValidateFunction = ajv.getSchema(
 /**
  * Рекурсивная функция преобразования древовидного объекта в массив страниц
  *
- * @function getPages
- * @param {TPage[]} pages - Элементы массива страниц
- * @returns {TPage[]} - Аддитивный массив страниц
+ * @function getViews
+ * @param {TView[]} views - Элементы массива страниц
+ * @returns {TView[]} - Аддитивный массив страниц
  */
-const getPages = (pages: TPage[]): TPage[] =>
-  pages.flatMap((element) => [element, ...getPages(element.children ?? [])]);
+const getViews = (views: TView[]): TView[] =>
+  views.flatMap((element) => [element, ...getViews(element.children ?? [])]);
 /**
  * Объект, на котором определяется свойство позиции в соседних объектах
  *
@@ -254,7 +254,7 @@ const index: PropertyDescriptor = {
    *
    * @returns {number} - Позиция в соседних объектах
    */
-  get(this: TPage): number {
+  get(this: TView): number {
     return this.siblings.findIndex(({ id }) => this.id === id);
   },
 };
@@ -267,9 +267,9 @@ const prev: PropertyDescriptor = {
   /**
    * Геттер предыдущего объекта
    *
-   * @returns {TPage | undefined} - Предыдущий объект
+   * @returns {TView | undefined} - Предыдущий объект
    */
-  get(this: TPage): TPage | undefined {
+  get(this: TView): TView | undefined {
     return this.siblings[this.index - 1];
   },
 };
@@ -282,9 +282,9 @@ const next: PropertyDescriptor = {
   /**
    * Геттер следующего объекта
    *
-   * @returns {TPage | undefined} - Следующий объект
+   * @returns {TView | undefined} - Следующий объект
    */
-  get(this: TPage): TPage | undefined {
+  get(this: TView): TView | undefined {
     return this.siblings[this.index + 1];
   },
 };
@@ -297,21 +297,21 @@ const branch: PropertyDescriptor = {
   /**
    * Геттер ветви объектов
    *
-   * @returns {TPage[]} - Ветвь объектов
+   * @returns {TView[]} - Ветвь объектов
    */
-  get(this: TPage): TPage[] {
+  get(this: TView): TView[] {
     /**
      * Результирующий массив для записи ветви
      *
-     * @type {TPage[]}
+     * @type {TView[]}
      */
-    const ret: TPage[] = [];
+    const ret: TView[] = [];
     /**
      * Родительский объект
      *
-     * @type {TPage | undefined}
+     * @type {TView | undefined}
      */
-    let parent: TPage | undefined = this;
+    let parent: TView | undefined = this;
     do {
       ret.unshift(parent);
       ({ parent } = parent);
@@ -330,7 +330,7 @@ const path: PropertyDescriptor = {
    *
    * @returns {string} - Путь до объекта
    */
-  get(this: TPage): string {
+  get(this: TView): string {
     return this.branch
       .map(
         ({ label, id }) =>
@@ -351,7 +351,7 @@ const url: PropertyDescriptor = {
    *
    * @returns {string} - Url ресурса
    */
-  get(this: TPage): string {
+  get(this: TView): string {
     return (
       (this.loc && encodeURI(this.loc?.replace(" ", "_") ?? "")) || this.path
     );
@@ -368,7 +368,7 @@ const name: PropertyDescriptor = {
    *
    * @returns {string | null} - Название страницы
    */
-  get(this: TPage): string | null {
+  get(this: TView): string | null {
     return this.title ?? this.label;
   },
 };
@@ -383,7 +383,7 @@ const favicon: PropertyDescriptor = {
    *
    * @returns {string | undefined} - Фавиконка страницы
    */
-  get(this: TPage): string | undefined {
+  get(this: TView): string | undefined {
     return this.icon?.replace(/-./g, (x) => x[1].toUpperCase());
   },
 };
@@ -403,17 +403,17 @@ const fixPlain = (siblings: { value: TResource[] }) => {
  * Рекурсивная функция ремонта страниц
  *
  * @function fixDeep
- * @param {{ value: TPage[] }} siblings - Объект для defineProperties
- * @param {TPage[]} [siblings.value] - Элементы массива страниц
+ * @param {{ value: TView[] }} siblings - Объект для defineProperties
+ * @param {TView[]} [siblings.value] - Элементы массива страниц
  * @param {boolean} [siblings.configurable] - Признак возможности конфигурации
- * @param {{ value: TPage; configurable: boolean }} [parent] - Объект для
+ * @param {{ value: TView; configurable: boolean }} [parent] - Объект для
  *   defineProperties
- * @param {TPage} parent.value - Родительский объект
+ * @param {TView} parent.value - Родительский объект
  * @param {boolean} [parent.configurable] - Признак возможности конфигурации
  */
 const fixDeep = (
-  siblings: { value: TPage[]; configurable?: boolean },
-  parent: { value?: TPage; configurable?: boolean } = { value: undefined },
+  siblings: { value: TView[]; configurable?: boolean },
+  parent: { value?: TView; configurable?: boolean } = { value: undefined },
 ) => {
   siblings.value.forEach((value) => {
     Object.defineProperties(value, {
@@ -444,17 +444,17 @@ export const $: TData = reactive({} as TData);
  * Функция для вызова расчета массива страниц
  *
  * @type {() => any}
- * @returns {TPage[]} - Страницы
+ * @returns {TView[]} - Страницы
  */
-const get: () => any = (): TPage[] => getPages($.content ?? []);
+const get: () => any = (): TView[] => getViews($.content ?? []);
 /**
  * Расчетный массив страниц
  *
- * @type {ComputedRef<TPage[]>}
+ * @type {ComputedRef<TView[]>}
  */
-export const pages: ComputedRef<TPage[]> = computed(() =>
-  get().map((value: TPage) => {
-    Object.defineProperty(value, "pages", { get });
+export const views: ComputedRef<TView[]> = computed(() =>
+  get().map((value: TView) => {
+    Object.defineProperty(value, "views", { get });
     return value;
   }),
 );
@@ -488,7 +488,7 @@ const value: undefined = undefined;
 watch($, (newValue) => {
   if (Object.keys(newValue).length) {
     ["content", "css", "js"].forEach((key) => {
-      if (!(newValue[key as keyof TData] as TPage[] | TResource[])?.length)
+      if (!(newValue[key as keyof TData] as TView[] | TResource[])?.length)
         Reflect.defineProperty(newValue, key, { value });
     });
     validate?.(newValue);

@@ -1,6 +1,6 @@
 import type { JSONSchema } from "json-schema-to-ts";
 
-const $id = "urn:jsonschema:page";
+const $id = "urn:jsonschema:view";
 const additionalProperties = false;
 const nullable = true;
 const id = "uuid";
@@ -105,7 +105,7 @@ const properties = {
 } as const;
 const type = "object";
 
-export const plainPage = {
+export const plainView = {
   $id,
   type,
   properties,

@@ -1,11 +1,11 @@
 <template lang="pug">
 q-btn-group.q-mx-xs(spread, flat)
-  q-btn(icon="note", @click="newPage")
-  q-btn(icon="delete", @click="deletePage")
-  q-btn(v-if="nodes", icon="chevron_left", @click="leftPage")
-  q-btn(v-if="nodes", icon="chevron_right", @click="rightPage")
-  q-btn(icon="expand_more", @click="downPage")
-  q-btn(icon="expand_less", @click="upPage")
+  q-btn(icon="note", @click="newView")
+  q-btn(icon="delete", @click="deleteView")
+  q-btn(v-if="nodes", icon="chevron_left", @click="leftView")
+  q-btn(v-if="nodes", icon="chevron_right", @click="rightView")
+  q-btn(icon="expand_more", @click="downView")
+  q-btn(icon="expand_less", @click="upView")
 .scroll.col
   q-tree.q-ma-xs(
     ref="tree",
@@ -37,7 +37,7 @@ q-btn-group.q-mx-xs(spread, flat)
 <script setup lang="ts">
 import type { QTree, QVueGlobals } from "quasar";
 import { useQuasar } from "quasar";
-import type { TPage } from "stores/data";
+import type { TView } from "stores/data";
 import { cancel, immediate, persistent } from "stores/defaults";
 import type { ComputedRef, Ref } from "vue";
 import { computed, nextTick, ref, watch } from "vue";
@@ -46,15 +46,15 @@ import { computed, nextTick, ref, watch } from "vue";
  * @property {string} selected - Идентификатор выбранного элемента
  * @property {string} type- Тип данных
  * @property {string[]} expanded - Массив раскрытых узлов
- * @property {TPage[]} nodes - Дерево
- * @property {TPage[]} list - Массив, представляющий дерево
+ * @property {TView[]} nodes - Дерево
+ * @property {TView[]} list - Массив, представляющий дерево
  */
 interface IProps {
   selected?: string;
   type?: string;
   expanded?: string[];
-  nodes?: TPage[];
-  list: TPage[];
+  nodes?: TView[];
+  list: TView[];
 }
 /**
  * @type {IEmits}
@@ -87,16 +87,16 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
    * Пустой массив по умолчанию
    *
    * @function list
-   * @returns {TPage[]} - Пустой массив
+   * @returns {TView[]} - Пустой массив
    */
-  list: (): TPage[] => [],
+  list: (): TView[] => [],
 });
 /**
  * Объект текущей страницы
  *
- * @type {ComputedRef<TPage | null | undefined>}
+ * @type {ComputedRef<TView | null | undefined>}
  */
-const the: ComputedRef<TPage | null | undefined> = computed(() =>
+const the: ComputedRef<TView | null | undefined> = computed(() =>
   props.list.length
     ? props.list.find(({ id }) => id === props.selected) ?? null
     : undefined,
@@ -152,9 +152,9 @@ const message: string = "Вы действительно хотите удали
 /**
  * Удаление текущей страницы
  *
- * @function deletePage
+ * @function deleteView
  */
-const deletePage = () => {
+const deleteView = () => {
   if (the.value) {
     const { parent, prev, next, siblings, index } = the.value;
     $q.dialog({ title, message, cancel, persistent }).onOk(async () => {
@@ -186,9 +186,9 @@ const deletePage = () => {
 /**
  * Перемещение страницы вверх на одну позицию
  *
- * @function upPage
+ * @function upView
  */
-const upPage = () => {
+const upView = () => {
   if (the.value) {
     const { index, siblings } = the.value;
     if (index)
@@ -201,9 +201,9 @@ const upPage = () => {
 /**
  * Перемещение страницы вниз на одну позицию
  *
- * @function downPage
+ * @function downView
  */
-const downPage = () => {
+const downView = () => {
   if (the.value) {
     const { index, siblings } = the.value;
     if (index < siblings.length - 1)
@@ -216,9 +216,9 @@ const downPage = () => {
 /**
  * Перемещение страницы вправо на одну позицию
  *
- * @function rightPage
+ * @function rightView
  */
-const rightPage = () => {
+const rightView = () => {
   if (the.value) {
     const { index, siblings, prev } = the.value;
     if (prev) {
@@ -231,9 +231,9 @@ const rightPage = () => {
 /**
  * Перемещение страницы влево на одну позицию
  *
- * @function leftPage
+ * @function leftView
  */
-const leftPage = () => {
+const leftView = () => {
   if (the.value) {
     const { index, parent } = the.value;
     if (parent) {
@@ -260,9 +260,9 @@ const value: boolean = false;
 /**
  * Добавление новой страницы
  *
- * @function newPage
+ * @function newView
  */
-const newPage = () => {
+const newView = () => {
   if (the.value) {
     const { parent, children, index, siblings } = the.value;
     /**
@@ -273,14 +273,14 @@ const newPage = () => {
     const id: string = crypto.randomUUID();
     switch (true) {
       case !!parent:
-        siblings.splice(index + 1, 0, { id } as TPage);
+        siblings.splice(index + 1, 0, { id } as TView);
         break;
       case !!children:
-        children.unshift({ id } as TPage);
+        children.unshift({ id } as TView);
         tree.value?.setExpanded(the.value.id, true);
         break;
       default:
-        siblings.splice(index + 1, 0, { id } as TPage);
+        siblings.splice(index + 1, 0, { id } as TView);
         break;
     }
     updateSelected(id);

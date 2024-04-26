@@ -55,24 +55,24 @@ v-head
     @scroll.passive="start"
   )
     .z-40(
-      v-if="pages[0]?.enabled",
+      v-if="views[0]?.enabled",
       :class="[...(ready ? [] : $.navbar?.scroll ?? []), ...($.navbar?.classes ?? [])]",
       :data-theme="$.navbar?.theme"
     )
       .navbar
         component(:is="navigator", :the)
     router-view
-  .drawer-side.z-50(v-if="pages[0]?.enabled")
+  .drawer-side.z-50(v-if="views[0]?.enabled")
     label.drawer-overlay(for="drawer")
     .grid.max-w-full.self-stretch.overflow-x-auto.scroll-smooth(
-      :class="{ 'justify-self-stretch': pages[0]?.full }"
+      :class="{ 'justify-self-stretch': views[0]?.full }"
     )
       .col-start-1.row-start-1.flex
         .prose.w-full.max-w-none.flex-auto.text-sm(
           class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
-          :data-theme="pages[0]?.theme"
+          :data-theme="views[0]?.theme"
         )
-          component(:is="root", :the="pages[0]")
+          component(:is="root", :the="views[0]")
       label.btn.btn-circle.btn-ghost.sticky.right-1.top-1.col-start-1.row-start-1.justify-self-end(
         for="drawer"
       )
@@ -81,8 +81,8 @@ v-head
 </template>
 <script setup lang="ts">
 import { useTimeout } from "@vueuse/core";
-import type { TPage, TResource } from "app/src/stores/data";
-import { $, pages } from "app/src/stores/data";
+import type { TResource, TView } from "app/src/stores/data";
+import { $, views } from "app/src/stores/data";
 import { controls } from "app/src/stores/defaults";
 import type { ComputedRef, Ref } from "vue";
 import { computed, ref } from "vue";
@@ -114,7 +114,7 @@ const navigator: ComputedRef<object> = computed(() => {
     id,
     ...$.navbar,
     path,
-  } as TPage);
+  } as TView);
 });
 /**
  * Текущий роут сайта
@@ -134,15 +134,15 @@ const router: Router = useRouter();
  * @type {ComputedRef<object>}
  */
 const root: ComputedRef<object> = computed(() =>
-  getAsyncComponent(pages.value[0]),
+  getAsyncComponent(views.value[0]),
 );
 /**
  * Поиск текущего объекта страницы
  *
- * @type {ComputedRef<TPage | undefined>}
+ * @type {ComputedRef<TView | undefined>}
  */
-const the: ComputedRef<TPage | undefined> = computed(() =>
-  pages.value.find(({ id }) => id === route.name),
+const the: ComputedRef<TView | undefined> = computed(() =>
+  views.value.find(({ id }) => id === route.name),
 );
 /**
  * Ссылка на переключатель панели

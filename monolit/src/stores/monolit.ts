@@ -3,7 +3,7 @@ import * as tresjsCore from "@tresjs/core";
 import * as vueuseComponents from "@vueuse/components";
 import * as vueuseCore from "@vueuse/core";
 import { useStyleTag } from "@vueuse/core";
-import type { TPage } from "app/src/stores/data";
+import type { TView } from "app/src/stores/data";
 import { cache } from "app/src/stores/defaults";
 import type { AsyncComponentLoader } from "vue";
 import * as vue from "vue";
@@ -42,13 +42,13 @@ const log = (type: keyof Console, ...args: any[]) => {
  * Функция, возвращающая Promise на сконструированный шаблон
  *
  * @function getAsyncComponent
- * @param {TPage} page - Объект страницы
- * @param {string} page.path - Путь до страницы
- * @param {boolean} page.setup - Тип скриптов
- * @param {boolean} page.scoped - Тип стилей
- * @param {string} page.template - Шаблон страницы
- * @param {string} page.script - Скрипты страницы
- * @param {string} page.style - Стили страницы
+ * @param {TView} view - Объект страницы
+ * @param {string} view.path - Путь до страницы
+ * @param {boolean} view.setup - Тип скриптов
+ * @param {boolean} view.scoped - Тип стилей
+ * @param {string} view.template - Шаблон страницы
+ * @param {string} view.script - Скрипты страницы
+ * @param {string} view.style - Стили страницы
  * @returns {Promise<object>} Шаблон
  */
 export const getAsyncComponent = ({
@@ -58,7 +58,7 @@ export const getAsyncComponent = ({
   template,
   script,
   style,
-}: TPage): Promise<object> => {
+}: TView): Promise<object> => {
   /**
    * Функция получения файла шаблона
    *
@@ -116,10 +116,10 @@ export const getAsyncComponent = ({
  *
  * @async
  * @function getResource
- * @param {keyof TPage} ext - Расширение файла
+ * @param {keyof TView} ext - Расширение файла
  * @returns {Promise<string>} Содержимое файла
  */
-async function getResource(this: TPage, ext: keyof TPage): Promise<string> {
+async function getResource(this: TView, ext: keyof TView): Promise<string> {
   if (this[ext] == null) {
     /**
      * Ответ сервера
@@ -154,7 +154,7 @@ const template: PropertyDescriptor = {
    * @function get
    * @returns {Promise<string>} - Шаблон страницы
    */
-  async get(this: TPage): Promise<string> {
+  async get(this: TView): Promise<string> {
     return getResource.call(this, "htm");
   },
 };
@@ -171,7 +171,7 @@ const style: PropertyDescriptor = {
    * @function get
    * @returns {Promise<string>} - Стили страницы
    */
-  async get(this: TPage): Promise<string> {
+  async get(this: TView): Promise<string> {
     return getResource.call(this, "css");
   },
 };
@@ -188,7 +188,7 @@ const script: PropertyDescriptor = {
    * @function get
    * @returns {Promise<string>} - Скрипты страницы
    */
-  async get(this: TPage): Promise<string> {
+  async get(this: TView): Promise<string> {
     return getResource.call(this, "js");
   },
 };
@@ -196,9 +196,9 @@ const script: PropertyDescriptor = {
  * Рекурсивная функция ремонта страниц
  *
  * @function fix
- * @param {TPage[]} siblings - Элементы массива страниц
+ * @param {TView[]} siblings - Элементы массива страниц
  */
-export const fix = (siblings: TPage[]) => {
+export const fix = (siblings: TView[]) => {
   siblings.forEach((value) => {
     Object.defineProperties(value, {
       template,

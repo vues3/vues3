@@ -13,8 +13,8 @@
     )
 </template>
 <script setup lang="ts">
-import type { TPage } from "app/src/stores/data";
-import { pages } from "app/src/stores/data";
+import type { TView } from "app/src/stores/data";
+import { views } from "app/src/stores/data";
 import { loop, zoomable } from "app/src/stores/defaults";
 import GLightbox from "glightbox";
 import type { ComputedRef } from "vue";
@@ -33,21 +33,21 @@ const route: RouteLocationNormalizedLoaded = useRoute();
  * Вычисление текущего объекта с учетом переадресации корневого объекта страницы
  * на первый доступный объект страницы
  *
- * @type {ComputedRef<TPage | undefined>}
+ * @type {ComputedRef<TView | undefined>}
  */
-const the: ComputedRef<TPage | undefined> = computed(() => {
+const the: ComputedRef<TView | undefined> = computed(() => {
   /**
    * Позиция текущей страницы в массиве страниц
    *
    * @type {number}
    */
-  const index: number = pages.value.findIndex(({ id }) => id === route.name);
+  const index: number = views.value.findIndex(({ id }) => id === route.name);
   /**
    * Вычисленный текущий объект
    *
-   * @type {TPage}
+   * @type {TView}
    */
-  const ret: TPage = pages.value[index];
+  const ret: TView = views.value[index];
   return index ? ret : ret.children[0];
 });
 /**

@@ -6,7 +6,7 @@ const nullable = true;
 const content = {
   type: "array",
   default: [{}],
-  items: { $ref: "urn:jsonschema:page" },
+  items: { $ref: "urn:jsonschema:view" },
 } as const;
 const properties = {
   settings: {

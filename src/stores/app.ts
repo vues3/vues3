@@ -7,8 +7,8 @@ import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import { FromSchema } from "json-schema-to-ts";
 import mime from "mime";
 import Config from "src/schemas/config";
-import type { TData, TPage } from "stores/data";
-import { $, code, pages, validate } from "stores/data";
+import type { TData, TView } from "stores/data";
+import { $, code, validate, views } from "stores/data";
 import {
   coerceTypes,
   configurable,
@@ -60,13 +60,13 @@ export const validateConfig: ValidateFunction = ajv.getSchema(
 ) as ValidateFunction;
 /**
  * @function getFile
- * @param {keyof TPage} ext - Расширение файла
+ * @param {keyof TView} ext - Расширение файла
  * @param {Function} beautify - Ф-ция форматирования кода
  * @returns {Promise<string>} Содержимое файла
  */
 async function getFile(
-  this: TPage,
-  ext: keyof TPage,
+  this: TView,
+  ext: keyof TView,
   beautify: Function,
 ): Promise<string> {
   if (this[ext] == null) {
@@ -80,7 +80,7 @@ async function getFile(
  * @param {string} ext - Расширение файла
  * @param {string} text - Новое содержимое файла
  */
-export function save(this: TPage | undefined, ext: string, text: string) {
+export function save(this: TView | undefined, ext: string, text: string) {
   if (this) {
     putObject(
       `views/${this.id}.${ext}`,
@@ -108,7 +108,7 @@ const debounceFn: Function = useDebounceFn(save, debounce);
  * @param {string} ext - Расширение файла
  * @param {string} value - Новое содержимое файла
  */
-function setFile(this: TPage, ext: string, value: string) {
+function setFile(this: TView, ext: string, value: string) {
   Object.defineProperty(this, ext, { value, configurable });
   debounceFn.call(this, ext, value);
 }
@@ -124,7 +124,7 @@ const template: PropertyDescriptor = {
    * @function get
    * @returns {Promise<string>} - Шаблон страницы
    */
-  get(this: TPage): Promise<string> {
+  get(this: TView): Promise<string> {
     return getFile.call(this, "htm", html_beautify);
   },
   /**
@@ -133,7 +133,7 @@ const template: PropertyDescriptor = {
    * @function set
    * @param {string} value - Передаваемый шаблон страницы
    */
-  set(this: TPage, value: string) {
+  set(this: TView, value: string) {
     setFile.call(this, "htm", value);
   },
 };
@@ -150,7 +150,7 @@ const html: PropertyDescriptor = {
    * @function get
    * @returns {Promise<string>} - Template
    */
-  async get(this: TPage): Promise<string> {
+  async get(this: TView): Promise<string> {
     const doc = parser.parseFromString(
       `<head><base href="${base.value}/"></head><body>${await this.template}</body>`,
       "text/html",
@@ -166,7 +166,7 @@ const html: PropertyDescriptor = {
    * @function set
    * @param {string} value - Template
    */
-  set(this: TPage, value: string) {
+  set(this: TView, value: string) {
     const regexp = new RegExp(`^${base.value}/`);
     const doc = parser.parseFromString(
       `<head><base href="${base.value}/"></head><body>${value}</body>`,
@@ -190,7 +190,7 @@ const style: PropertyDescriptor = {
    * @function get
    * @returns {Promise<string>} - Стили страницы
    */
-  get(this: TPage): Promise<string> {
+  get(this: TView): Promise<string> {
     return getFile.call(this, "css", css_beautify);
   },
   /**
@@ -199,7 +199,7 @@ const style: PropertyDescriptor = {
    * @function set
    * @param {string} value - Передаваемые стили страницы
    */
-  set(this: TPage, value: string) {
+  set(this: TView, value: string) {
     setFile.call(this, "css", value);
   },
 };
@@ -216,7 +216,7 @@ const script: PropertyDescriptor = {
    * @function get
    * @returns {Promise<string>} - Скрипты страницы
    */
-  async get(this: TPage): Promise<string> {
+  async get(this: TView): Promise<string> {
     return getFile.call(this, "js", js_beautify);
   },
   /**
@@ -225,7 +225,7 @@ const script: PropertyDescriptor = {
    * @function set
    * @param {string} value - Передаваемые скрипты страницы
    */
-  set(this: TPage, value: string) {
+  set(this: TView, value: string) {
     setFile.call(this, "js", value);
   },
 };
@@ -311,7 +311,7 @@ const sitemap: ComputedRef<object> = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
   urlset: {
     "@xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
-    url: pages.value.map(({ url, lastmod, changefreq, priority }) => ({
+    url: views.value.map(({ url, lastmod, changefreq, priority }) => ({
       loc: `https://${bucket.value}/${url}`,
       lastmod,
       changefreq,
@@ -378,7 +378,7 @@ export const putImage = async (
  */
 const flush: WatchOptions["flush"] = "sync";
 watch(
-  pages,
+  views,
   (newValue) => {
     newValue.forEach((value) => {
       Object.defineProperties(value, { html, template, style, script });

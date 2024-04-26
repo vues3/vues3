@@ -11,7 +11,7 @@ import { Head } from "@unhead/vue/components";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
 import type { TData, TSettings } from "app/src/stores/data";
-import { $, pages, validate } from "app/src/stores/data";
+import { $, validate, views } from "app/src/stores/data";
 import {
   autoPrefix,
   bypassDefined,
@@ -102,7 +102,7 @@ const routes: RouteRecordRaw[] = [];
  */
 const router: Router = createRouter({ history, routes });
 watch(
-  pages,
+  views,
   (value) => {
     value.forEach(({ path, id: name, loc }) => {
       /**
