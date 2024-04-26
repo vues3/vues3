@@ -277,6 +277,7 @@ const newPage = () => {
         break;
       case !!children:
         children.unshift({ id } as TPage);
+        tree.value?.setExpanded(the.value.id, true);
         break;
       default:
         siblings.splice(index + 1, 0, { id } as TPage);
