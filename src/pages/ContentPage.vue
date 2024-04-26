@@ -202,30 +202,30 @@ q-page.column.full-height
         :key="the.id",
         v-model="the.html",
         :theme="the.theme",
-        @vue:unmounted="onUnmounted(the, 'template', 'htm', the?.html)"
+        @vue:unmounted="onUnmounted('htm', 'template')"
       )
     q-tab-panel.column(name="template")
       v-source-code.col(
         v-if="'htm' in (the ?? {})",
         :key="the.id",
-        v-model="the.htm",
-        @vue:unmounted="onUnmounted(the, 'template', 'htm', the?.htm)"
+        v-model="the.template",
+        @vue:unmounted="onUnmounted('htm', 'template')"
       )
     q-tab-panel.column(name="script")
       v-source-code.col(
         v-if="'js' in (the ?? {})",
         :key="the.id",
-        v-model="the.js",
+        v-model="the.script",
         lang="javascript",
-        @vue:unmounted="onUnmounted(the, 'script', 'js', the?.js)"
+        @vue:unmounted="onUnmounted('js', 'script')"
       )
     q-tab-panel.column(name="style")
       v-source-code.col(
         v-if="'css' in (the ?? {})",
         :key="the.id",
-        v-model="the.css",
+        v-model="the.style",
         lang="css",
-        @vue:unmounted="onUnmounted(the, 'style', 'css', the?.css)"
+        @vue:unmounted="onUnmounted('css', 'style')"
       )
 </template>
 <script setup lang="ts">
@@ -268,24 +268,6 @@ const $q: QVueGlobals = useQuasar();
  */
 const icons: Ref<object> = ref(materialIcons.icons);
 /**
- * Функция экстренной записи при размонтировании
- *
- * @async
- * @function onUnmounted
- * @param {TPage} that - Текущий объект страницы
- * @param {string} key - Название свойства для хранения считанного файла
- * @param {string} ext - Расширение файла
- * @param {Promise<string> | string} value - Новое содержимое файла
- */
-const onUnmounted = async (
-  that: TPage,
-  key: string,
-  ext: string,
-  value: Promise<string> | string,
-) => {
-  if (that) save.call(that, key, ext, await value);
-};
-/**
  * Выбранный объект страницы
  *
  * @type {ComputedRef<TPage | undefined>}
@@ -293,6 +275,17 @@ const onUnmounted = async (
 const the: ComputedRef<TPage | undefined> = computed(() =>
   pages.value.find(({ id }) => id === config.value.content.selected),
 );
+/**
+ * Функция экстренной записи при размонтировании
+ *
+ * @async
+ * @function onUnmounted
+ * @param {string} ext - Расширение файла
+ * @param {keyof TPage} key - Новое содержимое файла
+ */
+const onUnmounted = async (ext: string, key: keyof TPage) => {
+  save.call(the.value, ext, (await the.value?.[key]) as string);
+};
 /**
  * Значение постоянной ссылки
  *

@@ -22,7 +22,7 @@ const properties = {
     items: { type: "string" },
     description: "Классы",
   },
-  scrollClasses: {
+  scroll: {
     type: "array",
     default: ["opacity-100"],
     items: { type: "string" },

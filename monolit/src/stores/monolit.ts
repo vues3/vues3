@@ -46,18 +46,18 @@ const log = (type: keyof Console, ...args: any[]) => {
  * @param {string} page.path - Путь до страницы
  * @param {boolean} page.setup - Тип скриптов
  * @param {boolean} page.scoped - Тип стилей
- * @param {string} page.htm - Шаблон страницы
- * @param {string} page.js - Скрипты страницы
- * @param {string} page.css - Стили страницы
+ * @param {string} page.template - Шаблон страницы
+ * @param {string} page.script - Скрипты страницы
+ * @param {string} page.style - Стили страницы
  * @returns {Promise<object>} Шаблон
  */
 export const getAsyncComponent = ({
   path,
   setup,
   scoped,
-  htm,
-  js,
-  css,
+  template,
+  script,
+  style,
 }: TPage): Promise<object> => {
   /**
    * Функция получения файла шаблона
@@ -67,7 +67,7 @@ export const getAsyncComponent = ({
    * @returns {Promise<ContentData>} Шаблон
    */
   const getFile = async (): Promise<ContentData> => {
-    const [template, script, style] = await Promise.all([htm, js, css]);
+    const [htm, js, css] = await Promise.all([template, script, style]);
     /**
      * Константа со скриптами
      *
@@ -75,14 +75,14 @@ export const getAsyncComponent = ({
      * @type {string}
      */
     const cntScript: string =
-      script && `<script${setup ? " setup" : ""}>${script}</script>`;
+      js && `<script${setup ? " setup" : ""}>${js}</script>`;
     /**
      * Константа с шаблоном
      *
      * @constant
      * @type {string}
      */
-    const cntTemplate: string = template && `<template>${template}</template>`;
+    const cntTemplate: string = htm && `<template>${htm}</template>`;
     /**
      * Константа со стилями
      *
@@ -90,7 +90,7 @@ export const getAsyncComponent = ({
      * @type {string}
      */
     const cntStyle: string =
-      style && `<style${scoped ? " scoped" : ""}>${style}</style>`;
+      css && `<style${scoped ? " scoped" : ""}>${css}</style>`;
     return `${cntScript}${cntTemplate}${cntStyle}`;
   };
 
@@ -116,16 +116,11 @@ export const getAsyncComponent = ({
  *
  * @async
  * @function getResource
- * @param {string} key - Название свойства для хранения считанного файла
- * @param {string} ext - Расширение файла
+ * @param {keyof TPage} ext - Расширение файла
  * @returns {Promise<string>} Содержимое файла
  */
-async function getResource(
-  this: TPage,
-  key: keyof TPage,
-  ext: string,
-): Promise<string> {
-  if (this[key] == null) {
+async function getResource(this: TPage, ext: keyof TPage): Promise<string> {
+  if (this[ext] == null) {
     /**
      * Ответ сервера
      *
@@ -142,16 +137,16 @@ async function getResource(
      * @type {string}
      */
     const value: string = response.ok ? await response.text() : "";
-    Object.defineProperty(this, key, { value });
+    Object.defineProperty(this, ext, { value });
   }
-  return this[key] as string;
+  return this[ext] as string;
 }
 /**
  * Объект, на котором определяется загрузка шаблона страницы
  *
  * @type {PropertyDescriptor}
  */
-const htm: PropertyDescriptor = {
+const template: PropertyDescriptor = {
   /**
    * Геттер шаблона страницы
    *
@@ -160,7 +155,7 @@ const htm: PropertyDescriptor = {
    * @returns {Promise<string>} - Шаблон страницы
    */
   async get(this: TPage): Promise<string> {
-    return getResource.call(this, "template", "htm");
+    return getResource.call(this, "htm");
   },
 };
 /**
@@ -168,7 +163,7 @@ const htm: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const css: PropertyDescriptor = {
+const style: PropertyDescriptor = {
   /**
    * Геттер стилей страницы
    *
@@ -177,7 +172,7 @@ const css: PropertyDescriptor = {
    * @returns {Promise<string>} - Стили страницы
    */
   async get(this: TPage): Promise<string> {
-    return getResource.call(this, "style", "css");
+    return getResource.call(this, "css");
   },
 };
 /**
@@ -185,7 +180,7 @@ const css: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const js: PropertyDescriptor = {
+const script: PropertyDescriptor = {
   /**
    * Геттер скриптов страницы
    *
@@ -194,7 +189,7 @@ const js: PropertyDescriptor = {
    * @returns {Promise<string>} - Скрипты страницы
    */
   async get(this: TPage): Promise<string> {
-    return getResource.call(this, "script", "js");
+    return getResource.call(this, "js");
   },
 };
 /**
@@ -206,9 +201,9 @@ const js: PropertyDescriptor = {
 export const fix = (siblings: TPage[]) => {
   siblings.forEach((value) => {
     Object.defineProperties(value, {
-      htm,
-      css,
-      js,
+      template,
+      style,
+      script,
     });
     fix(value.children ?? []);
   });

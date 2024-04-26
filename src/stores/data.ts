@@ -115,17 +115,17 @@ export type TPage = FromSchema<typeof plainPage> & {
   next?: TPage;
   pages: TPage[];
   html: Promise<string> | string;
-  htm: Promise<string> | string;
-  js: Promise<string> | string;
-  css: Promise<string> | string;
+  htm: string;
+  js: string;
+  css: string;
   path: string;
   index: number;
   name: string;
   url: string;
   favicon: string;
-  style: string;
-  script: string;
-  template: string;
+  style: Promise<string> | string;
+  script: Promise<string> | string;
+  template: Promise<string> | string;
 };
 /**
  * @type {TResource}
@@ -153,7 +153,7 @@ export type TSettings = FromSchema<typeof Settings>;
  * @property {boolean} [scoped=true] - Добавление атрибута scoped в таг style.
  *   Default is `true`
  * @property {string[]} classes - Массив классов
- * @property {string[]} scrollClasses - Массив классов, добавляемых при скроле
+ * @property {string[]} scroll - Массив классов, добавляемых при скроле
  * @property {string} [template] - Сохраненный шаблон страницы
  * @property {string} [script] - Сохраненные скрипты страницы
  * @property {string} [style] - Сохраненные стили страницы

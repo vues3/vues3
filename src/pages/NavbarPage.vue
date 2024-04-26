@@ -46,8 +46,8 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         label="Классы навигатора"
       )
       q-select(
-        v-if="'scrollClasses' in ($.navbar ?? {})",
-        v-model.trim="$.navbar.scrollClasses",
+        v-if="'scroll' in ($.navbar ?? {})",
+        v-model.trim="$.navbar.scroll",
         multiple,
         use-chips,
         use-input,

@@ -60,39 +60,42 @@ export const validateConfig: ValidateFunction = ajv.getSchema(
 ) as ValidateFunction;
 /**
  * @function getFile
- * @param {keyof TPage} key - Название свойства для хранения считанного файла
- * @param {string} ext - Расширение файла
+ * @param {keyof TPage} ext - Расширение файла
  * @param {Function} beautify - Ф-ция форматирования кода
  * @returns {Promise<string>} Содержимое файла
  */
 async function getFile(
   this: TPage,
-  key: keyof TPage,
-  ext: string,
+  ext: keyof TPage,
   beautify: Function,
 ): Promise<string> {
-  if (this[key] == null) {
+  if (this[ext] == null) {
     const value = beautify((await getObject(`views/${this.id}.${ext}`)) ?? "");
-    Object.defineProperty(this, key, { value, configurable });
+    Object.defineProperty(this, ext, { value, configurable });
   }
-  return this[key] as string;
+  return this[ext] as string;
 }
 /**
  * @function save
- * @param {string} key - Название свойства для хранения считанного файла
  * @param {string} ext - Расширение файла
  * @param {string} text - Новое содержимое файла
  */
-export function save(this: TPage, key: string, ext: string, text: string) {
-  putObject(`views/${this.id}.${ext}`, mime.getType(ext) ?? "text/plain", text);
-  /**
-   * Дата в формате iso
-   *
-   * @constant
-   * @type {string}
-   */
-  const value: string = new Date().toISOString();
-  Reflect.defineProperty(this, "lastmod", { value });
+export function save(this: TPage | undefined, ext: string, text: string) {
+  if (this) {
+    putObject(
+      `views/${this.id}.${ext}`,
+      mime.getType(ext) ?? "text/plain",
+      text,
+    );
+    /**
+     * Дата в формате iso
+     *
+     * @constant
+     * @type {string}
+     */
+    const value: string = new Date().toISOString();
+    Reflect.defineProperty(this, "lastmod", { value });
+  }
 }
 /**
  * Функция с супер способностью устранения дребезга
@@ -102,20 +105,19 @@ export function save(this: TPage, key: string, ext: string, text: string) {
 const debounceFn: Function = useDebounceFn(save, debounce);
 /**
  * @function setFile
- * @param {string} key - Название свойства для хранения считанного файла
  * @param {string} ext - Расширение файла
  * @param {string} value - Новое содержимое файла
  */
-function setFile(this: TPage, key: string, ext: string, value: string) {
-  Object.defineProperty(this, key, { value, configurable });
-  debounceFn.call(this, key, ext, value);
+function setFile(this: TPage, ext: string, value: string) {
+  Object.defineProperty(this, ext, { value, configurable });
+  debounceFn.call(this, ext, value);
 }
 /**
  * Объект, на котором определяется загрузка шаблона страницы
  *
  * @type {PropertyDescriptor}
  */
-const htm: PropertyDescriptor = {
+const template: PropertyDescriptor = {
   /**
    * Геттер шаблона страницы
    *
@@ -123,7 +125,7 @@ const htm: PropertyDescriptor = {
    * @returns {Promise<string>} - Шаблон страницы
    */
   get(this: TPage): Promise<string> {
-    return getFile.call(this, "template", "htm", html_beautify);
+    return getFile.call(this, "htm", html_beautify);
   },
   /**
    * Сеттер шаблона страницы
@@ -132,7 +134,7 @@ const htm: PropertyDescriptor = {
    * @param {string} value - Передаваемый шаблон страницы
    */
   set(this: TPage, value: string) {
-    setFile.call(this, "template", "htm", value);
+    setFile.call(this, "htm", value);
   },
 };
 /**
@@ -150,7 +152,7 @@ const html: PropertyDescriptor = {
    */
   async get(this: TPage): Promise<string> {
     const doc = parser.parseFromString(
-      `<head><base href="${base.value}/"></head><body>${await this.htm}</body>`,
+      `<head><base href="${base.value}/"></head><body>${await this.template}</body>`,
       "text/html",
     );
     [...doc.images].forEach((image) => {
@@ -173,7 +175,7 @@ const html: PropertyDescriptor = {
     [...doc.images].forEach((image) => {
       image.setAttribute("src", image.src.replace(regexp, ""));
     });
-    this.htm = doc.body.innerHTML;
+    this.template = doc.body.innerHTML;
   },
 };
 /**
@@ -181,7 +183,7 @@ const html: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const css: PropertyDescriptor = {
+const style: PropertyDescriptor = {
   /**
    * Геттер стилей страницы
    *
@@ -189,7 +191,7 @@ const css: PropertyDescriptor = {
    * @returns {Promise<string>} - Стили страницы
    */
   get(this: TPage): Promise<string> {
-    return getFile.call(this, "style", "css", css_beautify);
+    return getFile.call(this, "css", css_beautify);
   },
   /**
    * Сеттер стилей страницы
@@ -198,7 +200,7 @@ const css: PropertyDescriptor = {
    * @param {string} value - Передаваемые стили страницы
    */
   set(this: TPage, value: string) {
-    setFile.call(this, "style", "css", value);
+    setFile.call(this, "css", value);
   },
 };
 /**
@@ -206,7 +208,7 @@ const css: PropertyDescriptor = {
  *
  * @type {PropertyDescriptor}
  */
-const js: PropertyDescriptor = {
+const script: PropertyDescriptor = {
   /**
    * Геттер скриптов страницы
    *
@@ -215,7 +217,7 @@ const js: PropertyDescriptor = {
    * @returns {Promise<string>} - Скрипты страницы
    */
   async get(this: TPage): Promise<string> {
-    return getFile.call(this, "script", "js", js_beautify);
+    return getFile.call(this, "js", js_beautify);
   },
   /**
    * Сеттер скриптов страницы
@@ -224,7 +226,7 @@ const js: PropertyDescriptor = {
    * @param {string} value - Передаваемые скрипты страницы
    */
   set(this: TPage, value: string) {
-    setFile.call(this, "script", "js", value);
+    setFile.call(this, "js", value);
   },
 };
 watch(S3, async (value) => {
@@ -379,7 +381,7 @@ watch(
   pages,
   (newValue) => {
     newValue.forEach((value) => {
-      Object.defineProperties(value, { html, htm, css, js });
+      Object.defineProperties(value, { html, template, style, script });
     });
   },
   { flush },

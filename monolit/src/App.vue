@@ -56,7 +56,7 @@ v-head
   )
     .z-40(
       v-if="pages[0]?.enabled",
-      :class="[...(ready ? [] : $.navbar?.scrollClasses ?? []), ...($.navbar?.classes ?? [])]",
+      :class="[...(ready ? [] : $.navbar?.scroll ?? []), ...($.navbar?.classes ?? [])]",
       :data-theme="$.navbar?.theme"
     )
       .navbar
@@ -110,14 +110,11 @@ const navigator: ComputedRef<object> = computed(() => {
    * @type {string}
    */
   const id: string = crypto.randomUUID();
-  const {
-    template: htm,
-    script: js,
-    style: css,
-    setup,
-    scoped,
-  } = $.navbar ?? {};
-  return getAsyncComponent({ id, htm, js, css, setup, scoped, path } as TPage);
+  return getAsyncComponent({
+    id,
+    ...$.navbar,
+    path,
+  } as TPage);
 });
 /**
  * Текущий роут сайта
