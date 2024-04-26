@@ -132,7 +132,7 @@ async function getResource(
      * @constant
      * @type {Response}
      */
-    const response: Response = await fetch(`/assets/${this.id}.${ext}`, {
+    const response: Response = await fetch(`/views/${this.id}.${ext}`, {
       cache,
     });
     /**

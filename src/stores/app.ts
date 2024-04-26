@@ -72,7 +72,7 @@ async function getFile(
   beautify: Function,
 ): Promise<string> {
   if (this[key] == null) {
-    const value = beautify((await getObject(`assets/${this.id}.${ext}`)) ?? "");
+    const value = beautify((await getObject(`views/${this.id}.${ext}`)) ?? "");
     Object.defineProperty(this, key, { value, configurable });
   }
   return this[key] as string;
@@ -84,11 +84,7 @@ async function getFile(
  * @param {string} text - Новое содержимое файла
  */
 export function save(this: TPage, key: string, ext: string, text: string) {
-  putObject(
-    `assets/${this.id}.${ext}`,
-    mime.getType(ext) ?? "text/plain",
-    text,
-  );
+  putObject(`views/${this.id}.${ext}`, mime.getType(ext) ?? "text/plain", text);
   /**
    * Дата в формате iso
    *
@@ -158,8 +154,7 @@ const html: PropertyDescriptor = {
       "text/html",
     );
     [...doc.images].forEach((image) => {
-      const element = image;
-      element.src = image.src;
+      image.setAttribute("src", image.src);
     });
     return doc.body.innerHTML;
   },
@@ -170,14 +165,13 @@ const html: PropertyDescriptor = {
    * @param {string} value - Template
    */
   set(this: TPage, value: string) {
-    const regexp = new RegExp(`^${base.value}`);
+    const regexp = new RegExp(`^${base.value}/`);
     const doc = parser.parseFromString(
       `<head><base href="${base.value}/"></head><body>${value}</body>`,
       "text/html",
     );
     [...doc.images].forEach((image) => {
-      const element = image;
-      element.src = image.src.replace(regexp, "");
+      image.setAttribute("src", image.src.replace(regexp, ""));
     });
     this.htm = doc.body.innerHTML;
   },
@@ -359,7 +353,7 @@ export const putImage = async (
 ): Promise<Record<string, string | undefined>> => {
   const { type } = file;
   /** @type {string} */
-  const filePath: string = `assets/${crypto.randomUUID()}.${mime.getExtension(type)}`;
+  const filePath: string = `images/${crypto.randomUUID()}.${mime.getExtension(type)}`;
   /** @type {string | undefined} */
   let message: string | undefined;
   try {
