@@ -206,14 +206,14 @@ q-page.column.full-height
       )
     q-tab-panel.column(name="template")
       v-source-code.col(
-        v-if="'htm' in (the ?? {})",
+        v-if="'template' in (the ?? {})",
         :key="the.id",
         v-model="the.template",
         @vue:unmounted="onUnmounted('htm', 'template')"
       )
     q-tab-panel.column(name="script")
       v-source-code.col(
-        v-if="'js' in (the ?? {})",
+        v-if="'script' in (the ?? {})",
         :key="the.id",
         v-model="the.script",
         lang="javascript",
@@ -221,7 +221,7 @@ q-page.column.full-height
       )
     q-tab-panel.column(name="style")
       v-source-code.col(
-        v-if="'css' in (the ?? {})",
+        v-if="'style' in (the ?? {})",
         :key="the.id",
         v-model="the.style",
         lang="css",
