@@ -197,13 +197,14 @@ q-page.column.full-height
   q-separator
   q-tab-panels.full-width.col(v-model="config.content.tab")
     q-tab-panel.column(name="wysiwyg")
-      v-wysiwyg.full-width.col.column(
-        v-if="'html' in (the ?? {})",
-        :key="the.id",
-        v-model="the.html",
-        :theme="the.theme",
-        @vue:unmounted="onUnmounted('htm', 'template')"
-      )
+      Suspense
+        v-wysiwyg.full-width.col.column(
+          v-if="'html' in (the ?? {})",
+          :key="the.id",
+          v-model="the.html",
+          :theme="the.theme",
+          @vue:unmounted="onUnmounted('htm', 'template')"
+        )
     q-tab-panel.column(name="template")
       v-source-code.col(
         v-if="'template' in (the ?? {})",
