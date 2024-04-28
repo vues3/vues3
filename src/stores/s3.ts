@@ -74,33 +74,24 @@ export const putFile = async (Key: string, ContentType: string, file: File) => {
  * Считывание объекта
  *
  * @param {string} Key Имя файла
- * @returns {Promise<string | undefined>} Тело файла
+ * @param {string} [ResponseCacheControl] - Параметры кеша
+ * @returns {Promise<Response>} Тело файла
  */
-export const getObject = async (Key: string): Promise<string | undefined> => {
+export const getObject = async (
+  Key: string,
+  ResponseCacheControl?: string,
+): Promise<Response> => {
   const Bucket = bucket.value;
-  const ResponseCacheControl = "no-store";
-  const textDecoder = new TextDecoder();
-  let ret: string | undefined;
   if (S3.value)
     try {
       const { Body } = await S3.value.send(
         new GetObjectCommand({ ResponseCacheControl, Bucket, Key }),
       );
-      const reader = (Body as ReadableStream)?.getReader();
-      ret = await new Promise((resolve) => {
-        (async function read(chunks) {
-          const { done, value } = await reader.read();
-          if (done) resolve(chunks.join(""));
-          else {
-            chunks.push(textDecoder.decode(value));
-            read(chunks);
-          }
-        })([] as string[]);
-      });
+      return new Response(Body as BodyInit);
     } catch (e) {
       //
     }
-  return ret;
+  return new Response();
 };
 
 export const base = computed(

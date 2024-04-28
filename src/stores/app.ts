@@ -10,6 +10,7 @@ import Config from "src/schemas/config";
 import type { TData, TView } from "stores/data";
 import { $, code, validate, views } from "stores/data";
 import {
+  cache,
   coerceTypes,
   configurable,
   debounce,
@@ -21,7 +22,7 @@ import {
   removeAdditional,
   useDefaults,
 } from "stores/defaults";
-import { base, bucket, getObject, putFile, putObject, S3 } from "stores/s3";
+import { bucket, getObject, putFile, putObject, S3 } from "stores/s3";
 import { toXML } from "to-xml";
 import type { ComputedRef, Ref, WatchOptions } from "vue";
 import { computed, ref, watch } from "vue";
@@ -70,7 +71,9 @@ async function getFile(
   beautify: Function,
 ): Promise<string> {
   if (this[ext] == null) {
-    const value = beautify((await getObject(`views/${this.id}.${ext}`)) ?? "");
+    const value = beautify(
+      (await (await getObject(`views/${this.id}.${ext}`, cache)).text()) ?? "",
+    );
     Object.defineProperty(this, ext, { value, configurable });
   }
   return this[ext] as string;
@@ -138,6 +141,13 @@ const template: PropertyDescriptor = {
   },
 };
 /**
+ * Массив временных урлов для картинок
+ *
+ * @constant
+ * @type {string[]}
+ */
+const urls: Record<string, string> = {};
+/**
  * Объект, на котором определяется загрузка шаблона страницы
  *
  * @type {PropertyDescriptor}
@@ -151,12 +161,46 @@ const html: PropertyDescriptor = {
    * @returns {Promise<string>} - Template
    */
   async get(this: TView): Promise<string> {
-    const doc = parser.parseFromString(
-      `<head><base href="${base.value}/"></head><body>${await this.template}</body>`,
+    /**
+     * Преобразованный в документ шаблон
+     *
+     * @constant
+     * @type {Document}
+     */
+    const doc: Document = parser.parseFromString(
+      `<head><base href="//"></head><body>${await this.template}</body>`,
       "text/html",
     );
-    [...doc.images].forEach((image) => {
-      image.setAttribute("src", image.src);
+    Object.keys(urls).forEach((url) => {
+      if (![...doc.images].find((image) => image.src === url)) {
+        URL.revokeObjectURL(urls[url]);
+        delete urls[url];
+      }
+    });
+    (
+      await Promise.all(
+        (
+          await Promise.all(
+            [...doc.images].map((image) =>
+              image.src &&
+              !(image.src in urls) &&
+              window.location.origin ===
+                new URL(image.src, window.location.origin).origin
+                ? getObject(image.src)
+                : undefined,
+            ),
+          )
+        ).map((image: Response | undefined) => image?.blob()),
+      )
+    ).forEach((image, index) => {
+      if (image)
+        if (image.size)
+          urls[doc.images[index].src] = URL.createObjectURL(image);
+        else urls[doc.images[index].src] = "";
+      if (urls[doc.images[index].src]) {
+        doc.images[index].setAttribute("data-src", doc.images[index].src);
+        doc.images[index].setAttribute("src", urls[doc.images[index].src]);
+      }
     });
     return doc.body.innerHTML;
   },
@@ -167,13 +211,21 @@ const html: PropertyDescriptor = {
    * @param {string} value - Template
    */
   set(this: TView, value: string) {
-    const regexp = new RegExp(`^${base.value}/`);
-    const doc = parser.parseFromString(
-      `<head><base href="${base.value}/"></head><body>${value}</body>`,
+    /**
+     * Преобразованный в документ шаблон
+     *
+     * @constant
+     * @type {Document}
+     */
+    const doc: Document = parser.parseFromString(
+      `<head><base href="//"></head><body>${value}</body>`,
       "text/html",
     );
     [...doc.images].forEach((image) => {
-      image.setAttribute("src", image.src.replace(regexp, ""));
+      if (image.dataset.src) {
+        image.setAttribute("src", image.dataset.src);
+        image.removeAttribute("data-src");
+      }
     });
     this.template = doc.body.innerHTML;
   },
@@ -232,7 +284,9 @@ const script: PropertyDescriptor = {
 watch(S3, async (value) => {
   if (value) {
     /** @type {object} */
-    const data: object = JSON.parse((await getObject("data.json")) ?? "{}");
+    const data: object = JSON.parse(
+      (await (await getObject("data.json", cache)).text()) ?? "{}",
+    );
     validate?.(data);
     Object.keys(data).forEach((key) => {
       $[key as keyof TData] = data[key as keyof {}];
@@ -248,13 +302,12 @@ watch(S3, async (newValue) => {
       (await Promise.all([
         (await fetch("monolit/.vite/manifest.json")).json(),
         new Promise((resolve) => {
-          getObject(".vite/manifest.json").then((value = "{}") => {
-            try {
-              resolve(JSON.parse(value));
-            } catch (e) {
-              resolve({});
-            }
-          });
+          resolve(
+            (async (response: Promise<Response>) =>
+              JSON.parse((await (await response).text()) ?? "{}"))(
+              getObject(".vite/manifest.json", cache),
+            ),
+          );
         }),
       ])) as Record<string, Record<string, string | string[]>>[]
     ).map(

@@ -37,10 +37,10 @@ import type {
 import { useQuasar } from "quasar";
 import { putImage } from "stores/app";
 import { $ } from "stores/data";
-import { accept, immediate } from "stores/defaults";
+import { accept } from "stores/defaults";
 import { base } from "stores/s3";
 import type { Ref } from "vue";
-import { nextTick, ref, toRefs, watch, watchPostEffect } from "vue";
+import { nextTick, ref, watch, watchPostEffect } from "vue";
 /**
  * @type {IProps}
  * @property {Promise<string> | string} modelValue - Контент для загрузки в
@@ -60,14 +60,13 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
   modelValue: "",
   theme: undefined,
 });
-const { modelValue } = toRefs(props);
 defineEmits(["update:modelValue"]);
 /**
  * Текст для вставки в редактор
  *
  * @type {Ref<string | null>}
  */
-const htm: Ref<string | null> = ref(null);
+const htm: Ref<string | null> = ref(await props.modelValue);
 /**
  * Флаг демонстрации модального окна для вставки шаблона
  *
@@ -222,13 +221,6 @@ const toolbar: string | {}[][] = [
 watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });
-watch(
-  modelValue,
-  async (value) => {
-    htm.value = await value;
-  },
-  { immediate },
-);
 watchPostEffect(() => {
   /**
    * Элемент, в котором содержится контент редактора
