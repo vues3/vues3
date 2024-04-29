@@ -12,31 +12,8 @@
       content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (ctx.mode.cordova || ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>"
     />
     <link rel="icon" href="favicon.svg" sizes="any" type="image/svg+xml" />
-    <style>
-      #loader {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        animation: rotation 1s linear infinite;
-        margin: -24px auto auto -24px;
-        border: 5px solid black;
-        border-bottom-color: transparent;
-        border-radius: 50%;
-        width: 48px;
-        height: 48px;
-      }
-      @keyframes rotation {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-    </style>
   </head>
   <body>
-    <div id="loader"></div>
     <!-- quasar:entry-point -->
   </body>
 </html>

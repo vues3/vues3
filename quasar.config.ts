@@ -7,7 +7,7 @@ import type {
 } from "quasar";
 import { configure } from "quasar/wrappers";
 /** @type {string[]} */
-const boot: string[] = ["main", "uno", "route"];
+const boot: string[] = ["uno", "route"];
 /** @type {string[]} */
 const css: string[] = ["app.sass"];
 /** @type {(QuasarIconSets | QuasarFonts)[]} */

@@ -205,6 +205,8 @@ q-page.column.full-height
           :theme="the.theme",
           @vue:unmounted="onUnmounted('htm', 'template')"
         )
+        template(#fallback)
+          q-circular-progress.absolute-center(indeterminate)
     q-tab-panel.column(name="template")
       v-source-code.col(
         v-if="'template' in (the ?? {})",

@@ -1,7 +1,6 @@
 <template lang="pug">
 div
   q-editor.col.column.full-width(
-    v-if="htm !== null",
     ref="editor",
     paragraph-tag="div",
     :model-value="htm",
@@ -62,12 +61,6 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
 });
 defineEmits(["update:modelValue"]);
 /**
- * Текст для вставки в редактор
- *
- * @type {Ref<string | null>}
- */
-const htm: Ref<string | null> = ref(await props.modelValue);
-/**
  * Флаг демонстрации модального окна для вставки шаблона
  *
  * @type {Ref<boolean>}
@@ -101,7 +94,6 @@ const editor: Ref<QEditor | undefined> = ref();
  */
 const insertImage = async (file: File) => {
   const { filePath, message } = await putImage(file);
-
   if (message) $q.notify({ message });
   else editor.value?.runCmd("insertImage", `${base.value}/${filePath}`);
 };
@@ -233,6 +225,12 @@ watchPostEffect(() => {
     | undefined;
   if (contentEl) contentEl.dataset.theme = props.theme;
 });
+/**
+ * Текст для вставки в редактор
+ *
+ * @type {Ref<string | null>}
+ */
+const htm: Ref<string | null> = ref(await props.modelValue);
 </script>
 <style lang="sass" scoped>
 :deep(router-link)
