@@ -289,10 +289,10 @@ watch(S3, async (value) => {
     );
     validate?.(data);
     Object.keys(data).forEach((key) => {
-      $[key as keyof TData] = data[key as keyof {}];
+      $.value[key as keyof TData] = data[key as keyof {}];
     });
   } else
-    Object.keys($).forEach((key) => {
+    Object.keys($.value).forEach((key) => {
       delete $[key as keyof {}];
     });
 });

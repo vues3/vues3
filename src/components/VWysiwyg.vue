@@ -136,7 +136,7 @@ const definitions: object = {
         "share",
         "Вставка внутренней ссылки",
         () => {
-          if ($.content?.length) showLinkDialog.value = true;
+          if ($.value.content?.length) showLinkDialog.value = true;
         },
       ],
     ].map(([icon, tip, handler]) => [icon, { tip, icon, handler }]),

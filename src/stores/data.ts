@@ -16,8 +16,8 @@ import {
   useDefaults,
 } from "app/src/stores/defaults";
 import { FromSchema } from "json-schema-to-ts";
-import type { ComputedRef } from "vue";
-import { computed, reactive, watch } from "vue";
+import type { ComputedRef, Ref } from "vue";
+import { computed, ref, watch } from "vue";
 /**
  * @type {TView}
  * @property {string} [id] - Идентификатор страницы, значения по умолчанию
@@ -437,16 +437,16 @@ const fixDeep = (
 /**
  * Главный реактивный объект данных
  *
- * @type {TData}
+ * @type {Ref<TData>}
  */
-export const $: TData = reactive({} as TData);
+export const $: Ref<TData> = ref({} as TData);
 /**
  * Функция для вызова расчета массива страниц
  *
  * @type {() => any}
  * @returns {TView[]} - Страницы
  */
-const get: () => any = (): TView[] => getViews($.content ?? []);
+const get: () => any = (): TView[] => getViews($.value.content ?? []);
 /**
  * Расчетный массив страниц
  *
@@ -459,21 +459,21 @@ export const views: ComputedRef<TView[]> = computed(() =>
   }),
 );
 watch(
-  () => $.content ?? [],
+  () => $.value.content ?? [],
   (value) => {
     fixDeep({ value });
   },
   { deep },
 );
 watch(
-  () => $.css ?? [],
+  () => $.value.css ?? [],
   (value) => {
     fixPlain({ value });
   },
   { deep },
 );
 watch(
-  () => $.js ?? [],
+  () => $.value.js ?? [],
   (value) => {
     fixPlain({ value });
   },
@@ -485,12 +485,16 @@ watch(
  * @type {undefined}
  */
 const value: undefined = undefined;
-watch($, (newValue) => {
-  if (Object.keys(newValue).length) {
-    ["content", "css", "js"].forEach((key) => {
-      if (!(newValue[key as keyof TData] as TView[] | TResource[])?.length)
-        Reflect.defineProperty(newValue, key, { value });
-    });
-    validate?.(newValue);
-  }
-});
+watch(
+  $,
+  (newValue) => {
+    if (Object.keys(newValue).length) {
+      ["content", "css", "js"].forEach((key) => {
+        if (!(newValue[key as keyof TData] as TView[] | TResource[])?.length)
+          Reflect.defineProperty(newValue, key, { value });
+      });
+      validate?.(newValue);
+    }
+  },
+  { deep },
+);

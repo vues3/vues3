@@ -331,7 +331,7 @@ const loc: WritableComputedRef<string | null> = computed({
 const iconPicker: Ref<object> = ref({ show, filter, pagination });
 rightDrawer.value = true;
 watch(
-  () => $.content ?? [],
+  () => $.value.content ?? [],
   ([{ id = null } = {}]) => {
     if (!config.value.content.expanded.length && id)
       config.value.content.expanded.push(id);

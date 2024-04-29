@@ -112,7 +112,7 @@ const navigator: ComputedRef<object> = computed(() => {
   const id: string = crypto.randomUUID();
   return getAsyncComponent({
     id,
-    ...$.navbar,
+    ...$.value.navbar,
     path,
   } as TView);
 });
@@ -176,7 +176,7 @@ const alive = ({ enabled, url }: TResource): boolean => !!(enabled && url);
  * @type {ComputedRef<TResource[]>}
  */
 const theJS: ComputedRef<TResource[]> = computed(
-  () => $.js?.filter(alive) ?? [],
+  () => $.value.js?.filter(alive) ?? [],
 );
 /**
  * Фильтр глобальных стилей по видимости
@@ -184,7 +184,7 @@ const theJS: ComputedRef<TResource[]> = computed(
  * @type {ComputedRef<TResource[]>}
  */
 const theCSS: ComputedRef<TResource[]> = computed(
-  () => $.css?.filter(alive) ?? [],
+  () => $.value.css?.filter(alive) ?? [],
 );
 router.beforeEach(() => {
   drawer.value = false;

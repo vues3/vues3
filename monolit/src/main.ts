@@ -71,9 +71,9 @@ app.config.globalProperties.mdi = mdi;
   const data: TData = response.ok ? await response.json() : {};
   validate?.(data);
   Object.keys(data).forEach((key) => {
-    $[key as keyof TData] = data[key as keyof {}];
+    $.value[key as keyof TData] = data[key as keyof {}];
   });
-  fix($.content ?? []);
+  fix($.value.content ?? []);
 })();
 /**
  * Перевод яндекс метрики в продуктовый режим
@@ -125,7 +125,7 @@ watch(
          */
         component(): RouteComponent {
           return import(
-            $.settings?.landing
+            $.value.settings?.landing
               ? "@/views/MultiView.vue"
               : "@/views/SingleView.vue"
           );
@@ -157,7 +157,7 @@ watch(
   { once },
 );
 watch(
-  () => $.settings as TSettings,
+  () => $.value.settings as TSettings,
   ({ metrika, analytics }) => {
     if (metrika) {
       /**

@@ -66,7 +66,7 @@ const the: ComputedRef<TView | undefined> = computed(() =>
   views.value.find(({ id }) => id === selected.value),
 );
 watch(model, (show) => {
-  const [{ id }] = $.content ?? [];
+  const [{ id }] = $.value.content ?? [];
   if (show) selected.value = id;
 });
 </script>

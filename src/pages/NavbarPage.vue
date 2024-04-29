@@ -175,9 +175,9 @@ const resetNavbar = () => {
   $q.dialog({ title, message, options, cancel, persistent }).onOk(
     (value: string[]) => {
       value.forEach((element) => {
-        delete $.navbar?.[element as keyof TNavbar];
+        delete $.value.navbar?.[element as keyof TNavbar];
       });
-      validateNavbar?.($.navbar);
+      validateNavbar?.($.value.navbar);
     },
   );
 };
