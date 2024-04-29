@@ -13,11 +13,14 @@ q-page.column.full-height
   q-separator
   q-tab-panels.full-width.col(v-model="config.js.tab")
     q-tab-panel.column(name="script")
-      v-source-code.col(
-        v-if="'script' in $",
-        v-model="$.script",
-        lang="javascript"
-      )
+      Suspense
+        v-source-code.col(
+          v-if="'script' in $",
+          v-model="$.script",
+          lang="javascript"
+        )
+        template(#fallback)
+          q-circular-progress.absolute-center(indeterminate)
     q-tab-panel.column(name="js")
       v-interactive-tree(
         v-model:selected="config.js.selected",

@@ -15,9 +15,8 @@ import "vue3-ace-editor";
 import "ace-builds/esm-resolver";
 
 import { css, html, js } from "js-beautify";
-import { immediate } from "stores/defaults";
 import type { Ref } from "vue";
-import { nextTick, ref, toRefs, watch } from "vue";
+import { nextTick, ref } from "vue";
 // eslint-disable-next-line no-duplicate-imports, import/no-duplicates
 import { VAceEditor } from "vue3-ace-editor";
 /**
@@ -47,7 +46,6 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
   lang: "html",
   modelValue: "",
 });
-const { modelValue } = toRefs(props);
 const emit = defineEmits(["update:modelValue"]);
 /**
  * Функция форматирования кода в зависимости от его типа
@@ -81,12 +79,5 @@ const editor: Ref<HTMLElement | undefined> = ref();
  *
  * @type {Ref<string | null>}
  */
-const value: Ref<string | null> = ref(null);
-watch(
-  modelValue,
-  async (model) => {
-    value.value = await model;
-  },
-  { immediate },
-);
+const value: Ref<string | null> = ref(await props.modelValue);
 </script>

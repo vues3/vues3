@@ -127,7 +127,7 @@ const template: PropertyDescriptor = {
    * @function get
    * @returns {Promise<string>} - Шаблон страницы
    */
-  get(this: TView): Promise<string> {
+  async get(this: TView): Promise<string> {
     return getFile.call(this, "htm", html_beautify);
   },
   /**
@@ -242,7 +242,7 @@ const style: PropertyDescriptor = {
    * @function get
    * @returns {Promise<string>} - Стили страницы
    */
-  get(this: TView): Promise<string> {
+  async get(this: TView): Promise<string> {
     return getFile.call(this, "css", css_beautify);
   },
   /**

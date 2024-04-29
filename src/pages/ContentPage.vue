@@ -208,28 +208,37 @@ q-page.column.full-height
         template(#fallback)
           q-circular-progress.absolute-center(indeterminate)
     q-tab-panel.column(name="template")
-      v-source-code.col(
-        v-if="'template' in (the ?? {})",
-        :key="the.id",
-        v-model="the.template",
-        @vue:unmounted="onUnmounted('htm', 'template')"
-      )
+      Suspense
+        v-source-code.col(
+          v-if="'template' in (the ?? {})",
+          :key="the.id",
+          v-model="the.template",
+          @vue:unmounted="onUnmounted('htm', 'template')"
+        )
+        template(#fallback)
+          q-circular-progress.absolute-center(indeterminate)
     q-tab-panel.column(name="script")
-      v-source-code.col(
-        v-if="'script' in (the ?? {})",
-        :key="the.id",
-        v-model="the.script",
-        lang="javascript",
-        @vue:unmounted="onUnmounted('js', 'script')"
-      )
+      Suspense
+        v-source-code.col(
+          v-if="'script' in (the ?? {})",
+          :key="the.id",
+          v-model="the.script",
+          lang="javascript",
+          @vue:unmounted="onUnmounted('js', 'script')"
+        )
+        template(#fallback)
+          q-circular-progress.absolute-center(indeterminate)
     q-tab-panel.column(name="style")
-      v-source-code.col(
-        v-if="'style' in (the ?? {})",
-        :key="the.id",
-        v-model="the.style",
-        lang="css",
-        @vue:unmounted="onUnmounted('css', 'style')"
-      )
+      Suspense
+        v-source-code.col(
+          v-if="'style' in (the ?? {})",
+          :key="the.id",
+          v-model="the.style",
+          lang="css",
+          @vue:unmounted="onUnmounted('css', 'style')"
+        )
+        template(#fallback)
+          q-circular-progress.absolute-center(indeterminate)
 </template>
 <script setup lang="ts">
 // @ts-ignore

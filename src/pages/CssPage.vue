@@ -13,7 +13,10 @@ q-page.column.full-height
   q-separator
   q-tab-panels.full-width.col(v-model="config.css.tab")
     q-tab-panel.column(name="style")
-      v-source-code.col(v-if="'style' in $", v-model="$.style", lang="css")
+      Suspense
+        v-source-code.col(v-if="'style' in $", v-model="$.style", lang="css")
+        template(#fallback)
+          q-circular-progress.absolute-center(indeterminate)
     q-tab-panel.column(name="css")
       v-interactive-tree(
         v-model:selected="config.css.selected",

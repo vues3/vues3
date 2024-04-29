@@ -78,22 +78,31 @@ q-page.column.full-height
   q-separator
   q-tab-panels.full-width.col(v-model="config.navbar.tab")
     q-tab-panel.column(name="template")
-      v-source-code.col(
-        v-if="'template' in ($.navbar ?? {})",
-        v-model="$.navbar.template"
-      )
+      Suspense
+        v-source-code.col(
+          v-if="'template' in ($.navbar ?? {})",
+          v-model="$.navbar.template"
+        )
+        template(#fallback)
+          q-circular-progress.absolute-center(indeterminate)
     q-tab-panel.column(name="script")
-      v-source-code.col(
-        v-if="'script' in ($.navbar ?? {})",
-        v-model="$.navbar.script",
-        lang="javascript"
-      )
+      Suspense
+        v-source-code.col(
+          v-if="'script' in ($.navbar ?? {})",
+          v-model="$.navbar.script",
+          lang="javascript"
+        )
+        template(#fallback)
+          q-circular-progress.absolute-center(indeterminate)
     q-tab-panel.column(name="style")
-      v-source-code.col(
-        v-if="'style' in ($.navbar ?? {})",
-        v-model="$.navbar.style",
-        lang="css"
-      )
+      Suspense
+        v-source-code.col(
+          v-if="'style' in ($.navbar ?? {})",
+          v-model="$.navbar.style",
+          lang="css"
+        )
+        template(#fallback)
+          q-circular-progress.absolute-center(indeterminate)
 </template>
 <script setup lang="ts">
 import themes from "assets/themes.json";
