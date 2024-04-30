@@ -7,8 +7,8 @@ import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import { FromSchema } from "json-schema-to-ts";
 import mime from "mime";
 import Config from "src/schemas/config";
-import type { TData, TView } from "stores/data";
-import { $, code, validate, views } from "stores/data";
+import type { TView } from "stores/data";
+import { $, code, views } from "stores/data";
 import {
   cache,
   coerceTypes,
@@ -16,9 +16,7 @@ import {
   debounce,
   deep,
   immediate,
-  itemsPerPage,
   mergeDefaults,
-  page,
   removeAdditional,
   useDefaults,
 } from "stores/defaults";
@@ -282,19 +280,11 @@ const script: PropertyDescriptor = {
   },
 };
 watch(S3, async (value) => {
-  if (value) {
-    /** @type {object} */
-    const data: object = JSON.parse(
+  if (value)
+    $.value = JSON.parse(
       (await (await getObject("data.json", cache)).text()) ?? "{}",
     );
-    validate?.(data);
-    Object.keys(data).forEach((key) => {
-      $.value[key as keyof TData] = data[key as keyof {}];
-    });
-  } else
-    Object.keys($.value).forEach((key) => {
-      delete $[key as keyof {}];
-    });
+  else $.value = undefined;
 });
 watch(S3, async (newValue) => {
   if (newValue) {
@@ -387,14 +377,6 @@ watch(
   },
   { immediate },
 );
-/**
- * Настройки страниц при выборе иконок
- *
- * @constant
- * @default
- * @type {object}
- */
-export const pagination: object = { itemsPerPage, page };
 /**
  * @function putImage
  * @param {object} file - Файл

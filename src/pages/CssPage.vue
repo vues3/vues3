@@ -14,9 +14,10 @@ q-page.column.full-height
   q-tab-panels.full-width.col(v-model="config.css.tab")
     q-tab-panel.column(name="style")
       Suspense
-        v-source-code.col(v-if="'style' in $", v-model="$.style", lang="css")
+        v-source-code.col(v-model="$.style", lang="css")
         template(#fallback)
-          q-circular-progress.absolute-center(indeterminate)
+          q-inner-loading(showing)
+            q-spinner-hourglass
     q-tab-panel.column(name="css")
       v-interactive-tree(
         v-model:selected="config.css.selected",

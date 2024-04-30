@@ -10,8 +10,8 @@ import { createHead } from "@unhead/vue";
 import { Head } from "@unhead/vue/components";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
-import type { TData, TSettings } from "app/src/stores/data";
-import { $, validate, views } from "app/src/stores/data";
+import type { TSettings } from "app/src/stores/data";
+import { $, views } from "app/src/stores/data";
 import {
   autoPrefix,
   bypassDefined,
@@ -61,19 +61,8 @@ app.config.globalProperties.mdi = mdi;
   const response: Response = await fetch("/data.json", {
     cache,
   });
-  /**
-   * Объект данных, полученный с сервера
-   *
-   * @constant
-   * @default
-   * @type {TData}
-   */
-  const data: TData = response.ok ? await response.json() : {};
-  validate?.(data);
-  Object.keys(data).forEach((key) => {
-    $.value[key as keyof TData] = data[key as keyof {}];
-  });
-  fix($.value.content ?? []);
+  $.value = response.ok ? await response.json() : {};
+  fix($.value?.content ?? []);
 })();
 /**
  * Перевод яндекс метрики в продуктовый режим
@@ -125,7 +114,7 @@ watch(
          */
         component(): RouteComponent {
           return import(
-            $.value.settings?.landing
+            $.value?.settings?.landing
               ? "@/views/MultiView.vue"
               : "@/views/SingleView.vue"
           );
@@ -157,7 +146,7 @@ watch(
   { once },
 );
 watch(
-  () => $.value.settings as TSettings,
+  () => $.value?.settings as TSettings,
   ({ metrika, analytics }) => {
     if (metrika) {
       /**

@@ -9,7 +9,6 @@ q-dialog(v-model="model", full-width, full-height, persistent)
       q-card.col.column.full-width(flat, bordered)
         q-card-section.col.column.full-width
           q-tree.col.scroll.full-width(
-            v-if="$.content",
             v-model:selected="selected",
             :nodes="$.content",
             default-expand-all,
@@ -26,7 +25,7 @@ q-dialog(v-model="model", full-width, full-height, persistent)
         v-close-popup,
         flat,
         label="Ok",
-        @click="editor.runCmd('insertHTML', `<router-link to='/${the.path}'>${the.label}</router-link>`)"
+        @click="editor?.runCmd('insertHTML', `<router-link to='/${the?.path}'>${the?.label}</router-link>`)"
       )
 </template>
 <script setup lang="ts">
@@ -35,16 +34,10 @@ import type { TView } from "stores/data";
 import { $, views } from "stores/data";
 import type { ComputedRef, ModelRef, Ref } from "vue";
 import { computed, ref, watch } from "vue";
-/**
- * @type {IProps}
- * @property {QEditor | undefined} editor - Экземпляр редактора
- */
-interface IProps {
+
+defineProps<{
   editor?: QEditor;
-}
-withDefaults(defineProps<IProps>(), {
-  editor: undefined,
-});
+}>();
 /**
  * Флаг открытия модального окна
  *
@@ -66,7 +59,7 @@ const the: ComputedRef<TView | undefined> = computed(() =>
   views.value.find(({ id }) => id === selected.value),
 );
 watch(model, (show) => {
-  const [{ id }] = $.value.content ?? [];
+  const [{ id }] = $.value?.content ?? [];
   if (show) selected.value = id;
 });
 </script>

@@ -1,5 +1,5 @@
 <template lang="pug">
-q-drawer(v-model="rightDrawer", bordered, side="right")
+q-drawer(v-if="$?.navbar", v-model="rightDrawer", bordered, side="right")
   q-card(flat)
     q-item.text-teal
       q-item-section(avatar)
@@ -8,7 +8,6 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         q-item-label Настройки панели навигации
     q-card-section
       q-select(
-        v-if="'theme' in ($.navbar ?? {})",
         v-model="$.navbar.theme",
         label="Цветовая тема",
         :options="themes",
@@ -20,22 +19,15 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         q-list
           q-item(v-ripple, tag="label")
             q-item-section(avatar)
-              q-checkbox(
-                v-if="'setup' in ($.navbar ?? {})",
-                v-model="$.navbar.setup"
-              )
+              q-checkbox(v-model="$.navbar.setup")
             q-item-section
               q-item-label script setup
           q-item(v-ripple, tag="label")
             q-item-section(avatar)
-              q-checkbox(
-                v-if="'scoped' in ($.navbar ?? {})",
-                v-model="$.navbar.scoped"
-              )
+              q-checkbox(v-model="$.navbar.scoped")
             q-item-section
               q-item-label style scoped
       q-select(
-        v-if="'classes' in ($.navbar ?? {})",
         v-model.trim="$.navbar.classes",
         multiple,
         use-chips,
@@ -46,7 +38,6 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         label="Классы навигатора"
       )
       q-select(
-        v-if="'scroll' in ($.navbar ?? {})",
         v-model.trim="$.navbar.scroll",
         multiple,
         use-chips,
@@ -63,7 +54,7 @@ q-drawer(v-model="rightDrawer", bordered, side="right")
         icon="sync",
         @click="resetNavbar"
       ) Сброс параметров
-q-page.column.full-height
+q-page.column.full-height(v-if="$?.navbar")
   q-tabs.text-grey(
     v-model="config.navbar.tab",
     dense,
@@ -79,30 +70,22 @@ q-page.column.full-height
   q-tab-panels.full-width.col(v-model="config.navbar.tab")
     q-tab-panel.column(name="template")
       Suspense
-        v-source-code.col(
-          v-if="'template' in ($.navbar ?? {})",
-          v-model="$.navbar.template"
-        )
+        v-source-code.col(v-model="$.navbar.template")
         template(#fallback)
-          q-circular-progress.absolute-center(indeterminate)
+          q-inner-loading(showing)
+            q-spinner-hourglass
     q-tab-panel.column(name="script")
       Suspense
-        v-source-code.col(
-          v-if="'script' in ($.navbar ?? {})",
-          v-model="$.navbar.script",
-          lang="javascript"
-        )
+        v-source-code.col(v-model="$.navbar.script", lang="javascript")
         template(#fallback)
-          q-circular-progress.absolute-center(indeterminate)
+          q-inner-loading(showing)
+            q-spinner-hourglass
     q-tab-panel.column(name="style")
       Suspense
-        v-source-code.col(
-          v-if="'style' in ($.navbar ?? {})",
-          v-model="$.navbar.style",
-          lang="css"
-        )
+        v-source-code.col(v-model="$.navbar.style", lang="css")
         template(#fallback)
-          q-circular-progress.absolute-center(indeterminate)
+          q-inner-loading(showing)
+            q-spinner-hourglass
 </template>
 <script setup lang="ts">
 import themes from "assets/themes.json";
@@ -175,9 +158,9 @@ const resetNavbar = () => {
   $q.dialog({ title, message, options, cancel, persistent }).onOk(
     (value: string[]) => {
       value.forEach((element) => {
-        delete $.value.navbar?.[element as keyof TNavbar];
+        delete $.value?.navbar?.[element as keyof TNavbar];
       });
-      validateNavbar?.($.value.navbar);
+      validateNavbar?.($.value?.navbar);
     },
   );
 };

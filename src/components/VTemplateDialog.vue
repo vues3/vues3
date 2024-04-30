@@ -19,7 +19,6 @@ q-dialog(v-model="model", full-width, full-height, persistent)
         q-card-section.col.column.w-full
           // eslint-disable vue/no-v-html
           .col.prose.column.q-pa-xl.w-full.max-w-none.overflow-auto(
-            ref="element",
             class="[&>*]:m-auto [&>*]:!min-h-fit [&>*]:min-w-fit",
             v-html="html"
           )
@@ -30,7 +29,7 @@ q-dialog(v-model="model", full-width, full-height, persistent)
         v-close-popup,
         flat,
         label="Ok",
-        @click="editor.runCmd('insertHTML', html_beautify(html))"
+        @click="editor?.runCmd('insertHTML', html_beautify(html))"
       )
 </template>
 <script setup lang="ts">
@@ -38,25 +37,11 @@ import options from "assets/templates.json";
 import { html_beautify } from "js-beautify";
 import type { QEditor } from "quasar";
 import type { ModelRef, Ref } from "vue";
-import { ref, watch, watchPostEffect } from "vue";
-/**
- * @type {IProps}
- * @property {QEditor | undefined} editor - Экземпляр редактора
- * @property {string | undefined} theme - Тема
- */
-interface IProps {
+import { ref, watch } from "vue";
+
+defineProps<{
   editor?: QEditor;
-  theme?: string;
-}
-/**
- * Пропсы
- *
- * @type {IProps}
- */
-const props: IProps = withDefaults(defineProps<IProps>(), {
-  editor: undefined,
-  theme: undefined,
-});
+}>();
 /**
  * Флаг открытия модального окна
  *
@@ -66,20 +51,11 @@ const model: ModelRef<boolean> = defineModel<boolean>({ default: false });
 /**
  * Шаблон для вставки
  *
- * @type {Ref<string | undefined>}
+ * @type {Ref<string>}
  */
-const html: Ref<string | undefined> = ref();
+const html: Ref<string> = ref("");
 const [{ value }] = options;
 watch(model, (show) => {
   if (show) html.value = value;
-});
-/**
- * Элемент для демонстрации шаблона
- *
- * @type {Ref<HTMLElement | undefined>}
- */
-const element: Ref<HTMLElement | undefined> = ref();
-watchPostEffect(() => {
-  if (element.value) element.value.dataset.theme = props.theme;
 });
 </script>

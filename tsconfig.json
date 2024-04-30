@@ -5,5 +5,8 @@
     "baseUrl": ".",
     "types": ["vite/client", "node"]
   },
-  "exclude": ["dist", ".quasar", "node_modules"]
+  "exclude": ["dist", ".quasar", "node_modules"],
+  "vueCompilerOptions": {
+    "plugins": ["@vue/language-plugin-pug"]
+  }
 }

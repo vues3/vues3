@@ -4,7 +4,7 @@ v-head
   link(
     v-for="a in theCSS",
     :key="a.id",
-    crossorigin,
+    crossorigin="",
     rel="stylesheet",
     :href="a.url"
   )
@@ -12,7 +12,7 @@ v-head
     :is="'script'",
     v-for="a in theJS",
     :key="a.id",
-    crossorigin,
+    crossorigin="",
     deffer,
     :src="a.url"
   )
@@ -33,15 +33,15 @@ v-head
     type="image/svg+xml"
   )
   link(v-if="canonical", rel="canonical", :href="canonical")
-  component(:is="'style'", v-if="$.style") {{ $.style }}
-  component(:is="'script'", v-if="$.script") {{ $.script }}
+  component(:is="'style'", v-if="$?.style") {{ $.style }}
+  component(:is="'script'", v-if="$?.script") {{ $.script }}
   meta(
-    v-if="$.settings?.yandex",
+    v-if="$?.settings?.yandex",
     name="yandex-verification",
     :content="$.settings?.yandex"
   )
   meta(
-    v-if="$.settings?.google",
+    v-if="$?.settings?.google",
     name="google-site-verification",
     :content="$.settings?.google"
   )
@@ -80,6 +80,7 @@ v-head
           path(:d="mdi.mdiClose")
 </template>
 <script setup lang="ts">
+import * as mdi from "@mdi/js";
 import { useTimeout } from "@vueuse/core";
 import type { TResource, TView } from "app/src/stores/data";
 import { $, views } from "app/src/stores/data";
@@ -112,7 +113,7 @@ const navigator: ComputedRef<object> = computed(() => {
   const id: string = crypto.randomUUID();
   return getAsyncComponent({
     id,
-    ...$.value.navbar,
+    ...$.value?.navbar,
     path,
   } as TView);
 });
@@ -176,7 +177,7 @@ const alive = ({ enabled, url }: TResource): boolean => !!(enabled && url);
  * @type {ComputedRef<TResource[]>}
  */
 const theJS: ComputedRef<TResource[]> = computed(
-  () => $.value.js?.filter(alive) ?? [],
+  () => $.value?.js.filter(alive) ?? [],
 );
 /**
  * Фильтр глобальных стилей по видимости
@@ -184,7 +185,7 @@ const theJS: ComputedRef<TResource[]> = computed(
  * @type {ComputedRef<TResource[]>}
  */
 const theCSS: ComputedRef<TResource[]> = computed(
-  () => $.value.css?.filter(alive) ?? [],
+  () => $.value?.css.filter(alive) ?? [],
 );
 router.beforeEach(() => {
   drawer.value = false;

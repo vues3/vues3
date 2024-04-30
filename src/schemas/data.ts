@@ -18,13 +18,11 @@ const properties = {
   style: { nullable, type: "string", default: "" },
   script: { nullable, type: "string", default: "" },
   css: {
-    nullable,
     type: "array",
     default: [{}],
     items: { $ref: "urn:jsonschema:resource" },
   },
   js: {
-    nullable,
     type: "array",
     default: [{}],
     items: { $ref: "urn:jsonschema:resource" },

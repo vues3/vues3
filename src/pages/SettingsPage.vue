@@ -1,40 +1,24 @@
 <template lang="pug">
-q-page.column.full-height
+q-page.column.full-height(v-if="$?.settings")
   q-card.q-ma-xl.col.scroll(flat)
     q-card-section
       .text-h6 YANDEX
     q-separator
     q-card-section
-      q-input(
-        v-if="'yandex' in ($.settings ?? {})",
-        v-model.trim="$.settings.yandex",
-        label="yandex verification id"
-      )
+      q-input(v-model.trim="$.settings.yandex", label="yandex verification id")
         template(#prepend)
           q-icon(name="mdi-alpha-y-circle-outline")
-      q-input(
-        v-if="'metrika' in ($.settings ?? {})",
-        v-model.trim="$.settings.metrika",
-        label="yandex metrika id"
-      )
+      q-input(v-model.trim="$.settings.metrika", label="yandex metrika id")
         template(#prepend)
           q-icon(name="mdi-ruler")
     q-card-section
       .text-h6 GOOGLE
     q-separator
     q-card-section
-      q-input(
-        v-if="'google' in ($.settings ?? {})",
-        v-model.trim="$.settings.google",
-        label="google verification id"
-      )
+      q-input(v-model.trim="$.settings.google", label="google verification id")
         template(#prepend)
           q-icon(name="mdi-google")
-      q-input(
-        v-if="'analytics' in ($.settings ?? {})",
-        v-model.trim="$.settings.analytics",
-        label="google analytics id"
-      )
+      q-input(v-model.trim="$.settings.analytics", label="google analytics id")
         template(#prepend)
           q-icon(name="mdi-google-analytics")
     q-card-section
@@ -44,10 +28,7 @@ q-page.column.full-height
       q-list
         q-item(v-ripple, tag="label")
           q-item-section(avatar)
-            q-checkbox(
-              v-if="'landing' in ($.settings ?? {})",
-              v-model="$.settings.landing"
-            )
+            q-checkbox(v-model="$.settings.landing")
           q-item-section
             q-item-label В виде лендинга
 </template>

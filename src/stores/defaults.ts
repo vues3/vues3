@@ -84,14 +84,6 @@ export const cancel: boolean = true;
  */
 export const persistent: boolean = true;
 /**
- * Выбор иконок по умолчанию скрыт
- *
- * @constant
- * @default
- * @type {boolean}
- */
-export const show: boolean = false;
-/**
  * Пустой фильтр иконок по умолчанию
  *
  * @constant

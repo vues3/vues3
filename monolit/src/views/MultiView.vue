@@ -11,12 +11,12 @@
     v-cloak,
     class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
     :data-theme="a.theme",
-    :role="a.id === the.id ? 'main' : undefined"
+    :role="a.id === the?.id ? 'main' : undefined"
   )
     component(
-      :is="templates[a.id]",
+      :is="templates[a.id as keyof object] as object",
       :the="a",
-      @vue:mounted="promises[a.id].resolve"
+      @vue:mounted="(promises[a.id as keyof object]).resolve"
     )
 </template>
 <script setup lang="ts">
@@ -83,13 +83,14 @@ const siblings: ComputedRef<TView[]> = computed(
 /**
  * Вычисление идентифицированного объекта промисов
  *
- * @type {ComputedRef<object>}
+ * @type {ComputedRef<Record<string, PromiseWithResolvers<undefined>>>}
  */
-const promises: ComputedRef<object> = computed(() =>
-  Object.fromEntries(
-    siblings.value.map(({ id }) => [id, Promise.withResolvers()]),
-  ),
-);
+const promises: ComputedRef<Record<string, PromiseWithResolvers<undefined>>> =
+  computed(() =>
+    Object.fromEntries(
+      siblings.value.map(({ id }) => [id, Promise.withResolvers()]),
+    ),
+  );
 /**
  * Вычисление массива загруженных шаблонов
  *

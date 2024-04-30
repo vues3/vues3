@@ -14,9 +14,9 @@ div
     @paste="capture",
     @drop="capture",
     @update:model-value="$emit('update:modelValue', $event)",
-    @vue:mounted="nextTick(editor.focus)"
+    @vue:mounted="nextTick(editor?.focus)"
   )
-  v-template-dialog(v-model="showTemplateDialog", :theme, :editor)
+  v-template-dialog(v-model="showTemplateDialog", :editor)
   v-link-dialog(v-model="showLinkDialog", :editor)
 </template>
 <script setup lang="ts">
@@ -28,6 +28,7 @@ import VLinkDialog from "components/VLinkDialog.vue";
 import VTemplateDialog from "components/VTemplateDialog.vue";
 import type {
   QEditor,
+  QEditorCommand,
   QuasarIconSetEditor,
   QuasarLanguageEditorLabel,
   QVueGlobals,
@@ -39,16 +40,14 @@ import { $ } from "stores/data";
 import { accept } from "stores/defaults";
 import { base } from "stores/s3";
 import type { Ref } from "vue";
-import { nextTick, ref, watch, watchPostEffect } from "vue";
+import { nextTick, ref, watch } from "vue";
 /**
  * @type {IProps}
  * @property {Promise<string> | string} modelValue - Контент для загрузки в
  *   редактор
- * @property {string | undefined} theme - Тема
  */
 interface IProps {
   modelValue: Promise<string> | string;
-  theme: string | undefined;
 }
 /**
  * Пропсы
@@ -57,7 +56,6 @@ interface IProps {
  */
 const props: IProps = withDefaults(defineProps<IProps>(), {
   modelValue: "",
-  theme: undefined,
 });
 defineEmits(["update:modelValue"]);
 /**
@@ -119,9 +117,9 @@ const { files, open } = useFileDialog({ accept });
  * Определения для редактора
  *
  * @constant
- * @type {object}
+ * @type {{ [commandName: string]: QEditorCommand }}
  */
-const definitions: object = {
+const definitions: { [commandName: string]: QEditorCommand } = {
   ...Object.fromEntries(
     [
       ["upload", "Загрузка картинки", open],
@@ -136,7 +134,7 @@ const definitions: object = {
         "share",
         "Вставка внутренней ссылки",
         () => {
-          if ($.value.content?.length) showLinkDialog.value = true;
+          if ($.value?.content?.length) showLinkDialog.value = true;
         },
       ],
     ].map(([icon, tip, handler]) => [icon, { tip, icon, handler }]),
@@ -213,24 +211,12 @@ const toolbar: string | {}[][] = [
 watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });
-watchPostEffect(() => {
-  /**
-   * Элемент, в котором содержится контент редактора
-   *
-   * @constant
-   * @type {HTMLElement | undefined}
-   */
-  const contentEl: HTMLElement | undefined = editor.value?.getContentEl() as
-    | HTMLElement
-    | undefined;
-  if (contentEl) contentEl.dataset.theme = props.theme;
-});
 /**
  * Текст для вставки в редактор
  *
- * @type {Ref<string | null>}
+ * @type {Ref<string>}
  */
-const htm: Ref<string | null> = ref(await props.modelValue);
+const htm: Ref<string> = ref(await props.modelValue);
 </script>
 <style lang="sass" scoped>
 :deep(router-link)

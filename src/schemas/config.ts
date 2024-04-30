@@ -13,7 +13,7 @@ const properties = {
         enum: ["wysiwyg", "template", "script", "style"],
       },
       selected: { type: "string" },
-      expanded: { type: "array", default: [] },
+      expanded: { type: "array", default: [], items: { type: "string" } },
     },
   },
   navbar: {

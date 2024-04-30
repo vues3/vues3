@@ -35,12 +35,12 @@ q-btn-group.q-mx-xs(spread, flat)
         )
 </template>
 <script setup lang="ts">
-import type { QTree, QVueGlobals } from "quasar";
+import type { QInputProps, QTree, QVueGlobals } from "quasar";
 import { useQuasar } from "quasar";
-import type { TView } from "stores/data";
+import type { TResource, TView } from "stores/data";
 import { cancel, immediate, persistent } from "stores/defaults";
 import type { ComputedRef, Ref } from "vue";
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 /**
  * @type {IProps}
  * @property {string} selected - Идентификатор выбранного элемента
@@ -51,10 +51,10 @@ import { computed, nextTick, ref, watch } from "vue";
  */
 interface IProps {
   selected?: string;
-  type?: string;
+  type?: QInputProps["type"];
   expanded?: string[];
   nodes?: TView[];
-  list: TView[];
+  list: TView[] | TResource[];
 }
 /**
  * @type {IEmits}
@@ -64,7 +64,7 @@ interface IProps {
  *   работает со второй версией vue-tsc
  */
 interface IEmits {
-  (e: "update:expanded", value: string[]): void;
+  (e: "update:expanded", value: readonly string[]): void;
   (e: "update:selected", value: string | undefined): void;
 }
 /**
@@ -94,9 +94,9 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
 /**
  * Объект текущей страницы
  *
- * @type {ComputedRef<TView | null | undefined>}
+ * @type {ComputedRef<TView | TResource | null | undefined>}
  */
-const the: ComputedRef<TView | null | undefined> = computed(() =>
+const the: ComputedRef<TView | TResource | null | undefined> = computed(() =>
   props.list.length
     ? props.list.find(({ id }) => id === props.selected) ?? null
     : undefined,
@@ -113,13 +113,13 @@ const emits: IEmits = defineEmits<IEmits>();
  * @function updateExpanded
  * @param {string[]} value - Массив открытых нод
  */
-const updateExpanded = (value: string[]) => {
+const updateExpanded = (value: readonly string[]) => {
   emits("update:expanded", value);
 };
 /**
  * Обновление идентификатора выбранной ноды
  *
- * @function updateExpanded
+ * @function updateSelected
  * @param {string | undefined} value - Идентификатор выбранной ноды
  */
 const updateSelected = (value: string | undefined) => {
@@ -286,6 +286,9 @@ const newView = () => {
     updateSelected(id);
   }
 };
+onMounted(() => {
+  if (props.nodes?.length) tree.value?.setExpanded(props.nodes[0].id, true);
+});
 watch(
   the,
   (newVal, oldVal) => {

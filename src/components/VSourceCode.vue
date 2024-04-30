@@ -6,7 +6,7 @@ v-ace-editor(
   :lang,
   :options,
   @update:value="$emit('update:modelValue', $event)",
-  @vue:mounted="beautify(value); nextTick(editor.focus)"
+  @vue:mounted="beautify(value); nextTick(editor?.focus)"
 )
 </template>
 <script setup lang="ts">
@@ -28,7 +28,7 @@ import { VAceEditor } from "vue3-ace-editor";
 interface IProps {
   options?: object;
   lang?: string;
-  modelValue: Promise<string> | string;
+  modelValue: Promise<string> | string | null;
 }
 /**
  * Пропсы

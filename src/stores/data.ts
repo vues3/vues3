@@ -1,3 +1,4 @@
+import * as mdi from "@mdi/js";
 import type { FuncKeywordDefinition, ValidateFunction } from "ajv";
 import Ajv from "ajv";
 import type { DynamicDefaultFunc } from "ajv-keywords/dist/definitions/dynamicDefaults";
@@ -16,8 +17,10 @@ import {
   useDefaults,
 } from "app/src/stores/defaults";
 import { FromSchema } from "json-schema-to-ts";
+import type { QTreeNode } from "quasar";
 import type { ComputedRef, Ref } from "vue";
 import { computed, ref, watch } from "vue";
+
 /**
  * @type {TView}
  * @property {string} [id] - Идентификатор страницы, значения по умолчанию
@@ -122,18 +125,18 @@ export type TView = FromSchema<typeof plainView> & {
   index: number;
   name: string;
   url: string;
-  favicon: string;
+  favicon: keyof typeof mdi;
   style: Promise<string> | string;
   script: Promise<string> | string;
   template: Promise<string> | string;
-};
+} & QTreeNode;
 /**
  * @type {TResource}
  * @property {string} [id] - Id ресурса, вычисляется динамически
  * @property {boolean} enabled - Признак использования ресурса
  * @property {string} url - Url ресурса
  */
-export type TResource = FromSchema<typeof Resource>;
+export type TResource = FromSchema<typeof Resource> & QTreeNode;
 /**
  * @type {TSettings}
  * @property {string | null} yandex - Id яндекса
@@ -437,16 +440,16 @@ const fixDeep = (
 /**
  * Главный реактивный объект данных
  *
- * @type {Ref<TData>}
+ * @type {Ref<TData | undefined>}
  */
-export const $: Ref<TData> = ref({} as TData);
+export const $: Ref<TData | undefined> = ref();
 /**
  * Функция для вызова расчета массива страниц
  *
  * @type {() => any}
  * @returns {TView[]} - Страницы
  */
-const get: () => any = (): TView[] => getViews($.value.content ?? []);
+const get: () => any = (): TView[] => getViews($.value?.content ?? []);
 /**
  * Расчетный массив страниц
  *
@@ -459,21 +462,21 @@ export const views: ComputedRef<TView[]> = computed(() =>
   }),
 );
 watch(
-  () => $.value.content ?? [],
+  () => $.value?.content ?? [],
   (value) => {
     fixDeep({ value });
   },
   { deep },
 );
 watch(
-  () => $.value.css ?? [],
+  () => $.value?.css ?? [],
   (value) => {
     fixPlain({ value });
   },
   { deep },
 );
 watch(
-  () => $.value.js ?? [],
+  () => $.value?.js ?? [],
   (value) => {
     fixPlain({ value });
   },
@@ -488,7 +491,7 @@ const value: undefined = undefined;
 watch(
   $,
   (newValue) => {
-    if (Object.keys(newValue).length) {
+    if (newValue) {
       ["content", "css", "js"].forEach((key) => {
         if (!(newValue[key as keyof TData] as TView[] | TResource[])?.length)
           Reflect.defineProperty(newValue, key, { value });
