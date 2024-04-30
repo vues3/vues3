@@ -187,6 +187,7 @@ export const threshold: number = 0;
 /**
  * Быстрый скролл
  *
+ * @default
  * @type {ScrollBehavior}
  */
 export const behavior: ScrollBehavior = "instant";
@@ -197,7 +198,7 @@ export const behavior: ScrollBehavior = "instant";
  * @default
  * @type {true}
  */
-export const controls: true = true;
+export const controls: true = true as const;
 /**
  * Enable css property auto prefixer
  *

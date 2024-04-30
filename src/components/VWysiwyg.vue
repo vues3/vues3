@@ -167,9 +167,9 @@ const list: string = "no-icons";
  * Конфигурация тулбара
  *
  * @constant
- * @type {string | {}[][]}
+ * @type {string | object[][]}
  */
-const toolbar: string | {}[][] = [
+const toolbar: string | object[][] = [
   ["left", "center", "right", "justify"],
   ["bold", "italic", "strike", "underline", "subscript", "superscript"],
   ["hr", "link"],

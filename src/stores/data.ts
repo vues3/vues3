@@ -446,10 +446,10 @@ export const $: Ref<TData | undefined> = ref();
 /**
  * Функция для вызова расчета массива страниц
  *
- * @type {() => any}
+ * @type {() => TView[]}
  * @returns {TView[]} - Страницы
  */
-const get: () => any = (): TView[] => getViews($.value?.content ?? []);
+const get: () => TView[] = (): TView[] => getViews($.value?.content ?? []);
 /**
  * Расчетный массив страниц
  *
