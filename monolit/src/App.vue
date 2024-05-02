@@ -85,6 +85,7 @@ import { useTimeout } from "@vueuse/core";
 import type { TResource, TView } from "app/src/stores/data";
 import { $, views } from "app/src/stores/data";
 import { controls } from "app/src/stores/defaults";
+import { uid } from "quasar";
 import type { ComputedRef, Ref } from "vue";
 import { computed, ref } from "vue";
 import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
@@ -110,12 +111,12 @@ const navigator: ComputedRef<object> = computed(() => {
    *
    * @type {string}
    */
-  const id: string = crypto.randomUUID();
-  return getAsyncComponent({
+  const id: string = uid();
+  return getAsyncComponent(<TView>{
     id,
     ...$.value?.navbar,
     path,
-  } as TView);
+  });
 });
 /**
  * Текущий роут сайта
@@ -177,7 +178,7 @@ const alive = ({ enabled, url }: TResource): boolean => !!(enabled && url);
  * @type {ComputedRef<TResource[]>}
  */
 const theJS: ComputedRef<TResource[]> = computed(
-  () => $.value?.js.filter(alive) ?? [],
+  () => (<TResource[] | undefined>$.value?.js)?.filter(alive) ?? [],
 );
 /**
  * Фильтр глобальных стилей по видимости
@@ -185,7 +186,7 @@ const theJS: ComputedRef<TResource[]> = computed(
  * @type {ComputedRef<TResource[]>}
  */
 const theCSS: ComputedRef<TResource[]> = computed(
-  () => $.value?.css.filter(alive) ?? [],
+  () => (<TResource[] | undefined>$.value?.css)?.filter(alive) ?? [],
 );
 router.beforeEach(() => {
   drawer.value = false;

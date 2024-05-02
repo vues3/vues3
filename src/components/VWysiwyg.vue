@@ -90,10 +90,13 @@ const editor: Ref<QEditor | undefined> = ref();
  * @see {@link
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#image_types}
  */
-const insertImage = async (file: File) => {
-  const { filePath, message } = await putImage(file);
-  if (message) $q.notify({ message });
-  else editor.value?.runCmd("insertImage", `${base.value}/${filePath}`);
+const insertImage = (file: File) => {
+  void (async () => {
+    const { filePath, message } = await putImage(file);
+    if (message) $q.notify({ message });
+    else if (filePath)
+      editor.value?.runCmd("insertImage", `${base.value ?? ""}/${filePath}`);
+  })();
 };
 /**
  * Функция обработки вставки картинок через d'n'd и ctrl+v
@@ -103,9 +106,7 @@ const insertImage = async (file: File) => {
  */
 const capture = (evt: ClipboardEvent | DragEvent) => {
   const { files = [] } =
-    (evt as DragEvent)?.dataTransfer ??
-    (evt as ClipboardEvent)?.clipboardData ??
-    {};
+    (<DragEvent>evt).dataTransfer ?? (<ClipboardEvent>evt).clipboardData ?? {};
   if (files.length) {
     evt.preventDefault();
     evt.stopPropagation();
@@ -119,8 +120,8 @@ const { files, open } = useFileDialog({ accept });
  * @constant
  * @type {{ [commandName: string]: QEditorCommand }}
  */
-const definitions: { [commandName: string]: QEditorCommand } = {
-  ...Object.fromEntries(
+const definitions: { [commandName: string]: QEditorCommand } = <const>{
+  ...(<{ [commandName: string]: QEditorCommand }>Object.fromEntries(
     [
       ["upload", "Загрузка картинки", open],
       [
@@ -134,27 +135,27 @@ const definitions: { [commandName: string]: QEditorCommand } = {
         "share",
         "Вставка внутренней ссылки",
         () => {
-          if ($.value?.content?.length) showLinkDialog.value = true;
+          if ($.value?.content.length) showLinkDialog.value = true;
         },
       ],
     ].map(([icon, tip, handler]) => [icon, { tip, icon, handler }]),
-  ),
+  )),
   ...Object.fromEntries(
     [
       ...[...Array(4).keys()].map((key) => [
-        `h${key + 1}`,
-        `heading${key + 1}`,
+        `h${String(key + 1)}`,
+        `heading${String(key + 1)}`,
       ]),
       ["p", "paragraph"],
       ["code", "code"],
     ].map(([key, value]) => [
       key,
       {
-        htmlTip: `<span class="prose"><${key} class="q-ma-none">${$q.lang.editor[value as keyof StringDictionary<QuasarLanguageEditorLabel>]}</${key}></span>`,
+        htmlTip: `<span class="prose"><${key} class="q-ma-none">${$q.lang.editor[<keyof StringDictionary<QuasarLanguageEditorLabel>>value]}</${key}></span>`,
       },
     ]),
   ),
-} as const;
+};
 /**
  * Выпадающий список без иконок
  *
@@ -167,9 +168,9 @@ const list: string = "no-icons";
  * Конфигурация тулбара
  *
  * @constant
- * @type {string | object[][]}
+ * @type {(string | object)[][]}
  */
-const toolbar: string | object[][] = [
+const toolbar: (string | object)[][] = <const>[
   ["left", "center", "right", "justify"],
   ["bold", "italic", "strike", "underline", "subscript", "superscript"],
   ["hr", "link"],
@@ -178,25 +179,25 @@ const toolbar: string | object[][] = [
     ...[
       [
         "formatting",
-        ["p", ...[...Array(4).keys()].map((key) => `h${key + 1}`), "code"],
+        [
+          "p",
+          ...[...Array(4).keys()].map((key) => `h${String(key + 1)}`),
+          "code",
+        ],
         false,
         false,
       ],
       [
         "fontSize",
-        [...Array(7).keys()].map((key) => `size-${key + 1}`),
+        [...Array(7).keys()].map((key) => `size-${String(key + 1)}`),
         true,
         true,
       ],
       ["defaultFont", ["default_font", ...Object.keys(fonts)], false, true],
     ].map(([key, options, fixedLabel, fixedIcon]) => ({
       label:
-        $q.lang.editor[
-          key as keyof StringDictionary<QuasarLanguageEditorLabel>
-        ],
-      icon: $q.iconSet.editor[
-        key as keyof StringDictionary<QuasarIconSetEditor>
-      ],
+        $q.lang.editor[<keyof StringDictionary<QuasarLanguageEditorLabel>>key],
+      icon: $q.iconSet.editor[<keyof StringDictionary<QuasarIconSetEditor>>key],
       list,
       options,
       fixedLabel,
@@ -207,7 +208,7 @@ const toolbar: string | object[][] = [
   ["quote", "unordered", "ordered", "outdent", "indent"],
   ["undo", "redo"],
   ["upload", "dashboard", "share"],
-] as const;
+];
 watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });

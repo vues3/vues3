@@ -10,7 +10,7 @@ import { createHead } from "@unhead/vue";
 import { Head } from "@unhead/vue/components";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
-import type { TSettings } from "app/src/stores/data";
+import type { TData, TSettings } from "app/src/stores/data";
 import { $, views } from "app/src/stores/data";
 import {
   autoPrefix,
@@ -50,7 +50,7 @@ initUnocssRuntime({ autoPrefix, defaults, bypassDefined });
  */
 const app: App = createApp(vueApp);
 app.config.globalProperties.mdi = mdi;
-(async () => {
+void (async () => {
   /**
    * Ответ на считывание data.json
    *
@@ -61,8 +61,8 @@ app.config.globalProperties.mdi = mdi;
   const response: Response = await fetch("/data.json", {
     cache,
   });
-  $.value = response.ok ? await response.json() : {};
-  fix($.value?.content ?? []);
+  $.value = response.ok ? <TData>await response.json() : <TData>{};
+  fix($.value.content);
 })();
 /**
  * Перевод яндекс метрики в продуктовый режим
@@ -141,12 +141,12 @@ watch(
         return import("@/views/NotFoundView.vue");
       },
     });
-    router.replace(router.currentRoute.value.fullPath);
+    void router.replace(router.currentRoute.value.fullPath);
   },
   { once },
 );
 watch(
-  () => $.value?.settings as TSettings,
+  () => <TSettings>$.value?.settings,
   ({ metrika, analytics }) => {
     if (metrika) {
       /**
@@ -157,7 +157,7 @@ watch(
        * @type {string}
        */
       const id: string = metrika;
-      app.use(initYandexMetrika, { id, router, env } as Config);
+      app.use(initYandexMetrika, <Config>{ id, router, env });
     }
     if (analytics) {
       /**

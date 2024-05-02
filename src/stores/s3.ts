@@ -87,7 +87,7 @@ export const getObject = async (
       const { Body } = await S3.value.send(
         new GetObjectCommand({ ResponseCacheControl, Bucket, Key }),
       );
-      return new Response(Body as BodyInit);
+      return new Response(<BodyInit>Body);
     } catch (e) {
       //
     }
@@ -96,6 +96,6 @@ export const getObject = async (
 
 export const base = computed(
   () =>
-    S3?.value &&
+    S3.value &&
     `${wendpoint.value ? wendpoint.value : "https:/"}/${bucket.value}`,
 );

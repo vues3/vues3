@@ -6,6 +6,7 @@ import extractorPug from "@unocss/extractor-pug";
 import UnoCSS from "@unocss/vite";
 // import legacy from "@vitejs/plugin-legacy";
 import vue from "@vitejs/plugin-vue";
+import type { PluginOption } from "vite";
 import { defineConfig } from "vite";
 /**
  * Extractors are used to extract the usage of utilities from your source code
@@ -35,7 +36,7 @@ const configFile: string = "../uno.config.js";
  * @default
  * @type {any[]}
  */
-const plugins: Array<any> = [
+const plugins: PluginOption[] = [
   vue({ ...templateCompilerOptions }),
   UnoCSS({ configFile, extractors }),
   // legacy({ modernPolyfills }),
@@ -100,7 +101,7 @@ const outDir: string = "../public/monolit";
  * @returns {string} - Вендор
  */
 const manualChunks = (id: string = ""): string =>
-  id?.split("node_modules/")?.[1]?.split("/")?.[0] ?? "";
+  id.split("node_modules/")[1]?.split("/")?.[0] ?? "";
 /**
  * Блок output
  *

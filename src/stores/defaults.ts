@@ -198,7 +198,7 @@ export const behavior: ScrollBehavior = "instant";
  * @default
  * @type {true}
  */
-export const controls: true = true as const;
+export const controls: true = <const>true;
 /**
  * Enable css property auto prefixer
  *

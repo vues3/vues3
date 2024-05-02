@@ -2,16 +2,16 @@
 q-btn-group.q-mx-xs(spread, flat)
   q-btn(icon="note", @click="newView")
   q-btn(icon="delete", @click="deleteView")
-  q-btn(v-if="nodes", icon="chevron_left", @click="leftView")
-  q-btn(v-if="nodes", icon="chevron_right", @click="rightView")
+  q-btn(v-if="tree", icon="chevron_left", @click="leftView")
+  q-btn(v-if="tree", icon="chevron_right", @click="rightView")
   q-btn(icon="expand_more", @click="downView")
   q-btn(icon="expand_less", @click="upView")
 .scroll.col
   q-tree.q-ma-xs(
-    ref="tree",
+    ref="qtree",
     :selected,
     :expanded,
-    :nodes="nodes ?? list",
+    :nodes,
     node-key="id",
     no-selection-unset,
     accordion,
@@ -35,8 +35,8 @@ q-btn-group.q-mx-xs(spread, flat)
         )
 </template>
 <script setup lang="ts">
-import type { QInputProps, QTree, QVueGlobals } from "quasar";
-import { useQuasar } from "quasar";
+import type { QInputProps, QTree, QTreeNode, QVueGlobals } from "quasar";
+import { uid, useQuasar } from "quasar";
 import type { TResource, TView } from "stores/data";
 import { cancel, immediate, persistent } from "stores/defaults";
 import type { ComputedRef, Ref } from "vue";
@@ -46,14 +46,14 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
  * @property {string} selected - Идентификатор выбранного элемента
  * @property {string} type- Тип данных
  * @property {string[]} expanded - Массив раскрытых узлов
- * @property {TView[]} nodes - Дерево
+ * @property {TView[]} tree - Дерево
  * @property {TView[]} list - Массив, представляющий дерево
  */
 interface IProps {
   selected?: string;
   type?: QInputProps["type"];
   expanded?: string[];
-  nodes?: TView[];
+  tree?: TView[];
   list: TView[] | TResource[];
 }
 /**
@@ -82,7 +82,7 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
    * @returns {string[]} - Пустой массив
    */
   expanded: (): string[] => [],
-  nodes: undefined,
+  tree: undefined,
   /**
    * Пустой массив по умолчанию
    *
@@ -91,6 +91,14 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
    */
   list: (): TView[] => [],
 });
+/**
+ * Ноды для дерева
+ *
+ * @type {ComputedRef<QTreeNode[]>}
+ */
+const nodes: ComputedRef<QTreeNode[]> = computed(
+  () => <QTreeNode[]>(props.tree ?? props.list),
+);
 /**
  * Объект текущей страницы
  *
@@ -136,7 +144,7 @@ const $q: QVueGlobals = useQuasar();
  *
  * @type {Ref<QTree | undefined>}
  */
-const tree: Ref<QTree | undefined> = ref();
+const qtree: Ref<QTree | undefined> = ref();
 /**
  * Заголовок диалога
  *
@@ -157,7 +165,7 @@ const message: string = "Вы действительно хотите удали
 const deleteView = () => {
   if (the.value) {
     const { parent, prev, next, siblings, index } = the.value;
-    $q.dialog({ title, message, cancel, persistent }).onOk(async () => {
+    $q.dialog({ title, message, cancel, persistent }).onOk(() => {
       /**
        * Идентификатор страницы, выбираемой после удаления
        *
@@ -175,11 +183,13 @@ const deleteView = () => {
           ({ id } = parent ?? {});
       }
       siblings.splice(index, 1);
-      if (!id) {
-        await nextTick();
-        [{ id }] = props.list;
-      }
-      updateSelected(id);
+      void (async () => {
+        if (!id) {
+          await nextTick();
+          [{ id }] = props.list;
+        }
+        updateSelected(id);
+      })();
     });
   }
 };
@@ -224,7 +234,7 @@ const rightView = () => {
     if (prev) {
       const { children = [], id } = prev;
       prev.children = [...children, ...siblings.splice(index, 1)];
-      tree.value?.setExpanded(id, true);
+      qtree.value?.setExpanded(id, true);
     }
   }
 };
@@ -245,7 +255,7 @@ const leftView = () => {
         id,
       } = parent;
       if (grandparent) {
-        tree.value?.setExpanded(id, false);
+        qtree.value?.setExpanded(id, false);
         siblings.splice(grandindex + 1, 0, ...children.splice(index, 1));
       }
     }
@@ -270,24 +280,24 @@ const newView = () => {
      *
      * @type {string}
      */
-    const id: string = crypto.randomUUID();
+    const id: string = uid();
     switch (true) {
       case !!parent:
-        siblings.splice(index + 1, 0, { id } as TView);
+        siblings.splice(index + 1, 0, <TView>{ id });
         break;
       case !!children:
-        children.unshift({ id } as TView);
-        tree.value?.setExpanded(the.value.id, true);
+        children.unshift(<TView>{ id });
+        qtree.value?.setExpanded(the.value.id, true);
         break;
       default:
-        siblings.splice(index + 1, 0, { id } as TView);
+        siblings.splice(index + 1, 0, <TView>{ id });
         break;
     }
     updateSelected(id);
   }
 };
 onMounted(() => {
-  if (props.nodes?.length) tree.value?.setExpanded(props.nodes[0].id, true);
+  if (props.tree?.length) qtree.value?.setExpanded(props.tree[0].id, true);
 });
 watch(
   the,

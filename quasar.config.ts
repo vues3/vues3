@@ -17,7 +17,7 @@ const extras: (QuasarIconSets | QuasarFonts)[] = [
   "material-icons",
 ];
 /** @type {"history"} */
-const vueRouterMode: "history" = "history";
+const vueRouterMode: string = "history";
 /** @type {object} */
 const build: object = {
   vueRouterMode,
@@ -40,8 +40,8 @@ const hideSplashscreen: boolean = true;
 const capacitor: object = { hideSplashscreen };
 /** @type {number} */
 const inspectPort: number = 5858;
-/** @type {"packager"} */
-const bundler: "packager" = "packager";
+/** @type {QuasarElectronConfiguration["bundler"]} */
+const bundler: QuasarElectronConfiguration["bundler"] = "packager";
 /** @type {object} */
 const packager: object = {};
 /** @type {QuasarElectronConfiguration} */

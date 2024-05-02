@@ -6,8 +6,9 @@ import mimes from "assets/mimes.json";
 import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import { FromSchema } from "json-schema-to-ts";
 import mime from "mime";
+import { uid } from "quasar";
 import Config from "src/schemas/config";
-import type { TView } from "stores/data";
+import type { TData, TView } from "stores/data";
 import { $, code, views } from "stores/data";
 import {
   cache,
@@ -54,27 +55,28 @@ const ajv: Ajv = new Ajv({
  * @function validateConfig
  * @type {ValidateFunction}
  */
-export const validateConfig: ValidateFunction = ajv.getSchema(
-  "urn:jsonschema:config",
-) as ValidateFunction;
+export const validateConfig: ValidateFunction = <ValidateFunction>(
+  ajv.getSchema("urn:jsonschema:config")
+);
 /**
  * @function getFile
  * @param {keyof TView} ext - Расширение файла
- * @param {Function} beautify - Ф-ция форматирования кода
+ * @param {(js_source_text: string) => string} beautify - Ф-ция форматирования
+ *   кода
  * @returns {Promise<string>} Содержимое файла
  */
 async function getFile(
   this: TView,
   ext: keyof TView,
-  beautify: Function,
+  beautify: (js_source_text: string) => string,
 ): Promise<string> {
-  if (this[ext] == null) {
+  if (this[ext] == null && this.id) {
     const value = beautify(
-      (await (await getObject(`views/${this.id}.${ext}`, cache)).text()) ?? "",
+      (await (await getObject(`views/${this.id}.${ext}`, cache)).text()) || "",
     );
     Object.defineProperty(this, ext, { value, configurable });
   }
-  return this[ext] as string;
+  return <string>this[ext];
 }
 /**
  * @function save
@@ -82,8 +84,8 @@ async function getFile(
  * @param {string} text - Новое содержимое файла
  */
 export function save(this: TView | undefined, ext: string, text: string) {
-  if (this) {
-    putObject(
+  if (this?.id) {
+    void putObject(
       `views/${this.id}.${ext}`,
       mime.getType(ext) ?? "text/plain",
       text,
@@ -103,7 +105,7 @@ export function save(this: TView | undefined, ext: string, text: string) {
  *
  * @function debounceFn
  */
-const debounceFn: Function = useDebounceFn(save, debounce);
+const debounceFn = useDebounceFn(save, debounce);
 /**
  * @function setFile
  * @param {string} ext - Расширение файла
@@ -111,7 +113,7 @@ const debounceFn: Function = useDebounceFn(save, debounce);
  */
 function setFile(this: TView, ext: string, value: string) {
   Object.defineProperty(this, ext, { value, configurable });
-  debounceFn.call(this, ext, value);
+  void debounceFn.call(this, ext, value);
 }
 /**
  * Объект, на котором определяется загрузка шаблона страницы
@@ -144,7 +146,7 @@ const template: PropertyDescriptor = {
  * @constant
  * @type {string[]}
  */
-const urls: Record<string, string> = {};
+const urls: Record<string, string | undefined> = {};
 /**
  * Объект, на котором определяется загрузка шаблона страницы
  *
@@ -171,8 +173,8 @@ const html: PropertyDescriptor = {
     );
     Object.keys(urls).forEach((url) => {
       if (![...doc.images].find((image) => image.src === url)) {
-        URL.revokeObjectURL(urls[url]);
-        delete urls[url];
+        URL.revokeObjectURL(urls[url] ?? "");
+        urls[url] = undefined;
       }
     });
     (
@@ -197,7 +199,10 @@ const html: PropertyDescriptor = {
         else urls[doc.images[index].src] = "";
       if (urls[doc.images[index].src]) {
         doc.images[index].setAttribute("data-src", doc.images[index].src);
-        doc.images[index].setAttribute("src", urls[doc.images[index].src]);
+        doc.images[index].setAttribute(
+          "src",
+          urls[doc.images[index].src] ?? "",
+        );
       }
     });
     return doc.body.innerHTML;
@@ -281,43 +286,48 @@ const script: PropertyDescriptor = {
 };
 watch(S3, async (value) => {
   if (value)
-    $.value = JSON.parse(
-      (await (await getObject("data.json", cache)).text()) ?? "{}",
+    $.value = <TData>(
+      JSON.parse((await (await getObject("data.json", cache)).text()) || "{}")
     );
   else $.value = undefined;
 });
 watch(S3, async (newValue) => {
   if (newValue) {
-    const [localManifest, serverManifest] = (
-      (await Promise.all([
-        (await fetch("monolit/.vite/manifest.json")).json(),
-        new Promise((resolve) => {
-          resolve(
-            (async (response: Promise<Response>) =>
-              JSON.parse((await (await response).text()) ?? "{}"))(
-              getObject(".vite/manifest.json", cache),
-            ),
-          );
-        }),
-      ])) as Record<string, Record<string, string | string[]>>[]
-    ).map(
+    const [localManifest, serverManifest] = (<
+      Record<string, Record<string, string | string[]>>[]
+    >await Promise.all([
+      (await fetch("monolit/.vite/manifest.json")).json(),
+      new Promise((resolve) => {
+        resolve(
+          (async (response: Promise<Response>) =>
+            <object>JSON.parse((await (await response).text()) || "{}"))(
+            getObject(".vite/manifest.json", cache),
+          ),
+        );
+      }),
+    ])).map(
       (value) =>
         new Set(
-          [
-            ...Object.values(value).map(({ file }) => file),
-            ...(value["index.html"]?.css ?? []),
-          ].filter(Boolean),
+          <string[]>(
+            [
+              ...Object.values(value).map(({ file }) => file),
+              ...(value["index.html"].css || []),
+            ].filter(Boolean)
+          ),
         ),
     );
-    localManifest
-      .add("index.html")
-      .add(".vite/manifest.json")
-      .add("robots.txt")
-      // @ts-ignore
-      .difference(serverManifest)
-      .forEach(async (value: string) => {
-        const body = await (await fetch(`monolit/${value}`)).blob();
-        putObject(value, body.type, body);
+    [
+      ...localManifest
+        .add("index.html")
+        .add(".vite/manifest.json")
+        .add("robots.txt"),
+    ]
+      .filter((x) => !serverManifest.has(x))
+      .forEach((value: string) => {
+        void (async () => {
+          const body = await (await fetch(`monolit/${value}`)).blob();
+          void putObject(value, body.type, body);
+        })();
       });
   }
 });
@@ -325,7 +335,7 @@ watchDebounced(
   $,
   (value, oldValue) => {
     if (value && oldValue)
-      putObject("data.json", "application/json", JSON.stringify(value));
+      void putObject("data.json", "application/json", JSON.stringify(value));
   },
   { deep, debounce },
 );
@@ -337,8 +347,8 @@ export const accessKeyId: Ref<string | undefined> = ref();
  * @type {RemovableRef<TConfig>}
  */
 export const config: RemovableRef<TConfig> = useStorage(
-  `config-${accessKeyId.value}`,
-  {} as TConfig,
+  `config-${accessKeyId.value ?? ""}`,
+  <TConfig>{},
   localStorage,
   { mergeDefaults },
 );
@@ -364,16 +374,15 @@ const sitemap: ComputedRef<object> = computed(() => ({
 }));
 watchDebounced(
   sitemap,
-  (value, oldValue) => {
-    if (value && oldValue)
-      putObject("sitemap.xml", "application/xml", toXML(value));
+  (value) => {
+    void putObject("sitemap.xml", "application/xml", toXML(value));
   },
   { debounce },
 );
 watch(
   config,
   (value) => {
-    validateConfig?.(value);
+    validateConfig(value);
   },
   { immediate },
 );
@@ -390,7 +399,7 @@ export const putImage = async (
 ): Promise<Record<string, string | undefined>> => {
   const { type } = file;
   /** @type {string} */
-  const filePath: string = `images/${crypto.randomUUID()}.${mime.getExtension(type)}`;
+  const filePath: string = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
   /** @type {string | undefined} */
   let message: string | undefined;
   try {
@@ -400,7 +409,7 @@ export const putImage = async (
         "Тип графического файла не подходит для использования в сети интернет",
       );
   } catch (err) {
-    ({ message } = err as Error);
+    ({ message } = <Error>err);
   }
   return { filePath, message };
 };

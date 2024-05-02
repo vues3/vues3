@@ -22,14 +22,24 @@ q-page.column.full-height
       v-interactive-tree(
         v-model:selected="config.css.selected",
         type="url",
-        :list="$.css"
+        :list
       )
 </template>
 <script setup lang="ts">
 import VInteractiveTree from "components/VInteractiveTree.vue";
 import VSourceCode from "components/VSourceCode.vue";
 import { config, rightDrawer } from "stores/app";
+import type { TResource } from "stores/data";
 import { $ } from "stores/data";
-
+import type { ComputedRef } from "vue";
+import { computed } from "vue";
+/**
+ * Список для вывода
+ *
+ * @type {ComputedRef<TResource[]>}
+ */
+const list: ComputedRef<TResource[]> = computed(
+  () => <TResource[]>$.value?.css,
+);
 rightDrawer.value = undefined;
 </script>

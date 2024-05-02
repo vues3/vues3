@@ -10,7 +10,7 @@ q-drawer(v-if="the", v-model="rightDrawer", bordered, side="right")
       v-interactive-tree(
         v-model:selected="config.content.selected",
         v-model:expanded="config.content.expanded",
-        :nodes="$.content",
+        :tree="$.content",
         :list="views"
       )
     q-separator
@@ -229,7 +229,6 @@ q-page.column.full-height.bg-light(v-else)
     q-spinner-hourglass
 </template>
 <script setup lang="ts">
-// @ts-ignore
 import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
 import { useFileDialog } from "@vueuse/core";
 import changefreq from "assets/changefreq.json";
@@ -283,14 +282,18 @@ const pagination: Ref<object> = ref({ itemsPerPage, page });
  *
  * @type {Ref<object>}
  */
-const icons: Ref<object> = ref(materialIcons.icons);
+const icons: Ref<object[]> = ref(
+  (<Record<string, object[]>>materialIcons).icons,
+);
 /**
  * Выбранный объект страницы
  *
  * @type {ComputedRef<TView | undefined>}
  */
-const the: ComputedRef<TView | undefined> = computed(() =>
-  views.value.find(({ id }) => id === config.value.content.selected),
+const the: ComputedRef<TView | undefined> = computed(
+  () =>
+    views.value.find(({ id }) => id === config.value.content.selected) ??
+    views.value[0],
 );
 /**
  * Функция экстренной записи при размонтировании
@@ -301,7 +304,7 @@ const the: ComputedRef<TView | undefined> = computed(() =>
  * @param {keyof TView} key - Новое содержимое файла
  */
 const onUnmounted = async (ext: string, key: keyof TView) => {
-  save.call(the.value, ext, (await the.value?.[key]) as string);
+  save.call(the.value, ext, <string>await the.value?.[key]);
 };
 /**
  * Значение постоянной ссылки
@@ -346,10 +349,10 @@ watch(
 );
 watch(files, async (newFiles) => {
   const [file] = newFiles ?? [];
-  if (file && the.value) {
+  if (the.value) {
     const { filePath, message } = await putImage(file);
     if (message) $q.notify({ message });
-    else the.value.image = `/${filePath}`;
+    else if (filePath) the.value.image = `/${filePath}`;
   }
 });
 </script>

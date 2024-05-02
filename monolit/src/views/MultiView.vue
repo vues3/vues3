@@ -14,9 +14,9 @@
     :role="a.id === the?.id ? 'main' : undefined"
   )
     component(
-      :is="templates[a.id as keyof object] as object",
+      :is="<object>templates[<keyof object>a.id]",
       :the="a",
-      @vue:mounted="(promises[a.id as keyof object]).resolve"
+      @vue:mounted="(promises[<keyof object>a.id]).resolve"
     )
 </template>
 <script setup lang="ts">
@@ -86,18 +86,26 @@ const siblings: ComputedRef<TView[]> = computed(
  * @type {ComputedRef<Record<string, PromiseWithResolvers<undefined>>>}
  */
 const promises: ComputedRef<Record<string, PromiseWithResolvers<undefined>>> =
-  computed(() =>
-    Object.fromEntries(
-      siblings.value.map(({ id }) => [id, Promise.withResolvers()]),
-    ),
+  computed(
+    () =>
+      <Record<string, PromiseWithResolvers<undefined>>>(
+        Object.fromEntries(
+          siblings.value.map(({ id }) => [id, Promise.withResolvers()]),
+        )
+      ),
   );
 /**
  * Вычисление массива загруженных шаблонов
  *
  * @type {ComputedRef<object>}
  */
-const templates: ComputedRef<object> = computed(() =>
-  Object.fromEntries(siblings.value.map((a) => [a.id, getAsyncComponent(a)])),
+const templates: ComputedRef<object> = computed(
+  () =>
+    <object>(
+      Object.fromEntries(
+        siblings.value.map((a) => [a.id, getAsyncComponent(a)]),
+      )
+    ),
 );
 /**
  * Родительский элемент представления
@@ -105,7 +113,7 @@ const templates: ComputedRef<object> = computed(() =>
  * @type {Ref<HTMLElement>}
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root} см. документацию
  */
-const root: Ref<HTMLElement> = useParentElement() as Ref<HTMLElement>;
+const root: Ref<HTMLElement> = <Ref<HTMLElement>>useParentElement();
 /**
  * Флаг постановки проверки пересечения страницы с областью видимости на паузу
  *
@@ -137,8 +145,7 @@ const callback: IntersectionObserverCallback = ([
 ]: IntersectionObserverEntry[]) => {
   if (!pause && isIntersecting && name !== the.value?.id) {
     push = true;
-
-    router.push({ name });
+    void router.push({ name });
   }
 };
 /**

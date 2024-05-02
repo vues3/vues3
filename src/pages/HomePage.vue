@@ -211,7 +211,7 @@ watch(provider, (value) => {
   }
 });
 watch(region, () => {
-  if (provider.value) set(wendpoint, provider.value?.wendpoint);
+  if (provider.value) set(wendpoint, provider.value.wendpoint);
   else set(wendpoint, "");
 });
 watch(cred, (value) => {
@@ -241,7 +241,7 @@ let s3Client: S3Client | undefined;
 const login = async () => {
   if (!s3Client)
     try {
-      s3Client = new S3Client({
+      s3Client = new S3Client(<S3ClientConfig>{
         region: region.value,
         endpoint: endpoint.value,
         credentials: {
@@ -249,7 +249,7 @@ const login = async () => {
           secretAccessKey: secretAccessKey.value,
         },
         requestHandler: new FetchHttpHandler({ keepAlive: false }),
-      } as S3ClientConfig);
+      });
       set(creds, [
         ...creds.value.filter(({ label }) => label !== bucket.value),
         ...(remember.value
@@ -272,10 +272,10 @@ const login = async () => {
         }),
       );
       set(S3, s3Client);
-      router.push("/content");
+      void router.push("/content");
     } catch (err) {
       s3Client = undefined;
-      const { message } = err as Error;
+      const { message } = <Error>err;
       $q.notify({ message });
     }
 };

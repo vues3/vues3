@@ -1,7 +1,6 @@
 import * as mdi from "@mdi/js";
 import type { FuncKeywordDefinition, ValidateFunction } from "ajv";
 import Ajv from "ajv";
-import type { DynamicDefaultFunc } from "ajv-keywords/dist/definitions/dynamicDefaults";
 import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
 import Data, { plainData } from "app/src/schemas/data";
 import Navbar from "app/src/schemas/navbar";
@@ -17,10 +16,9 @@ import {
   useDefaults,
 } from "app/src/stores/defaults";
 import { FromSchema } from "json-schema-to-ts";
-import type { QTreeNode } from "quasar";
+import { uid } from "quasar";
 import type { ComputedRef, Ref } from "vue";
 import { computed, ref, watch } from "vue";
-
 /**
  * @type {TView}
  * @property {string} [id] - Идентификатор страницы, значения по умолчанию
@@ -129,14 +127,21 @@ export type TView = FromSchema<typeof plainView> & {
   style: Promise<string> | string;
   script: Promise<string> | string;
   template: Promise<string> | string;
-} & QTreeNode;
+};
 /**
  * @type {TResource}
  * @property {string} [id] - Id ресурса, вычисляется динамически
  * @property {boolean} enabled - Признак использования ресурса
  * @property {string} url - Url ресурса
  */
-export type TResource = FromSchema<typeof Resource> & QTreeNode;
+export type TResource = FromSchema<typeof Resource> & {
+  parent?: undefined;
+  children?: undefined;
+  siblings: TView[];
+  prev?: TView;
+  next?: TView;
+  index: number;
+};
 /**
  * @type {TSettings}
  * @property {string | null} yandex - Id яндекса
@@ -179,10 +184,9 @@ export type TData = FromSchema<
 /**
  * Динамический расчет uuid при валидации
  *
- * @returns {DynamicDefaultFunc} Ф-ция динамического расчета uuid при валидации
+ * @returns {() => string} Ф-ция динамического расчета uuid при валидации
  */
-dynamicDefaults.DEFAULTS.uuid = (): DynamicDefaultFunc => () =>
-  crypto.randomUUID() as any;
+dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uid();
 /**
  * An array or object of schemas that will be added to the instance
  *
@@ -225,18 +229,18 @@ const ajv: Ajv = new Ajv({
  *
  * @type {ValidateFunction}
  */
-export const validate: ValidateFunction = ajv.getSchema(
-  "urn:jsonschema:data",
-) as ValidateFunction;
+export const validate: ValidateFunction = <ValidateFunction>(
+  ajv.getSchema("urn:jsonschema:data")
+);
 /**
  * Функция проверки навбара
  *
  * @function validateNavbar
  * @type {ValidateFunction}
  */
-export const validateNavbar: ValidateFunction = ajv.getSchema(
-  "urn:jsonschema:navbar",
-) as ValidateFunction;
+export const validateNavbar: ValidateFunction = <ValidateFunction>(
+  ajv.getSchema("urn:jsonschema:navbar")
+);
 /**
  * Рекурсивная функция преобразования древовидного объекта в массив страниц
  *
@@ -245,7 +249,7 @@ export const validateNavbar: ValidateFunction = ajv.getSchema(
  * @returns {TView[]} - Аддитивный массив страниц
  */
 const getViews = (views: TView[]): TView[] =>
-  views.flatMap((element) => [element, ...getViews(element.children ?? [])]);
+  views.flatMap((element) => [element, ...getViews(element.children)]);
 /**
  * Объект, на котором определяется свойство позиции в соседних объектах
  *
@@ -308,17 +312,14 @@ const branch: PropertyDescriptor = {
      *
      * @type {TView[]}
      */
-    const ret: TView[] = [];
+    const ret: TView[] = [this];
     /**
      * Родительский объект
      *
      * @type {TView | undefined}
      */
-    let parent: TView | undefined = this;
-    do {
-      ret.unshift(parent);
-      ({ parent } = parent);
-    } while (parent);
+    let parent: TView | undefined;
+    while ((parent = ret[0]?.parent)) ret.unshift(parent);
     return ret;
   },
 };
@@ -356,7 +357,7 @@ const url: PropertyDescriptor = {
    */
   get(this: TView): string {
     return (
-      (this.loc && encodeURI(this.loc?.replace(" ", "_") ?? "")) || this.path
+      (this.loc && encodeURI(this.loc.replace(" ", "_") || "")) || this.path
     );
   },
 };
@@ -431,10 +432,7 @@ const fixDeep = (
       url,
       favicon,
     });
-    fixDeep(
-      { value: value.children ?? [], configurable },
-      { value, configurable },
-    );
+    fixDeep({ value: value.children, configurable }, { value, configurable });
   });
 };
 /**
@@ -469,15 +467,15 @@ watch(
   { deep },
 );
 watch(
-  () => $.value?.css ?? [],
-  (value) => {
+  () => <TResource[]>($.value?.css ?? []),
+  (value: TResource[]) => {
     fixPlain({ value });
   },
   { deep },
 );
 watch(
-  () => $.value?.js ?? [],
-  (value) => {
+  () => <TResource[]>($.value?.js ?? []),
+  (value: TResource[]) => {
     fixPlain({ value });
   },
   { deep },
@@ -493,10 +491,10 @@ watch(
   (newValue) => {
     if (newValue) {
       ["content", "css", "js"].forEach((key) => {
-        if (!(newValue[key as keyof TData] as TView[] | TResource[])?.length)
+        if (!(<TView[] | TResource[]>newValue[<keyof TData>key]).length)
           Reflect.defineProperty(newValue, key, { value });
       });
-      validate?.(newValue);
+      validate(newValue);
     }
   },
   { deep },
