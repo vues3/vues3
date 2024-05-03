@@ -255,41 +255,25 @@ import {
 import { base } from "stores/s3";
 import type { ComputedRef, Ref, WritableComputedRef } from "vue";
 import { computed, ref, watch } from "vue";
-/**
- * Объект quasar
- *
- * @type {QVueGlobals}
- */
+/** Объект quasar */
 const $q: QVueGlobals = useQuasar();
 /**
  * Выбор иконок по умолчанию скрыт
  *
- * @constant
  * @default
- * @type {Ref<boolean>}
  */
 const show: Ref<boolean> = ref(false);
 /**
  * Настройки страниц при выборе иконок
  *
- * @constant
  * @default
- * @type {Ref<object>}
  */
 const pagination: Ref<object> = ref({ itemsPerPage, page });
-/**
- * Иконки для выбора
- *
- * @type {Ref<object>}
- */
+/** Иконки для выбора */
 const icons: Ref<object[]> = ref(
   (<Record<string, object[]>>materialIcons).icons,
 );
-/**
- * Выбранный объект страницы
- *
- * @type {ComputedRef<TView | undefined>}
- */
+/** Выбранный объект страницы */
 const the: ComputedRef<TView | undefined> = computed(
   () =>
     views.value.find(({ id }) => id === config.value.content.selected) ??
@@ -299,24 +283,18 @@ const the: ComputedRef<TView | undefined> = computed(
  * Функция экстренной записи при размонтировании
  *
  * @async
- * @function onUnmounted
- * @param {string} ext - Расширение файла
- * @param {keyof TView} key - Новое содержимое файла
+ * @param ext - Расширение файла
+ * @param key - Новое содержимое файла
  */
 const onUnmounted = async (ext: string, key: keyof TView) => {
   save.call(the.value, ext, <string>await the.value?.[key]);
 };
-/**
- * Значение постоянной ссылки
- *
- * @type {WritableComputedRef<string | null>}
- */
+/** Значение постоянной ссылки */
 const loc: WritableComputedRef<string | null> = computed({
   /**
    * Получение постоянной ссылки
    *
-   * @function get
-   * @returns {string | null} - Постоянная ссылка
+   * @returns - Постоянная ссылка
    */
   get(): string | null {
     return the.value?.loc ?? null;
@@ -324,19 +302,14 @@ const loc: WritableComputedRef<string | null> = computed({
   /**
    * Запись постоянной ссылки
    *
-   * @function set
-   * @param {string | null} value - Новое значение постоянной ссылки
+   * @param value - Новое значение постоянной ссылки
    */
   set(value: string | null) {
     if (the.value) the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
   },
 });
 const { files, open } = useFileDialog({ multiple, accept, capture, reset });
-/**
- * Открывает диалог по клику
- *
- * @function click
- */
+/** Открывает диалог по клику */
 const click = () => {
   open();
 };

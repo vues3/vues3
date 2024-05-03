@@ -19,27 +19,20 @@ import { nextTick, ref } from "vue";
 // eslint-disable-next-line no-duplicate-imports
 import { VAceEditor } from "vue3-ace-editor";
 /**
- * @type {IProps}
- * @property {object} [options] - Свойства редактора
- * @property {string} [lang] - Язык подсветки
- * @property {Promise<string> | string} modelValue - Содержимое редактора
+ * [options] - Свойства редактора [lang] - Язык подсветки modelValue -
+ * Содержимое редактора
  */
 interface IProps {
   options?: object;
   lang?: string;
   modelValue: Promise<string> | string | null;
 }
-/**
- * Пропсы
- *
- * @type {IProps}
- */
+/** Пропсы */
 const props: IProps = withDefaults(defineProps<IProps>(), {
   /**
    * Фу-ция инициализации объекта свойств редактора по умолчанию
    *
-   * @function options
-   * @returns {object} - Пустой объект по умолчанию
+   * @returns - Пустой объект по умолчанию
    */
   options: (): object => ({}),
   lang: "html",
@@ -49,8 +42,7 @@ const emit = defineEmits(["update:modelValue"]);
 /**
  * Функция форматирования кода в зависимости от его типа
  *
- * @function beautify
- * @param {string} value - Исходный код
+ * @param value - Исходный код
  */
 const beautify = (value: string) => {
   let code;
@@ -67,16 +59,8 @@ const beautify = (value: string) => {
   }
   emit("update:modelValue", code);
 };
-/**
- * Экземпляр редактора
- *
- * @type {Ref<HTMLElement | undefined>}
- */
+/** Экземпляр редактора */
 const editor: Ref<HTMLElement | undefined> = ref();
-/**
- * Текст для вставки в редактор
- *
- * @type {Ref<string | null>}
- */
+/** Текст для вставки в редактор */
 const value: Ref<string | null> = ref(await props.modelValue);
 </script>

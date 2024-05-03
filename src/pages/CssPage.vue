@@ -33,11 +33,7 @@ import type { TResource } from "stores/data";
 import { $ } from "stores/data";
 import type { ComputedRef } from "vue";
 import { computed } from "vue";
-/**
- * Список для вывода
- *
- * @type {ComputedRef<TResource[]>}
- */
+/** Список для вывода */
 const list: ComputedRef<TResource[]> = computed(
   () => <TResource[]>$.value?.css,
 );

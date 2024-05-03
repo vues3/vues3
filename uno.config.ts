@@ -22,11 +22,7 @@ import staticSerifs from "./src/assets/fonts/StaticSerifs.json";
 /** @see {@link https://type.today/ru/journal/transitional Переходные антиквы} */
 import transitionalSerifs from "./src/assets/fonts/TransitionalSerifs.json";
 
-/**
- * Шрифты
- *
- * @type {Record<string, string>}
- */
+/** Шрифты */
 const fonts: Record<string, string> = Object.fromEntries(
   [
     ...dynamicSerifs,
@@ -42,9 +38,7 @@ const fonts: Record<string, string> = Object.fromEntries(
 /**
  * Пресеты
  *
- * @constant
  * @default
- * @type {Preset[]}
  */
 const presets: Preset[] = [
   presetUno(),
@@ -57,9 +51,7 @@ const presets: Preset[] = [
 /**
  * Трансформеры
  *
- * @constant
  * @default
- * @type {SourceCodeTransformer[]}
  */
 const transformers: SourceCodeTransformer[] = [
   transformerDirectives(),

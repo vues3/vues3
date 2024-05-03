@@ -25,7 +25,7 @@ export default route((/* { store, ssrContext } */) => {
   else createHistory = createWebHashHistory;
 
   return createRouter({
-    /** @returns {object} - Объект с позиционированием */
+    /** @returns - Объект с позиционированием */
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
 

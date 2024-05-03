@@ -42,12 +42,8 @@ import { cancel, immediate, persistent } from "stores/defaults";
 import type { ComputedRef, Ref } from "vue";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 /**
- * @type {IProps}
- * @property {string} selected - Идентификатор выбранного элемента
- * @property {string} type- Тип данных
- * @property {string[]} expanded - Массив раскрытых узлов
- * @property {TView[]} tree - Дерево
- * @property {TView[]} list - Массив, представляющий дерево
+ * Selected - Идентификатор выбранного элемента type- Тип данных expanded -
+ * Массив раскрытых узлов tree - Дерево list - Массив, представляющий дерево
  */
 interface IProps {
   selected?: string;
@@ -57,7 +53,6 @@ interface IProps {
   list: TView[] | TResource[];
 }
 /**
- * @type {IEmits}
  * @see {@link https://github.com/vuejs/language-tools/issues/3169}
  * @see {@link https://vuejs.org/api/sfc-script-setup.html#type-only-props-emit-declarations}
  * @todo Переписать в нормальный вид, после обновления vue-tsc. Пока quasar не
@@ -67,59 +62,40 @@ interface IEmits {
   (e: "update:expanded", value: readonly string[]): void;
   (e: "update:selected", value: string | undefined): void;
 }
-/**
- * Пропсы
- *
- * @type {IProps}
- */
+/** Пропсы */
 const props: IProps = withDefaults(defineProps<IProps>(), {
   selected: "",
   type: "text",
   /**
    * Пустой массив по умолчанию
    *
-   * @function expanded
-   * @returns {string[]} - Пустой массив
+   * @returns - Пустой массив
    */
   expanded: (): string[] => [],
   tree: undefined,
   /**
    * Пустой массив по умолчанию
    *
-   * @function list
-   * @returns {TView[]} - Пустой массив
+   * @returns - Пустой массив
    */
   list: (): TView[] => [],
 });
-/**
- * Ноды для дерева
- *
- * @type {ComputedRef<QTreeNode[]>}
- */
+/** Ноды для дерева */
 const nodes: ComputedRef<QTreeNode[]> = computed(
   () => <QTreeNode[]>(props.tree ?? props.list),
 );
-/**
- * Объект текущей страницы
- *
- * @type {ComputedRef<TView | TResource | null | undefined>}
- */
+/** Объект текущей страницы */
 const the: ComputedRef<TView | TResource | null | undefined> = computed(() =>
   props.list.length
     ? props.list.find(({ id }) => id === props.selected) ?? null
     : undefined,
 );
-/**
- * Эмиттеры
- *
- * @type {IEmits}
- */
+/** Эмиттеры */
 const emits: IEmits = defineEmits<IEmits>();
 /**
  * Обновление массива открытых нод
  *
- * @function updateExpanded
- * @param {string[]} value - Массив открытых нод
+ * @param value - Массив открытых нод
  */
 const updateExpanded = (value: readonly string[]) => {
   emits("update:expanded", value);
@@ -127,50 +103,25 @@ const updateExpanded = (value: readonly string[]) => {
 /**
  * Обновление идентификатора выбранной ноды
  *
- * @function updateSelected
- * @param {string | undefined} value - Идентификатор выбранной ноды
+ * @param value - Идентификатор выбранной ноды
  */
 const updateSelected = (value: string | undefined) => {
   emits("update:selected", value);
 };
-/**
- * Объект quasar
- *
- * @type {QVueGlobals}
- */
+/** Объект quasar */
 const $q: QVueGlobals = useQuasar();
-/**
- * Экземпляр дерева
- *
- * @type {Ref<QTree | undefined>}
- */
+/** Экземпляр дерева */
 const qtree: Ref<QTree | undefined> = ref();
-/**
- * Заголовок диалога
- *
- * @type {string}
- */
+/** Заголовок диалога */
 const title: string = "Подтверждение";
-/**
- * Сообщение диалога
- *
- * @type {string}
- */
+/** Сообщение диалога */
 const message: string = "Вы действительно хотите удалить?";
-/**
- * Удаление текущей страницы
- *
- * @function deleteView
- */
+/** Удаление текущей страницы */
 const deleteView = () => {
   if (the.value) {
     const { parent, prev, next, siblings, index } = the.value;
     $q.dialog({ title, message, cancel, persistent }).onOk(() => {
-      /**
-       * Идентификатор страницы, выбираемой после удаления
-       *
-       * @type {string}
-       */
+      /** Идентификатор страницы, выбираемой после удаления */
       let id: string | undefined;
       switch (true) {
         case !!next:
@@ -193,11 +144,7 @@ const deleteView = () => {
     });
   }
 };
-/**
- * Перемещение страницы вверх на одну позицию
- *
- * @function upView
- */
+/** Перемещение страницы вверх на одну позицию */
 const upView = () => {
   if (the.value) {
     const { index, siblings } = the.value;
@@ -208,11 +155,7 @@ const upView = () => {
       ];
   }
 };
-/**
- * Перемещение страницы вниз на одну позицию
- *
- * @function downView
- */
+/** Перемещение страницы вниз на одну позицию */
 const downView = () => {
   if (the.value) {
     const { index, siblings } = the.value;
@@ -223,11 +166,7 @@ const downView = () => {
       ];
   }
 };
-/**
- * Перемещение страницы вправо на одну позицию
- *
- * @function rightView
- */
+/** Перемещение страницы вправо на одну позицию */
 const rightView = () => {
   if (the.value) {
     const { index, siblings, prev } = the.value;
@@ -238,11 +177,7 @@ const rightView = () => {
     }
   }
 };
-/**
- * Перемещение страницы влево на одну позицию
- *
- * @function leftView
- */
+/** Перемещение страницы влево на одну позицию */
 const leftView = () => {
   if (the.value) {
     const { index, parent } = the.value;
@@ -261,25 +196,13 @@ const leftView = () => {
     }
   }
 };
-/**
- * Значение для свойства contenteditable
- *
- * @type {boolean}
- */
+/** Значение для свойства contenteditable */
 const value: boolean = false;
-/**
- * Добавление новой страницы
- *
- * @function newView
- */
+/** Добавление новой страницы */
 const newView = () => {
   if (the.value) {
     const { parent, children, index, siblings } = the.value;
-    /**
-     * Идентификатор нового нода
-     *
-     * @type {string}
-     */
+    /** Идентификатор нового нода */
     const id: string = uid();
     switch (true) {
       case !!parent:

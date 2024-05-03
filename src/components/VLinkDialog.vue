@@ -38,23 +38,11 @@ import { computed, ref, watch } from "vue";
 defineProps<{
   editor?: QEditor;
 }>();
-/**
- * Флаг открытия модального окна
- *
- * @type {ModelRef<boolean>}
- */
+/** Флаг открытия модального окна */
 const model: ModelRef<boolean> = defineModel<boolean>({ default: false });
-/**
- * Идентификатор выбранной страницы
- *
- * @type {Ref<string | undefined>}
- */
+/** Идентификатор выбранной страницы */
 const selected: Ref<string | undefined> = ref();
-/**
- * Выбранный объект страницы
- *
- * @type {ComputedRef<TView | undefined>}
- */
+/** Выбранный объект страницы */
 const the: ComputedRef<TView | undefined> = computed(() =>
   views.value.find(({ id }) => id === selected.value),
 );

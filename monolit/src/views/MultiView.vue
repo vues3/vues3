@@ -40,52 +40,26 @@ import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
 
 import { getAsyncComponent, selector } from "../stores/monolit";
-/**
- * Текущий роут сайта
- *
- * @type {RouteLocationNormalizedLoaded}
- */
+/** Текущий роут сайта */
 const route: RouteLocationNormalizedLoaded = useRoute();
-/**
- * Роутер сайта
- *
- * @type {Router}
- */
+/** Роутер сайта */
 const router: Router = useRouter();
 /**
  * Вычисление текущего объекта с учетом переадресации корневого объекта страницы
  * на первый доступный объект страницы
- *
- * @type {ComputedRef<TView | undefined>}
  */
 const the: ComputedRef<TView | undefined> = computed(() => {
-  /**
-   * Позиция текущей страницы в массиве страниц
-   *
-   * @type {number}
-   */
+  /** Позиция текущей страницы в массиве страниц */
   const index: number = views.value.findIndex(({ id }) => id === route.name);
-  /**
-   * Вычисленный текущий объект
-   *
-   * @type {TView}
-   */
+  /** Вычисленный текущий объект */
   const ret: TView = views.value[index];
   return index ? ret : ret.children[0];
 });
-/**
- * Вычисление массива видимых объектов страниц с одинаковым предком
- *
- * @type {ComputedRef<TView[]>}
- */
+/** Вычисление массива видимых объектов страниц с одинаковым предком */
 const siblings: ComputedRef<TView[]> = computed(
   () => the.value?.siblings.filter(({ enabled }) => enabled) ?? [],
 );
-/**
- * Вычисление идентифицированного объекта промисов
- *
- * @type {ComputedRef<Record<string, PromiseWithResolvers<undefined>>>}
- */
+/** Вычисление идентифицированного объекта промисов */
 const promises: ComputedRef<Record<string, PromiseWithResolvers<undefined>>> =
   computed(
     () =>
@@ -95,11 +69,7 @@ const promises: ComputedRef<Record<string, PromiseWithResolvers<undefined>>> =
         )
       ),
   );
-/**
- * Вычисление массива загруженных шаблонов
- *
- * @type {ComputedRef<object>}
- */
+/** Вычисление массива загруженных шаблонов */
 const templates: ComputedRef<object> = computed(
   () =>
     <object>(
@@ -111,32 +81,26 @@ const templates: ComputedRef<object> = computed(
 /**
  * Родительский элемент представления
  *
- * @type {Ref<HTMLElement>}
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root} см. документацию
  */
 const root: Ref<HTMLElement> = <Ref<HTMLElement>>useParentElement();
 /**
  * Флаг постановки проверки пересечения страницы с областью видимости на паузу
  *
- * @constant
  * @default
- * @type {boolean}
  */
 let pause: boolean = true;
 /**
  * Флаг условия изменения роута
  *
- * @constant
  * @default
- * @type {boolean}
  */
 let push: boolean = false;
 /**
  * Процедура обновления роутера, если страница появилась в области видимости
  *
- * @type {IntersectionObserverCallback}
- * @param {IntersectionObserverEntry[]} entries - Массив объектов, описывающих
- *   пересечения
+ * @param entries - Массив объектов, описывающих пересечения
+ * @param entries."0"
  */
 const callback: IntersectionObserverCallback = ([
   {
@@ -149,17 +113,12 @@ const callback: IntersectionObserverCallback = ([
     void router.push({ name });
   }
 };
-/**
- * Массив страниц, отображаемых на экране
- *
- * @type {Ref<HTMLElement[]>}
- */
+/** Массив страниц, отображаемых на экране */
 const refs: Ref<HTMLElement[]> = ref([]);
 /**
  * Процедура ожидания загрузки страниц
  *
  * @async
- * @function all
  */
 const all = async () => {
   await Promise.all(

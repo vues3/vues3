@@ -11,30 +11,21 @@ import { defineConfig } from "vite";
 /**
  * Extractors are used to extract the usage of utilities from your source code
  *
- * @type {Extractor[]}
  * @see {@link https://unocss.dev/config/extractors} см. документацию
  */
 const extractors: Extractor[] = [extractorPug()];
-/**
- * Массив с типами замещаемых полифилов
- *
- * @type {string[]}
- */
+/** Массив с типами замещаемых полифилов */
 // const modernPolyfills: string[] = ["es.promise.with-resolvers"];
 /**
  * Конфигурационный файл UnoCSS
  *
- * @constant
  * @default
- * @type {string}
  */
 const configFile: string = "../uno.config.js";
 /**
  * Массив плагинов для использования
  *
- * @constant
  * @default
- * @type {any[]}
  */
 const plugins: PluginOption[] = [
   vue({ ...templateCompilerOptions }),
@@ -49,9 +40,7 @@ const plugins: PluginOption[] = [
  * используйте абсолютные пути. Относительные alias значения будут
  * использоваться как есть и не будут резолвнуты в file system paths.
  *
- * @constant
  * @default
- * @type {object}
  */
 const alias: object = {
   "@": ".",
@@ -60,9 +49,7 @@ const alias: object = {
 /**
  * Блок resolve
  *
- * @constant
  * @default
- * @type {object}
  */
 const resolve: object = { alias };
 /**
@@ -71,9 +58,7 @@ const resolve: object = { alias };
  * хешированным версиям, который в дальнейшем может быть использован серверным
  * фреймворком чтобы срендерить корректные ссылки на ресурсы (assets).
  *
- * @constant
  * @default
- * @type {boolean}
  */
 const manifest: boolean = true;
 /**
@@ -85,7 +70,6 @@ const manifest: boolean = true;
  *
  * @constant
  * @default
- * @type {string}
  */
 
 const outDir: string = "../public/monolit";
@@ -96,18 +80,15 @@ const outDir: string = "../public/monolit";
  * graph unless they are already in another manual chunk. The name of the chunk
  * will be determined by the property key.
  *
- * @function manualChunks
- * @param {string} id - Путь до модуля
- * @returns {string} - Вендор
+ * @param id - Путь до модуля
+ * @returns - Вендор
  */
 const manualChunks = (id: string = ""): string =>
   id.split("node_modules/")[1]?.split("/")?.[0] ?? "";
 /**
  * Блок output
  *
- * @constant
  * @default
- * @type {object}
  */
 const output: object = { manualChunks };
 /**
@@ -116,26 +97,20 @@ const output: object = { manualChunks };
  * будут смёржены с Vite's внутренними Rollup опциями. Смотрите Rollup options
  * документацию для большей информации.
  *
- * @constant
  * @default
- * @type {object}
  */
 const rollupOptions: object = { output };
 /**
  * Блок build
  *
- * @constant
  * @default
- * @type {object}
  */
 const build: object = { manifest, outDir, rollupOptions };
 /**
  * Определяет глобальную замену констант. Записи будут определяться как
  * глобальные во время dev разработки и статически заменяться во время build.
  *
- * @constant
  * @default
- * @type {object}
  */
 const define: object = {
   __APP_VERSION__: JSON.stringify(process.env.npm_package_version),

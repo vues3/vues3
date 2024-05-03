@@ -43,20 +43,14 @@ window.console.info(
   "https://vues3.ru",
 );
 initUnocssRuntime({ autoPrefix, defaults, bypassDefined });
-/**
- * Приложение vue
- *
- * @type {App}
- */
+/** Приложение vue */
 const app: App = createApp(vueApp);
 app.config.globalProperties.mdi = mdi;
 void (async () => {
   /**
    * Ответ на считывание data.json
    *
-   * @constant
    * @default
-   * @type {Response}
    */
   const response: Response = await fetch("/data.json", {
     cache,
@@ -67,28 +61,14 @@ void (async () => {
 /**
  * Перевод яндекс метрики в продуктовый режим
  *
- * @constant
  * @default
- * @type {string}
  */
 const env: string = process.env.NODE_ENV;
-/**
- * Объект истории
- *
- * @type {RouterHistory}
- */
+/** Объект истории */
 const history: RouterHistory = createWebHistory(import.meta.env.BASE_URL);
-/**
- * Роуты
- *
- * @type {RouteRecordRaw[]}
- */
+/** Роуты */
 const routes: RouteRecordRaw[] = [];
-/**
- * Роутер
- *
- * @type {Router}
- */
+/** Роутер */
 const router: Router = createRouter({ history, routes });
 watch(
   views,
@@ -97,9 +77,7 @@ watch(
       /**
        * Подготовленный алиас
        *
-       * @constant
        * @default
-       * @type {string}
        */
       const alias: string = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
       router.addRoute({
@@ -109,8 +87,7 @@ watch(
         /**
          * Функция динамического импорта компонента
          *
-         * @function component
-         * @returns {RouteComponent} - Страница ошибки
+         * @returns - Страница ошибки
          */
         component(): RouteComponent {
           return import(
@@ -124,9 +101,7 @@ watch(
     /**
      * Все неучтенные пути
      *
-     * @constant
      * @default
-     * @type {string}
      */
     const path: string = "/:catchAll(.*)*";
     router.addRoute({
@@ -134,8 +109,7 @@ watch(
       /**
        * Функция динамического импорта компонента
        *
-       * @function component
-       * @returns {RouteComponent} - Страница ошибки
+       * @returns - Страница ошибки
        */
       component(): RouteComponent {
         return import("@/views/NotFoundView.vue");
@@ -152,9 +126,7 @@ watch(
       /**
        * Id метрики
        *
-       * @constant
        * @default
-       * @type {string}
        */
       const id: string = metrika;
       app.use(initYandexMetrika, <Config>{ id, router, env });
@@ -163,17 +135,13 @@ watch(
       /**
        * Id аналитики
        *
-       * @constant
        * @default
-       * @type {string}
        */
       const id: string = analytics;
       /**
        * Подготовленный конфиг
        *
-       * @constant
        * @default
-       * @type {{ id: string }}
        */
       const config: { id: string } = { id };
       app.use(VueGtag, { config }, router);

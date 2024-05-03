@@ -20,15 +20,14 @@ import { uid } from "quasar";
 import type { ComputedRef, Ref } from "vue";
 import { computed, ref, watch } from "vue";
 /**
- * @type {TView}
- * @property {string} [id] - Идентификатор страницы, значения по умолчанию
+ * [id] - Идентификатор страницы, значения по умолчанию
  *   вычисляются динамически
- * @property {string | null} [changefreq=null] - Вероятная частота изменения
+ * [changefreq=null] - Вероятная частота изменения
  *   этой страницы. Это значение предоставляет общую информацию для поисковых
  *   систем и может не соответствовать точно частоте сканирования этой страницы.
  *   Допустимые значения: always, hourly, daily, weekly, monthly, yearly, never.
  *   Default is `null`
- * @property {string | null} [description=null] - Предназначен для
+ * [description=null] - Предназначен для
  *   предоставления поисковым системам краткого описания содержимого страницы
  *   для индексации и вывода сопроводительной информации в выдаче результатов
  *   поиска. Когда-то информация из этого тега обязательно отображалась в
@@ -36,18 +35,18 @@ import { computed, ref, watch } from "vue";
  *   злоупотреблениями, различные поисковые системы используют разные алгоритмы
  *   для оценки релевантности указанного в теге описания и содержимого страницы,
  *   на основании чего могут игнорировать содержимое тега. Default is `null`
- * @property {string | null} [icon=null] - Название иконки сайта из набора
+ * [icon=null] - Название иконки сайта из набора
  *   иконок mdi. Default is `null`
- * @property {string | null} [image=null] - Содержит url картинки, используемой
+ * [image=null] - Содержит url картинки, используемой
  *   поисковиками в выдаче. Default is `null`
- * @property {string[]} [keywords=[]] -Используется для предоставления данных
+ * [keywords=[]] -Используется для предоставления данных
  *   поисковикам для повышения значимости некоторых слов при поиске, а также для
  *   навигации внутри сайта по хештегам. Default is `[]`
- * @property {string | null} [label=null] - Краткое название страницы,
+ * [label=null] - Краткое название страницы,
  *   используется в пути доступа. Default is `null`
- * @property {string | null} [lastmod=null] - Дата последнего изменения файла.
+ * [lastmod=null] - Дата последнего изменения файла.
  *   Эта дата должна быть в формате W3C Datetime. Default is `null`
- * @property {string | null} [loc=null] - URL-адрес страницы. Этот URL-адрес
+ * [loc=null] - URL-адрес страницы. Этот URL-адрес
  *   должен начинаться с префикса (например, HTTP) и заканчиваться косой чертой,
  *   если Ваш веб-сервер требует этого. Длина этого значения не должна превышать
  *   2048 символов. Default is `null`
@@ -129,10 +128,8 @@ export type TView = FromSchema<typeof plainView> & {
   template: Promise<string> | string;
 };
 /**
- * @type {TResource}
- * @property {string} [id] - Id ресурса, вычисляется динамически
- * @property {boolean} enabled - Признак использования ресурса
- * @property {string} url - Url ресурса
+ * [id] - Id ресурса, вычисляется динамически enabled - Признак использования
+ * ресурса url - Url ресурса
  */
 export type TResource = FromSchema<typeof Resource> & {
   parent?: undefined;
@@ -143,39 +140,24 @@ export type TResource = FromSchema<typeof Resource> & {
   index: number;
 };
 /**
- * @type {TSettings}
- * @property {string | null} yandex - Id яндекса
- * @property {string | null} metrika - Id метрики
- * @property {string | null} google - Id гугла
- * @property {string | null} analytics - Id аналитики
- * @property {boolean} landing - Признак формирования сайта в виде лендинга
+ * Yandex - Id яндекса metrika - Id метрики google - Id гугла analytics - Id
+ * аналитики landing - Признак формирования сайта в виде лендинга
  */
 export type TSettings = FromSchema<typeof Settings>;
 /**
- * @type {TNavbar}
- * @property {string | null} [theme=null] - Тема daisyui, @see
- *   {@link https://daisyui.com/docs/themes/} см. документацию. Default is
- *   `null`
- * @property {boolean} [setup=true] - Добавление атрибута setup в таг script.
- *   Default is `true`
- * @property {boolean} [scoped=true] - Добавление атрибута scoped в таг style.
- *   Default is `true`
- * @property {string[]} classes - Массив классов
- * @property {string[]} scroll - Массив классов, добавляемых при скроле
- * @property {string} [template] - Сохраненный шаблон страницы
- * @property {string} [script] - Сохраненные скрипты страницы
- * @property {string} [style] - Сохраненные стили страницы
+ * [theme=null] - Тема daisyui, @see {@link https://daisyui.com/docs/themes/} см.
+ * документацию. Default is `null` [setup=true] - Добавление атрибута setup в
+ * таг script. Default is `true` [scoped=true] - Добавление атрибута scoped в
+ * таг style. Default is `true` classes - Массив классов scroll - Массив
+ * классов, добавляемых при скроле [template] - Сохраненный шаблон страницы
+ * [script] - Сохраненные скрипты страницы [style] - Сохраненные стили страницы
  */
 export type TNavbar = FromSchema<typeof Navbar>;
 /**
- * @type {TData}
- * @property {TSettings} settings - Настройки сайта
- * @property {string | null} style - Общие стили сайта
- * @property {string | null} script - Общие скрипты сайта
- * @property {TResource[]} css - Подключаемые общие стили сайта
- * @property {TResource[]} js - Подключаемые общие скрипты сайта
- * @property {TNavbar} navbar - Навигационная плашка сайта
- * @property {TView[]} content - Дерево объектов страниц сайта
+ * Settings - Настройки сайта style - Общие стили сайта script - Общие скрипты
+ * сайта css - Подключаемые общие стили сайта js - Подключаемые общие скрипты
+ * сайта navbar - Навигационная плашка сайта content - Дерево объектов страниц
+ * сайта
  */
 export type TData = FromSchema<
   typeof plainData,
@@ -184,36 +166,30 @@ export type TData = FromSchema<
 /**
  * Динамический расчет uuid при валидации
  *
- * @returns {() => string} Ф-ция динамического расчета uuid при валидации
+ * @returns Ф-ция динамического расчета uuid при валидации
  */
 dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uid();
 /**
  * An array or object of schemas that will be added to the instance
  *
- * @constant
  * @default
- * @type {object[]}
  */
 const schemas: object[] = [Resource, View, Settings, Navbar, Data];
 /**
  * Code generation options
  *
  * @default
- * @type {object}
  */
 export const code: object = { esm };
 /**
  * An array of keyword definitions or strings
  *
- * @constant
  * @default
- * @type {FuncKeywordDefinition[]}
  */
 const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
 /**
  * Объект валидатора
  *
- * @type {Ajv}
  * @see {@link https://ajv.js.org} см. документацию
  */
 const ajv: Ajv = new Ajv({
@@ -224,115 +200,77 @@ const ajv: Ajv = new Ajv({
   code,
   keywords,
 });
-/**
- * Скомпилированная схема для валидации данных
- *
- * @type {ValidateFunction}
- */
+/** Скомпилированная схема для валидации данных */
 export const validate: ValidateFunction = <ValidateFunction>(
   ajv.getSchema("urn:jsonschema:data")
 );
-/**
- * Функция проверки навбара
- *
- * @function validateNavbar
- * @type {ValidateFunction}
- */
+/** Функция проверки навбара */
 export const validateNavbar: ValidateFunction = <ValidateFunction>(
   ajv.getSchema("urn:jsonschema:navbar")
 );
 /**
  * Рекурсивная функция преобразования древовидного объекта в массив страниц
  *
- * @function getViews
- * @param {TView[]} views - Элементы массива страниц
- * @returns {TView[]} - Аддитивный массив страниц
+ * @param views - Элементы массива страниц
+ * @returns - Аддитивный массив страниц
  */
 const getViews = (views: TView[]): TView[] =>
   views.flatMap((element) => [element, ...getViews(element.children)]);
-/**
- * Объект, на котором определяется свойство позиции в соседних объектах
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется свойство позиции в соседних объектах */
 const index: PropertyDescriptor = {
   /**
    * Геттер позиции в соседних объектах
    *
-   * @returns {number} - Позиция в соседних объектах
+   * @returns - Позиция в соседних объектах
    */
   get(this: TView): number {
     return this.siblings.findIndex(({ id }) => this.id === id);
   },
 };
-/**
- * Объект, на котором определяется свойство предыдущего объекта
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется свойство предыдущего объекта */
 const prev: PropertyDescriptor = {
   /**
    * Геттер предыдущего объекта
    *
-   * @returns {TView | undefined} - Предыдущий объект
+   * @returns - Предыдущий объект
    */
   get(this: TView): TView | undefined {
     return this.siblings[this.index - 1];
   },
 };
-/**
- * Объект, на котором определяется свойство следующего объекта
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется свойство следующего объекта */
 const next: PropertyDescriptor = {
   /**
    * Геттер следующего объекта
    *
-   * @returns {TView | undefined} - Следующий объект
+   * @returns - Следующий объект
    */
   get(this: TView): TView | undefined {
     return this.siblings[this.index + 1];
   },
 };
-/**
- * Объект, на котором определяется свойство ветви объектов
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется свойство ветви объектов */
 const branch: PropertyDescriptor = {
   /**
    * Геттер ветви объектов
    *
-   * @returns {TView[]} - Ветвь объектов
+   * @returns - Ветвь объектов
    */
   get(this: TView): TView[] {
-    /**
-     * Результирующий массив для записи ветви
-     *
-     * @type {TView[]}
-     */
+    /** Результирующий массив для записи ветви */
     const ret: TView[] = [this];
-    /**
-     * Родительский объект
-     *
-     * @type {TView | undefined}
-     */
+    /** Родительский объект */
     let parent: TView | undefined;
     while ((parent = ret[0]?.parent)) ret.unshift(parent);
     return ret;
   },
 };
-/**
- * Объект, на котором определяется путь до объекта
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется путь до объекта */
 const path: PropertyDescriptor = {
   /**
    * Геттер пути до объекта
    *
-   * @returns {string} - Путь до объекта
+   * @returns - Путь до объекта
    */
   get(this: TView): string {
     return this.branch
@@ -344,16 +282,12 @@ const path: PropertyDescriptor = {
       .join("/");
   },
 };
-/**
- * Объект, на котором определяется url ресурса
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется url ресурса */
 const url: PropertyDescriptor = {
   /**
    * Геттер url ресурса
    *
-   * @returns {string} - Url ресурса
+   * @returns - Url ресурса
    */
   get(this: TView): string {
     return (
@@ -361,31 +295,23 @@ const url: PropertyDescriptor = {
     );
   },
 };
-/**
- * Объект, на котором определяется название страницы
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется название страницы */
 const name: PropertyDescriptor = {
   /**
    * Геттер названия страницы
    *
-   * @returns {string | null} - Название страницы
+   * @returns - Название страницы
    */
   get(this: TView): string | null {
     return this.title ?? this.label;
   },
 };
-/**
- * Объект, на котором определяется фавиконка страницы
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется фавиконка страницы */
 const favicon: PropertyDescriptor = {
   /**
    * Геттер фавиконки страницы
    *
-   * @returns {string | undefined} - Фавиконка страницы
+   * @returns - Фавиконка страницы
    */
   get(this: TView): string | undefined {
     return this.icon?.replace(/-./g, (x) => x[1].toUpperCase());
@@ -394,9 +320,8 @@ const favicon: PropertyDescriptor = {
 /**
  * Функция ремонта плоских массивов js & css
  *
- * @function fixPlain
- * @param {{}} siblings - Объект для defineProperties
- * @param {TResource[]} siblings.value - Исходный массив
+ * @param siblings - Объект для defineProperties
+ * @param siblings.value - Исходный массив
  */
 const fixPlain = (siblings: { value: TResource[] }) => {
   siblings.value.forEach((element) => {
@@ -406,14 +331,12 @@ const fixPlain = (siblings: { value: TResource[] }) => {
 /**
  * Рекурсивная функция ремонта страниц
  *
- * @function fixDeep
- * @param {{ value: TView[] }} siblings - Объект для defineProperties
- * @param {TView[]} [siblings.value] - Элементы массива страниц
- * @param {boolean} [siblings.configurable] - Признак возможности конфигурации
- * @param {{ value: TView; configurable: boolean }} [parent] - Объект для
- *   defineProperties
- * @param {TView} parent.value - Родительский объект
- * @param {boolean} [parent.configurable] - Признак возможности конфигурации
+ * @param siblings - Объект для defineProperties
+ * @param [siblings.value] - Элементы массива страниц
+ * @param [siblings.configurable] - Признак возможности конфигурации
+ * @param [parent] - Объект для defineProperties
+ * @param parent.value - Родительский объект
+ * @param [parent.configurable] - Признак возможности конфигурации
  */
 const fixDeep = (
   siblings: { value: TView[]; configurable?: boolean },
@@ -435,24 +358,15 @@ const fixDeep = (
     fixDeep({ value: value.children, configurable }, { value, configurable });
   });
 };
-/**
- * Главный реактивный объект данных
- *
- * @type {Ref<TData | undefined>}
- */
+/** Главный реактивный объект данных */
 export const $: Ref<TData | undefined> = ref();
 /**
  * Функция для вызова расчета массива страниц
  *
- * @type {() => TView[]}
- * @returns {TView[]} - Страницы
+ * @returns - Страницы
  */
 const get: () => TView[] = (): TView[] => getViews($.value?.content ?? []);
-/**
- * Расчетный массив страниц
- *
- * @type {ComputedRef<TView[]>}
- */
+/** Расчетный массив страниц */
 export const views: ComputedRef<TView[]> = computed(() =>
   get().map((value: TView) => {
     Object.defineProperty(value, "views", { get });
@@ -480,11 +394,7 @@ watch(
   },
   { deep },
 );
-/**
- * Значение для выключаемых свойств
- *
- * @type {undefined}
- */
+/** Значение для выключаемых свойств */
 const value: undefined = undefined;
 watch(
   $,

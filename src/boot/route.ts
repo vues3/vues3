@@ -3,8 +3,8 @@ import publicItems from "assets/public.json";
 import { S3 } from "stores/s3";
 import type { Router } from "vue-router";
 /**
- * @param {object} boot - Boot object
- * @param {object} boot.router - Instance of Vue Router from src/router/index.js
+ * @param boot - Boot object
+ * @param boot.router - Instance of Vue Router from src/router/index.js
  */
 export default ({ router }: { router: Router }) => {
   const privateTo = privateItems.map((val) => val.to);

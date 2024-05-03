@@ -24,38 +24,20 @@ import type { RouteLocationNormalizedLoaded } from "vue-router";
 import { useRoute } from "vue-router";
 
 import { getAsyncComponent, selector } from "../stores/monolit";
-/**
- * Текущий роут сайта
- *
- * @type {RouteLocationNormalizedLoaded}
- */
+/** Текущий роут сайта */
 const route: RouteLocationNormalizedLoaded = useRoute();
 /**
  * Вычисление текущего объекта с учетом переадресации корневого объекта страницы
  * на первый доступный объект страницы
- *
- * @type {ComputedRef<TView | undefined>}
  */
 const the: ComputedRef<TView | undefined> = computed(() => {
-  /**
-   * Позиция текущей страницы в массиве страниц
-   *
-   * @type {number}
-   */
+  /** Позиция текущей страницы в массиве страниц */
   const index: number = views.value.findIndex(({ id }) => id === route.name);
-  /**
-   * Вычисленный текущий объект
-   *
-   * @type {TView}
-   */
+  /** Вычисленный текущий объект */
   const ret: TView = views.value[index];
   return index ? ret : ret.children[0];
 });
-/**
- * Вычисление объекта загруженных шаблонов
- *
- * @type {ComputedRef<object | undefined>}
- */
+/** Вычисление объекта загруженных шаблонов */
 const template: ComputedRef<object | undefined> = computed(
   () => the.value && getAsyncComponent(the.value),
 );

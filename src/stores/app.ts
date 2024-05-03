@@ -25,23 +25,10 @@ import { bucket, getObject, putFile, putObject, S3 } from "stores/s3";
 import { toXML } from "to-xml";
 import type { ComputedRef, Ref, WatchOptions } from "vue";
 import { computed, ref, watch } from "vue";
-/**
- * Объект для парсинга
- *
- * @type {DOMParser}
- */
+/** Объект для парсинга */
 const parser: DOMParser = new DOMParser();
-/** @type {TConfig} */
 export type TConfig = FromSchema<typeof Config>;
-/**
- * @constant
- * @type {AnySchema[]}
- */
 const schemas: AnySchema[] = [Config];
-/**
- * @constant
- * @type {Ajv}
- */
 const ajv: Ajv = new Ajv({
   useDefaults,
   coerceTypes,
@@ -49,21 +36,14 @@ const ajv: Ajv = new Ajv({
   schemas,
   code,
 });
-/**
- * Функция проверки конфига
- *
- * @function validateConfig
- * @type {ValidateFunction}
- */
+/** Функция проверки конфига */
 export const validateConfig: ValidateFunction = <ValidateFunction>(
   ajv.getSchema("urn:jsonschema:config")
 );
 /**
- * @function getFile
- * @param {keyof TView} ext - Расширение файла
- * @param {(js_source_text: string) => string} beautify - Ф-ция форматирования
- *   кода
- * @returns {Promise<string>} Содержимое файла
+ * @param ext - Расширение файла
+ * @param beautify - Ф-ция форматирования кода
+ * @returns Содержимое файла
  */
 async function getFile(
   this: TView,
@@ -79,9 +59,8 @@ async function getFile(
   return <string>this[ext];
 }
 /**
- * @function save
- * @param {string} ext - Расширение файла
- * @param {string} text - Новое содержимое файла
+ * @param ext - Расширение файла
+ * @param text - Новое содержимое файла
  */
 export function save(this: TView | undefined, ext: string, text: string) {
   if (this?.id) {
@@ -90,42 +69,27 @@ export function save(this: TView | undefined, ext: string, text: string) {
       mime.getType(ext) ?? "text/plain",
       text,
     );
-    /**
-     * Дата в формате iso
-     *
-     * @constant
-     * @type {string}
-     */
+    /** Дата в формате iso */
     const value: string = new Date().toISOString();
     Reflect.defineProperty(this, "lastmod", { value });
   }
 }
-/**
- * Функция с супер способностью устранения дребезга
- *
- * @function debounceFn
- */
+/** Функция с супер способностью устранения дребезга */
 const debounceFn = useDebounceFn(save, debounce);
 /**
- * @function setFile
- * @param {string} ext - Расширение файла
- * @param {string} value - Новое содержимое файла
+ * @param ext - Расширение файла
+ * @param value - Новое содержимое файла
  */
 function setFile(this: TView, ext: string, value: string) {
   Object.defineProperty(this, ext, { value, configurable });
   void debounceFn.call(this, ext, value);
 }
-/**
- * Объект, на котором определяется загрузка шаблона страницы
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется загрузка шаблона страницы */
 const template: PropertyDescriptor = {
   /**
    * Геттер шаблона страницы
    *
-   * @function get
-   * @returns {Promise<string>} - Шаблон страницы
+   * @returns - Шаблон страницы
    */
   async get(this: TView): Promise<string> {
     return getFile.call(this, "htm", html_beautify);
@@ -133,40 +97,24 @@ const template: PropertyDescriptor = {
   /**
    * Сеттер шаблона страницы
    *
-   * @function set
-   * @param {string} value - Передаваемый шаблон страницы
+   * @param value - Передаваемый шаблон страницы
    */
   set(this: TView, value: string) {
     setFile.call(this, "htm", value);
   },
 };
-/**
- * Массив временных урлов для картинок
- *
- * @constant
- * @type {string[]}
- */
+/** Массив временных урлов для картинок */
 const urls: Record<string, string | undefined> = {};
-/**
- * Объект, на котором определяется загрузка шаблона страницы
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется загрузка шаблона страницы */
 const html: PropertyDescriptor = {
   /**
    * Считывание исходного кода из структуры данных
    *
    * @async
-   * @function get
-   * @returns {Promise<string>} - Template
+   * @returns - Template
    */
   async get(this: TView): Promise<string> {
-    /**
-     * Преобразованный в документ шаблон
-     *
-     * @constant
-     * @type {Document}
-     */
+    /** Преобразованный в документ шаблон */
     const doc: Document = parser.parseFromString(
       `<head><base href="//"></head><body>${await this.template}</body>`,
       "text/html",
@@ -210,16 +158,10 @@ const html: PropertyDescriptor = {
   /**
    * Запись исходного кода страницы в структуры данных
    *
-   * @function set
-   * @param {string} value - Template
+   * @param value - Template
    */
   set(this: TView, value: string) {
-    /**
-     * Преобразованный в документ шаблон
-     *
-     * @constant
-     * @type {Document}
-     */
+    /** Преобразованный в документ шаблон */
     const doc: Document = parser.parseFromString(
       `<head><base href="//"></head><body>${value}</body>`,
       "text/html",
@@ -233,17 +175,12 @@ const html: PropertyDescriptor = {
     this.template = doc.body.innerHTML;
   },
 };
-/**
- * Объект, на котором определяется загрузка стилей страницы
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется загрузка стилей страницы */
 const style: PropertyDescriptor = {
   /**
    * Геттер стилей страницы
    *
-   * @function get
-   * @returns {Promise<string>} - Стили страницы
+   * @returns - Стили страницы
    */
   async get(this: TView): Promise<string> {
     return getFile.call(this, "css", css_beautify);
@@ -251,25 +188,19 @@ const style: PropertyDescriptor = {
   /**
    * Сеттер стилей страницы
    *
-   * @function set
-   * @param {string} value - Передаваемые стили страницы
+   * @param value - Передаваемые стили страницы
    */
   set(this: TView, value: string) {
     setFile.call(this, "css", value);
   },
 };
-/**
- * Объект, на котором определяется загрузка скриптов страницы
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется загрузка скриптов страницы */
 const script: PropertyDescriptor = {
   /**
    * Геттер скриптов страницы
    *
    * @async
-   * @function get
-   * @returns {Promise<string>} - Скрипты страницы
+   * @returns - Скрипты страницы
    */
   async get(this: TView): Promise<string> {
     return getFile.call(this, "js", js_beautify);
@@ -277,8 +208,7 @@ const script: PropertyDescriptor = {
   /**
    * Сеттер скриптов страницы
    *
-   * @function set
-   * @param {string} value - Передаваемые скрипты страницы
+   * @param value - Передаваемые скрипты страницы
    */
   set(this: TView, value: string) {
     setFile.call(this, "js", value);
@@ -339,27 +269,16 @@ watchDebounced(
   },
   { deep, debounce },
 );
-/** @type {Ref<string | undefined>} */
 export const accessKeyId: Ref<string | undefined> = ref();
-/**
- * Хранимая конфигурация приложения
- *
- * @type {RemovableRef<TConfig>}
- */
+/** Хранимая конфигурация приложения */
 export const config: RemovableRef<TConfig> = useStorage(
   `config-${accessKeyId.value ?? ""}`,
   <TConfig>{},
   localStorage,
   { mergeDefaults },
 );
-/**
- * Флаг правой открывающейся панели
- *
- * @constant
- * @type {Ref<boolean | undefined>}
- */
+/** Флаг правой открывающейся панели */
 export const rightDrawer: Ref<boolean | undefined> = ref();
-/** @type {ComputedRef<object>} */
 const sitemap: ComputedRef<object> = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
   urlset: {
@@ -387,10 +306,8 @@ watch(
   { immediate },
 );
 /**
- * @function putImage
- * @param {object} file - Файл
- * @returns {Promise<Record<string, string | undefined>>} Возвращаем путь файла
- *   или undefined в случае ошибки
+ * @param file - Файл
+ * @returns Возвращаем путь файла или undefined в случае ошибки
  * @see {@link
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#image_types}
  */
@@ -398,9 +315,7 @@ export const putImage = async (
   file: File,
 ): Promise<Record<string, string | undefined>> => {
   const { type } = file;
-  /** @type {string} */
   const filePath: string = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
-  /** @type {string | undefined} */
   let message: string | undefined;
   try {
     if (mimes.includes(type)) await putFile(filePath, type, file);
@@ -416,9 +331,7 @@ export const putImage = async (
 /**
  * Adjust the callback's flush timing
  *
- * @constant
  * @default
- * @type {WatchOptions["flush"]}
  */
 const flush: WatchOptions["flush"] = "sync";
 watch(

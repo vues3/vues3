@@ -8,32 +8,20 @@ import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
 
-/**
- * Корзина в сервисе s3
- *
- * @type {string}
- */
+/** Корзина в сервисе s3 */
 export const bucket = ref("");
 
-/**
- * Путь к сайту через сервис s3
- *
- * @type {string}
- */
+/** Путь к сайту через сервис s3 */
 export const wendpoint = ref("");
 
-/**
- * Клиент к сервису s3
- *
- * @type {Ref<S3Client | undefined>}
- */
+/** Клиент к сервису s3 */
 export const S3: Ref<S3Client | undefined> = ref();
 
 /**
  * Считывание заголовка файла
  *
- * @param {string} Key Имя файла
- * @returns {object} Заголовок файла
+ * @param Key Имя файла
+ * @returns Заголовок файла
  */
 export const headObject = (Key: string) => {
   const Bucket = bucket.value;
@@ -43,9 +31,9 @@ export const headObject = (Key: string) => {
 /**
  * Запись объекта
  *
- * @param {string} Key Имя файла
- * @param {string} ContentType Тип mime
- * @param {StreamingBlobPayloadInputTypes} body Тело файла
+ * @param Key Имя файла
+ * @param ContentType Тип mime
+ * @param body Тело файла
  */
 export const putObject = async (
   Key: string,
@@ -62,9 +50,9 @@ export const putObject = async (
 /**
  * Запись файла
  *
- * @param {string} Key Имя файла
- * @param {string} ContentType Тип mime
- * @param {File} file Файл
+ * @param Key Имя файла
+ * @param ContentType Тип mime
+ * @param file Файл
  */
 export const putFile = async (Key: string, ContentType: string, file: File) => {
   await putObject(Key, ContentType, new Blob([await file.arrayBuffer()]));
@@ -73,9 +61,9 @@ export const putFile = async (Key: string, ContentType: string, file: File) => {
 /**
  * Считывание объекта
  *
- * @param {string} Key Имя файла
- * @param {string} [ResponseCacheControl] - Параметры кеша
- * @returns {Promise<Response>} Тело файла
+ * @param Key Имя файла
+ * @param [ResponseCacheControl] - Параметры кеша
+ * @returns Тело файла
  */
 export const getObject = async (
   Key: string,

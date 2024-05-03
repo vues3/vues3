@@ -182,7 +182,7 @@ const providers: IRegion[] = [
     ],
     region: "us-east-1",
     endpoint: "",
-    /** @returns {string} - Wendpoint */
+    /** @returns - Wendpoint */
     get wendpoint() {
       return `https://s3.${region.value}.amazonaws.com`;
     },

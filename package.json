@@ -82,8 +82,7 @@
     "prettier-plugin-tailwindcss": "^0.5.14",
     "pug": "^3.0.2",
     "vite": "^5.2.11",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-import-resolver-typescript": "^3.6.1"
+    "eslint-config-airbnb-typescript": "^18.0.0"
   },
   "engines": {
     "node": "^24 || ^22 || ^20 || ^18",

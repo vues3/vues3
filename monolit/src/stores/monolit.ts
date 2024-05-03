@@ -17,9 +17,7 @@ import selectors from "../assets/glightbox.json";
 /**
  * Модули, передаваемые шаблону
  *
- * @constant
  * @default
- * @type {ModuleExport}
  */
 const moduleCache: ModuleExport = {
   vue,
@@ -32,9 +30,8 @@ const moduleCache: ModuleExport = {
 /**
  * Процедура логирования ошибок
  *
- * @function log
- * @param {keyof Console} type - Тип записи
- * @param {...string[]} args - Содержимое записи
+ * @param type - Тип записи
+ * @param args - Содержимое записи
  */
 const log = (type: keyof Console, ...args: string[]) => {
   (<(...optionalParams: string[]) => void>window.console[type])(...args);
@@ -42,15 +39,14 @@ const log = (type: keyof Console, ...args: string[]) => {
 /**
  * Функция, возвращающая Promise на сконструированный шаблон
  *
- * @function getAsyncComponent
- * @param {TView} view - Объект страницы
- * @param {string} view.path - Путь до страницы
- * @param {boolean} view.setup - Тип скриптов
- * @param {boolean} view.scoped - Тип стилей
- * @param {string} view.template - Шаблон страницы
- * @param {string} view.script - Скрипты страницы
- * @param {string} view.style - Стили страницы
- * @returns {Promise<object>} Шаблон
+ * @param view - Объект страницы
+ * @param view.path - Путь до страницы
+ * @param view.setup - Тип скриптов
+ * @param view.scoped - Тип стилей
+ * @param view.template - Шаблон страницы
+ * @param view.script - Скрипты страницы
+ * @param view.style - Стили страницы
+ * @returns Шаблон
  */
 export const getAsyncComponent = ({
   path,
@@ -64,32 +60,16 @@ export const getAsyncComponent = ({
    * Функция получения файла шаблона
    *
    * @async
-   * @function getFile
-   * @returns {Promise<ContentData>} Шаблон
+   * @returns Шаблон
    */
   const getFile = async (): Promise<ContentData> => {
     const [htm, js, css] = await Promise.all([template, script, style]);
-    /**
-     * Константа со скриптами
-     *
-     * @constant
-     * @type {string}
-     */
+    /** Константа со скриптами */
     const cntScript: string =
       js && `<script${setup ? " setup" : ""}>${js}</script>`;
-    /**
-     * Константа с шаблоном
-     *
-     * @constant
-     * @type {string}
-     */
+    /** Константа с шаблоном */
     const cntTemplate: string = htm && `<template>${htm}</template>`;
-    /**
-     * Константа со стилями
-     *
-     * @constant
-     * @type {string}
-     */
+    /** Константа со стилями */
     const cntStyle: string =
       css && `<style${scoped ? " scoped" : ""}>${css}</style>`;
     return `${cntScript}${cntTemplate}${cntStyle}`;
@@ -98,8 +78,7 @@ export const getAsyncComponent = ({
   /**
    * Процедура добавления стилей
    *
-   * @function addStyle
-   * @param {string} styles - Стили
+   * @param styles - Стили
    */
   const addStyle = (styles: string) => {
     useStyleTag(styles);
@@ -118,78 +97,52 @@ export const getAsyncComponent = ({
  * Запрос на сервер за контентом
  *
  * @async
- * @function getResource
- * @param {keyof TView} ext - Расширение файла
- * @returns {Promise<string>} Содержимое файла
+ * @param ext - Расширение файла
+ * @returns Содержимое файла
  */
 async function getResource(this: TView, ext: keyof TView): Promise<string> {
   if (this[ext] == null) {
-    /**
-     * Ответ сервера
-     *
-     * @constant
-     * @type {Response}
-     */
+    /** Ответ сервера */
     const response: Response = await fetch(`/views/${this.id ?? ""}.${ext}`, {
       cache,
     });
-    /**
-     * Текстовые данные, полученные с сервера
-     *
-     * @constant
-     * @type {string}
-     */
+    /** Текстовые данные, полученные с сервера */
     const value: string = response.ok ? await response.text() : "";
     Object.defineProperty(this, ext, { value });
   }
   return <string>this[ext];
 }
-/**
- * Объект, на котором определяется загрузка шаблона страницы
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется загрузка шаблона страницы */
 const template: PropertyDescriptor = {
   /**
    * Геттер шаблона страницы
    *
    * @async
-   * @function get
-   * @returns {Promise<string>} - Шаблон страницы
+   * @returns - Шаблон страницы
    */
   async get(this: TView): Promise<string> {
     return getResource.call(this, "htm");
   },
 };
-/**
- * Объект, на котором определяется загрузка стилей страницы
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется загрузка стилей страницы */
 const style: PropertyDescriptor = {
   /**
    * Геттер стилей страницы
    *
    * @async
-   * @function get
-   * @returns {Promise<string>} - Стили страницы
+   * @returns - Стили страницы
    */
   async get(this: TView): Promise<string> {
     return getResource.call(this, "css");
   },
 };
-/**
- * Объект, на котором определяется загрузка скриптов страницы
- *
- * @type {PropertyDescriptor}
- */
+/** Объект, на котором определяется загрузка скриптов страницы */
 const script: PropertyDescriptor = {
   /**
    * Геттер скриптов страницы
    *
    * @async
-   * @function get
-   * @returns {Promise<string>} - Скрипты страницы
+   * @returns - Скрипты страницы
    */
   async get(this: TView): Promise<string> {
     return getResource.call(this, "js");
@@ -198,8 +151,7 @@ const script: PropertyDescriptor = {
 /**
  * Рекурсивная функция ремонта страниц
  *
- * @function fix
- * @param {TView[]} siblings - Элементы массива страниц
+ * @param siblings - Элементы массива страниц
  */
 export const fix = (siblings: TView[]) => {
   siblings.forEach((value) => {
@@ -215,17 +167,12 @@ export const fix = (siblings: TView[]) => {
  * Name of the selector for example '.glightbox' or 'data-glightbox' or
  * '*[data-glightbox]'
  *
- * @constant
  * @default
- * @type {string}
  * @see {@link https://github.com/biati-digital/glightbox} см. документацию
  */
 export const selector: string = selectors.map((el) => `a[href${el}]`).join();
 /**
  * Уникальный ключ для favicon. Иначе иконка динамически не обновляется в chrome
  * при смене страницы
- *
- * @constant
- * @type {string}
  */
 export const favicon: string = uid();

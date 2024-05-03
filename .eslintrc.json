@@ -5,18 +5,16 @@
     "parser": "@typescript-eslint/parser",
     "ecmaVersion": "latest",
     "sourceType": "module",
-    "project": true,
-    "tsconfigRootDir": ".",
+    "project": "./tsconfig.json",
     "extraFileExtensions": [".vue"]
   },
   "extends": [
-    "eslint:recommended",
+    "airbnb-base",
+    "airbnb-typescript/base",
     "plugin:@typescript-eslint/strict-type-checked",
     "plugin:vue/vue3-recommended",
     "plugin:vue-pug/vue3-recommended",
-    "plugin:import/recommended",
-    "plugin:import/typescript",
-    "plugin:jsdoc/recommended",
+    "plugin:jsdoc/recommended-typescript",
     "plugin:sonarjs/recommended",
     "plugin:prettier/recommended"
   ],
