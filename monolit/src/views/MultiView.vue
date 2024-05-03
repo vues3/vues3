@@ -100,7 +100,7 @@ let push: boolean = false;
  * Процедура обновления роутера, если страница появилась в области видимости
  *
  * @param entries - Массив объектов, описывающих пересечения
- * @param entries."0"
+ * @param entries."0" - Объект, описывающий пересечения
  */
 const callback: IntersectionObserverCallback = ([
   {
@@ -110,7 +110,7 @@ const callback: IntersectionObserverCallback = ([
 ]: IntersectionObserverEntry[]) => {
   if (!pause && isIntersecting && name !== the.value?.id) {
     push = true;
-    void router.push({ name });
+    router.push({ name }).catch(() => {});
   }
 };
 /** Массив страниц, отображаемых на экране */

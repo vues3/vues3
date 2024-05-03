@@ -134,13 +134,13 @@ const deleteView = () => {
           ({ id } = parent ?? {});
       }
       siblings.splice(index, 1);
-      void (async () => {
+      (async () => {
         if (!id) {
           await nextTick();
           [{ id }] = props.list;
         }
         updateSelected(id);
-      })();
+      })().catch(() => {});
     });
   }
 };

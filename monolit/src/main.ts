@@ -46,7 +46,7 @@ initUnocssRuntime({ autoPrefix, defaults, bypassDefined });
 /** Приложение vue */
 const app: App = createApp(vueApp);
 app.config.globalProperties.mdi = mdi;
-void (async () => {
+(async () => {
   /**
    * Ответ на считывание data.json
    *
@@ -57,7 +57,7 @@ void (async () => {
   });
   $.value = response.ok ? <TData>await response.json() : <TData>{};
   fix($.value.content);
-})();
+})().catch(() => {});
 /**
  * Перевод яндекс метрики в продуктовый режим
  *
@@ -115,7 +115,7 @@ watch(
         return import("@/views/NotFoundView.vue");
       },
     });
-    void router.replace(router.currentRoute.value.fullPath);
+    router.replace(router.currentRoute.value.fullPath).catch(() => {});
   },
   { once },
 );

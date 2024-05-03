@@ -64,11 +64,11 @@ async function getFile(
  */
 export function save(this: TView | undefined, ext: string, text: string) {
   if (this?.id) {
-    void putObject(
+    putObject(
       `views/${this.id}.${ext}`,
       mime.getType(ext) ?? "text/plain",
       text,
-    );
+    ).catch(() => {});
     /** Дата в формате iso */
     const value: string = new Date().toISOString();
     Reflect.defineProperty(this, "lastmod", { value });
@@ -82,7 +82,7 @@ const debounceFn = useDebounceFn(save, debounce);
  */
 function setFile(this: TView, ext: string, value: string) {
   Object.defineProperty(this, ext, { value, configurable });
-  void debounceFn.call(this, ext, value);
+  debounceFn.call(this, ext, value).catch(() => {});
 }
 /** Объект, на котором определяется загрузка шаблона страницы */
 const template: PropertyDescriptor = {
@@ -254,10 +254,10 @@ watch(S3, async (newValue) => {
     ]
       .filter((x) => !serverManifest.has(x))
       .forEach((value: string) => {
-        void (async () => {
+        (async () => {
           const body = await (await fetch(`monolit/${value}`)).blob();
-          void putObject(value, body.type, body);
-        })();
+          putObject(value, body.type, body).catch(() => {});
+        })().catch(() => {});
       });
   }
 });
@@ -265,7 +265,9 @@ watchDebounced(
   $,
   (value, oldValue) => {
     if (value && oldValue)
-      void putObject("data.json", "application/json", JSON.stringify(value));
+      putObject("data.json", "application/json", JSON.stringify(value)).catch(
+        () => {},
+      );
   },
   { deep, debounce },
 );
@@ -294,7 +296,7 @@ const sitemap: ComputedRef<object> = computed(() => ({
 watchDebounced(
   sitemap,
   (value) => {
-    void putObject("sitemap.xml", "application/xml", toXML(value));
+    putObject("sitemap.xml", "application/xml", toXML(value)).catch(() => {});
   },
   { debounce },
 );

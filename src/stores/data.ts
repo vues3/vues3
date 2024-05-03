@@ -173,9 +173,7 @@ const branch: PropertyDescriptor = {
   get(this: TView): TView[] {
     /** Результирующий массив для записи ветви */
     const ret: TView[] = [this];
-    /** Родительский объект */
-    let parent: TView | undefined;
-    while ((parent = ret[0]?.parent)) ret.unshift(parent);
+    while (ret[0].parent) ret.unshift(ret[0].parent);
     return ret;
   },
 };

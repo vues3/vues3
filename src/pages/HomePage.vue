@@ -272,7 +272,7 @@ const login = async () => {
         }),
       );
       set(S3, s3Client);
-      void router.push("/content");
+      router.push("/content").catch(() => {});
     } catch (err) {
       s3Client = undefined;
       const { message } = <Error>err;

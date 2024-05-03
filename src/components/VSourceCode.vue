@@ -10,13 +10,14 @@ v-ace-editor(
 )
 </template>
 <script setup lang="ts">
+// eslint-disable-next-line import/no-duplicates
 import "vue3-ace-editor";
 import "ace-builds/esm-resolver";
 
 import { css, html, js } from "js-beautify";
 import type { Ref } from "vue";
 import { nextTick, ref } from "vue";
-// eslint-disable-next-line no-duplicate-imports
+// eslint-disable-next-line no-duplicate-imports, import/no-duplicates
 import { VAceEditor } from "vue3-ace-editor";
 /**
  * [options] - Свойства редактора [lang] - Язык подсветки modelValue -

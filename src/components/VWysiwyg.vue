@@ -66,12 +66,12 @@ const editor: Ref<QEditor | undefined> = ref();
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#image_types}
  */
 const insertImage = (file: File) => {
-  void (async () => {
+  (async () => {
     const { filePath, message } = await putImage(file);
     if (message) $q.notify({ message });
     else if (filePath)
       editor.value?.runCmd("insertImage", `${base.value ?? ""}/${filePath}`);
-  })();
+  })().catch(() => {});
 };
 /**
  * Функция обработки вставки картинок через d'n'd и ctrl+v
