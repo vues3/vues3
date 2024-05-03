@@ -116,7 +116,7 @@ const path: PropertyDescriptor = {
 const url: PropertyDescriptor = {
   get(this: TView): string {
     return (
-      (this.loc && encodeURI(this.loc.replace(" ", "_") || "")) || this.path
+      (this.loc && encodeURI(this.loc.replace(" ", "_") || "")) ?? this.path
     );
   },
 };

@@ -10,7 +10,7 @@ export default ({ router }: { router: Router }) => {
 
   router.beforeEach(({ path }, from, next) => {
     if (
-      (S3.value && !privateTo.includes(path)) ||
+      (S3.value && !privateTo.includes(path)) ??
       (!S3.value && !publicTo.includes(path))
     )
       next("/");

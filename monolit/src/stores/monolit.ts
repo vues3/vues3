@@ -47,14 +47,13 @@ export const getAsyncComponent = ({
   const addStyle = (styles: string) => {
     useStyleTag(styles);
   };
-  return defineAsyncComponent(
-    () =>
-      loadModule(`${["", "~"].includes(path) ? "" : "/"}${path}/view.vue`, (<unknown>{
+  return defineAsyncComponent((() =>
+    loadModule(`${["", "~"].includes(path) ? "" : "/"}${path}/view.vue`, {
       addStyle,
       getFile,
       log,
       moduleCache,
-    } as Options)) as AsyncComponentLoader<Promise<object>>));
+    } as unknown as Options)) as AsyncComponentLoader<Promise<object>>);
 };
 async function getResource(this: TView, ext: keyof TView): Promise<string> {
   if (this[ext] == null) {
