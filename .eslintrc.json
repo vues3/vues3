@@ -18,10 +18,6 @@
     "plugin:perfectionist/recommended-natural",
     "plugin:prettier/recommended"
   ],
-  "plugins": ["eslint-plugin-tsdoc"],
-  "rules": {
-    "tsdoc/syntax": "warn"
-  },
   "settings": {
     "import/resolver": {
       "typescript": true
