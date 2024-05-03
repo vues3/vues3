@@ -37,9 +37,9 @@ const ajv: Ajv = new Ajv({
   schemas,
   useDefaults,
 });
-export const validateConfig: ValidateFunction = <ValidateFunction>(
-  ajv.getSchema("urn:jsonschema:config")
-);
+export const validateConfig: ValidateFunction = ajv.getSchema(
+  "urn:jsonschema:config",
+) as ValidateFunction;
 async function getFile(
   this: TView,
   ext: keyof TView,
@@ -51,7 +51,7 @@ async function getFile(
     );
     Object.defineProperty(this, ext, { configurable, value });
   }
-  return <string>this[ext];
+  return this[ext] as string;
 }
 export function save(this: TView | undefined, ext: string, text: string) {
   if (this?.id) {
@@ -84,6 +84,18 @@ const html: PropertyDescriptor = {
       `<head><base href="//"></head><body>${await this.template}</body>`,
       "text/html",
     );
+
+    // const links = doc.querySelectorAll("router-link");
+    // console.log(links);
+    // links.forEach((link) => {
+    //   console.log(link.attributes.getNamedItem("to")?.value);
+    //   console.log(link.innerHTML);
+    //   const createA = document.createElement("a");
+    //   createA.innerHTML = link.innerHTML;
+    //   //   createA.setAttribute('href', "http://google.com");
+    //   //   createA.appendChild(createAText);
+    // });
+
     Object.keys(urls).forEach((url) => {
       if (![...doc.images].find((image) => image.src === url)) {
         URL.revokeObjectURL(urls[url] ?? "");
@@ -96,7 +108,7 @@ const html: PropertyDescriptor = {
           await Promise.all(
             [...doc.images].map((image) =>
               image.src &&
-              !(image.src in urls) &&
+              urls[image.src] === undefined &&
               window.location.origin ===
                 new URL(image.src, window.location.origin).origin
                 ? getObject(image.src)
@@ -152,34 +164,32 @@ const script: PropertyDescriptor = {
 };
 watch(S3, async (value) => {
   if (value)
-    $.value = <TData>(
-      JSON.parse((await (await getObject("data.json", cache)).text()) || "{}")
-    );
+    $.value = JSON.parse(
+      (await (await getObject("data.json", cache)).text()) || "{}",
+    ) as TData;
   else $.value = undefined;
 });
 watch(S3, async (newValue) => {
   if (newValue) {
-    const [localManifest, serverManifest] = (<
-      Record<string, Record<string, string | string[]>>[]
-    >await Promise.all([
-      (await fetch("monolit/.vite/manifest.json")).json(),
-      new Promise((resolve) => {
-        resolve(
-          (async (response: Promise<Response>) =>
-            <object>JSON.parse((await (await response).text()) || "{}"))(
-            getObject(".vite/manifest.json", cache),
-          ),
-        );
-      }),
-    ])).map(
+    const [localManifest, serverManifest] = (
+      (await Promise.all([
+        (await fetch("monolit/.vite/manifest.json")).json(),
+        new Promise((resolve) => {
+          resolve(
+            (async (response: Promise<Response>) =>
+              JSON.parse((await (await response).text()) || "{}") as object)(
+              getObject(".vite/manifest.json", cache),
+            ),
+          );
+        }),
+      ])) as Record<string, Record<string, string | string[]>>[]
+    ).map(
       (value) =>
         new Set(
-          <string[]>(
-            [
-              ...Object.values(value).map(({ file }) => file),
-              ...(value["index.html"].css || []),
-            ].filter(Boolean)
-          ),
+          [
+            ...Object.values(value).map(({ file }) => file),
+            ...(value["index.html"].css || []),
+          ].filter(Boolean) as string[],
         ),
     );
     [
@@ -210,7 +220,7 @@ watchDebounced(
 export const accessKeyId: Ref<string | undefined> = ref();
 export const config: RemovableRef<TConfig> = useStorage(
   `config-${accessKeyId.value ?? ""}`,
-  <TConfig>{},
+  {} as TConfig,
   localStorage,
   { mergeDefaults },
 );
@@ -245,7 +255,7 @@ export const putImage = async (
   file: File,
 ): Promise<Record<string, string | undefined>> => {
   const { type } = file;
-  const filePath: string = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
+  const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
   let message: string | undefined;
   try {
     if (mimes.includes(type)) await putFile(filePath, type, file);
@@ -254,7 +264,7 @@ export const putImage = async (
         "Тип графического файла не подходит для использования в сети интернет",
       );
   } catch (err) {
-    ({ message } = <Error>err);
+    ({ message } = err as Error);
   }
   return { filePath, message };
 };

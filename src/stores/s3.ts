@@ -40,7 +40,7 @@ export const getObject = async (
       const { Body } = await S3.value.send(
         new GetObjectCommand({ Bucket, Key, ResponseCacheControl }),
       );
-      return new Response(<BodyInit>Body);
+      return new Response(Body as BodyInit);
     } catch (e) {
       //
     }

@@ -241,7 +241,7 @@ let s3Client: S3Client | undefined;
 const login = async () => {
   if (!s3Client)
     try {
-      s3Client = new S3Client(<S3ClientConfig>{
+      s3Client = new S3Client({
         credentials: {
           accessKeyId: accessKeyId.value,
           secretAccessKey: secretAccessKey.value,
@@ -249,7 +249,7 @@ const login = async () => {
         endpoint: endpoint.value,
         region: region.value,
         requestHandler: new FetchHttpHandler({ keepAlive: false }),
-      });
+      } as S3ClientConfig);
       set(creds, [
         ...creds.value.filter(({ label }) => label !== bucket.value),
         ...(remember.value
@@ -275,7 +275,7 @@ const login = async () => {
       router.push("/content").catch(() => {});
     } catch (err) {
       s3Client = undefined;
-      const { message } = <Error>err;
+      const { message } = err as Error;
       $q.notify({ message });
     }
 };

@@ -48,7 +48,7 @@ app.config.globalProperties.mdi = mdi;
   const response: Response = await fetch("/data.json", {
     cache,
   });
-  $.value = response.ok ? <TData>await response.json() : <TData>{};
+  $.value = response.ok ? ((await response.json()) as TData) : ({} as TData);
   fix($.value.content);
 })().catch(() => {});
 const env: string = process.env.NODE_ENV;
@@ -59,7 +59,7 @@ watch(
   views,
   (value) => {
     value.forEach(({ id: name, loc, path }) => {
-      const alias: string = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
+      const alias = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
       router.addRoute({
         name,
         path: `/${path}`,
@@ -73,7 +73,7 @@ watch(
         },
       });
     });
-    const path: string = "/:catchAll(.*)*";
+    const path = "/:catchAll(.*)*";
     router.addRoute({
       component(): RouteComponent {
         return import("@/views/NotFoundView.vue");
@@ -85,11 +85,11 @@ watch(
   { once },
 );
 watch(
-  () => <TSettings>$.value?.settings,
+  () => $.value?.settings as TSettings,
   ({ analytics, metrika }) => {
     if (metrika) {
       const id: string = metrika;
-      app.use(initYandexMetrika, <Config>{ env, id, router });
+      app.use(initYandexMetrika, { env, id, router } as Config);
     }
     if (analytics) {
       const id: string = analytics;

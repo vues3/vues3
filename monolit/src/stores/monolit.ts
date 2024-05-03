@@ -25,7 +25,7 @@ const moduleCache: ModuleExport = {
   "vue-router": vueRouter,
 };
 const log = (type: keyof Console, ...args: string[]) => {
-  (<(...optionalParams: string[]) => void>window.console[type])(...args);
+  (window.console[type] as (...optionalParams: string[]) => void)(...args);
 };
 export const getAsyncComponent = ({
   path,
@@ -47,15 +47,14 @@ export const getAsyncComponent = ({
   const addStyle = (styles: string) => {
     useStyleTag(styles);
   };
-  return defineAsyncComponent(<AsyncComponentLoader<Promise<object>>>(() =>
-    loadModule(`${["", "~"].includes(path) ? "" : "/"}${path}/view.vue`, <
-      Options
-    >(<unknown>{
+  return defineAsyncComponent(
+    () =>
+      loadModule(`${["", "~"].includes(path) ? "" : "/"}${path}/view.vue`, (<unknown>{
       addStyle,
       getFile,
       log,
       moduleCache,
-    }))));
+    } as Options)) as AsyncComponentLoader<Promise<object>>));
 };
 async function getResource(this: TView, ext: keyof TView): Promise<string> {
   if (this[ext] == null) {
@@ -65,7 +64,7 @@ async function getResource(this: TView, ext: keyof TView): Promise<string> {
     const value: string = response.ok ? await response.text() : "";
     Object.defineProperty(this, ext, { value });
   }
-  return <string>this[ext];
+  return this[ext] as string;
 }
 const template: PropertyDescriptor = {
   async get(this: TView): Promise<string> {

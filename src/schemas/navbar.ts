@@ -3,7 +3,7 @@ import type { JSONSchema } from "json-schema-to-ts";
 const $id = "urn:jsonschema:navbar";
 const additionalProperties = false;
 const nullable = true;
-const properties = <const>{
+const properties = {
   classes: {
     default: [
       "rounded-box",
@@ -74,14 +74,14 @@ const {
     type: "string",
   },
   theme: { default: null, description: "Тема", nullable, type: "string" },
-};
+} as const;
 const type = "object";
 
-const Navbar = (<const>{
+const Navbar = {
   $id,
   additionalProperties,
   properties,
   type,
-}) satisfies JSONSchema;
+} as const satisfies JSONSchema;
 
 export default Navbar;

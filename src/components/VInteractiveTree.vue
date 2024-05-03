@@ -62,7 +62,7 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
   type: "text",
 });
 const nodes: ComputedRef<QTreeNode[]> = computed(
-  () => <QTreeNode[]>(props.tree ?? props.list),
+  () => props.tree ?? (props.list as QTreeNode[]),
 );
 const the: ComputedRef<TResource | TView | null | undefined> = computed(() =>
   props.list.length
@@ -78,8 +78,8 @@ const updateSelected = (value: string | undefined) => {
 };
 const $q: QVueGlobals = useQuasar();
 const qtree: Ref<QTree | undefined> = ref();
-const title: string = "Подтверждение";
-const message: string = "Вы действительно хотите удалить?";
+const title = "Подтверждение";
+const message = "Вы действительно хотите удалить?";
 const deleteView = () => {
   if (the.value) {
     const { index, next, parent, prev, siblings } = the.value;
@@ -154,21 +154,21 @@ const leftView = () => {
     }
   }
 };
-const value: boolean = false;
+const value = false;
 const newView = () => {
   if (the.value) {
     const { children, index, parent, siblings } = the.value;
     const id: string = uid();
     switch (true) {
       case !!parent:
-        siblings.splice(index + 1, 0, <TView>{ id });
+        siblings.splice(index + 1, 0, { id } as TView);
         break;
       case !!children:
-        children.unshift(<TView>{ id });
+        children.unshift({ id } as TView);
         qtree.value?.setExpanded(the.value.id, true);
         break;
       default:
-        siblings.splice(index + 1, 0, <TView>{ id });
+        siblings.splice(index + 1, 0, { id } as TView);
         break;
     }
     updateSelected(id);

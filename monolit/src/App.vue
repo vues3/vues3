@@ -97,14 +97,14 @@ import { useRoute, useRouter } from "vue-router";
 import { favicon, getAsyncComponent } from "./stores/monolit";
 
 const { ready, start } = useTimeout(1000, { controls });
-const path: string = "~";
+const path = "~";
 const navigator: ComputedRef<object> = computed(() => {
   const id: string = uid();
-  return getAsyncComponent(<TView>{
+  return getAsyncComponent({
     id,
     ...$.value?.navbar,
     path,
-  });
+  } as TView);
 });
 const route: RouteLocationNormalizedLoaded = useRoute();
 const router: Router = useRouter();

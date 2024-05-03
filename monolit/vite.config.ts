@@ -11,7 +11,7 @@ import { defineConfig } from "vite";
 
 const extractors: Extractor[] = [extractorPug()];
 // const modernPolyfills: string[] = ["es.promise.with-resolvers"];
-const configFile: string = "../uno.config.js";
+const configFile = "../uno.config.js";
 const plugins: PluginOption[] = [
   vue({ ...templateCompilerOptions }),
   UnoCSS({ configFile, extractors }),
@@ -22,9 +22,9 @@ const alias: object = {
   app: fileURLToPath(new URL("..", import.meta.url)),
 };
 const resolve: object = { alias };
-const manifest: boolean = true;
-const outDir: string = "../public/monolit";
-const manualChunks = (id: string = ""): string =>
+const manifest = true;
+const outDir = "../public/monolit";
+const manualChunks = (id = ""): string =>
   id.split("node_modules/")[1]?.split("/")?.[0] ?? "";
 const output: object = { manualChunks };
 const rollupOptions: object = { output };

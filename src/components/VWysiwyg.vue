@@ -63,7 +63,9 @@ const insertImage = (file: File) => {
 };
 const capture = (evt: ClipboardEvent | DragEvent) => {
   const { files = [] } =
-    (<DragEvent>evt).dataTransfer ?? (<ClipboardEvent>evt).clipboardData ?? {};
+    (evt as DragEvent).dataTransfer ??
+    (evt as ClipboardEvent).clipboardData ??
+    {};
   if (files.length) {
     evt.preventDefault();
     evt.stopPropagation();
@@ -71,8 +73,8 @@ const capture = (evt: ClipboardEvent | DragEvent) => {
   }
 };
 const { files, open } = useFileDialog({ accept });
-const definitions: { [commandName: string]: QEditorCommand } = <const>{
-  ...(<{ [commandName: string]: QEditorCommand }>Object.fromEntries(
+const definitions: Record<string, QEditorCommand> = {
+  ...(Object.fromEntries(
     [
       ["upload", "Загрузка картинки", open],
       [
@@ -90,7 +92,7 @@ const definitions: { [commandName: string]: QEditorCommand } = <const>{
         },
       ],
     ].map(([icon, tip, handler]) => [icon, { handler, icon, tip }]),
-  )),
+  ) as Record<string, QEditorCommand>),
   ...Object.fromEntries(
     [
       ...[...Array(4).keys()].map((key) => [
@@ -102,13 +104,13 @@ const definitions: { [commandName: string]: QEditorCommand } = <const>{
     ].map(([key, value]) => [
       key,
       {
-        htmlTip: `<span class="prose"><${key} class="q-ma-none">${$q.lang.editor[<keyof StringDictionary<QuasarLanguageEditorLabel>>value]}</${key}></span>`,
+        htmlTip: `<span class="prose"><${key} class="q-ma-none">${$q.lang.editor[value as keyof StringDictionary<QuasarLanguageEditorLabel>]}</${key}></span>`,
       },
     ]),
   ),
-};
-const list: string = "no-icons";
-const toolbar: (object | string)[][] = <const>[
+} as const;
+const list = "no-icons";
+const toolbar: (object | string)[][] = [
   ["left", "center", "right", "justify"],
   ["bold", "italic", "strike", "underline", "subscript", "superscript"],
   ["hr", "link"],
@@ -135,9 +137,13 @@ const toolbar: (object | string)[][] = <const>[
     ].map(([key, options, fixedLabel, fixedIcon]) => ({
       fixedIcon,
       fixedLabel,
-      icon: $q.iconSet.editor[<keyof StringDictionary<QuasarIconSetEditor>>key],
+      icon: $q.iconSet.editor[
+        key as keyof StringDictionary<QuasarIconSetEditor>
+      ],
       label:
-        $q.lang.editor[<keyof StringDictionary<QuasarLanguageEditorLabel>>key],
+        $q.lang.editor[
+          key as keyof StringDictionary<QuasarLanguageEditorLabel>
+        ],
       list,
       options,
     })),
@@ -146,7 +152,7 @@ const toolbar: (object | string)[][] = <const>[
   ["quote", "unordered", "ordered", "outdent", "indent"],
   ["undo", "redo"],
   ["upload", "dashboard", "share"],
-];
+] as const;
 watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });

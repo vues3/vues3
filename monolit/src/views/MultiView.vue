@@ -55,23 +55,19 @@ const siblings: ComputedRef<TView[]> = computed(
 const promises: ComputedRef<Record<string, PromiseWithResolvers<undefined>>> =
   computed(
     () =>
-      <Record<string, PromiseWithResolvers<undefined>>>(
-        Object.fromEntries(
-          siblings.value.map(({ id }) => [id, Promise.withResolvers()]),
-        )
-      ),
+      Object.fromEntries(
+        siblings.value.map(({ id }) => [id, Promise.withResolvers()]),
+      ) as Record<string, PromiseWithResolvers<undefined>>,
   );
 const templates: ComputedRef<object> = computed(
   () =>
-    <object>(
-      Object.fromEntries(
-        siblings.value.map((a) => [a.id, getAsyncComponent(a)]),
-      )
-    ),
+    Object.fromEntries(
+      siblings.value.map((a) => [a.id, getAsyncComponent(a)]),
+    ) as object,
 );
-const root: Ref<HTMLElement> = <Ref<HTMLElement>>useParentElement();
-let pause: boolean = true;
-let push: boolean = false;
+const root: Ref<HTMLElement> = useParentElement() as Ref<HTMLElement>;
+let pause = true;
+let push = false;
 const callback: IntersectionObserverCallback = ([
   {
     isIntersecting,

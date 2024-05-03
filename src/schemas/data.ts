@@ -3,12 +3,12 @@ import type { JSONSchema } from "json-schema-to-ts";
 const $id = "urn:jsonschema:data";
 const additionalProperties = false;
 const nullable = true;
-const content = <const>{
+const content = {
   default: [{}],
   items: { $ref: "urn:jsonschema:view" },
   type: "array",
-};
-const properties = <const>{
+} as const;
+const properties = {
   css: {
     default: [{}],
     items: { $ref: "urn:jsonschema:resource" },
@@ -33,22 +33,22 @@ const properties = <const>{
     type: "object",
   },
   style: { default: "", nullable, type: "string" },
-};
+} as const;
 const type = "object";
 
-const plainData = (<const>{
+const plainData = {
   $id,
   additionalProperties,
   properties,
   type,
-}) satisfies JSONSchema;
+} as const satisfies JSONSchema;
 
-const Data = (<const>{
+const Data = {
   $id,
   additionalProperties,
   properties: { content, ...properties },
   type,
-}) satisfies JSONSchema;
+} as const satisfies JSONSchema;
 
 export { plainData };
 export default Data;

@@ -45,7 +45,7 @@ const the: ComputedRef<TView | undefined> = computed(() =>
   views.value.find(({ id }) => id === selected.value),
 );
 const nodes: ComputedRef<QTreeNode[]> = computed(
-  () => <QTreeNode[]>$.value?.content,
+  () => $.value?.content as QTreeNode[],
 );
 watch(model, (show) => {
   const [{ id }] = $.value?.content ?? [];

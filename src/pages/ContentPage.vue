@@ -261,7 +261,7 @@ const $q: QVueGlobals = useQuasar();
 const show: Ref<boolean> = ref(false);
 const pagination: Ref<object> = ref({ itemsPerPage, page });
 const icons: Ref<object[]> = ref(
-  (<Record<string, object[]>>materialIcons).icons,
+  (materialIcons as Record<string, object[]>).icons,
 );
 const the: ComputedRef<TView | undefined> = computed(
   () =>
@@ -269,7 +269,7 @@ const the: ComputedRef<TView | undefined> = computed(
     views.value[0],
 );
 const onUnmounted = async (ext: string, key: keyof TView) => {
-  save.call(the.value, ext, <string>await the.value?.[key]);
+  save.call(the.value, ext, (await the.value?.[key]) as string);
 };
 const loc: WritableComputedRef<null | string> = computed({
   get(): null | string {

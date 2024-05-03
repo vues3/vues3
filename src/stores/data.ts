@@ -72,12 +72,12 @@ const ajv: Ajv = new Ajv({
   schemas,
   useDefaults,
 });
-export const validate: ValidateFunction = <ValidateFunction>(
-  ajv.getSchema("urn:jsonschema:data")
-);
-export const validateNavbar: ValidateFunction = <ValidateFunction>(
-  ajv.getSchema("urn:jsonschema:navbar")
-);
+export const validate: ValidateFunction = ajv.getSchema(
+  "urn:jsonschema:data",
+) as ValidateFunction;
+export const validateNavbar: ValidateFunction = ajv.getSchema(
+  "urn:jsonschema:navbar",
+) as ValidateFunction;
 const getViews = (views: TView[]): TView[] =>
   views.flatMap((element) => [element, ...getViews(element.children)]);
 const index: PropertyDescriptor = {
@@ -184,13 +184,13 @@ watch(
   },
   { deep },
 );
-const value: undefined = undefined;
+const value = undefined;
 watch(
   $,
   (newValue) => {
     if (newValue) {
       ["content", "css", "js"].forEach((key) => {
-        if (!(<TResource[] | TView[]>newValue[<keyof TData>key]).length)
+        if (!(newValue[key as keyof TData] as TResource[] | TView[]).length)
           Reflect.defineProperty(newValue, key, { value });
       });
       validate(newValue);

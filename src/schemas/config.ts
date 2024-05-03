@@ -2,7 +2,7 @@ import type { JSONSchema } from "json-schema-to-ts";
 
 const $id = "urn:jsonschema:config";
 const additionalProperties = false;
-const properties = <const>{
+const properties = {
   content: {
     default: {},
     properties: {
@@ -52,11 +52,11 @@ const properties = <const>{
     },
     type: "object",
   },
-};
+} as const;
 const type = "object";
-export default (<const>{
+export default {
   $id,
   additionalProperties,
   properties,
   type,
-}) satisfies JSONSchema;
+} as const satisfies JSONSchema;

@@ -105,8 +105,8 @@ import { $, validateNavbar } from "stores/data";
 import { cancel, persistent } from "stores/defaults";
 
 const $q: QVueGlobals = useQuasar();
-const title: string = "Сброс навбара";
-const message: string = "Выбор сбрасываемых параметров:";
+const title = "Сброс навбара";
+const message = "Выбор сбрасываемых параметров:";
 const type: SelectionPromptType = "checkbox";
 const model: [] = [];
 const items: QOptionGroupProps["options"] = Object.entries(Navbar.properties)
@@ -117,7 +117,7 @@ const resetNavbar = () => {
   $q.dialog({ cancel, message, options, persistent, title }).onOk(
     (value: string[]) => {
       value.forEach((element) => {
-        delete $.value?.navbar?.[<keyof TNavbar>element];
+        delete $.value?.navbar?.[element as keyof TNavbar];
       });
       validateNavbar($.value?.navbar);
     },

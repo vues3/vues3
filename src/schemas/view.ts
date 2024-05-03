@@ -5,8 +5,8 @@ const additionalProperties = false;
 const nullable = true;
 const id = "uuid";
 const dynamicDefaults = { id };
-const children = <const>{ default: [], items: { $ref: "#" }, type: "array" };
-const properties = <const>{
+const children = { default: [], items: { $ref: "#" }, type: "array" } as const;
+const properties = {
   alt: { default: null, nullable, type: "string" },
   changefreq: {
     default: null,
@@ -102,20 +102,20 @@ const properties = <const>{
     nullable,
     type: "string",
   },
-};
+} as const;
 const type = "object";
 
-export const plainView = (<const>{
+export const plainView = {
   $id,
   additionalProperties,
   properties,
   type,
-}) satisfies JSONSchema;
+} as const satisfies JSONSchema;
 
-export default <const>{
+export default {
   $id,
   additionalProperties,
   dynamicDefaults,
   properties: { children, ...properties },
   type,
-};
+} as const;
