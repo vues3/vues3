@@ -1,5 +1,5 @@
 <template lang="pug">
-q-dialog(full-height, full-width, persistent, v-model="model")
+q-dialog(full-height, full-width, v-model="model")
   q-card.column.w-full
     q-card-section.row.q-pb-none.items-center
       .text-h6 Выбор компонента для вставки
@@ -32,7 +32,6 @@ q-dialog(full-height, full-width, persistent, v-model="model")
 </template>
 <script setup lang="ts">
 import type { QEditor } from "quasar";
-import type { ModelRef, Ref } from "vue";
 
 import options from "assets/templates.json";
 import { html_beautify } from "js-beautify";
@@ -41,8 +40,8 @@ import { ref, watch } from "vue";
 defineProps<{
   editor?: QEditor;
 }>();
-const model: ModelRef<boolean> = defineModel<boolean>({ default: false });
-const html: Ref<string> = ref("");
+const model = defineModel<boolean>({ default: false });
+const html = ref("");
 const [{ value }] = options;
 watch(model, (show) => {
   if (show) html.value = value;

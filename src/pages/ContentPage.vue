@@ -229,9 +229,7 @@ q-page.column.full-height.bg-light(v-else)
     q-spinner-hourglass
 </template>
 <script setup lang="ts">
-import type { QVueGlobals } from "quasar";
 import type { TView } from "stores/data";
-import type { ComputedRef, Ref, WritableComputedRef } from "vue";
 
 import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
 import { useFileDialog } from "@vueuse/core";
@@ -257,26 +255,24 @@ import {
 import { base } from "stores/s3";
 import { computed, ref, watch } from "vue";
 
-const $q: QVueGlobals = useQuasar();
-const show: Ref<boolean> = ref(false);
-const pagination: Ref<object> = ref({ itemsPerPage, page });
-const icons: Ref<object[]> = ref(
-  (materialIcons as Record<string, object[]>).icons,
-);
-const the: ComputedRef<TView | undefined> = computed(
+const $q = useQuasar();
+const show = ref(false);
+const pagination = ref({ itemsPerPage, page });
+const icons = ref((materialIcons as Record<string, object[]>).icons);
+const the = computed(
   () =>
     views.value.find(({ id }) => id === config.value.content.selected) ??
     views.value[0],
 );
 const onUnmounted = async (ext: string, key: keyof TView) => {
-  save.call(the.value, ext, (await the.value?.[key]) as string);
+  save.call(the.value, ext, (await the.value[key]) as string);
 };
-const loc: WritableComputedRef<null | string> = computed({
+const loc = computed({
   get(): null | string {
-    return the.value?.loc ?? null;
+    return the.value.loc ?? null;
   },
   set(value: null | string) {
-    if (the.value) the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
+    the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
   },
 });
 const { files, open } = useFileDialog({ accept, capture, multiple, reset });
@@ -286,16 +282,14 @@ const click = () => {
 watch(
   the,
   (newValue, oldValue) => {
-    if (newValue !== oldValue) rightDrawer.value = newValue ? true : undefined;
+    if (newValue !== oldValue) rightDrawer.value = true;
   },
   { immediate },
 );
 watch(files, async (newFiles) => {
   const [file] = newFiles ?? [];
-  if (the.value) {
-    const { filePath, message } = await putImage(file);
-    if (message) $q.notify({ message });
-    else if (filePath) the.value.image = `/${filePath}`;
-  }
+  const { filePath, message } = await putImage(file);
+  if (message) $q.notify({ message });
+  else if (filePath) the.value.image = `/${filePath}`;
 });
 </script>

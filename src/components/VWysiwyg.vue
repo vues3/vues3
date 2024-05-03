@@ -158,9 +158,3 @@ watch(files, (newFiles) => {
 });
 const htm: Ref<string> = ref(await props.modelValue);
 </script>
-<style lang="sass" scoped>
-:deep(router-link)
-  color: var(--tw-prose-links)
-  text-decoration: underline
-  font-weight: 500
-</style>

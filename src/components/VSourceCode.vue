@@ -10,7 +10,6 @@ v-ace-editor(
 )
 </template>
 <script setup lang="ts">
-import type { Ref } from "vue";
 // eslint-disable-next-line perfectionist/sort-imports
 import { VAceEditor } from "vue3-ace-editor";
 
@@ -24,7 +23,7 @@ interface IProps {
   modelValue: Promise<string> | null | string;
   options?: object;
 }
-const props: IProps = withDefaults(defineProps<IProps>(), {
+const props = withDefaults(defineProps<IProps>(), {
   lang: "html",
   modelValue: "",
   options: (): object => ({}),
@@ -45,6 +44,6 @@ const beautify = (value: string) => {
   }
   emit("update:modelValue", code);
 };
-const editor: Ref<HTMLElement | undefined> = ref();
-const value: Ref<null | string> = ref(await props.modelValue);
+const editor = ref();
+const value = ref(await props.modelValue);
 </script>

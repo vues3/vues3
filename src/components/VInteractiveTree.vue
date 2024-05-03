@@ -35,9 +35,9 @@ q-btn-group.q-mx-xs(flat, spread)
         )
 </template>
 <script setup lang="ts">
-import type { QInputProps, QTree, QTreeNode, QVueGlobals } from "quasar";
+import type { QInputProps, QTree, QTreeNode } from "quasar";
 import type { TResource, TView } from "stores/data";
-import type { ComputedRef, Ref } from "vue";
+import type { Ref } from "vue";
 
 import { uid, useQuasar } from "quasar";
 import { cancel, immediate, persistent } from "stores/defaults";
@@ -61,22 +61,20 @@ const props: IProps = withDefaults(defineProps<IProps>(), {
   tree: undefined,
   type: "text",
 });
-const nodes: ComputedRef<QTreeNode[]> = computed(
-  () => props.tree ?? (props.list as QTreeNode[]),
-);
-const the: ComputedRef<TResource | TView | null | undefined> = computed(() =>
+const nodes = computed(() => (props.tree ?? props.list) as QTreeNode[]);
+const the = computed(() =>
   props.list.length
     ? props.list.find(({ id }) => id === props.selected) ?? null
     : undefined,
 );
-const emits: IEmits = defineEmits<IEmits>();
+const emits = defineEmits<IEmits>();
 const updateExpanded = (value: readonly string[]) => {
   emits("update:expanded", value);
 };
 const updateSelected = (value: string | undefined) => {
   emits("update:selected", value);
 };
-const $q: QVueGlobals = useQuasar();
+const $q = useQuasar();
 const qtree: Ref<QTree | undefined> = ref();
 const title = "Подтверждение";
 const message = "Вы действительно хотите удалить?";
@@ -84,7 +82,7 @@ const deleteView = () => {
   if (the.value) {
     const { index, next, parent, prev, siblings } = the.value;
     $q.dialog({ cancel, message, persistent, title }).onOk(() => {
-      let id: string | undefined;
+      let id;
       switch (true) {
         case !!next:
           ({ id } = next);
@@ -158,7 +156,7 @@ const value = false;
 const newView = () => {
   if (the.value) {
     const { children, index, parent, siblings } = the.value;
-    const id: string = uid();
+    const id = uid();
     switch (true) {
       case !!parent:
         siblings.splice(index + 1, 0, { id } as TView);
@@ -175,7 +173,8 @@ const newView = () => {
   }
 };
 onMounted(() => {
-  if (props.tree?.length) qtree.value?.setExpanded(props.tree[0].id, true);
+  const [{ id }] = props.tree ?? [{}];
+  if (id) qtree.value?.setExpanded(id, true);
 });
 watch(
   the,

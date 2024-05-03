@@ -1,5 +1,5 @@
 <template lang="pug">
-q-dialog(full-height, full-width, persistent, v-model="model")
+q-dialog(full-height, full-width, v-model="model")
   q-card.column
     q-card-section.row.q-pb-none.items-center
       .text-h6 Выбор внутренней ссылки для вставки
@@ -22,7 +22,7 @@ q-dialog(full-height, full-width, persistent, v-model="model")
     q-card-actions.text-primary(align="right")
       q-btn(flat, label="Отмена", v-close-popup)
       q-btn(
-        @click="editor?.runCmd('insertHTML', `<router-link to='/${the?.path}'>${the?.label}</router-link>`)",
+        @click="editor?.runCmd('createLink', `/${the?.path}`)",
         flat,
         label="Ok",
         v-close-popup
@@ -30,8 +30,6 @@ q-dialog(full-height, full-width, persistent, v-model="model")
 </template>
 <script setup lang="ts">
 import type { QEditor, QTreeNode } from "quasar";
-import type { TView } from "stores/data";
-import type { ComputedRef, ModelRef, Ref } from "vue";
 
 import { $, views } from "stores/data";
 import { computed, ref, watch } from "vue";
@@ -39,14 +37,10 @@ import { computed, ref, watch } from "vue";
 defineProps<{
   editor?: QEditor;
 }>();
-const model: ModelRef<boolean> = defineModel<boolean>({ default: false });
-const selected: Ref<string | undefined> = ref();
-const the: ComputedRef<TView | undefined> = computed(() =>
-  views.value.find(({ id }) => id === selected.value),
-);
-const nodes: ComputedRef<QTreeNode[]> = computed(
-  () => $.value?.content as QTreeNode[],
-);
+const model = defineModel<boolean>({ default: false });
+const selected = ref();
+const the = computed(() => views.value.find(({ id }) => id === selected.value));
+const nodes = computed(() => $.value?.content as QTreeNode[]);
 watch(model, (show) => {
   const [{ id }] = $.value?.content ?? [];
   if (show) selected.value = id;

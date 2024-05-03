@@ -14,9 +14,7 @@
       )
 </template>
 <script setup lang="ts">
-import type { TView } from "app/src/stores/data";
 import type { ComputedRef } from "vue";
-import type { RouteLocationNormalizedLoaded } from "vue-router";
 
 import { views } from "app/src/stores/data";
 import { loop, zoomable } from "app/src/stores/defaults";
@@ -26,13 +24,13 @@ import { useRoute } from "vue-router";
 
 import { getAsyncComponent, selector } from "../stores/monolit";
 
-const route: RouteLocationNormalizedLoaded = useRoute();
-const the: ComputedRef<TView | undefined> = computed(() => {
-  const index: number = views.value.findIndex(({ id }) => id === route.name);
-  const ret: TView = views.value[index];
+const route = useRoute();
+const the = computed(() => {
+  const index = views.value.findIndex(({ id }) => id === route.name);
+  const ret = views.value[index];
   return index ? ret : ret.children[0];
 });
-const template: ComputedRef<object | undefined> = computed(
-  () => the.value && getAsyncComponent(the.value),
+const template: ComputedRef<object | undefined> = computed(() =>
+  getAsyncComponent(the.value),
 );
 </script>

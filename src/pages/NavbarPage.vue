@@ -88,12 +88,7 @@ q-page.column.full-height(v-if="$?.navbar")
             q-spinner-hourglass
 </template>
 <script setup lang="ts">
-import type {
-  QDialogSelectionPrompt,
-  QOptionGroupProps,
-  QVueGlobals,
-  SelectionPromptType,
-} from "quasar";
+import type { QDialogSelectionPrompt } from "quasar";
 import type { TNavbar } from "stores/data";
 
 import themes from "assets/themes.json";
@@ -104,12 +99,12 @@ import { config, rightDrawer } from "stores/app";
 import { $, validateNavbar } from "stores/data";
 import { cancel, persistent } from "stores/defaults";
 
-const $q: QVueGlobals = useQuasar();
+const $q = useQuasar();
 const title = "Сброс навбара";
 const message = "Выбор сбрасываемых параметров:";
-const type: SelectionPromptType = "checkbox";
+const type = "checkbox";
 const model: [] = [];
-const items: QOptionGroupProps["options"] = Object.entries(Navbar.properties)
+const items = Object.entries(Navbar.properties)
   .map(([key, { description }]) => ({ label: description, value: key }))
   .filter(({ label }) => label);
 const options: QDialogSelectionPrompt = { items, model, type };

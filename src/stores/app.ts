@@ -1,7 +1,6 @@
-import type { RemovableRef } from "@vueuse/core";
-import type { AnySchema, ValidateFunction } from "ajv";
+import type { ValidateFunction } from "ajv";
 import type { TData, TView } from "stores/data";
-import type { ComputedRef, Ref, WatchOptions } from "vue";
+import type { Ref } from "vue";
 
 import { useDebounceFn, useStorage, watchDebounced } from "@vueuse/core";
 import Ajv from "ajv";
@@ -27,31 +26,31 @@ import { S3, bucket, getObject, putFile, putObject } from "stores/s3";
 import { toXML } from "to-xml";
 import { computed, ref, watch } from "vue";
 
-const parser: DOMParser = new DOMParser();
+const parser = new DOMParser();
 export type TConfig = FromSchema<typeof Config>;
-const schemas: AnySchema[] = [Config];
-const ajv: Ajv = new Ajv({
+const schemas = [Config];
+const ajv = new Ajv({
   code,
   coerceTypes,
   removeAdditional,
   schemas,
   useDefaults,
 });
-export const validateConfig: ValidateFunction = ajv.getSchema(
+export const validateConfig = ajv.getSchema(
   "urn:jsonschema:config",
 ) as ValidateFunction;
 async function getFile(
   this: TView,
   ext: keyof TView,
   beautify: (js_source_text: string) => string,
-): Promise<string> {
+) {
   if (this[ext] == null && this.id) {
     const value = beautify(
       (await (await getObject(`views/${this.id}.${ext}`, cache)).text()) || "",
     );
     Object.defineProperty(this, ext, { configurable, value });
   }
-  return this[ext] as string;
+  return this[ext];
 }
 export function save(this: TView | undefined, ext: string, text: string) {
   if (this?.id) {
@@ -60,7 +59,7 @@ export function save(this: TView | undefined, ext: string, text: string) {
       mime.getType(ext) ?? "text/plain",
       text,
     ).catch(() => {});
-    const value: string = new Date().toISOString();
+    const value = new Date().toISOString();
     Reflect.defineProperty(this, "lastmod", { value });
   }
 }
@@ -69,8 +68,8 @@ function setFile(this: TView, ext: string, value: string) {
   Object.defineProperty(this, ext, { configurable, value });
   debounceFn.call(this, ext, value).catch(() => {});
 }
-const template: PropertyDescriptor = {
-  async get(this: TView): Promise<string> {
+const template = {
+  async get(this: TView) {
     return getFile.call(this, "htm", html_beautify);
   },
   set(this: TView, value: string) {
@@ -78,24 +77,18 @@ const template: PropertyDescriptor = {
   },
 };
 const urls: Record<string, string | undefined> = {};
-const html: PropertyDescriptor = {
-  async get(this: TView): Promise<string> {
-    const doc: Document = parser.parseFromString(
+const html = {
+  async get(this: TView) {
+    const doc = parser.parseFromString(
       `<head><base href="//"></head><body>${await this.template}</body>`,
       "text/html",
     );
-
-    // const links = doc.querySelectorAll("router-link");
-    // console.log(links);
-    // links.forEach((link) => {
-    //   console.log(link.attributes.getNamedItem("to")?.value);
-    //   console.log(link.innerHTML);
-    //   const createA = document.createElement("a");
-    //   createA.innerHTML = link.innerHTML;
-    //   //   createA.setAttribute('href', "http://google.com");
-    //   //   createA.appendChild(createAText);
-    // });
-
+    doc.querySelectorAll("router-link").forEach((link) => {
+      const a = document.createElement("a");
+      a.innerHTML = link.innerHTML;
+      a.setAttribute("href", link.attributes.getNamedItem("to")?.value ?? "");
+      link.replaceWith(a);
+    });
     Object.keys(urls).forEach((url) => {
       if (![...doc.images].find((image) => image.src === url)) {
         URL.revokeObjectURL(urls[url] ?? "");
@@ -115,7 +108,7 @@ const html: PropertyDescriptor = {
                 : undefined,
             ),
           )
-        ).map((image: Response | undefined) => image?.blob()),
+        ).map((image) => image?.blob()),
       )
     ).forEach((image, index) => {
       if (image)
@@ -133,10 +126,23 @@ const html: PropertyDescriptor = {
     return doc.body.innerHTML;
   },
   set(this: TView, value: string) {
-    const doc: Document = parser.parseFromString(
+    const doc = parser.parseFromString(
       `<head><base href="//"></head><body>${value}</body>`,
       "text/html",
     );
+
+    doc.querySelectorAll("a").forEach((a) => {
+      const href = a.attributes.getNamedItem("href")?.value ?? "";
+      if (
+        window.location.origin === new URL(href, window.location.origin).origin
+      ) {
+        const link = document.createElement("router-link");
+        link.innerHTML = a.innerHTML;
+        link.setAttribute("to", href);
+        a.replaceWith(link);
+      }
+    });
+
     [...doc.images].forEach((image) => {
       if (image.dataset.src) {
         image.setAttribute("src", image.dataset.src);
@@ -146,16 +152,16 @@ const html: PropertyDescriptor = {
     this.template = doc.body.innerHTML;
   },
 };
-const style: PropertyDescriptor = {
-  async get(this: TView): Promise<string> {
+const style = {
+  async get(this: TView) {
     return getFile.call(this, "css", css_beautify);
   },
   set(this: TView, value: string) {
     setFile.call(this, "css", value);
   },
 };
-const script: PropertyDescriptor = {
-  async get(this: TView): Promise<string> {
+const script = {
+  async get(this: TView) {
     return getFile.call(this, "js", js_beautify);
   },
   set(this: TView, value: string) {
@@ -176,7 +182,7 @@ watch(S3, async (newValue) => {
         (await fetch("monolit/.vite/manifest.json")).json(),
         new Promise((resolve) => {
           resolve(
-            (async (response: Promise<Response>) =>
+            (async (response) =>
               JSON.parse((await (await response).text()) || "{}") as object)(
               getObject(".vite/manifest.json", cache),
             ),
@@ -199,7 +205,7 @@ watch(S3, async (newValue) => {
         .add("robots.txt"),
     ]
       .filter((x) => !serverManifest.has(x))
-      .forEach((value: string) => {
+      .forEach((value) => {
         (async () => {
           const body = await (await fetch(`monolit/${value}`)).blob();
           putObject(value, body.type, body).catch(() => {});
@@ -218,14 +224,14 @@ watchDebounced(
   { debounce, deep },
 );
 export const accessKeyId: Ref<string | undefined> = ref();
-export const config: RemovableRef<TConfig> = useStorage(
+export const config = useStorage(
   `config-${accessKeyId.value ?? ""}`,
   {} as TConfig,
   localStorage,
   { mergeDefaults },
 );
-export const rightDrawer: Ref<boolean | undefined> = ref();
-const sitemap: ComputedRef<object> = computed(() => ({
+export const rightDrawer = ref();
+const sitemap = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
   urlset: {
     "@xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
@@ -251,12 +257,10 @@ watch(
   },
   { immediate },
 );
-export const putImage = async (
-  file: File,
-): Promise<Record<string, string | undefined>> => {
+export const putImage = async (file: File) => {
   const { type } = file;
   const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
-  let message: string | undefined;
+  let message;
   try {
     if (mimes.includes(type)) await putFile(filePath, type, file);
     else
@@ -268,7 +272,7 @@ export const putImage = async (
   }
   return { filePath, message };
 };
-const flush: WatchOptions["flush"] = "sync";
+const flush = "sync";
 watch(
   views,
   (newValue) => {

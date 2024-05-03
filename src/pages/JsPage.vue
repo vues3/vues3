@@ -26,15 +26,12 @@ q-page.column.full-height
       )
 </template>
 <script setup lang="ts">
-import type { TResource } from "stores/data";
-import type { ComputedRef } from "vue";
-
 import VInteractiveTree from "components/VInteractiveTree.vue";
 import VSourceCode from "components/VSourceCode.vue";
 import { config, rightDrawer } from "stores/app";
 import { $ } from "stores/data";
 import { computed } from "vue";
 
-const list: ComputedRef<TResource[] | undefined> = computed(() => $.value?.js);
+const list = computed(() => $.value?.js);
 rightDrawer.value = undefined;
 </script>
