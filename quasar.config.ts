@@ -5,11 +5,12 @@ import type {
   QuasarLanguageCodesHolder,
   QuasarPlugins,
 } from "quasar";
+
 import { configure } from "quasar/wrappers";
 
 const boot: string[] = ["uno", "route"];
 const css: string[] = ["app.sass"];
-const extras: (QuasarIconSets | QuasarFonts)[] = [
+const extras: (QuasarFonts | QuasarIconSets)[] = [
   "mdi-v6",
   "roboto-font",
   "material-icons",
@@ -30,18 +31,18 @@ const inspectPort: number = 5858;
 const bundler: QuasarElectronConfiguration["bundler"] = "packager";
 const packager: object = {};
 const electron: QuasarElectronConfiguration = {
-  inspectPort,
   bundler,
+  inspectPort,
   packager,
 };
 export default configure(() => ({
   boot,
-  css,
-  extras,
   build,
-  devServer,
-  framework,
-  cordova,
   capacitor,
+  cordova,
+  css,
+  devServer,
   electron,
+  extras,
+  framework,
 }));

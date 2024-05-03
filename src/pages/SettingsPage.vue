@@ -5,20 +5,20 @@ q-page.column.full-height(v-if="$?.settings")
       .text-h6 YANDEX
     q-separator
     q-card-section
-      q-input(v-model.trim="$.settings.yandex", label="yandex verification id")
+      q-input(label="yandex verification id", v-model.trim="$.settings.yandex")
         template(#prepend)
           q-icon(name="mdi-alpha-y-circle-outline")
-      q-input(v-model.trim="$.settings.metrika", label="yandex metrika id")
+      q-input(label="yandex metrika id", v-model.trim="$.settings.metrika")
         template(#prepend)
           q-icon(name="mdi-ruler")
     q-card-section
       .text-h6 GOOGLE
     q-separator
     q-card-section
-      q-input(v-model.trim="$.settings.google", label="google verification id")
+      q-input(label="google verification id", v-model.trim="$.settings.google")
         template(#prepend)
           q-icon(name="mdi-google")
-      q-input(v-model.trim="$.settings.analytics", label="google analytics id")
+      q-input(label="google analytics id", v-model.trim="$.settings.analytics")
         template(#prepend)
           q-icon(name="mdi-google-analytics")
     q-card-section
@@ -26,7 +26,7 @@ q-page.column.full-height(v-if="$?.settings")
     q-separator
     q-card-section
       q-list
-        q-item(v-ripple, tag="label")
+        q-item(tag="label", v-ripple)
           q-item-section(avatar)
             q-checkbox(v-model="$.settings.landing")
           q-item-section

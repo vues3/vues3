@@ -1,6 +1,9 @@
 import type { RemovableRef } from "@vueuse/core";
-import { useDebounceFn, useStorage, watchDebounced } from "@vueuse/core";
 import type { AnySchema, ValidateFunction } from "ajv";
+import type { TData, TView } from "stores/data";
+import type { ComputedRef, Ref, WatchOptions } from "vue";
+
+import { useDebounceFn, useStorage, watchDebounced } from "@vueuse/core";
 import Ajv from "ajv";
 import mimes from "assets/mimes.json";
 import { css_beautify, html_beautify, js_beautify } from "js-beautify";
@@ -8,7 +11,6 @@ import { FromSchema } from "json-schema-to-ts";
 import mime from "mime";
 import { uid } from "quasar";
 import Config from "src/schemas/config";
-import type { TData, TView } from "stores/data";
 import { $, code, views } from "stores/data";
 import {
   cache,
@@ -21,20 +23,19 @@ import {
   removeAdditional,
   useDefaults,
 } from "stores/defaults";
-import { bucket, getObject, putFile, putObject, S3 } from "stores/s3";
+import { S3, bucket, getObject, putFile, putObject } from "stores/s3";
 import { toXML } from "to-xml";
-import type { ComputedRef, Ref, WatchOptions } from "vue";
 import { computed, ref, watch } from "vue";
 
 const parser: DOMParser = new DOMParser();
 export type TConfig = FromSchema<typeof Config>;
 const schemas: AnySchema[] = [Config];
 const ajv: Ajv = new Ajv({
-  useDefaults,
+  code,
   coerceTypes,
   removeAdditional,
   schemas,
-  code,
+  useDefaults,
 });
 export const validateConfig: ValidateFunction = <ValidateFunction>(
   ajv.getSchema("urn:jsonschema:config")
@@ -48,7 +49,7 @@ async function getFile(
     const value = beautify(
       (await (await getObject(`views/${this.id}.${ext}`, cache)).text()) || "",
     );
-    Object.defineProperty(this, ext, { value, configurable });
+    Object.defineProperty(this, ext, { configurable, value });
   }
   return <string>this[ext];
 }
@@ -65,7 +66,7 @@ export function save(this: TView | undefined, ext: string, text: string) {
 }
 const debounceFn = useDebounceFn(save, debounce);
 function setFile(this: TView, ext: string, value: string) {
-  Object.defineProperty(this, ext, { value, configurable });
+  Object.defineProperty(this, ext, { configurable, value });
   debounceFn.call(this, ext, value).catch(() => {});
 }
 const template: PropertyDescriptor = {
@@ -204,7 +205,7 @@ watchDebounced(
         () => {},
       );
   },
-  { deep, debounce },
+  { debounce, deep },
 );
 export const accessKeyId: Ref<string | undefined> = ref();
 export const config: RemovableRef<TConfig> = useStorage(
@@ -218,10 +219,10 @@ const sitemap: ComputedRef<object> = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
   urlset: {
     "@xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
-    url: views.value.map(({ url, lastmod, changefreq, priority }) => ({
-      loc: `https://${bucket.value}/${url}`,
-      lastmod,
+    url: views.value.map(({ changefreq, lastmod, priority, url }) => ({
       changefreq,
+      lastmod,
+      loc: `https://${bucket.value}/${url}`,
       priority,
     })),
   },
@@ -262,7 +263,7 @@ watch(
   views,
   (newValue) => {
     newValue.forEach((value) => {
-      Object.defineProperties(value, { html, template, style, script });
+      Object.defineProperties(value, { html, script, style, template });
     });
   },
   { flush },

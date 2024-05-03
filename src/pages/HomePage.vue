@@ -1,52 +1,52 @@
 <template lang="pug">
 q-page.column
   .col.column.q-ma-md
-    q-img.col.rounded-borders(src="~/assets/bg.jpg", no-spinner)
+    q-img.col.rounded-borders(no-spinner, src="~/assets/bg.jpg")
       q-card.absolute-center
         q-form(@submit="login")
           .row.q-col-gutter-x-md
             .col-12.col-md.min-w-300
               .text-overline WEBSITE
               q-select(
-                v-model="cred",
+                :options="creds",
+                clearable,
                 dark,
                 filled,
-                clearable,
+                hint="",
                 label="saved credentials",
-                :options="creds",
-                hint=""
+                v-model="cred"
               )
                 template(#prepend)
                   q-icon(name="save")
               q-input(
-                v-model.trim="bucket",
                 :rules="[(v) => !!v || 'Item is required']",
-                lazy-rules,
                 dark,
                 filled,
                 label="domain",
-                placeholder="example.com"
+                lazy-rules,
+                placeholder="example.com",
+                v-model.trim="bucket"
               )
                 template(#prepend)
                   q-icon(name="language")
               q-input(
-                v-model.trim="accessKeyId",
                 :rules="[(v) => !!v || 'Item is required']",
-                lazy-rules,
                 dark,
                 filled,
-                label="access key id"
+                label="access key id",
+                lazy-rules,
+                v-model.trim="accessKeyId"
               )
                 template(#prepend)
                   q-icon(name="key")
               q-input(
-                v-model.trim="secretAccessKey",
                 :rules="[(v) => !!v || 'Item is required']",
-                lazy-rules,
+                :type="isPwd ? 'password' : 'text'",
                 dark,
-                label="secret access key",
                 filled,
-                :type="isPwd ? 'password' : 'text'"
+                label="secret access key",
+                lazy-rules,
+                v-model.trim="secretAccessKey"
               )
                 template(#prepend)
                   q-icon(name="lock")
@@ -58,86 +58,87 @@ q-page.column
             .col-12.col-md.min-w-300
               .text-overline CLOUD
               q-select(
-                v-model="provider",
-                clearable,
                 :options="providers",
+                clearable,
                 dark,
                 filled,
+                hint="",
                 label="cloud provider",
-                hint=""
+                v-model="provider"
               )
                 template(#prepend)
                   q-icon(name="cloud")
               q-select(
-                v-model.trim="region",
-                use-input,
+                :disable="provider && provider.label === 'yandex'",
+                :options="regions",
+                :rules="[(v) => !!v || 'Item is required']",
+                @input-value="(val) => { region = val; }",
+                dark,
+                fill-input,
                 filled,
                 hide-selected,
-                fill-input,
                 input-debounce="0",
-                :options="regions",
                 label="region",
                 lazy-rules,
-                :rules="[(v) => !!v || 'Item is required']",
-                dark,
-                :disable="provider && provider.label === 'yandex'",
-                @input-value="(val) => { region = val; }"
+                use-input,
+                v-model.trim="region"
               )
                 template(#prepend)
                   q-icon(name="flag")
               q-input(
-                v-model.trim="endpoint",
+                :disable="!!provider",
                 dark,
                 filled,
+                hint="",
                 label="endpoint url",
-                :disable="!!provider",
-                hint=""
+                v-model.trim="endpoint"
               )
                 template(#prepend)
                   q-icon(name="link")
               q-input(
-                v-model.trim="wendpoint",
+                :disable="!!provider",
                 dark,
                 filled,
+                hint="",
                 label="website endpoint url",
-                :disable="!!provider",
-                hint=""
+                v-model.trim="wendpoint"
               )
                 template(#prepend)
                   q-icon(name="web")
-          q-toggle.q-mb-md(v-model="remember", label="remember credentials")
+          q-toggle.q-mb-md(label="remember credentials", v-model="remember")
           div
-            q-btn.full-width(label="LogIn", type="submit", color="primary")
+            q-btn.full-width(color="primary", label="LogIn", type="submit")
 </template>
 <script setup lang="ts">
 import type { S3ClientConfig } from "@aws-sdk/client-s3";
+import type { RemovableRef } from "@vueuse/core";
+import type { Ref } from "vue";
+
 import { HeadBucketCommand, S3Client } from "@aws-sdk/client-s3";
 import { FetchHttpHandler } from "@smithy/fetch-http-handler";
-import type { RemovableRef } from "@vueuse/core";
 import { set, useStorage } from "@vueuse/core";
 import { useQuasar } from "quasar";
 import { accessKeyId, rightDrawer } from "stores/app";
-import { bucket, S3, wendpoint } from "stores/s3";
-import type { Ref } from "vue";
+import { S3, bucket, wendpoint } from "stores/s3";
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 interface IRegion {
-  label: string;
-  regions: string[];
-  region: string;
   endpoint: string;
+  label: string;
+  region: string;
+  regions: string[];
   wendpoint: string;
 }
 
 interface ICred {
-  label: string;
   accessKeyId: string;
-  secretAccessKey: string;
-  region: string;
   endpoint: string;
-  wendpoint: string;
+  label: string;
   provider: string;
+  region: string;
+  secretAccessKey: string;
+  wendpoint: string;
 }
 
 const router = useRouter();
@@ -153,7 +154,9 @@ const isPwd = ref(true);
 const remember = ref(true);
 const providers: IRegion[] = [
   {
+    endpoint: "",
     label: "aws",
+    region: "us-east-1",
     regions: [
       "us-east-2",
       "us-east-1",
@@ -180,17 +183,15 @@ const providers: IRegion[] = [
       "me-south-1",
       "sa-east-1",
     ],
-    region: "us-east-1",
-    endpoint: "",
     get wendpoint() {
       return `https://s3.${region.value}.amazonaws.com`;
     },
   },
   {
-    label: "yandex",
-    regions: ["ru-central1"],
-    region: "ru-central1",
     endpoint: "https://storage.yandexcloud.net",
+    label: "yandex",
+    region: "ru-central1",
+    regions: ["ru-central1"],
     wendpoint: "https://website.yandexcloud.net",
   },
 ];
@@ -241,12 +242,12 @@ const login = async () => {
   if (!s3Client)
     try {
       s3Client = new S3Client(<S3ClientConfig>{
-        region: region.value,
-        endpoint: endpoint.value,
         credentials: {
           accessKeyId: accessKeyId.value,
           secretAccessKey: secretAccessKey.value,
         },
+        endpoint: endpoint.value,
+        region: region.value,
         requestHandler: new FetchHttpHandler({ keepAlive: false }),
       });
       set(creds, [
@@ -254,13 +255,13 @@ const login = async () => {
         ...(remember.value
           ? [
               {
-                label: bucket.value,
                 accessKeyId: accessKeyId.value,
-                secretAccessKey: secretAccessKey.value,
-                region: region.value,
                 endpoint: endpoint.value,
-                wendpoint: wendpoint.value,
+                label: bucket.value,
                 provider: provider.value?.label,
+                region: region.value,
+                secretAccessKey: secretAccessKey.value,
+                wendpoint: wendpoint.value,
               },
             ]
           : []),

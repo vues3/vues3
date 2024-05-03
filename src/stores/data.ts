@@ -1,5 +1,7 @@
-import * as mdi from "@mdi/js";
 import type { FuncKeywordDefinition, ValidateFunction } from "ajv";
+import type { ComputedRef, Ref } from "vue";
+
+import * as mdi from "@mdi/js";
 import Ajv from "ajv";
 import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
 import Data, { plainData } from "app/src/schemas/data";
@@ -17,55 +19,54 @@ import {
 } from "app/src/stores/defaults";
 import { FromSchema } from "json-schema-to-ts";
 import { uid } from "quasar";
-import type { ComputedRef, Ref } from "vue";
 import { computed, ref, watch } from "vue";
 
-export type TView = FromSchema<typeof plainView> & {
-  children: TView[];
-  parent?: TView;
-  siblings: TView[];
+export type TView = {
   branch: TView[];
-  prev?: TView;
-  next?: TView;
-  views: TView[];
-  html: Promise<string> | string;
-  htm: string;
-  js: string;
+  children: TView[];
   css: string;
-  path: string;
-  index: number;
-  name: string;
-  url: string;
   favicon: keyof typeof mdi;
-  style: Promise<string> | string;
-  script: Promise<string> | string;
-  template: Promise<string> | string;
-};
-export type TResource = FromSchema<typeof Resource> & {
-  parent?: undefined;
-  children?: undefined;
-  siblings: TView[];
-  prev?: TView;
-  next?: TView;
+  htm: string;
+  html: Promise<string> | string;
   index: number;
-};
+  js: string;
+  name: string;
+  next?: TView;
+  parent?: TView;
+  path: string;
+  prev?: TView;
+  script: Promise<string> | string;
+  siblings: TView[];
+  style: Promise<string> | string;
+  template: Promise<string> | string;
+  url: string;
+  views: TView[];
+} & FromSchema<typeof plainView>;
+export type TResource = {
+  children?: undefined;
+  index: number;
+  next?: TView;
+  parent?: undefined;
+  prev?: TView;
+  siblings: TView[];
+} & FromSchema<typeof Resource>;
 export type TSettings = FromSchema<typeof Settings>;
 export type TNavbar = FromSchema<typeof Navbar>;
-export type TData = FromSchema<
+export type TData = { content: TView[] } & FromSchema<
   typeof plainData,
   { references: [typeof Settings, typeof Resource, typeof Navbar] }
-> & { content: TView[] };
+>;
 dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uid();
 const schemas: object[] = [Resource, View, Settings, Navbar, Data];
 export const code: object = { esm };
 const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
 const ajv: Ajv = new Ajv({
-  useDefaults,
+  code,
   coerceTypes,
+  keywords,
   removeAdditional,
   schemas,
-  code,
-  keywords,
+  useDefaults,
 });
 export const validate: ValidateFunction = <ValidateFunction>(
   ajv.getSchema("urn:jsonschema:data")
@@ -101,7 +102,7 @@ const path: PropertyDescriptor = {
   get(this: TView): string {
     return this.branch
       .map(
-        ({ label, id }) =>
+        ({ id, label }) =>
           encodeURIComponent(label?.replace(" ", "_") ?? "") || id,
       )
       .slice(1)
@@ -116,7 +117,7 @@ const url: PropertyDescriptor = {
   },
 };
 const name: PropertyDescriptor = {
-  get(this: TView): string | null {
+  get(this: TView): null | string {
     return this.title ?? this.label;
   },
 };
@@ -127,27 +128,27 @@ const favicon: PropertyDescriptor = {
 };
 const fixPlain = (siblings: { value: TResource[] }) => {
   siblings.value.forEach((element) => {
-    Object.defineProperties(element, { siblings, index, prev, next });
+    Object.defineProperties(element, { index, next, prev, siblings });
   });
 };
 const fixDeep = (
-  siblings: { value: TView[]; configurable?: boolean },
-  parent: { value?: TView; configurable?: boolean } = { value: undefined },
+  siblings: { configurable?: boolean; value: TView[] },
+  parent: { configurable?: boolean; value?: TView } = { value: undefined },
 ) => {
   siblings.value.forEach((value) => {
     Object.defineProperties(value, {
-      parent,
-      siblings,
       branch,
-      path,
-      index,
-      prev,
-      next,
-      name,
-      url,
       favicon,
+      index,
+      name,
+      next,
+      parent,
+      path,
+      prev,
+      siblings,
+      url,
     });
-    fixDeep({ value: value.children, configurable }, { value, configurable });
+    fixDeep({ configurable, value: value.children }, { configurable, value });
   });
 };
 export const $: Ref<TData | undefined> = ref();
@@ -185,7 +186,7 @@ watch(
   (newValue) => {
     if (newValue) {
       ["content", "css", "js"].forEach((key) => {
-        if (!(<TView[] | TResource[]>newValue[<keyof TData>key]).length)
+        if (!(<TResource[] | TView[]>newValue[<keyof TData>key]).length)
           Reflect.defineProperty(newValue, key, { value });
       });
       validate(newValue);

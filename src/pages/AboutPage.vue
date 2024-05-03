@@ -1,15 +1,15 @@
 <template lang="pug">
 q-page.q-pa-xl
   q-timeline(layout="comfortable", side="right")
-    q-timeline-entry(title="Homepage", icon="rocket_launch")
+    q-timeline-entry(icon="rocket_launch", title="Homepage")
       template(#subtitle)
-        a(href="https://vues3.ru", target="_blank", rel="noopener noreferrer") vues3.ru
-    q-timeline-entry(title="Repository", icon="share")
+        a(href="https://vues3.ru", rel="noopener noreferrer", target="_blank") vues3.ru
+    q-timeline-entry(icon="share", title="Repository")
       template(#subtitle)
         a(
           href="https://github.com/vues3/vues3",
-          target="_blank",
-          rel="noopener noreferrer"
+          rel="noopener noreferrer",
+          target="_blank"
         ) github.com/vues3/vues3
   q-separator
   h3(style="text-align: center") GNU AFFERO GENERAL PUBLIC LICENSE
@@ -17,7 +17,7 @@ q-page.q-pa-xl
   p
     | Copyright &copy; 2007 Free Software Foundation,
     | Inc. &lt;
-    a(href="https://fsf.org/", target="_blank", rel="noopener noreferrer") https://fsf.org/
+    a(href="https://fsf.org/", rel="noopener noreferrer", target="_blank") https://fsf.org/
     | &gt;
     br
     | Everyone is permitted to copy and distribute verbatim copies
@@ -657,8 +657,8 @@ q-page.q-pa-xl
     | &lt;
     a(
       href="https://www.gnu.org/licenses/",
-      target="_blank",
-      rel="noopener noreferrer"
+      rel="noopener noreferrer",
+      target="_blank"
     ) https://www.gnu.org/licenses/
     | &gt;.
 </template>

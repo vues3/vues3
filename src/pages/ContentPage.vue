@@ -1,17 +1,17 @@
 <template lang="pug">
-q-drawer(v-if="the", v-model="rightDrawer", bordered, side="right")
+q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
   q-list
     q-expansion-item(
-      icon="account_tree",
-      label="Дерево рубрик",
       default-opened,
-      header-class="text-primary"
+      header-class="text-primary",
+      icon="account_tree",
+      label="Дерево рубрик"
     )
       v-interactive-tree(
-        v-model:selected="config.content.selected",
-        v-model:expanded="config.content.expanded",
+        :list="views",
         :tree="$.content",
-        :list="views"
+        v-model:expanded="config.content.expanded",
+        v-model:selected="config.content.selected"
       )
     q-separator
     q-card(flat)
@@ -22,29 +22,29 @@ q-drawer(v-if="the", v-model="rightDrawer", bordered, side="right")
           q-item-label Настройки слоя
       q-card-section
         q-select(
-          v-model="the.theme",
-          label="Цветовая тема",
           :options="themes",
           clearable,
-          hint="the.theme"
+          hint="the.theme",
+          label="Цветовая тема",
+          v-model="the.theme"
         )
           template(#prepend)
             q-icon(name="mdi-theme-light-dark")
         .q-pt-md
           q-list
-            q-item(v-ripple, tag="label")
+            q-item(tag="label", v-ripple)
               q-item-section(avatar)
                 q-checkbox(v-model="the.full")
               q-item-section
                 q-item-label Полный экран
                 q-item-label(caption) the.full
-            q-item(v-ripple, tag="label")
+            q-item(tag="label", v-ripple)
               q-item-section(avatar)
                 q-checkbox(v-model="the.setup")
               q-item-section
                 q-item-label script setup
                 q-item-label(caption) the.setup
-            q-item(v-ripple, tag="label")
+            q-item(tag="label", v-ripple)
               q-item-section(avatar)
                 q-checkbox(v-model="the.scoped")
               q-item-section
@@ -59,135 +59,135 @@ q-drawer(v-if="the", v-model="rightDrawer", bordered, side="right")
           q-item-label Настройки SEO
       q-card-section
         q-select(
-          v-model="the.type",
           :options="types",
-          label="Тип содержимого страницы",
           clearable,
-          hint="the.type"
+          hint="the.type",
+          label="Тип содержимого страницы",
+          v-model="the.type"
         )
         q-input(
-          v-model.trim="the.title",
+          hint="the.title",
           label="Заголовок страницы",
-          hint="the.title"
+          v-model.trim="the.title"
         )
         q-input(
-          v-model.trim="the.description",
-          type="textarea",
           autogrow,
+          hint="the.description",
           label="Описание страницы",
-          hint="the.description"
+          type="textarea",
+          v-model.trim="the.description"
         )
         q-select(
-          v-model.trim="the.keywords",
+          hide-dropdown-icon,
+          hint="the.keywords",
+          label="Ключевые слова",
           multiple,
-          use-chips,
-          use-input,
           new-value-mode="add",
           stack-label,
-          hide-dropdown-icon,
-          label="Ключевые слова",
-          hint="the.keywords"
+          use-chips,
+          use-input,
+          v-model.trim="the.keywords"
         )
         q-input(
-          v-model.trim="loc",
-          prefix="/",
+          hint="the.loc",
           label="Постоянная ссылка",
+          prefix="/",
           type="url",
-          hint="the.loc"
+          v-model.trim="loc"
         )
         q-select(
-          v-model="the.changefreq",
           :options="changefreq",
+          clearable,
+          hint="the.changefreq",
           label="Частота обновления",
-          clearable,
-          hint="the.changefreq"
+          v-model="the.changefreq"
         )
         q-input(
-          v-model.number="the.priority",
+          hint="the.priority",
           label="Приоритет",
-          type="number",
-          min="0",
           max="1",
+          min="0",
           step="0.1",
-          hint="the.priority"
+          type="number",
+          v-model.number="the.priority"
         )
         q-input(
-          v-model.trim="the.icon",
-          label="Иконка",
           clearable,
-          hint="the.icon"
+          hint="the.icon",
+          label="Иконка",
+          v-model.trim="the.icon"
         )
           template(#prepend)
             q-icon.cursor-pointer(:name="the.icon ?? 'mdi-tray-arrow-up'")
               q-popup-proxy.column.items-center.justify-center(v-model="show")
                 q-input.q-ma-md(
-                  v-model="filter",
-                  label="Поиск...",
                   clearable,
-                  dense
+                  dense,
+                  label="Поиск...",
+                  v-model="filter"
                 )
                 q-icon-picker(
-                  v-model="the.icon",
-                  v-model:model-pagination="pagination",
                   :filter="filter",
                   :icons="icons",
+                  dense,
                   tooltips,
-                  dense
+                  v-model="the.icon",
+                  v-model:model-pagination="pagination"
                 )
         q-input(
-          v-model.trim="the.alt",
-          type="textarea",
           autogrow,
+          hint="the.alt",
           label="Описание картинки",
-          hint="the.alt"
+          type="textarea",
+          v-model.trim="the.alt"
         )
         q-img.q-mt-md.rounded-borders(
-          v-if="the.image",
+          :ratio="16 / 9",
           :src="`${base}${the.image}`",
-          :ratio="16 / 9"
+          v-if="the.image"
         )
           q-btn.all-pointer-events.absolute(
-            size="xs",
+            @click="the.image = null",
+            color="white",
+            dense,
             icon="close",
             round,
-            color="white",
-            text-color="black",
-            dense,
+            size="xs",
             style="top: 8px; right: 8px",
-            @click="the.image = null"
+            text-color="black"
           )
           .absolute-bottom.text-center the.image
           template(#error)
             .absolute-full.flex-center.flex
               q-btn(
-                label="Загрузить картинку",
+                @click="click",
                 color="primary",
-                @click="click"
+                label="Загрузить картинку"
               )
-        q-img.q-mt-md.rounded-borders(v-if="!the.image", :ratio="16 / 9")
+        q-img.q-mt-md.rounded-borders(:ratio="16 / 9", v-if="!the.image")
           .absolute-full.flex-center.flex
-            q-btn(label="Загрузить картинку", color="primary", @click="click")
+            q-btn(@click="click", color="primary", label="Загрузить картинку")
 q-page.column.full-height(v-if="the")
   q-tabs.text-grey(
-    v-model="config.content.tab",
-    dense,
     active-color="primary",
-    indicator-color="primary",
     align="justify",
-    narrow-indicator
+    dense,
+    indicator-color="primary",
+    narrow-indicator,
+    v-model="config.content.tab"
   )
-    q-tab(name="wysiwyg", label="wysiwyg")
-    q-tab(name="template", label="template")
-    q-tab(name="script", :label="`script${the.setup ? ' setup' : ''}`")
-    q-tab(name="style", :label="`style${the.scoped ? ' scoped' : ''}`")
+    q-tab(label="wysiwyg", name="wysiwyg")
+    q-tab(label="template", name="template")
+    q-tab(:label="`script${the.setup ? ' setup' : ''}`", name="script")
+    q-tab(:label="`style${the.scoped ? ' scoped' : ''}`", name="style")
   q-separator
   q-tab-panels.full-width.col(v-model="config.content.tab")
     q-tab-panel.column(name="wysiwyg")
       Suspense
         v-wysiwyg.full-width.col.column(
           :key="the.id",
-          v-model="the.html",
-          @vue:unmounted="onUnmounted('htm', 'template')"
+          @vue:unmounted="onUnmounted('htm', 'template')",
+          v-model="the.html"
         )
         template(#fallback)
           q-inner-loading(showing)
@@ -196,8 +196,8 @@ q-page.column.full-height(v-if="the")
       Suspense
         v-source-code.col(
           :key="the.id",
-          v-model="the.template",
-          @vue:unmounted="onUnmounted('htm', 'template')"
+          @vue:unmounted="onUnmounted('htm', 'template')",
+          v-model="the.template"
         )
         template(#fallback)
           q-inner-loading(showing)
@@ -206,9 +206,9 @@ q-page.column.full-height(v-if="the")
       Suspense
         v-source-code.col(
           :key="the.id",
-          v-model="the.script",
+          @vue:unmounted="onUnmounted('js', 'script')",
           lang="javascript",
-          @vue:unmounted="onUnmounted('js', 'script')"
+          v-model="the.script"
         )
         template(#fallback)
           q-inner-loading(showing)
@@ -217,9 +217,9 @@ q-page.column.full-height(v-if="the")
       Suspense
         v-source-code.col(
           :key="the.id",
-          v-model="the.style",
+          @vue:unmounted="onUnmounted('css', 'style')",
           lang="css",
-          @vue:unmounted="onUnmounted('css', 'style')"
+          v-model="the.style"
         )
         template(#fallback)
           q-inner-loading(showing)
@@ -229,6 +229,10 @@ q-page.column.full-height.bg-light(v-else)
     q-spinner-hourglass
 </template>
 <script setup lang="ts">
+import type { QVueGlobals } from "quasar";
+import type { TView } from "stores/data";
+import type { ComputedRef, Ref, WritableComputedRef } from "vue";
+
 import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
 import { useFileDialog } from "@vueuse/core";
 import changefreq from "assets/changefreq.json";
@@ -237,10 +241,8 @@ import types from "assets/types.json";
 import VInteractiveTree from "components/VInteractiveTree.vue";
 import VSourceCode from "components/VSourceCode.vue";
 import VWysiwyg from "components/VWysiwyg.vue";
-import type { QVueGlobals } from "quasar";
 import { useQuasar } from "quasar";
 import { config, putImage, rightDrawer, save } from "stores/app";
-import type { TView } from "stores/data";
 import { $, views } from "stores/data";
 import {
   accept,
@@ -253,7 +255,6 @@ import {
   reset,
 } from "stores/defaults";
 import { base } from "stores/s3";
-import type { ComputedRef, Ref, WritableComputedRef } from "vue";
 import { computed, ref, watch } from "vue";
 
 const $q: QVueGlobals = useQuasar();
@@ -270,15 +271,15 @@ const the: ComputedRef<TView | undefined> = computed(
 const onUnmounted = async (ext: string, key: keyof TView) => {
   save.call(the.value, ext, <string>await the.value?.[key]);
 };
-const loc: WritableComputedRef<string | null> = computed({
-  get(): string | null {
+const loc: WritableComputedRef<null | string> = computed({
+  get(): null | string {
     return the.value?.loc ?? null;
   },
-  set(value: string | null) {
+  set(value: null | string) {
     if (the.value) the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
   },
 });
-const { files, open } = useFileDialog({ multiple, accept, capture, reset });
+const { files, open } = useFileDialog({ accept, capture, multiple, reset });
 const click = () => {
   open();
 };

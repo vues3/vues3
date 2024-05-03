@@ -1,69 +1,70 @@
 <template lang="pug">
-q-btn-group.q-mx-xs(spread, flat)
-  q-btn(icon="note", @click="newView")
-  q-btn(icon="delete", @click="deleteView")
-  q-btn(v-if="tree", icon="chevron_left", @click="leftView")
-  q-btn(v-if="tree", icon="chevron_right", @click="rightView")
-  q-btn(icon="expand_more", @click="downView")
-  q-btn(icon="expand_less", @click="upView")
+q-btn-group.q-mx-xs(flat, spread)
+  q-btn(@click="newView", icon="note")
+  q-btn(@click="deleteView", icon="delete")
+  q-btn(@click="leftView", icon="chevron_left", v-if="tree")
+  q-btn(@click="rightView", icon="chevron_right", v-if="tree")
+  q-btn(@click="downView", icon="expand_more")
+  q-btn(@click="upView", icon="expand_less")
 .scroll.col
   q-tree.q-ma-xs(
-    ref="qtree",
-    :selected,
     :expanded,
     :nodes,
-    node-key="id",
-    no-selection-unset,
-    accordion,
+    :selected,
+    @update:expanded="updateExpanded($event)",
     @update:selected="updateSelected($event)",
-    @update:expanded="updateExpanded($event)"
+    accordion,
+    no-selection-unset,
+    node-key="id",
+    ref="qtree"
   )
     template(#default-header="prop")
       .row.no-wrap.full-width.items-center(
         @dblclick="prop.node.contenteditable = true"
       )
-        q-checkbox.q-mr-xs(v-model="prop.node.enabled", dense)
+        q-checkbox.q-mr-xs(dense, v-model="prop.node.enabled")
         q-input.full-width.min-w-96(
-          v-model.trim="prop.node[type === 'text' ? 'label' : type]",
-          dense,
+          :bg-color="prop.node.id === selected ? 'primary' : undefined",
           :readonly="!prop.node.contenteditable",
           :type,
-          outlined,
-          :bg-color="prop.node.id === selected ? 'primary' : undefined",
           @click.stop="updateSelected(prop.node.id)",
-          @keyup.enter="prop.node.contenteditable = false"
+          @keyup.enter="prop.node.contenteditable = false",
+          dense,
+          outlined,
+          v-model.trim="prop.node[type === 'text' ? 'label' : type]"
         )
 </template>
 <script setup lang="ts">
 import type { QInputProps, QTree, QTreeNode, QVueGlobals } from "quasar";
-import { uid, useQuasar } from "quasar";
 import type { TResource, TView } from "stores/data";
-import { cancel, immediate, persistent } from "stores/defaults";
 import type { ComputedRef, Ref } from "vue";
+
+import { uid, useQuasar } from "quasar";
+import { cancel, immediate, persistent } from "stores/defaults";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 
 interface IProps {
-  selected?: string;
-  type?: QInputProps["type"];
   expanded?: string[];
+  list: TResource[] | TView[];
+  selected?: string;
   tree?: TView[];
-  list: TView[] | TResource[];
+  type?: QInputProps["type"];
 }
 interface IEmits {
   (e: "update:expanded", value: readonly string[]): void;
   (e: "update:selected", value: string | undefined): void;
 }
 const props: IProps = withDefaults(defineProps<IProps>(), {
-  selected: "",
-  type: "text",
   expanded: (): string[] => [],
-  tree: undefined,
   list: (): TView[] => [],
+  selected: "",
+  tree: undefined,
+  type: "text",
 });
 const nodes: ComputedRef<QTreeNode[]> = computed(
   () => <QTreeNode[]>(props.tree ?? props.list),
 );
-const the: ComputedRef<TView | TResource | null | undefined> = computed(() =>
+const the: ComputedRef<TResource | TView | null | undefined> = computed(() =>
   props.list.length
     ? props.list.find(({ id }) => id === props.selected) ?? null
     : undefined,
@@ -81,8 +82,8 @@ const title: string = "Подтверждение";
 const message: string = "Вы действительно хотите удалить?";
 const deleteView = () => {
   if (the.value) {
-    const { parent, prev, next, siblings, index } = the.value;
-    $q.dialog({ title, message, cancel, persistent }).onOk(() => {
+    const { index, next, parent, prev, siblings } = the.value;
+    $q.dialog({ cancel, message, persistent, title }).onOk(() => {
       let id: string | undefined;
       switch (true) {
         case !!next:
@@ -127,7 +128,7 @@ const downView = () => {
 };
 const rightView = () => {
   if (the.value) {
-    const { index, siblings, prev } = the.value;
+    const { index, prev, siblings } = the.value;
     if (prev) {
       const { children = [], id } = prev;
       prev.children = [...children, ...siblings.splice(index, 1)];
@@ -140,11 +141,11 @@ const leftView = () => {
     const { index, parent } = the.value;
     if (parent) {
       const {
+        children,
+        id,
         index: grandindex,
         parent: grandparent,
         siblings,
-        children,
-        id,
       } = parent;
       if (grandparent) {
         qtree.value?.setExpanded(id, false);
@@ -156,7 +157,7 @@ const leftView = () => {
 const value: boolean = false;
 const newView = () => {
   if (the.value) {
-    const { parent, children, index, siblings } = the.value;
+    const { children, index, parent, siblings } = the.value;
     const id: string = uid();
     switch (true) {
       case !!parent:

@@ -2,62 +2,62 @@
 v-head
   title {{ the?.name || " " }}
   link(
-    v-for="a in theCSS",
+    :href="a.url",
     :key="a.id",
     crossorigin="",
     rel="stylesheet",
-    :href="a.url"
+    v-for="a in theCSS"
   )
   component(
     :is="'script'",
-    v-for="a in theJS",
     :key="a.id",
+    :src="a.url",
     crossorigin="",
     deffer,
-    :src="a.url"
+    v-for="a in theJS"
   )
   meta(
-    v-if="the?.description",
+    :content="the?.description",
     name="description",
-    :content="the?.description"
+    v-if="the?.description"
   )
-  meta(v-if="the?.name", property="og:title", :content="the?.name")
-  meta(v-if="the?.type", property="og:type", :content="the?.type")
-  meta(v-if="canonical", property="og:url", :content="canonical")
-  meta(v-if="the?.image", property="og:image", :content="the?.image")
-  meta(v-if="the?.alt", property="og:image:alt", :content="the?.alt")
+  meta(:content="the?.name", property="og:title", v-if="the?.name")
+  meta(:content="the?.type", property="og:type", v-if="the?.type")
+  meta(:content="canonical", property="og:url", v-if="canonical")
+  meta(:content="the?.image", property="og:image", v-if="the?.image")
+  meta(:content="the?.alt", property="og:image:alt", v-if="the?.alt")
   link(
+    :href="`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='${mdi[the?.favicon ?? 'mdiWeb']}'/></svg>`",
     :key="favicon",
     rel="icon",
-    :href="`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='${mdi[the?.favicon ?? 'mdiWeb']}'/></svg>`",
     type="image/svg+xml"
   )
-  link(v-if="canonical", rel="canonical", :href="canonical")
+  link(:href="canonical", rel="canonical", v-if="canonical")
   component(:is="'style'", v-if="$?.style") {{ $.style }}
   component(:is="'script'", v-if="$?.script") {{ $.script }}
   meta(
-    v-if="$?.settings?.yandex",
+    :content="$.settings?.yandex",
     name="yandex-verification",
-    :content="$.settings?.yandex"
+    v-if="$?.settings?.yandex"
   )
   meta(
-    v-if="$?.settings?.google",
+    :content="$.settings?.google",
     name="google-site-verification",
-    :content="$.settings?.google"
+    v-if="$?.settings?.google"
   )
 .drawer.h-dvh
   input#drawer.drawer-toggle(
-    v-model="drawer",
+    aria-labelledby="#drawer",
     type="checkbox",
-    aria-labelledby="#drawer"
+    v-model="drawer"
   )
   .drawer-content.snap-y.snap-mandatory.overflow-y-auto.scroll-smooth(
     @scroll.passive="start"
   )
     .z-40(
-      v-if="views[0]?.enabled",
       :class="[...(ready ? [] : $.navbar?.scroll ?? []), ...($.navbar?.classes ?? [])]",
-      :data-theme="$.navbar?.theme"
+      :data-theme="$.navbar?.theme",
+      v-if="views[0]?.enabled"
     )
       .navbar
         Suspense
@@ -70,8 +70,8 @@ v-head
     )
       .col-start-1.row-start-1.flex
         .prose.w-full.max-w-none.flex-auto.text-sm(
-          class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
-          :data-theme="views[0]?.theme"
+          :data-theme="views[0]?.theme",
+          class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl"
         )
           Suspense
             component(:is="root", :the="views[0]")
@@ -82,15 +82,16 @@ v-head
           path(:d="mdi.mdiClose")
 </template>
 <script setup lang="ts">
+import type { TResource, TView } from "app/src/stores/data";
+import type { ComputedRef, Ref } from "vue";
+import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
+
 import * as mdi from "@mdi/js";
 import { useTimeout } from "@vueuse/core";
-import type { TResource, TView } from "app/src/stores/data";
 import { $, views } from "app/src/stores/data";
 import { controls } from "app/src/stores/defaults";
 import { uid } from "quasar";
-import type { ComputedRef, Ref } from "vue";
 import { computed, ref } from "vue";
-import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
 
 import { favicon, getAsyncComponent } from "./stores/monolit";
@@ -114,7 +115,7 @@ const the: ComputedRef<TView | undefined> = computed(() =>
   views.value.find(({ id }) => id === route.name),
 );
 const drawer: Ref<boolean> = ref(false);
-const canonical: ComputedRef<string | false> = computed(
+const canonical: ComputedRef<false | string> = computed(
   () =>
     the.value?.url.constructor === String &&
     `${window.location.origin}/${the.value.url}`,

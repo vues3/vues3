@@ -1,4 +1,4 @@
-import { fileURLToPath, URL } from "node:url";
+import type { PluginOption } from "vite";
 
 import { templateCompilerOptions } from "@tresjs/core";
 import { Extractor } from "@unocss/core";
@@ -6,7 +6,7 @@ import extractorPug from "@unocss/extractor-pug";
 import UnoCSS from "@unocss/vite";
 // import legacy from "@vitejs/plugin-legacy";
 import vue from "@vitejs/plugin-vue";
-import type { PluginOption } from "vite";
+import { URL, fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 
 const extractors: Extractor[] = [extractorPug()];
@@ -32,4 +32,4 @@ const build: object = { manifest, outDir, rollupOptions };
 const define: object = {
   __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
 };
-export default defineConfig({ plugins, resolve, build, define });
+export default defineConfig({ build, define, plugins, resolve });

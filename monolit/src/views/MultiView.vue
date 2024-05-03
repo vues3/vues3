@@ -1,17 +1,17 @@
 <template lang="pug">
 .flex.snap-start(
-  v-for="a in siblings",
+  :class="{ 'min-h-full': a.full }",
   :id="a.id",
   :key="a.id",
   ref="refs",
-  v-intersection-observer="[callback,{root,rootMargin,threshold}]",
-  :class="{ 'min-h-full': a.full }"
+  v-for="a in siblings",
+  v-intersection-observer="[callback,{root,rootMargin,threshold}]"
 )
   .prose.w-full.max-w-none.flex-auto.text-sm(
-    v-cloak,
-    class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
     :data-theme="a.theme",
-    :role="a.id === the?.id ? 'main' : undefined"
+    :role="a.id === the?.id ? 'main' : undefined",
+    class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
+    v-cloak
   )
     Suspense
       component(
@@ -21,9 +21,12 @@
       )
 </template>
 <script setup lang="ts">
+import type { TView } from "app/src/stores/data";
+import type { ComputedRef, Ref } from "vue";
+import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
+
 import { vIntersectionObserver } from "@vueuse/components";
 import { useParentElement } from "@vueuse/core";
-import type { TView } from "app/src/stores/data";
 import { views } from "app/src/stores/data";
 import {
   behavior,
@@ -34,9 +37,7 @@ import {
   zoomable,
 } from "app/src/stores/defaults";
 import GLightbox from "glightbox";
-import type { ComputedRef, Ref } from "vue";
 import { computed, ref, watch } from "vue";
-import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
 
 import { getAsyncComponent, selector } from "../stores/monolit";
@@ -92,7 +93,7 @@ watch(
   siblings,
   async () => {
     await all();
-    GLightbox({ loop, zoomable, selector });
+    GLightbox({ loop, selector, zoomable });
   },
   { immediate },
 );

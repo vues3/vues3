@@ -15,8 +15,8 @@ export default route((/* { store, ssrContext } */) => {
     createHistory = createWebHistory;
   else createHistory = createWebHashHistory;
   return createRouter({
-    scrollBehavior: () => ({ left: 0, top: 0 }),
-    routes,
     history: createHistory(process.env.VUE_ROUTER_BASE),
+    routes,
+    scrollBehavior: () => ({ left: 0, top: 0 }),
   });
 });

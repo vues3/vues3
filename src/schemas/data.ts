@@ -4,50 +4,50 @@ const $id = "urn:jsonschema:data";
 const additionalProperties = false;
 const nullable = true;
 const content = <const>{
-  type: "array",
   default: [{}],
   items: { $ref: "urn:jsonschema:view" },
+  type: "array",
 };
 const properties = <const>{
-  settings: {
-    type: "object",
-    nullable,
-    $ref: "urn:jsonschema:settings",
-    default: {},
-  },
-  style: { nullable, type: "string", default: "" },
-  script: { nullable, type: "string", default: "" },
   css: {
-    type: "array",
     default: [{}],
     items: { $ref: "urn:jsonschema:resource" },
+    type: "array",
   },
   js: {
-    type: "array",
     default: [{}],
     items: { $ref: "urn:jsonschema:resource" },
+    type: "array",
   },
   navbar: {
-    type: "object",
-    nullable,
     $ref: "urn:jsonschema:navbar",
     default: {},
+    nullable,
+    type: "object",
   },
+  script: { default: "", nullable, type: "string" },
+  settings: {
+    $ref: "urn:jsonschema:settings",
+    default: {},
+    nullable,
+    type: "object",
+  },
+  style: { default: "", nullable, type: "string" },
 };
 const type = "object";
 
 const plainData = (<const>{
   $id,
-  type,
-  properties,
   additionalProperties,
+  properties,
+  type,
 }) satisfies JSONSchema;
 
 const Data = (<const>{
   $id,
-  type,
-  properties: { content, ...properties },
   additionalProperties,
+  properties: { content, ...properties },
+  type,
 }) satisfies JSONSchema;
 
 export { plainData };

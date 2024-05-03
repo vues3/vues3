@@ -5,12 +5,10 @@ const additionalProperties = false;
 const nullable = true;
 const id = "uuid";
 const dynamicDefaults = { id };
-const children = <const>{ type: "array", default: [], items: { $ref: "#" } };
+const children = <const>{ default: [], items: { $ref: "#" }, type: "array" };
 const properties = <const>{
-  id: { type: "string" },
+  alt: { default: null, nullable, type: "string" },
   changefreq: {
-    type: "string",
-    nullable,
     default: null,
     enum: [
       "always",
@@ -22,22 +20,28 @@ const properties = <const>{
       "never",
       null,
     ],
+    nullable,
+    type: "string",
   },
-  description: { type: "string", nullable, default: null },
-  icon: { type: "string", nullable, default: null },
-  image: { type: "string", nullable, default: null },
+  contenteditable: { default: false, type: "boolean" },
+  description: { default: null, nullable, type: "string" },
+  enabled: { default: true, type: "boolean" },
+  full: { default: true, type: "boolean" },
+  icon: { default: null, nullable, type: "string" },
+  id: { type: "string" },
+  image: { default: null, nullable, type: "string" },
   keywords: {
-    type: "array",
     default: [],
     items: { type: "string" },
+    type: "array",
   },
-  label: { type: "string", nullable, default: null },
-  lastmod: { type: "string", nullable, default: null },
-  loc: { type: "string", nullable, default: null },
-  priority: { type: "number", nullable, default: null, minimum: 0, maximum: 1 },
+  label: { default: null, nullable, type: "string" },
+  lastmod: { default: null, nullable, type: "string" },
+  loc: { default: null, nullable, type: "string" },
+  priority: { default: null, maximum: 1, minimum: 0, nullable, type: "number" },
+  scoped: { default: true, type: "boolean" },
+  setup: { default: true, type: "boolean" },
   theme: {
-    type: "string",
-    nullable,
     default: null,
     enum: [
       "light",
@@ -74,12 +78,11 @@ const properties = <const>{
       "sunset",
       null,
     ],
-  },
-  title: { type: "string", nullable, default: null },
-  enabled: { type: "boolean", default: true },
-  type: {
-    type: "string",
     nullable,
+    type: "string",
+  },
+  title: { default: null, nullable, type: "string" },
+  type: {
     default: null,
     enum: [
       "article",
@@ -96,26 +99,23 @@ const properties = <const>{
       "video.other",
       null,
     ],
+    nullable,
+    type: "string",
   },
-  alt: { type: "string", nullable, default: null },
-  full: { type: "boolean", default: true },
-  setup: { type: "boolean", default: true },
-  scoped: { type: "boolean", default: true },
-  contenteditable: { type: "boolean", default: false },
 };
 const type = "object";
 
 export const plainView = (<const>{
   $id,
-  type,
-  properties,
   additionalProperties,
+  properties,
+  type,
 }) satisfies JSONSchema;
 
 export default <const>{
   $id,
-  dynamicDefaults,
-  type,
-  properties: { children, ...properties },
   additionalProperties,
+  dynamicDefaults,
+  properties: { children, ...properties },
+  type,
 };

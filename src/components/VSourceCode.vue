@@ -1,34 +1,33 @@
 <template lang="pug">
 v-ace-editor(
-  v-if="value !== null",
-  ref="editor",
-  :value,
   :lang,
   :options,
+  :value,
   @update:value="$emit('update:modelValue', $event)",
-  @vue:mounted="beautify(value); nextTick(editor?.focus)"
+  @vue:mounted="beautify(value); nextTick(editor?.focus)",
+  ref="editor",
+  v-if="value !== null"
 )
 </template>
 <script setup lang="ts">
-// eslint-disable-next-line import/no-duplicates
-import "vue3-ace-editor";
-import "ace-builds/esm-resolver";
-
-import { css, html, js } from "js-beautify";
 import type { Ref } from "vue";
-import { nextTick, ref } from "vue";
-// eslint-disable-next-line no-duplicate-imports, import/no-duplicates
+// eslint-disable-next-line perfectionist/sort-imports
 import { VAceEditor } from "vue3-ace-editor";
 
+// eslint-disable-next-line perfectionist/sort-imports
+import "ace-builds/esm-resolver";
+import { css, html, js } from "js-beautify";
+import { nextTick, ref } from "vue";
+
 interface IProps {
-  options?: object;
   lang?: string;
-  modelValue: Promise<string> | string | null;
+  modelValue: Promise<string> | null | string;
+  options?: object;
 }
 const props: IProps = withDefaults(defineProps<IProps>(), {
-  options: (): object => ({}),
   lang: "html",
   modelValue: "",
+  options: (): object => ({}),
 });
 const emit = defineEmits(["update:modelValue"]);
 const beautify = (value: string) => {
@@ -47,5 +46,5 @@ const beautify = (value: string) => {
   emit("update:modelValue", code);
 };
 const editor: Ref<HTMLElement | undefined> = ref();
-const value: Ref<string | null> = ref(await props.modelValue);
+const value: Ref<null | string> = ref(await props.modelValue);
 </script>

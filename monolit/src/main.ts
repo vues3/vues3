@@ -1,16 +1,20 @@
-import "@unocss/reset/tailwind.css";
-import "daisyui/dist/full.css";
-import "glightbox/dist/css/glightbox.css";
-import "virtual:uno.css";
-import "./style.sass";
+import type { TData, TSettings } from "app/src/stores/data";
+import type { App } from "vue";
+import type {
+  RouteComponent,
+  RouteRecordRaw,
+  Router,
+  RouterHistory,
+} from "vue-router";
+import type { Config } from "yandex-metrika-vue3/src/types";
 
 import * as mdi from "@mdi/js";
 import Tres from "@tresjs/core";
 import { createHead } from "@unhead/vue";
 import { Head } from "@unhead/vue/components";
+import "@unocss/reset/tailwind.css";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
-import type { TData, TSettings } from "app/src/stores/data";
 import { $, views } from "app/src/stores/data";
 import {
   autoPrefix,
@@ -19,22 +23,17 @@ import {
   once,
 } from "app/src/stores/defaults";
 import defaults from "app/uno.config";
-import type { App } from "vue";
+import "daisyui/dist/full.css";
+import "glightbox/dist/css/glightbox.css";
+import "virtual:uno.css";
 import { createApp, watch } from "vue";
 import VueGtag from "vue-gtag";
-import type {
-  RouteComponent,
-  Router,
-  RouteRecordRaw,
-  RouterHistory,
-} from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
 import { initYandexMetrika } from "yandex-metrika-vue3";
-import type { Config } from "yandex-metrika-vue3/src/types";
 
-import vueApp from "@/App.vue";
-
+import vueApp from "./App.vue";
 import { fix } from "./stores/monolit";
+import "./style.sass";
 
 window.console.info(
   "👨‍🚀",
@@ -42,7 +41,7 @@ window.console.info(
   `ver:${__APP_VERSION__}`,
   "https://vues3.ru",
 );
-initUnocssRuntime({ autoPrefix, defaults, bypassDefined });
+initUnocssRuntime({ autoPrefix, bypassDefined, defaults });
 const app: App = createApp(vueApp);
 app.config.globalProperties.mdi = mdi;
 (async () => {
@@ -59,7 +58,7 @@ const router: Router = createRouter({ history, routes });
 watch(
   views,
   (value) => {
-    value.forEach(({ path, id: name, loc }) => {
+    value.forEach(({ id: name, loc, path }) => {
       const alias: string = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
       router.addRoute({
         name,
@@ -76,10 +75,10 @@ watch(
     });
     const path: string = "/:catchAll(.*)*";
     router.addRoute({
-      path,
       component(): RouteComponent {
         return import("@/views/NotFoundView.vue");
       },
+      path,
     });
     router.replace(router.currentRoute.value.fullPath).catch(() => {});
   },
@@ -87,10 +86,10 @@ watch(
 );
 watch(
   () => <TSettings>$.value?.settings,
-  ({ metrika, analytics }) => {
+  ({ analytics, metrika }) => {
     if (metrika) {
       const id: string = metrika;
-      app.use(initYandexMetrika, <Config>{ id, router, env });
+      app.use(initYandexMetrika, <Config>{ env, id, router });
     }
     if (analytics) {
       const id: string = analytics;

@@ -1,42 +1,41 @@
 <template lang="pug">
-q-dialog(v-model="model", full-width, full-height, persistent)
+q-dialog(full-height, full-width, persistent, v-model="model")
   q-card.column.w-full
     q-card-section.row.q-pb-none.items-center
       .text-h6 Выбор компонента для вставки
       q-space
-      q-btn(v-close-popup, icon="close", flat, round, dense)
+      q-btn(dense, flat, icon="close", round, v-close-popup)
     q-card-section
       q-select(
-        v-model="html",
-        filled,
         :options,
-        label="Компонент",
         emit-value,
-        map-options
+        filled,
+        label="Компонент",
+        map-options,
+        v-model="html"
       )
     q-card-section.col.column.w-full
-      q-card.col.column.w-full(flat, bordered)
+      q-card.col.column.w-full(bordered, flat)
         q-card-section.col.column.w-full
-          // eslint-disable vue/no-v-html
           .col.prose.column.q-pa-xl.w-full.max-w-none.overflow-auto(
             class="[&>*]:m-auto [&>*]:!min-h-fit [&>*]:min-w-fit",
             v-html="html"
           )
-          // eslint-enable vue/no-v-html
     q-card-actions.text-primary(align="right")
-      q-btn(v-close-popup, flat, label="Отмена")
+      q-btn(flat, label="Отмена", v-close-popup)
       q-btn(
-        v-close-popup,
+        @click="editor?.runCmd('insertHTML', html_beautify(html))",
         flat,
         label="Ok",
-        @click="editor?.runCmd('insertHTML', html_beautify(html))"
+        v-close-popup
       )
 </template>
 <script setup lang="ts">
-import options from "assets/templates.json";
-import { html_beautify } from "js-beautify";
 import type { QEditor } from "quasar";
 import type { ModelRef, Ref } from "vue";
+
+import options from "assets/templates.json";
+import { html_beautify } from "js-beautify";
 import { ref, watch } from "vue";
 
 defineProps<{

@@ -2,39 +2,39 @@
 q-layout(view="hHh Lpr lff")
   q-header
     q-toolbar
-      q-btn(flat, dense, round, icon="menu", @click="leftDrawer = !leftDrawer")
+      q-btn(@click="leftDrawer = !leftDrawer", dense, flat, icon="menu", round)
       q-toolbar-title
         q-avatar(icon="rocket_launch", size="xl")
         | Vue.S3
       q-btn(
-        v-if="rightDrawer !== undefined",
-        flat,
+        @click="rightDrawer = !rightDrawer",
         dense,
-        round,
+        flat,
         icon="more_vert",
-        @click="rightDrawer = !rightDrawer"
+        round,
+        v-if="rightDrawer !== undefined"
       )
   q-drawer(
-    v-model="leftDrawer",
-    show-if-above,
-    mini-to-overlay,
-    bordered,
     :mini="miniState",
-    side="left",
-    @mouseover="miniState = false",
+    @blur="miniState = true",
     @focus="miniState = false",
     @mouseout="miniState = true",
-    @blur="miniState = true"
+    @mouseover="miniState = false",
+    bordered,
+    mini-to-overlay,
+    show-if-above,
+    side="left",
+    v-model="leftDrawer"
   )
     q-list
       q-item(
-        v-for="item in items",
         :key="item.title",
+        v-for="item in items",
         v-bind="item",
-        clickable,
-        :to="item.to"
+        :to="item.to",
+        clickable
       )
-        q-item-section(v-if="item.icon", avatar)
+        q-item-section(avatar, v-if="item.icon")
           q-icon(:name="item.icon")
         q-item-section
           q-item-label {{ item.title }}

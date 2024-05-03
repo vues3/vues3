@@ -1,45 +1,45 @@
 <template lang="pug">
 div
   q-editor.col.column.full-width(
-    ref="editor",
-    paragraph-tag="div",
-    :model-value="htm",
+    :definitions,
     :dense="$q.screen.lt.md",
-    :toolbar,
     :fonts,
+    :model-value="htm",
+    :toolbar,
+    @drop="capture",
+    @paste="capture",
+    @update:model-value="$emit('update:modelValue', $event)",
+    @vue:mounted="nextTick(editor?.focus)",
     content-class="col prose max-w-none full-width text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
     flat,
+    paragraph-tag="div",
     placeholder="Добавьте контент на вашу страницу...",
-    :definitions,
-    @paste="capture",
-    @drop="capture",
-    @update:model-value="$emit('update:modelValue', $event)",
-    @vue:mounted="nextTick(editor?.focus)"
+    ref="editor"
   )
-  v-template-dialog(v-model="showTemplateDialog", :editor)
-  v-link-dialog(v-model="showLinkDialog", :editor)
+  v-template-dialog(:editor, v-model="showTemplateDialog")
+  v-link-dialog(:editor, v-model="showLinkDialog")
 </template>
 <script setup lang="ts">
-import "daisyui/dist/full.css";
+import type {
+  QEditor,
+  QEditorCommand,
+  QVueGlobals,
+  QuasarIconSetEditor,
+  QuasarLanguageEditorLabel,
+  StringDictionary,
+} from "quasar";
+import type { Ref } from "vue";
 
 import { useFileDialog } from "@vueuse/core";
 import { fonts } from "app/uno.config";
 import VLinkDialog from "components/VLinkDialog.vue";
 import VTemplateDialog from "components/VTemplateDialog.vue";
-import type {
-  QEditor,
-  QEditorCommand,
-  QuasarIconSetEditor,
-  QuasarLanguageEditorLabel,
-  QVueGlobals,
-  StringDictionary,
-} from "quasar";
+import "daisyui/dist/full.css";
 import { useQuasar } from "quasar";
 import { putImage } from "stores/app";
 import { $ } from "stores/data";
 import { accept } from "stores/defaults";
 import { base } from "stores/s3";
-import type { Ref } from "vue";
 import { nextTick, ref, watch } from "vue";
 
 interface IProps {
@@ -89,7 +89,7 @@ const definitions: { [commandName: string]: QEditorCommand } = <const>{
           if ($.value?.content.length) showLinkDialog.value = true;
         },
       ],
-    ].map(([icon, tip, handler]) => [icon, { tip, icon, handler }]),
+    ].map(([icon, tip, handler]) => [icon, { handler, icon, tip }]),
   )),
   ...Object.fromEntries(
     [
@@ -108,7 +108,7 @@ const definitions: { [commandName: string]: QEditorCommand } = <const>{
   ),
 };
 const list: string = "no-icons";
-const toolbar: (string | object)[][] = <const>[
+const toolbar: (object | string)[][] = <const>[
   ["left", "center", "right", "justify"],
   ["bold", "italic", "strike", "underline", "subscript", "superscript"],
   ["hr", "link"],
@@ -133,13 +133,13 @@ const toolbar: (string | object)[][] = <const>[
       ],
       ["defaultFont", ["default_font", ...Object.keys(fonts)], false, true],
     ].map(([key, options, fixedLabel, fixedIcon]) => ({
+      fixedIcon,
+      fixedLabel,
+      icon: $q.iconSet.editor[<keyof StringDictionary<QuasarIconSetEditor>>key],
       label:
         $q.lang.editor[<keyof StringDictionary<QuasarLanguageEditorLabel>>key],
-      icon: $q.iconSet.editor[<keyof StringDictionary<QuasarIconSetEditor>>key],
       list,
       options,
-      fixedLabel,
-      fixedIcon,
     })),
     "removeFormat",
   ],

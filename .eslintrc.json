@@ -12,15 +12,14 @@
     "airbnb-base",
     "airbnb-typescript/base",
     "plugin:@typescript-eslint/strict-type-checked",
-    "plugin:vue/vue3-recommended",
+    "plugin:vue/vue3-strongly-recommended",
     "plugin:vue-pug/vue3-recommended",
     "plugin:sonarjs/recommended",
+    "plugin:perfectionist/recommended-natural",
     "plugin:prettier/recommended"
   ],
-  "plugins": ["simple-import-sort", "eslint-plugin-tsdoc"],
+  "plugins": ["eslint-plugin-tsdoc"],
   "rules": {
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error",
     "tsdoc/syntax": "warn"
   },
   "settings": {

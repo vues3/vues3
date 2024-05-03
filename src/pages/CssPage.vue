@@ -1,37 +1,38 @@
 <template lang="pug">
 q-page.column.full-height
   q-tabs.text-grey(
-    v-model="config.css.tab",
-    dense,
     active-color="primary",
-    indicator-color="primary",
     align="justify",
-    narrow-indicator
+    dense,
+    indicator-color="primary",
+    narrow-indicator,
+    v-model="config.css.tab"
   )
-    q-tab(name="style", label="Style")
-    q-tab(name="css", label="CSS")
+    q-tab(label="Style", name="style")
+    q-tab(label="CSS", name="css")
   q-separator
   q-tab-panels.full-width.col(v-model="config.css.tab")
     q-tab-panel.column(name="style")
       Suspense
-        v-source-code.col(v-model="$.style", lang="css")
+        v-source-code.col(lang="css", v-model="$.style")
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
     q-tab-panel.column(name="css")
       v-interactive-tree(
-        v-model:selected="config.css.selected",
+        :list,
         type="url",
-        :list
+        v-model:selected="config.css.selected"
       )
 </template>
 <script setup lang="ts">
+import type { TResource } from "stores/data";
+import type { ComputedRef } from "vue";
+
 import VInteractiveTree from "components/VInteractiveTree.vue";
 import VSourceCode from "components/VSourceCode.vue";
 import { config, rightDrawer } from "stores/app";
-import type { TResource } from "stores/data";
 import { $ } from "stores/data";
-import type { ComputedRef } from "vue";
 import { computed } from "vue";
 
 const list: ComputedRef<TResource[]> = computed(

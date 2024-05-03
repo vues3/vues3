@@ -4,9 +4,7 @@ const $id = "urn:jsonschema:navbar";
 const additionalProperties = false;
 const nullable = true;
 const properties = <const>{
-  theme: { type: "string", nullable, default: null, description: "Тема" },
   classes: {
-    type: "array",
     default: [
       "rounded-box",
       "fixed",
@@ -19,18 +17,39 @@ const properties = <const>{
       "ease-out",
       "hover:opacity-100",
     ],
-    items: { type: "string" },
     description: "Классы",
+    items: { type: "string" },
+    type: "array",
+  },
+  scoped: { default: true, description: "", type: "boolean" },
+  script: {
+    default: `import {
+  useSpeechSynthesis,
+  useNavigatorLanguage
+} from "@vueuse/core";
+ const {
+  the
+} = defineProps(["the"]);
+const {
+  language: lang
+} = useNavigatorLanguage();
+const {
+  speak
+} = useSpeechSynthesis(() => the?.description, {
+  lang
+});`,
+    description: "Скрипты",
+    type: "string",
   },
   scroll: {
-    type: "array",
     default: ["opacity-100"],
-    items: { type: "string" },
     description: "Скролл классы",
+    items: { type: "string" },
+    type: "array",
   },
+  setup: { default: true, description: "", type: "boolean" },
+  style: { default: "", description: "Стили", type: "string" },
   template: {
-    description: "Шаблон",
-    type: "string",
     default: `<div class="flex-none">
     <label class="btn btn-square btn-ghost" for="drawer">
         <svg class="fill-current h-6 w-6">
@@ -51,37 +70,18 @@ const properties = <const>{
         </svg>
     </button>
 </div>`,
-  },
-  script: {
-    description: "Скрипты",
+    description: "Шаблон",
     type: "string",
-    default: `import {
-  useSpeechSynthesis,
-  useNavigatorLanguage
-} from "@vueuse/core";
- const {
-  the
-} = defineProps(["the"]);
-const {
-  language: lang
-} = useNavigatorLanguage();
-const {
-  speak
-} = useSpeechSynthesis(() => the?.description, {
-  lang
-});`,
   },
-  style: { type: "string", default: "", description: "Стили" },
-  setup: { type: "boolean", default: true, description: "" },
-  scoped: { type: "boolean", default: true, description: "" },
+  theme: { default: null, description: "Тема", nullable, type: "string" },
 };
 const type = "object";
 
 const Navbar = (<const>{
   $id,
-  type,
-  properties,
   additionalProperties,
+  properties,
+  type,
 }) satisfies JSONSchema;
 
 export default Navbar;

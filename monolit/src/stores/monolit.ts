@@ -1,38 +1,39 @@
+import type { TView } from "app/src/stores/data";
+import type { AsyncComponentLoader } from "vue";
+import type { ContentData, ModuleExport, Options } from "vue3-sfc-loader";
+
 import * as tresjsCientos from "@tresjs/cientos";
 import * as tresjsCore from "@tresjs/core";
 import * as vueuseComponents from "@vueuse/components";
 import * as vueuseCore from "@vueuse/core";
 import { useStyleTag } from "@vueuse/core";
-import type { TView } from "app/src/stores/data";
 import { cache } from "app/src/stores/defaults";
 import { uid } from "quasar";
-import type { AsyncComponentLoader } from "vue";
 import * as vue from "vue";
 import { defineAsyncComponent } from "vue";
 import * as vueRouter from "vue-router";
-import type { ContentData, ModuleExport, Options } from "vue3-sfc-loader";
 import { loadModule } from "vue3-sfc-loader";
 
 import selectors from "../assets/glightbox.json";
 
 const moduleCache: ModuleExport = {
+  "@tresjs/cientos": tresjsCientos,
+  "@tresjs/core": tresjsCore,
+  "@vueuse/components": vueuseComponents,
+  "@vueuse/core": vueuseCore,
   vue,
   "vue-router": vueRouter,
-  "@vueuse/core": vueuseCore,
-  "@vueuse/components": vueuseComponents,
-  "@tresjs/core": tresjsCore,
-  "@tresjs/cientos": tresjsCientos,
 };
 const log = (type: keyof Console, ...args: string[]) => {
   (<(...optionalParams: string[]) => void>window.console[type])(...args);
 };
 export const getAsyncComponent = ({
   path,
-  setup,
   scoped,
-  template,
   script,
+  setup,
   style,
+  template,
 }: TView): Promise<object> => {
   const getFile = async (): Promise<ContentData> => {
     const [htm, js, css] = await Promise.all([template, script, style]);
@@ -50,10 +51,10 @@ export const getAsyncComponent = ({
     loadModule(`${["", "~"].includes(path) ? "" : "/"}${path}/view.vue`, <
       Options
     >(<unknown>{
-      moduleCache,
-      getFile,
       addStyle,
+      getFile,
       log,
+      moduleCache,
     }))));
 };
 async function getResource(this: TView, ext: keyof TView): Promise<string> {
@@ -84,9 +85,9 @@ const script: PropertyDescriptor = {
 export const fix = (siblings: TView[]) => {
   siblings.forEach((value) => {
     Object.defineProperties(value, {
-      template,
-      style,
       script,
+      style,
+      template,
     });
     fix(value.children);
   });

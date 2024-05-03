@@ -3,17 +3,17 @@ const additionalProperties = false;
 const id = "uuid";
 const dynamicDefaults = { id };
 const properties = <const>{
+  contenteditable: { default: false, type: "boolean" },
+  enabled: { default: true, type: "boolean" },
   id: { type: "string" },
-  url: { type: "string", default: "" },
-  enabled: { type: "boolean", default: true },
-  contenteditable: { type: "boolean", default: false },
+  url: { default: "", type: "string" },
 };
 const type = "object";
 const Resource = <const>{
   $id,
-  dynamicDefaults,
-  type,
-  properties,
   additionalProperties,
+  dynamicDefaults,
+  properties,
+  type,
 };
 export default Resource;

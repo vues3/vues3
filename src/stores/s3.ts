@@ -1,11 +1,12 @@
 import type { S3Client } from "@aws-sdk/client-s3";
+import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
+import type { Ref } from "vue";
+
 import {
   GetObjectCommand,
   HeadObjectCommand,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
-import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
-import type { Ref } from "vue";
 import { computed, ref } from "vue";
 
 export const bucket = ref("");
@@ -23,7 +24,7 @@ export const putObject = async (
   const Bucket = bucket.value;
   const Body = typeof body === "string" ? new TextEncoder().encode(body) : body;
   await S3.value?.send(
-    new PutObjectCommand({ Bucket, Key, ContentType, Body }),
+    new PutObjectCommand({ Body, Bucket, ContentType, Key }),
   );
 };
 export const putFile = async (Key: string, ContentType: string, file: File) => {
@@ -37,7 +38,7 @@ export const getObject = async (
   if (S3.value)
     try {
       const { Body } = await S3.value.send(
-        new GetObjectCommand({ ResponseCacheControl, Bucket, Key }),
+        new GetObjectCommand({ Bucket, Key, ResponseCacheControl }),
       );
       return new Response(<BodyInit>Body);
     } catch (e) {

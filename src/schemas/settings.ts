@@ -4,17 +4,17 @@ const $id = "urn:jsonschema:settings";
 const additionalProperties = false;
 const nullable = true;
 const properties = <const>{
-  yandex: { type: "string", nullable, default: null },
-  metrika: { type: "string", nullable, default: null },
-  google: { type: "string", nullable, default: null },
-  analytics: { type: "string", nullable, default: null },
-  landing: { type: "boolean", default: true },
+  analytics: { default: null, nullable, type: "string" },
+  google: { default: null, nullable, type: "string" },
+  landing: { default: true, type: "boolean" },
+  metrika: { default: null, nullable, type: "string" },
+  yandex: { default: null, nullable, type: "string" },
 };
 const type = "object";
 
 export default (<const>{
   $id,
-  type,
-  properties,
   additionalProperties,
+  properties,
+  type,
 }) satisfies JSONSchema;
