@@ -13,11 +13,12 @@
     :data-theme="a.theme",
     :role="a.id === the?.id ? 'main' : undefined"
   )
-    component(
-      :is="<object>templates[<keyof object>a.id]",
-      :the="a",
-      @vue:mounted="(promises[<keyof object>a.id]).resolve"
-    )
+    Suspense
+      component(
+        :is="<object>templates[<keyof object>a.id]",
+        :the="a",
+        @vue:mounted="(promises[<keyof object>a.id]).resolve"
+      )
 </template>
 <script setup lang="ts">
 import { vIntersectionObserver } from "@vueuse/components";

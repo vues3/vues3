@@ -6,11 +6,12 @@
     :data-theme="the.theme",
     role="main"
   )
-    component(
-      :is="template",
-      :the="the",
-      @vue:mounted="GLightbox({ loop, zoomable, selector })"
-    )
+    Suspense
+      component(
+        :is="template",
+        :the="the",
+        @vue:mounted="GLightbox({ loop, zoomable, selector })"
+      )
 </template>
 <script setup lang="ts">
 import type { TView } from "app/src/stores/data";

@@ -60,7 +60,8 @@ v-head
       :data-theme="$.navbar?.theme"
     )
       .navbar
-        component(:is="navigator", :the)
+        Suspense
+          component(:is="navigator", :the)
     router-view
   .drawer-side.z-50(v-if="views[0]?.enabled")
     label.drawer-overlay(for="drawer")
@@ -72,7 +73,8 @@ v-head
           class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
           :data-theme="views[0]?.theme"
         )
-          component(:is="root", :the="views[0]")
+          Suspense
+            component(:is="root", :the="views[0]")
       label.btn.btn-circle.btn-ghost.sticky.right-1.top-1.col-start-1.row-start-1.justify-self-end(
         for="drawer"
       )
