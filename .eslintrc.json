@@ -14,28 +14,14 @@
     "plugin:@typescript-eslint/strict-type-checked",
     "plugin:vue/vue3-recommended",
     "plugin:vue-pug/vue3-recommended",
-    "plugin:jsdoc/recommended-typescript",
     "plugin:sonarjs/recommended",
     "plugin:prettier/recommended"
   ],
-  "plugins": ["simple-import-sort"],
+  "plugins": ["simple-import-sort", "eslint-plugin-tsdoc"],
   "rules": {
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
-    "jsdoc/tag-lines": 0,
-    "jsdoc/require-jsdoc": [
-      "error",
-      {
-        "require": {
-          "FunctionDeclaration": true,
-          "MethodDefinition": true,
-          "ClassDeclaration": true,
-          "ClassExpression": true,
-          "ArrowFunctionExpression": true,
-          "FunctionExpression": true
-        }
-      }
-    ]
+    "tsdoc/syntax": "warn"
   },
   "settings": {
     "import/resolver": {

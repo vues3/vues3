@@ -41,10 +41,7 @@ import type { TResource, TView } from "stores/data";
 import { cancel, immediate, persistent } from "stores/defaults";
 import type { ComputedRef, Ref } from "vue";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
-/**
- * Selected - Идентификатор выбранного элемента type- Тип данных expanded -
- * Массив раскрытых узлов tree - Дерево list - Массив, представляющий дерево
- */
+
 interface IProps {
   selected?: string;
   type?: QInputProps["type"];
@@ -52,76 +49,40 @@ interface IProps {
   tree?: TView[];
   list: TView[] | TResource[];
 }
-/**
- * @see {@link https://github.com/vuejs/language-tools/issues/3169}
- * @see {@link https://vuejs.org/api/sfc-script-setup.html#type-only-props-emit-declarations}
- * @todo Переписать в нормальный вид, после обновления vue-tsc. Пока quasar не
- *   работает со второй версией vue-tsc
- */
 interface IEmits {
   (e: "update:expanded", value: readonly string[]): void;
   (e: "update:selected", value: string | undefined): void;
 }
-/** Пропсы */
 const props: IProps = withDefaults(defineProps<IProps>(), {
   selected: "",
   type: "text",
-  /**
-   * Пустой массив по умолчанию
-   *
-   * @returns - Пустой массив
-   */
   expanded: (): string[] => [],
   tree: undefined,
-  /**
-   * Пустой массив по умолчанию
-   *
-   * @returns - Пустой массив
-   */
   list: (): TView[] => [],
 });
-/** Ноды для дерева */
 const nodes: ComputedRef<QTreeNode[]> = computed(
   () => <QTreeNode[]>(props.tree ?? props.list),
 );
-/** Объект текущей страницы */
 const the: ComputedRef<TView | TResource | null | undefined> = computed(() =>
   props.list.length
     ? props.list.find(({ id }) => id === props.selected) ?? null
     : undefined,
 );
-/** Эмиттеры */
 const emits: IEmits = defineEmits<IEmits>();
-/**
- * Обновление массива открытых нод
- *
- * @param value - Массив открытых нод
- */
 const updateExpanded = (value: readonly string[]) => {
   emits("update:expanded", value);
 };
-/**
- * Обновление идентификатора выбранной ноды
- *
- * @param value - Идентификатор выбранной ноды
- */
 const updateSelected = (value: string | undefined) => {
   emits("update:selected", value);
 };
-/** Объект quasar */
 const $q: QVueGlobals = useQuasar();
-/** Экземпляр дерева */
 const qtree: Ref<QTree | undefined> = ref();
-/** Заголовок диалога */
 const title: string = "Подтверждение";
-/** Сообщение диалога */
 const message: string = "Вы действительно хотите удалить?";
-/** Удаление текущей страницы */
 const deleteView = () => {
   if (the.value) {
     const { parent, prev, next, siblings, index } = the.value;
     $q.dialog({ title, message, cancel, persistent }).onOk(() => {
-      /** Идентификатор страницы, выбираемой после удаления */
       let id: string | undefined;
       switch (true) {
         case !!next:
@@ -144,7 +105,6 @@ const deleteView = () => {
     });
   }
 };
-/** Перемещение страницы вверх на одну позицию */
 const upView = () => {
   if (the.value) {
     const { index, siblings } = the.value;
@@ -155,7 +115,6 @@ const upView = () => {
       ];
   }
 };
-/** Перемещение страницы вниз на одну позицию */
 const downView = () => {
   if (the.value) {
     const { index, siblings } = the.value;
@@ -166,7 +125,6 @@ const downView = () => {
       ];
   }
 };
-/** Перемещение страницы вправо на одну позицию */
 const rightView = () => {
   if (the.value) {
     const { index, siblings, prev } = the.value;
@@ -177,7 +135,6 @@ const rightView = () => {
     }
   }
 };
-/** Перемещение страницы влево на одну позицию */
 const leftView = () => {
   if (the.value) {
     const { index, parent } = the.value;
@@ -196,13 +153,10 @@ const leftView = () => {
     }
   }
 };
-/** Значение для свойства contenteditable */
 const value: boolean = false;
-/** Добавление новой страницы */
 const newView = () => {
   if (the.value) {
     const { parent, children, index, siblings } = the.value;
-    /** Идентификатор нового нода */
     const id: string = uid();
     switch (true) {
       case !!parent:

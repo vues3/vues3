@@ -102,35 +102,16 @@ import { config, rightDrawer } from "stores/app";
 import type { TNavbar } from "stores/data";
 import { $, validateNavbar } from "stores/data";
 import { cancel, persistent } from "stores/defaults";
-/** Объект quasar */
+
 const $q: QVueGlobals = useQuasar();
-/**
- * A text for the heading title of the dialog
- *
- * @default
- */
 const title: string = "Сброс навбара";
-/**
- * A text with more information about what needs to be input, selected or
- * confirmed.
- *
- * @default
- */
 const message: string = "Выбор сбрасываемых параметров:";
-/**
- * Тип элементов диалога
- *
- * @default
- */
 const type: SelectionPromptType = "checkbox";
 const model: [] = [];
-/** Список элементов формы */
 const items: QOptionGroupProps["options"] = Object.entries(Navbar.properties)
   .map(([key, { description }]) => ({ label: description, value: key }))
   .filter(({ label }) => label);
-/** Dialog options */
 const options: QDialogSelectionPrompt = { type, model, items };
-/** Сброс параметров навбара */
 const resetNavbar = () => {
   $q.dialog({ title, message, options, cancel, persistent }).onOk(
     (value: string[]) => {

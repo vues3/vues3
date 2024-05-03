@@ -41,30 +41,18 @@ import { accept } from "stores/defaults";
 import { base } from "stores/s3";
 import type { Ref } from "vue";
 import { nextTick, ref, watch } from "vue";
-/** ModelValue - Контент для загрузки в редактор */
+
 interface IProps {
   modelValue: Promise<string> | string;
 }
-/** Пропсы */
 const props: IProps = withDefaults(defineProps<IProps>(), {
   modelValue: "",
 });
 defineEmits(["update:modelValue"]);
-/** Флаг демонстрации модального окна для вставки шаблона */
 const showTemplateDialog: Ref<boolean> = ref(false);
-/** Флаг демонстрации модального окна для вставки внутренних ссылок */
 const showLinkDialog: Ref<boolean> = ref(false);
-/** Объект quasar */
 const $q: QVueGlobals = useQuasar();
-/** Экземпляр редактора */
 const editor: Ref<QEditor | undefined> = ref();
-/**
- * Функция закачки картинки на сервер
- *
- * @param file - Файл
- * @see {@link
- * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#image_types}
- */
 const insertImage = (file: File) => {
   (async () => {
     const { filePath, message } = await putImage(file);
@@ -73,11 +61,6 @@ const insertImage = (file: File) => {
       editor.value?.runCmd("insertImage", `${base.value ?? ""}/${filePath}`);
   })().catch(() => {});
 };
-/**
- * Функция обработки вставки картинок через d'n'd и ctrl+v
- *
- * @param evt - Объект события
- */
 const capture = (evt: ClipboardEvent | DragEvent) => {
   const { files = [] } =
     (<DragEvent>evt).dataTransfer ?? (<ClipboardEvent>evt).clipboardData ?? {};
@@ -88,7 +71,6 @@ const capture = (evt: ClipboardEvent | DragEvent) => {
   }
 };
 const { files, open } = useFileDialog({ accept });
-/** Определения для редактора */
 const definitions: { [commandName: string]: QEditorCommand } = <const>{
   ...(<{ [commandName: string]: QEditorCommand }>Object.fromEntries(
     [
@@ -125,13 +107,7 @@ const definitions: { [commandName: string]: QEditorCommand } = <const>{
     ]),
   ),
 };
-/**
- * Выпадающий список без иконок
- *
- * @default
- */
 const list: string = "no-icons";
-/** Конфигурация тулбара */
 const toolbar: (string | object)[][] = <const>[
   ["left", "center", "right", "justify"],
   ["bold", "italic", "strike", "underline", "subscript", "superscript"],
@@ -174,7 +150,6 @@ const toolbar: (string | object)[][] = <const>[
 watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });
-/** Текст для вставки в редактор */
 const htm: Ref<string> = ref(await props.modelValue);
 </script>
 <style lang="sass" scoped>

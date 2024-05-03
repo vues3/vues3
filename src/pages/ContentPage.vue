@@ -255,61 +255,30 @@ import {
 import { base } from "stores/s3";
 import type { ComputedRef, Ref, WritableComputedRef } from "vue";
 import { computed, ref, watch } from "vue";
-/** Объект quasar */
+
 const $q: QVueGlobals = useQuasar();
-/**
- * Выбор иконок по умолчанию скрыт
- *
- * @default
- */
 const show: Ref<boolean> = ref(false);
-/**
- * Настройки страниц при выборе иконок
- *
- * @default
- */
 const pagination: Ref<object> = ref({ itemsPerPage, page });
-/** Иконки для выбора */
 const icons: Ref<object[]> = ref(
   (<Record<string, object[]>>materialIcons).icons,
 );
-/** Выбранный объект страницы */
 const the: ComputedRef<TView | undefined> = computed(
   () =>
     views.value.find(({ id }) => id === config.value.content.selected) ??
     views.value[0],
 );
-/**
- * Функция экстренной записи при размонтировании
- *
- * @async
- * @param ext - Расширение файла
- * @param key - Новое содержимое файла
- */
 const onUnmounted = async (ext: string, key: keyof TView) => {
   save.call(the.value, ext, <string>await the.value?.[key]);
 };
-/** Значение постоянной ссылки */
 const loc: WritableComputedRef<string | null> = computed({
-  /**
-   * Получение постоянной ссылки
-   *
-   * @returns - Постоянная ссылка
-   */
   get(): string | null {
     return the.value?.loc ?? null;
   },
-  /**
-   * Запись постоянной ссылки
-   *
-   * @param value - Новое значение постоянной ссылки
-   */
   set(value: string | null) {
     if (the.value) the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
   },
 });
 const { files, open } = useFileDialog({ multiple, accept, capture, reset });
-/** Открывает диалог по клику */
 const click = () => {
   open();
 };

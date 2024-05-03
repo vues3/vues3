@@ -9,8 +9,6 @@ const properties = <const>{
   contenteditable: { type: "boolean", default: false },
 };
 const type = "object";
-
-/** Схема ресурсных записей */
 const Resource = <const>{
   $id,
   dynamicDefaults,
@@ -18,5 +16,4 @@ const Resource = <const>{
   properties,
   additionalProperties,
 };
-
 export default Resource;

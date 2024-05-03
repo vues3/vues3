@@ -42,9 +42,7 @@ import { ref, watch } from "vue";
 defineProps<{
   editor?: QEditor;
 }>();
-/** Флаг открытия модального окна */
 const model: ModelRef<boolean> = defineModel<boolean>({ default: false });
-/** Шаблон для вставки */
 const html: Ref<string> = ref("");
 const [{ value }] = options;
 watch(model, (show) => {

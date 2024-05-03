@@ -96,11 +96,8 @@ import { useRoute, useRouter } from "vue-router";
 import { favicon, getAsyncComponent } from "./stores/monolit";
 
 const { ready, start } = useTimeout(1000, { controls });
-/** Путь готового шаблона навбара */
 const path: string = "~";
-/** Вычисление навбара */
 const navigator: ComputedRef<object> = computed(() => {
-  /** Id навбара */
   const id: string = uid();
   return getAsyncComponent(<TView>{
     id,
@@ -108,40 +105,24 @@ const navigator: ComputedRef<object> = computed(() => {
     path,
   });
 });
-/** Текущий роут сайта */
 const route: RouteLocationNormalizedLoaded = useRoute();
-/** Роутер сайта */
 const router: Router = useRouter();
-/** Вычисление шаблона корневой страницы */
 const root: ComputedRef<object> = computed(() =>
   getAsyncComponent(views.value[0]),
 );
-/** Поиск текущего объекта страницы */
 const the: ComputedRef<TView | undefined> = computed(() =>
   views.value.find(({ id }) => id === route.name),
 );
-/** Ссылка на переключатель панели */
 const drawer: Ref<boolean> = ref(false);
-/** Вычисление канонического пути */
 const canonical: ComputedRef<string | false> = computed(
   () =>
     the.value?.url.constructor === String &&
     `${window.location.origin}/${the.value.url}`,
 );
-/**
- * Ф-ция проверки ресурса
- *
- * @param resource - Объект ресурса
- * @param resource.enabled - Признак использования
- * @param resource.url - Ссылка на ресурс
- * @returns - Флаг проверки ресурса
- */
 const alive = ({ enabled, url }: TResource): boolean => !!(enabled && url);
-/** Фильтр глобальных скриптов по видимости */
 const theJS: ComputedRef<TResource[]> = computed(
   () => (<TResource[] | undefined>$.value?.js)?.filter(alive) ?? [],
 );
-/** Фильтр глобальных стилей по видимости */
 const theCSS: ComputedRef<TResource[]> = computed(
   () => (<TResource[] | undefined>$.value?.css)?.filter(alive) ?? [],
 );

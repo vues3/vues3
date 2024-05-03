@@ -7,22 +7,21 @@ import presetWebFonts from "@unocss/preset-web-fonts";
 import transformerDirectives from "@unocss/transformer-directives";
 import transformerVariantGroup from "@unocss/transformer-variant-group";
 
-/** @see {@link https://type.today/ru/journal/old-style Динамические антиквы} */
+/** @see {@link https://type.today/ru/journal/old-style} Динамические антиквы */
 import dynamicSerifs from "./src/assets/fonts/DynamicSerifs.json";
-/** @see {@link http://type.today/ru/journal/geo Геометрические гротески} */
+/** @see {@link http://type.today/ru/journal/geo} Геометрические гротески */
 import geometricGrotesques from "./src/assets/fonts/GeometricGrotesques.json";
-/** @see {@link https://type.today/ru/journal/scripts Рукописные шрифты} */
+/** @see {@link https://type.today/ru/journal/scripts} Рукописные шрифты */
 import handwrittenFonts from "./src/assets/fonts/HandwrittenFonts.json";
-/** @see {@link https://type.today/ru/journal/humanist Гуманистические гротески} */
+/** @see {@link https://type.today/ru/journal/humanist} Гуманистические гротески */
 import humanisticGrotesques from "./src/assets/fonts/HumanisticGrotesques.json";
-/** @see {@link https://type.today/ru/journal/neo Неогротески} */
+/** @see {@link https://type.today/ru/journal/neo} Неогротески */
 import neogrotesques from "./src/assets/fonts/Neogrotesques.json";
-/** @see {@link https://type.today/ru/journal/gfdidones Статические антиквы} */
+/** @see {@link https://type.today/ru/journal/gfdidones} Статические антиквы */
 import staticSerifs from "./src/assets/fonts/StaticSerifs.json";
-/** @see {@link https://type.today/ru/journal/transitional Переходные антиквы} */
+/** @see {@link https://type.today/ru/journal/transitional} Переходные антиквы */
 import transitionalSerifs from "./src/assets/fonts/TransitionalSerifs.json";
 
-/** Шрифты */
 const fonts: Record<string, string> = Object.fromEntries(
   [
     ...dynamicSerifs,
@@ -34,12 +33,6 @@ const fonts: Record<string, string> = Object.fromEntries(
     ...handwrittenFonts,
   ].map((value) => [value.toLowerCase().replaceAll(" ", "_"), value]),
 );
-
-/**
- * Пресеты
- *
- * @default
- */
 const presets: Preset[] = [
   presetUno(),
   presetAttributify(),
@@ -47,16 +40,9 @@ const presets: Preset[] = [
   presetTagify(),
   presetWebFonts({ fonts }),
 ];
-
-/**
- * Трансформеры
- *
- * @default
- */
 const transformers: SourceCodeTransformer[] = [
   transformerDirectives(),
   transformerVariantGroup(),
 ];
-
 export { fonts };
 export default { presets, transformers };

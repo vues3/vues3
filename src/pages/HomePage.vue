@@ -182,7 +182,6 @@ const providers: IRegion[] = [
     ],
     region: "us-east-1",
     endpoint: "",
-    /** @returns - Wendpoint */
     get wendpoint() {
       return `https://s3.${region.value}.amazonaws.com`;
     },
@@ -237,7 +236,7 @@ watch(cred, (value) => {
   }
 });
 let s3Client: S3Client | undefined;
-/** { @link https://fetch.spec.whatwg.org/#http-network-or-cache-fetch } */
+/** @see {@link https://fetch.spec.whatwg.org/#http-network-or-cache-fetch } */
 const login = async () => {
   if (!s3Client)
     try {

@@ -8,33 +8,13 @@ import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
 
-/** Корзина в сервисе s3 */
 export const bucket = ref("");
-
-/** Путь к сайту через сервис s3 */
 export const wendpoint = ref("");
-
-/** Клиент к сервису s3 */
 export const S3: Ref<S3Client | undefined> = ref();
-
-/**
- * Считывание заголовка файла
- *
- * @param Key Имя файла
- * @returns Заголовок файла
- */
 export const headObject = (Key: string) => {
   const Bucket = bucket.value;
   return S3.value?.send(new HeadObjectCommand({ Bucket, Key }));
 };
-
-/**
- * Запись объекта
- *
- * @param Key Имя файла
- * @param ContentType Тип mime
- * @param body Тело файла
- */
 export const putObject = async (
   Key: string,
   ContentType: string,
@@ -46,25 +26,9 @@ export const putObject = async (
     new PutObjectCommand({ Bucket, Key, ContentType, Body }),
   );
 };
-
-/**
- * Запись файла
- *
- * @param Key Имя файла
- * @param ContentType Тип mime
- * @param file Файл
- */
 export const putFile = async (Key: string, ContentType: string, file: File) => {
   await putObject(Key, ContentType, new Blob([await file.arrayBuffer()]));
 };
-
-/**
- * Считывание объекта
- *
- * @param Key Имя файла
- * @param [ResponseCacheControl] - Параметры кеша
- * @returns Тело файла
- */
 export const getObject = async (
   Key: string,
   ResponseCacheControl?: string,

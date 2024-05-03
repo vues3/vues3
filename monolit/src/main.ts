@@ -43,52 +43,28 @@ window.console.info(
   "https://vues3.ru",
 );
 initUnocssRuntime({ autoPrefix, defaults, bypassDefined });
-/** Приложение vue */
 const app: App = createApp(vueApp);
 app.config.globalProperties.mdi = mdi;
 (async () => {
-  /**
-   * Ответ на считывание data.json
-   *
-   * @default
-   */
   const response: Response = await fetch("/data.json", {
     cache,
   });
   $.value = response.ok ? <TData>await response.json() : <TData>{};
   fix($.value.content);
 })().catch(() => {});
-/**
- * Перевод яндекс метрики в продуктовый режим
- *
- * @default
- */
 const env: string = process.env.NODE_ENV;
-/** Объект истории */
 const history: RouterHistory = createWebHistory(import.meta.env.BASE_URL);
-/** Роуты */
 const routes: RouteRecordRaw[] = [];
-/** Роутер */
 const router: Router = createRouter({ history, routes });
 watch(
   views,
   (value) => {
     value.forEach(({ path, id: name, loc }) => {
-      /**
-       * Подготовленный алиас
-       *
-       * @default
-       */
       const alias: string = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
       router.addRoute({
         name,
         path: `/${path}`,
         ...(loc && { alias }),
-        /**
-         * Функция динамического импорта компонента
-         *
-         * @returns - Страница ошибки
-         */
         component(): RouteComponent {
           return import(
             $.value?.settings?.landing
@@ -98,19 +74,9 @@ watch(
         },
       });
     });
-    /**
-     * Все неучтенные пути
-     *
-     * @default
-     */
     const path: string = "/:catchAll(.*)*";
     router.addRoute({
       path,
-      /**
-       * Функция динамического импорта компонента
-       *
-       * @returns - Страница ошибки
-       */
       component(): RouteComponent {
         return import("@/views/NotFoundView.vue");
       },
@@ -123,26 +89,11 @@ watch(
   () => <TSettings>$.value?.settings,
   ({ metrika, analytics }) => {
     if (metrika) {
-      /**
-       * Id метрики
-       *
-       * @default
-       */
       const id: string = metrika;
       app.use(initYandexMetrika, <Config>{ id, router, env });
     }
     if (analytics) {
-      /**
-       * Id аналитики
-       *
-       * @default
-       */
       const id: string = analytics;
-      /**
-       * Подготовленный конфиг
-       *
-       * @default
-       */
       const config: { id: string } = { id };
       app.use(VueGtag, { config }, router);
     }

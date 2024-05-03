@@ -25,7 +25,7 @@ import { bucket, getObject, putFile, putObject, S3 } from "stores/s3";
 import { toXML } from "to-xml";
 import type { ComputedRef, Ref, WatchOptions } from "vue";
 import { computed, ref, watch } from "vue";
-/** Объект для парсинга */
+
 const parser: DOMParser = new DOMParser();
 export type TConfig = FromSchema<typeof Config>;
 const schemas: AnySchema[] = [Config];
@@ -36,15 +36,9 @@ const ajv: Ajv = new Ajv({
   schemas,
   code,
 });
-/** Функция проверки конфига */
 export const validateConfig: ValidateFunction = <ValidateFunction>(
   ajv.getSchema("urn:jsonschema:config")
 );
-/**
- * @param ext - Расширение файла
- * @param beautify - Ф-ция форматирования кода
- * @returns Содержимое файла
- */
 async function getFile(
   this: TView,
   ext: keyof TView,
@@ -58,10 +52,6 @@ async function getFile(
   }
   return <string>this[ext];
 }
-/**
- * @param ext - Расширение файла
- * @param text - Новое содержимое файла
- */
 export function save(this: TView | undefined, ext: string, text: string) {
   if (this?.id) {
     putObject(
@@ -69,52 +59,26 @@ export function save(this: TView | undefined, ext: string, text: string) {
       mime.getType(ext) ?? "text/plain",
       text,
     ).catch(() => {});
-    /** Дата в формате iso */
     const value: string = new Date().toISOString();
     Reflect.defineProperty(this, "lastmod", { value });
   }
 }
-/** Функция с супер способностью устранения дребезга */
 const debounceFn = useDebounceFn(save, debounce);
-/**
- * @param ext - Расширение файла
- * @param value - Новое содержимое файла
- */
 function setFile(this: TView, ext: string, value: string) {
   Object.defineProperty(this, ext, { value, configurable });
   debounceFn.call(this, ext, value).catch(() => {});
 }
-/** Объект, на котором определяется загрузка шаблона страницы */
 const template: PropertyDescriptor = {
-  /**
-   * Геттер шаблона страницы
-   *
-   * @returns - Шаблон страницы
-   */
   async get(this: TView): Promise<string> {
     return getFile.call(this, "htm", html_beautify);
   },
-  /**
-   * Сеттер шаблона страницы
-   *
-   * @param value - Передаваемый шаблон страницы
-   */
   set(this: TView, value: string) {
     setFile.call(this, "htm", value);
   },
 };
-/** Массив временных урлов для картинок */
 const urls: Record<string, string | undefined> = {};
-/** Объект, на котором определяется загрузка шаблона страницы */
 const html: PropertyDescriptor = {
-  /**
-   * Считывание исходного кода из структуры данных
-   *
-   * @async
-   * @returns - Template
-   */
   async get(this: TView): Promise<string> {
-    /** Преобразованный в документ шаблон */
     const doc: Document = parser.parseFromString(
       `<head><base href="//"></head><body>${await this.template}</body>`,
       "text/html",
@@ -155,13 +119,7 @@ const html: PropertyDescriptor = {
     });
     return doc.body.innerHTML;
   },
-  /**
-   * Запись исходного кода страницы в структуры данных
-   *
-   * @param value - Template
-   */
   set(this: TView, value: string) {
-    /** Преобразованный в документ шаблон */
     const doc: Document = parser.parseFromString(
       `<head><base href="//"></head><body>${value}</body>`,
       "text/html",
@@ -175,41 +133,18 @@ const html: PropertyDescriptor = {
     this.template = doc.body.innerHTML;
   },
 };
-/** Объект, на котором определяется загрузка стилей страницы */
 const style: PropertyDescriptor = {
-  /**
-   * Геттер стилей страницы
-   *
-   * @returns - Стили страницы
-   */
   async get(this: TView): Promise<string> {
     return getFile.call(this, "css", css_beautify);
   },
-  /**
-   * Сеттер стилей страницы
-   *
-   * @param value - Передаваемые стили страницы
-   */
   set(this: TView, value: string) {
     setFile.call(this, "css", value);
   },
 };
-/** Объект, на котором определяется загрузка скриптов страницы */
 const script: PropertyDescriptor = {
-  /**
-   * Геттер скриптов страницы
-   *
-   * @async
-   * @returns - Скрипты страницы
-   */
   async get(this: TView): Promise<string> {
     return getFile.call(this, "js", js_beautify);
   },
-  /**
-   * Сеттер скриптов страницы
-   *
-   * @param value - Передаваемые скрипты страницы
-   */
   set(this: TView, value: string) {
     setFile.call(this, "js", value);
   },
@@ -272,14 +207,12 @@ watchDebounced(
   { deep, debounce },
 );
 export const accessKeyId: Ref<string | undefined> = ref();
-/** Хранимая конфигурация приложения */
 export const config: RemovableRef<TConfig> = useStorage(
   `config-${accessKeyId.value ?? ""}`,
   <TConfig>{},
   localStorage,
   { mergeDefaults },
 );
-/** Флаг правой открывающейся панели */
 export const rightDrawer: Ref<boolean | undefined> = ref();
 const sitemap: ComputedRef<object> = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
@@ -307,12 +240,6 @@ watch(
   },
   { immediate },
 );
-/**
- * @param file - Файл
- * @returns Возвращаем путь файла или undefined в случае ошибки
- * @see {@link
- * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#image_types}
- */
 export const putImage = async (
   file: File,
 ): Promise<Record<string, string | undefined>> => {
@@ -330,11 +257,6 @@ export const putImage = async (
   }
   return { filePath, message };
 };
-/**
- * Adjust the callback's flush timing
- *
- * @default
- */
 const flush: WatchOptions["flush"] = "sync";
 watch(
   views,
