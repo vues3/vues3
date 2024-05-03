@@ -35,8 +35,6 @@ import { config, rightDrawer } from "stores/app";
 import { $ } from "stores/data";
 import { computed } from "vue";
 
-const list: ComputedRef<TResource[]> = computed(
-  () => <TResource[]>$.value?.css,
-);
+const list: ComputedRef<TResource[] | undefined> = computed(() => $.value?.css);
 rightDrawer.value = undefined;
 </script>

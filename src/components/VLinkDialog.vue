@@ -9,7 +9,7 @@ q-dialog(full-height, full-width, persistent, v-model="model")
       q-card.col.column.full-width(bordered, flat)
         q-card-section.col.column.full-width
           q-tree.col.scroll.full-width(
-            :nodes="$.content",
+            :nodes,
             default-expand-all,
             no-selection-unset,
             node-key="id",
@@ -29,7 +29,7 @@ q-dialog(full-height, full-width, persistent, v-model="model")
       )
 </template>
 <script setup lang="ts">
-import type { QEditor } from "quasar";
+import type { QEditor, QTreeNode } from "quasar";
 import type { TView } from "stores/data";
 import type { ComputedRef, ModelRef, Ref } from "vue";
 
@@ -43,6 +43,9 @@ const model: ModelRef<boolean> = defineModel<boolean>({ default: false });
 const selected: Ref<string | undefined> = ref();
 const the: ComputedRef<TView | undefined> = computed(() =>
   views.value.find(({ id }) => id === selected.value),
+);
+const nodes: ComputedRef<QTreeNode[]> = computed(
+  () => <QTreeNode[]>$.value?.content,
 );
 watch(model, (show) => {
   const [{ id }] = $.value?.content ?? [];

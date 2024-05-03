@@ -122,10 +122,10 @@ const canonical: ComputedRef<false | string> = computed(
 );
 const alive = ({ enabled, url }: TResource): boolean => !!(enabled && url);
 const theJS: ComputedRef<TResource[]> = computed(
-  () => (<TResource[] | undefined>$.value?.js)?.filter(alive) ?? [],
+  () => $.value?.js.filter(alive) ?? [],
 );
 const theCSS: ComputedRef<TResource[]> = computed(
-  () => (<TResource[] | undefined>$.value?.css)?.filter(alive) ?? [],
+  () => $.value?.css.filter(alive) ?? [],
 );
 router.beforeEach(() => {
   drawer.value = false;

@@ -52,7 +52,11 @@ export type TResource = {
 } & FromSchema<typeof Resource>;
 export type TSettings = FromSchema<typeof Settings>;
 export type TNavbar = FromSchema<typeof Navbar>;
-export type TData = { content: TView[] } & FromSchema<
+export type TData = {
+  content: TView[];
+  css: TResource[];
+  js: TResource[];
+} & FromSchema<
   typeof plainData,
   { references: [typeof Settings, typeof Resource, typeof Navbar] }
 >;
@@ -167,14 +171,14 @@ watch(
   { deep },
 );
 watch(
-  () => <TResource[]>($.value?.css ?? []),
+  () => $.value?.css ?? [],
   (value: TResource[]) => {
     fixPlain({ value });
   },
   { deep },
 );
 watch(
-  () => <TResource[]>($.value?.js ?? []),
+  () => $.value?.js ?? [],
   (value: TResource[]) => {
     fixPlain({ value });
   },
