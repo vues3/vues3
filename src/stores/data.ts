@@ -1,5 +1,5 @@
-import type { FuncKeywordDefinition, ValidateFunction } from "ajv";
-import type { ComputedRef, Ref } from "vue";
+import type { ValidateFunction } from "ajv";
+import type { Ref } from "vue";
 
 import * as mdi from "@mdi/js";
 import Ajv from "ajv";
@@ -61,10 +61,10 @@ export type TData = {
   { references: [typeof Settings, typeof Resource, typeof Navbar] }
 >;
 dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uid();
-const schemas: object[] = [Resource, View, Settings, Navbar, Data];
-export const code: object = { esm };
-const keywords: FuncKeywordDefinition[] = [dynamicDefaults()];
-const ajv: Ajv = new Ajv({
+const schemas = [Resource, View, Settings, Navbar, Data];
+export const code = { esm };
+const keywords = [dynamicDefaults()];
+const ajv = new Ajv({
   code,
   coerceTypes,
   keywords,
@@ -72,37 +72,37 @@ const ajv: Ajv = new Ajv({
   schemas,
   useDefaults,
 });
-export const validate: ValidateFunction = ajv.getSchema(
+export const validate = ajv.getSchema(
   "urn:jsonschema:data",
 ) as ValidateFunction;
-export const validateNavbar: ValidateFunction = ajv.getSchema(
+export const validateNavbar = ajv.getSchema(
   "urn:jsonschema:navbar",
 ) as ValidateFunction;
 const getViews = (views: TView[]): TView[] =>
   views.flatMap((element) => [element, ...getViews(element.children)]);
-const index: PropertyDescriptor = {
+const index = {
   get(this: TView): number {
     return this.siblings.findIndex(({ id }) => this.id === id);
   },
 };
-const prev: PropertyDescriptor = {
+const prev = {
   get(this: TView): TView | undefined {
     return this.siblings[this.index - 1];
   },
 };
-const next: PropertyDescriptor = {
+const next = {
   get(this: TView): TView | undefined {
     return this.siblings[this.index + 1];
   },
 };
-const branch: PropertyDescriptor = {
+const branch = {
   get(this: TView): TView[] {
     const ret: TView[] = [this];
     while (ret[0].parent) ret.unshift(ret[0].parent);
     return ret;
   },
 };
-const path: PropertyDescriptor = {
+const path = {
   get(this: TView): string {
     return this.branch
       .map(
@@ -113,19 +113,19 @@ const path: PropertyDescriptor = {
       .join("/");
   },
 };
-const url: PropertyDescriptor = {
+const url = {
   get(this: TView): string {
     return (
       (this.loc && encodeURI(this.loc.replace(" ", "_") || "")) ?? this.path
     );
   },
 };
-const name: PropertyDescriptor = {
+const name = {
   get(this: TView): null | string {
     return this.title ?? this.label;
   },
 };
-const favicon: PropertyDescriptor = {
+const favicon = {
   get(this: TView): string | undefined {
     return this.icon?.replace(/-./g, (x) => x[1].toUpperCase());
   },
@@ -156,8 +156,8 @@ const fixDeep = (
   });
 };
 export const $: Ref<TData | undefined> = ref();
-const get: () => TView[] = (): TView[] => getViews($.value?.content ?? []);
-export const views: ComputedRef<TView[]> = computed(() =>
+const get: () => TView[] = () => getViews($.value?.content ?? []);
+export const views = computed(() =>
   get().map((value: TView) => {
     Object.defineProperty(value, "views", { get });
     return value;
