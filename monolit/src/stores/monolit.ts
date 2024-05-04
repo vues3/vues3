@@ -8,7 +8,7 @@ import * as vueuseComponents from "@vueuse/components";
 import * as vueuseCore from "@vueuse/core";
 import { useStyleTag } from "@vueuse/core";
 import { cache } from "app/src/stores/defaults";
-import { uid } from "quasar";
+import uuid from "uuid-random";
 import * as vue from "vue";
 import { defineAsyncComponent } from "vue";
 import * as vueRouter from "vue-router";
@@ -89,4 +89,4 @@ export const fix = (siblings: TView[]) => {
   });
 };
 export const selector = selectors.map((el) => `a[href${el}]`).join();
-export const favicon = uid();
+export const favicon = uuid();

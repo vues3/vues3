@@ -83,14 +83,12 @@ v-head
 </template>
 <script setup lang="ts">
 import type { TResource, TView } from "app/src/stores/data";
-import type { ComputedRef, Ref } from "vue";
-import type { RouteLocationNormalizedLoaded, Router } from "vue-router";
 
 import * as mdi from "@mdi/js";
 import { useTimeout } from "@vueuse/core";
 import { $, views } from "app/src/stores/data";
 import { controls } from "app/src/stores/defaults";
-import { uid } from "quasar";
+import uuid from "uuid-random";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -98,35 +96,27 @@ import { favicon, getAsyncComponent } from "./stores/monolit";
 
 const { ready, start } = useTimeout(1000, { controls });
 const path = "~";
-const navigator: ComputedRef<object> = computed(() => {
-  const id: string = uid();
+const navigator = computed(() => {
+  const id = uuid();
   return getAsyncComponent({
     id,
     ...$.value?.navbar,
     path,
   } as TView);
 });
-const route: RouteLocationNormalizedLoaded = useRoute();
-const router: Router = useRouter();
-const root: ComputedRef<object> = computed(() =>
-  getAsyncComponent(views.value[0]),
-);
-const the: ComputedRef<TView | undefined> = computed(() =>
-  views.value.find(({ id }) => id === route.name),
-);
-const drawer: Ref<boolean> = ref(false);
-const canonical: ComputedRef<false | string> = computed(
+const route = useRoute();
+const router = useRouter();
+const root = computed(() => getAsyncComponent(views.value[0]));
+const the = computed(() => views.value.find(({ id }) => id === route.name));
+const drawer = ref(false);
+const canonical = computed(
   () =>
     the.value?.url.constructor === String &&
     `${window.location.origin}/${the.value.url}`,
 );
-const alive = ({ enabled, url }: TResource): boolean => !!(enabled && url);
-const theJS: ComputedRef<TResource[]> = computed(
-  () => $.value?.js.filter(alive) ?? [],
-);
-const theCSS: ComputedRef<TResource[]> = computed(
-  () => $.value?.css.filter(alive) ?? [],
-);
+const alive = ({ enabled, url }: TResource) => !!(enabled && url);
+const theJS = computed(() => $.value?.js.filter(alive) ?? []);
+const theCSS = computed(() => $.value?.css.filter(alive) ?? []);
 router.beforeEach(() => {
   drawer.value = false;
 });

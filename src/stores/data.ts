@@ -18,7 +18,7 @@ import {
   useDefaults,
 } from "app/src/stores/defaults";
 import { FromSchema } from "json-schema-to-ts";
-import { uid } from "quasar";
+import uuid from "uuid-random";
 import { computed, ref, watch } from "vue";
 
 export type TView = {
@@ -60,7 +60,7 @@ export type TData = {
   typeof plainData,
   { references: [typeof Settings, typeof Resource, typeof Navbar] }
 >;
-dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uid();
+dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uuid();
 const schemas = [Resource, View, Settings, Navbar, Data];
 export const code = { esm };
 const keywords = [dynamicDefaults()];
