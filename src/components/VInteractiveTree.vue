@@ -43,24 +43,26 @@ import { uid, useQuasar } from "quasar";
 import { cancel, immediate, persistent } from "stores/defaults";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 
-interface IProps {
-  expanded?: string[];
-  list: TResource[] | TView[];
-  selected?: string;
-  tree?: TView[];
-  type?: QInputProps["type"];
-}
 interface IEmits {
   (e: "update:expanded", value: readonly string[]): void;
   (e: "update:selected", value: string | undefined): void;
 }
-const props: IProps = withDefaults(defineProps<IProps>(), {
-  expanded: (): string[] => [],
-  list: (): TView[] => [],
-  selected: "",
-  tree: undefined,
-  type: "text",
-});
+const props = withDefaults(
+  defineProps<{
+    expanded?: string[];
+    list: TResource[] | TView[];
+    selected?: string;
+    tree?: TView[];
+    type?: QInputProps["type"];
+  }>(),
+  {
+    expanded: (): string[] => [],
+    list: (): TView[] => [],
+    selected: "",
+    tree: undefined,
+    type: "text",
+  },
+);
 const nodes = computed(() => (props.tree ?? props.list) as QTreeNode[]);
 const the = computed(() =>
   props.list.length

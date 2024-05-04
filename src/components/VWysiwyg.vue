@@ -23,7 +23,6 @@ div
 import type {
   QEditor,
   QEditorCommand,
-  QVueGlobals,
   QuasarIconSetEditor,
   QuasarLanguageEditorLabel,
   StringDictionary,
@@ -42,16 +41,18 @@ import { accept } from "stores/defaults";
 import { base } from "stores/s3";
 import { nextTick, ref, watch } from "vue";
 
-interface IProps {
-  modelValue: Promise<string> | string;
-}
-const props: IProps = withDefaults(defineProps<IProps>(), {
-  modelValue: "",
-});
+const props = withDefaults(
+  defineProps<{
+    modelValue: Promise<string> | string;
+  }>(),
+  {
+    modelValue: "",
+  },
+);
 defineEmits(["update:modelValue"]);
-const showTemplateDialog: Ref<boolean> = ref(false);
-const showLinkDialog: Ref<boolean> = ref(false);
-const $q: QVueGlobals = useQuasar();
+const showTemplateDialog = ref(false);
+const showLinkDialog = ref(false);
+const $q = useQuasar();
 const editor: Ref<QEditor | undefined> = ref();
 const insertImage = (file: File) => {
   (async () => {
@@ -73,7 +74,7 @@ const capture = (evt: ClipboardEvent | DragEvent) => {
   }
 };
 const { files, open } = useFileDialog({ accept });
-const definitions: Record<string, QEditorCommand> = {
+const definitions = {
   ...(Object.fromEntries(
     [
       ["upload", "Загрузка картинки", open],
@@ -108,9 +109,9 @@ const definitions: Record<string, QEditorCommand> = {
       },
     ]),
   ),
-} as const;
+};
 const list = "no-icons";
-const toolbar: (object | string)[][] = [
+const toolbar = [
   ["left", "center", "right", "justify"],
   ["bold", "italic", "strike", "underline", "subscript", "superscript"],
   ["hr", "link"],
@@ -156,5 +157,5 @@ const toolbar: (object | string)[][] = [
 watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });
-const htm: Ref<string> = ref(await props.modelValue);
+const htm = ref(await props.modelValue);
 </script>

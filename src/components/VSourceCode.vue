@@ -18,16 +18,18 @@ import "ace-builds/esm-resolver";
 import { css, html, js } from "js-beautify";
 import { nextTick, ref } from "vue";
 
-interface IProps {
-  lang?: string;
-  modelValue: Promise<string> | null | string;
-  options?: object;
-}
-const props = withDefaults(defineProps<IProps>(), {
-  lang: "html",
-  modelValue: "",
-  options: (): object => ({}),
-});
+const props = withDefaults(
+  defineProps<{
+    lang?: string;
+    modelValue: Promise<string> | null | string;
+    options?: object;
+  }>(),
+  {
+    lang: "html",
+    modelValue: "",
+    options: (): object => ({}),
+  },
+);
 const emit = defineEmits(["update:modelValue"]);
 const beautify = (value: string) => {
   let code;
