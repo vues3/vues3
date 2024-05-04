@@ -30,10 +30,7 @@ export const putObject = async (
 export const putFile = async (Key: string, ContentType: string, file: File) => {
   await putObject(Key, ContentType, new Blob([await file.arrayBuffer()]));
 };
-export const getObject = async (
-  Key: string,
-  ResponseCacheControl?: string,
-): Promise<Response> => {
+export const getObject = async (Key: string, ResponseCacheControl?: string) => {
   const Bucket = bucket.value;
   if (S3.value)
     try {
