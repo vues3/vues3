@@ -81,29 +81,29 @@ export const validateNavbar = ajv.getSchema(
 const getViews = (views: TView[]): TView[] =>
   views.flatMap((element) => [element, ...getViews(element.children)]);
 const index = {
-  get(this: TView): number {
+  get(this: TView) {
     return this.siblings.findIndex(({ id }) => this.id === id);
   },
 };
 const prev = {
-  get(this: TView): TView | undefined {
+  get(this: TView) {
     return this.siblings[this.index - 1];
   },
 };
 const next = {
-  get(this: TView): TView | undefined {
+  get(this: TView) {
     return this.siblings[this.index + 1];
   },
 };
 const branch = {
-  get(this: TView): TView[] {
-    const ret: TView[] = [this];
+  get(this: TView) {
+    const ret = [this];
     while (ret[0].parent) ret.unshift(ret[0].parent);
     return ret;
   },
 };
 const path = {
-  get(this: TView): string {
+  get(this: TView) {
     return this.branch
       .map(
         ({ id, label }) =>
@@ -114,19 +114,19 @@ const path = {
   },
 };
 const url = {
-  get(this: TView): string {
+  get(this: TView) {
     return (
       (this.loc && encodeURI(this.loc.replace(" ", "_") || "")) ?? this.path
     );
   },
 };
 const name = {
-  get(this: TView): null | string {
+  get(this: TView) {
     return this.title ?? this.label;
   },
 };
 const favicon = {
-  get(this: TView): string | undefined {
+  get(this: TView) {
     return this.icon?.replace(/-./g, (x) => x[1].toUpperCase());
   },
 };
@@ -156,7 +156,7 @@ const fixDeep = (
   });
 };
 export const $: Ref<TData | undefined> = ref();
-const get: () => TView[] = () => getViews($.value?.content ?? []);
+const get = () => getViews($.value?.content ?? []);
 export const views = computed(() =>
   get().map((value: TView) => {
     Object.defineProperty(value, "views", { get });
