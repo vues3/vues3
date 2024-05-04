@@ -1,6 +1,6 @@
 import type { TView } from "app/src/stores/data";
 import type { AsyncComponentLoader } from "vue";
-import type { ContentData, ModuleExport, Options } from "vue3-sfc-loader";
+import type { Options } from "vue3-sfc-loader";
 
 import * as tresjsCientos from "@tresjs/cientos";
 import * as tresjsCore from "@tresjs/core";
@@ -16,7 +16,7 @@ import { loadModule } from "vue3-sfc-loader";
 
 import selectors from "../assets/glightbox.json";
 
-const moduleCache: ModuleExport = {
+const moduleCache = {
   "@tresjs/cientos": tresjsCientos,
   "@tresjs/core": tresjsCore,
   "@vueuse/components": vueuseComponents,
@@ -34,14 +34,12 @@ export const getAsyncComponent = ({
   setup,
   style,
   template,
-}: TView): Promise<object> => {
-  const getFile = async (): Promise<ContentData> => {
+}: TView) => {
+  const getFile = async () => {
     const [htm, js, css] = await Promise.all([template, script, style]);
-    const cntScript: string =
-      js && `<script${setup ? " setup" : ""}>${js}</script>`;
-    const cntTemplate: string = htm && `<template>${htm}</template>`;
-    const cntStyle: string =
-      css && `<style${scoped ? " scoped" : ""}>${css}</style>`;
+    const cntScript = js && `<script${setup ? " setup" : ""}>${js}</script>`;
+    const cntTemplate = htm && `<template>${htm}</template>`;
+    const cntStyle = css && `<style${scoped ? " scoped" : ""}>${css}</style>`;
     return `${cntScript}${cntTemplate}${cntStyle}`;
   };
   const addStyle = (styles: string) => {
@@ -55,28 +53,28 @@ export const getAsyncComponent = ({
       moduleCache,
     } as unknown as Options)) as AsyncComponentLoader<Promise<object>>);
 };
-async function getResource(this: TView, ext: keyof TView): Promise<string> {
+async function getResource(this: TView, ext: keyof TView) {
   if (this[ext] == null) {
-    const response: Response = await fetch(`/views/${this.id ?? ""}.${ext}`, {
+    const response = await fetch(`/views/${this.id ?? ""}.${ext}`, {
       cache,
     });
-    const value: string = response.ok ? await response.text() : "";
+    const value = response.ok ? await response.text() : "";
     Object.defineProperty(this, ext, { value });
   }
   return this[ext] as string;
 }
-const template: PropertyDescriptor = {
-  async get(this: TView): Promise<string> {
+const template = {
+  async get(this: TView) {
     return getResource.call(this, "htm");
   },
 };
-const style: PropertyDescriptor = {
-  async get(this: TView): Promise<string> {
+const style = {
+  async get(this: TView) {
     return getResource.call(this, "css");
   },
 };
-const script: PropertyDescriptor = {
-  async get(this: TView): Promise<string> {
+const script = {
+  async get(this: TView) {
     return getResource.call(this, "js");
   },
 };
@@ -90,5 +88,5 @@ export const fix = (siblings: TView[]) => {
     fix(value.children);
   });
 };
-export const selector: string = selectors.map((el) => `a[href${el}]`).join();
-export const favicon: string = uid();
+export const selector = selectors.map((el) => `a[href${el}]`).join();
+export const favicon = uid();
