@@ -29,7 +29,7 @@ const properties = {
   full: { default: true, type: "boolean" },
   icon: { default: null, nullable, type: "string" },
   id: { type: "string" },
-  image: { default: null, nullable, type: "string" },
+  img: { default: null, nullable, type: "string" },
   keywords: {
     default: [],
     items: { type: "string" },

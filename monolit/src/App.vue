@@ -24,7 +24,7 @@ v-head
   meta(:content="the?.name", property="og:title", v-if="the?.name")
   meta(:content="the?.type", property="og:type", v-if="the?.type")
   meta(:content="canonical", property="og:url", v-if="canonical")
-  meta(:content="the?.image", property="og:image", v-if="the?.image")
+  meta(:content="the?.img", property="og:image", v-if="the?.img")
   meta(:content="the?.alt", property="og:image:alt", v-if="the?.alt")
   link(
     :href="`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='${mdi[the?.favicon ?? 'mdiWeb']}'/></svg>`",

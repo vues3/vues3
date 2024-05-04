@@ -143,11 +143,11 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
         )
         q-img.q-mt-md.rounded-borders(
           :ratio="16 / 9",
-          :src="`${base}${the.image}`",
-          v-if="the.image"
+          :src="`${base}${the.img}`",
+          v-if="the.img"
         )
           q-btn.all-pointer-events.absolute(
-            @click="the.image = null",
+            @click="the.img = null",
             color="white",
             dense,
             icon="close",
@@ -156,7 +156,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
             style="top: 8px; right: 8px",
             text-color="black"
           )
-          .absolute-bottom.text-center the.image
+          .absolute-bottom.text-center the.img
           template(#error)
             .absolute-full.flex-center.flex
               q-btn(
@@ -164,7 +164,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
                 color="primary",
                 label="Загрузить картинку"
               )
-        q-img.q-mt-md.rounded-borders(:ratio="16 / 9", v-if="!the.image")
+        q-img.q-mt-md.rounded-borders(:ratio="16 / 9", v-if="!the.img")
           .absolute-full.flex-center.flex
             q-btn(@click="click", color="primary", label="Загрузить картинку")
 q-page.column.full-height(v-if="the")
@@ -268,10 +268,10 @@ const onUnmounted = async (ext: string, key: keyof TView) => {
   save.call(the.value, ext, (await the.value[key]) as string);
 };
 const loc = computed({
-  get(): null | string {
+  get() {
     return the.value.loc ?? null;
   },
-  set(value: null | string) {
+  set(value) {
     the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
   },
 });
@@ -290,6 +290,6 @@ watch(files, async (newFiles) => {
   const [file] = newFiles ?? [];
   const { filePath, message } = await putImage(file);
   if (message) $q.notify({ message });
-  else if (filePath) the.value.image = `/${filePath}`;
+  else if (filePath) the.value.img = `/${filePath}`;
 });
 </script>

@@ -31,14 +31,16 @@ import type { Ref } from "vue";
 
 import { useFileDialog } from "@vueuse/core";
 import { fonts } from "app/uno.config";
+import mimes from "assets/mimes.json";
 import VLinkDialog from "components/VLinkDialog.vue";
 import VTemplateDialog from "components/VTemplateDialog.vue";
 import "daisyui/dist/full.css";
-import { useQuasar } from "quasar";
-import { putImage } from "stores/app";
+import mime from "mime";
+import { uid, useQuasar } from "quasar";
+import { urls } from "stores/app";
 import { $ } from "stores/data";
 import { accept } from "stores/defaults";
-import { base } from "stores/s3";
+import { putFile } from "stores/s3";
 import { nextTick, ref, watch } from "vue";
 
 const props = withDefaults(
@@ -54,13 +56,19 @@ const showTemplateDialog = ref(false);
 const showLinkDialog = ref(false);
 const $q = useQuasar();
 const editor: Ref<QEditor | undefined> = ref();
+const message =
+  "Тип графического файла не подходит для использования в сети интернет";
 const insertImage = (file: File) => {
-  (async () => {
-    const { filePath, message } = await putImage(file);
-    if (message) $q.notify({ message });
-    else if (filePath)
-      editor.value?.runCmd("insertImage", `${base.value ?? ""}/${filePath}`);
-  })().catch(() => {});
+  const { type } = file;
+  if (mimes.includes(type)) {
+    const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
+    putFile(filePath, type, file).catch(() => {});
+    urls[filePath] = URL.createObjectURL(file);
+    editor.value?.runCmd(
+      "insertHTML",
+      `<img src="${urls[filePath] ?? ""}" data-src="${filePath}">`,
+    );
+  } else $q.notify({ message });
 };
 const capture = (evt: ClipboardEvent | DragEvent) => {
   const { files = [] } =
@@ -154,6 +162,10 @@ const toolbar = [
   ["undo", "redo"],
   ["upload", "dashboard", "share"],
 ] as const;
+Object.keys(urls).forEach((url) => {
+  URL.revokeObjectURL(urls[url] ?? "");
+  urls[url] = undefined;
+});
 watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });

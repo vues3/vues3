@@ -76,7 +76,7 @@ const template = {
     setFile.call(this, "htm", value);
   },
 };
-const urls: Record<string, string | undefined> = {};
+export const urls: Record<string, string | undefined> = {};
 const html = {
   async get(this: TView) {
     const doc = parser.parseFromString(
@@ -88,12 +88,6 @@ const html = {
       a.innerHTML = link.innerHTML;
       a.setAttribute("href", link.attributes.getNamedItem("to")?.value ?? "");
       link.replaceWith(a);
-    });
-    Object.keys(urls).forEach((url) => {
-      if (![...doc.images].find((image) => image.src === url)) {
-        URL.revokeObjectURL(urls[url] ?? "");
-        urls[url] = undefined;
-      }
     });
     (
       await Promise.all(
@@ -130,7 +124,6 @@ const html = {
       `<head><base href="//"></head><body>${value}</body>`,
       "text/html",
     );
-
     doc.querySelectorAll("a").forEach((a) => {
       const href = a.attributes.getNamedItem("href")?.value ?? "";
       if (
@@ -142,7 +135,6 @@ const html = {
         a.replaceWith(link);
       }
     });
-
     [...doc.images].forEach((image) => {
       if (image.dataset.src) {
         image.setAttribute("src", image.dataset.src);
