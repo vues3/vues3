@@ -63,10 +63,10 @@ const insertImage = (file: File) => {
   if (mimes.includes(type)) {
     const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
     putFile(filePath, type, file).catch(() => {});
-    urls[filePath] = URL.createObjectURL(file);
+    urls.set(filePath, URL.createObjectURL(file));
     editor.value?.runCmd(
       "insertHTML",
-      `<img src="${urls[filePath] ?? ""}" data-src="${filePath}">`,
+      `<img src="${urls.get(filePath) ?? ""}" data-src="${filePath}">`,
     );
   } else $q.notify({ message });
 };
@@ -162,10 +162,6 @@ const toolbar = [
   ["undo", "redo"],
   ["upload", "dashboard", "share"],
 ] as const;
-Object.keys(urls).forEach((url) => {
-  URL.revokeObjectURL(urls[url] ?? "");
-  urls[url] = undefined;
-});
 watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });

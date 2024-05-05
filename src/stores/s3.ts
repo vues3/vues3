@@ -7,10 +7,9 @@ import {
   HeadObjectCommand,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
 export const bucket = ref("");
-export const wendpoint = ref("");
 export const S3: Ref<S3Client | undefined> = ref();
 export const headObject = (Key: string) => {
   const Bucket = bucket.value;
@@ -43,9 +42,3 @@ export const getObject = async (Key: string, ResponseCacheControl?: string) => {
     }
   return new Response();
 };
-
-export const base = computed(
-  () =>
-    S3.value &&
-    `${wendpoint.value ? wendpoint.value : "https:/"}/${bucket.value}`,
-);

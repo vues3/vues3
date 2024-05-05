@@ -95,16 +95,6 @@ q-page.column
               )
                 template(#prepend)
                   q-icon(name="link")
-              q-input(
-                :disable="!!provider",
-                dark,
-                filled,
-                hint="",
-                label="website endpoint url",
-                v-model.trim="wendpoint"
-              )
-                template(#prepend)
-                  q-icon(name="web")
           q-toggle.q-mb-md(label="remember credentials", v-model="remember")
           div
             q-btn.full-width(color="primary", label="LogIn", type="submit")
@@ -119,7 +109,7 @@ import { FetchHttpHandler } from "@smithy/fetch-http-handler";
 import { set, useStorage } from "@vueuse/core";
 import { useQuasar } from "quasar";
 import { accessKeyId, rightDrawer } from "stores/app";
-import { S3, bucket, wendpoint } from "stores/s3";
+import { S3, bucket } from "stores/s3";
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
@@ -128,7 +118,6 @@ interface IRegion {
   label: string;
   region: string;
   regions: string[];
-  wendpoint: string;
 }
 
 interface ICred {
@@ -138,14 +127,12 @@ interface ICred {
   provider: string;
   region: string;
   secretAccessKey: string;
-  wendpoint: string;
 }
 
 const router = useRouter();
 const $q = useQuasar();
 accessKeyId.value = undefined;
 bucket.value = "";
-wendpoint.value = "";
 rightDrawer.value = undefined;
 const secretAccessKey = ref("");
 const region = ref("");
@@ -183,16 +170,12 @@ const providers: IRegion[] = [
       "me-south-1",
       "sa-east-1",
     ],
-    get wendpoint() {
-      return `https://s3.${region.value}.amazonaws.com`;
-    },
   },
   {
     endpoint: "https://storage.yandexcloud.net",
     label: "yandex",
     region: "ru-central1",
     regions: ["ru-central1"],
-    wendpoint: "https://website.yandexcloud.net",
   },
 ];
 const provider: Ref<IRegion | undefined> = ref();
@@ -210,10 +193,6 @@ watch(provider, (value) => {
     set(endpoint, "");
   }
 });
-watch(region, () => {
-  if (provider.value) set(wendpoint, provider.value.wendpoint);
-  else set(wendpoint, "");
-});
 watch(cred, (value) => {
   if (value) {
     set(bucket, value.label);
@@ -225,7 +204,6 @@ watch(cred, (value) => {
     );
     set(region, value.region);
     set(endpoint, value.endpoint);
-    set(wendpoint, value.wendpoint);
   } else {
     set(bucket, "");
     set(accessKeyId, "");
@@ -233,7 +211,6 @@ watch(cred, (value) => {
     set(provider, undefined);
     set(region, "");
     set(endpoint, "");
-    set(wendpoint, "");
   }
 });
 let s3Client: S3Client | undefined;
@@ -261,7 +238,6 @@ const login = async () => {
                 provider: provider.value?.label,
                 region: region.value,
                 secretAccessKey: secretAccessKey.value,
-                wendpoint: wendpoint.value,
               },
             ]
           : []),

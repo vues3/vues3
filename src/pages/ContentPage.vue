@@ -141,11 +141,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
           type="textarea",
           v-model.trim="the.alt"
         )
-        q-img.q-mt-md.rounded-borders(
-          :ratio="16 / 9",
-          :src="`${base}${the.img}`",
-          v-if="the.img"
-        )
+        q-img.q-mt-md.rounded-borders(:ratio="16 / 9", :src, v-if="the.img")
           q-btn.all-pointer-events.absolute(
             @click="the.img = null",
             color="white",
@@ -230,17 +226,20 @@ q-page.column.full-height.bg-light(v-else)
 </template>
 <script setup lang="ts">
 import type { TView } from "stores/data";
+import type { ComputedRef, Ref } from "vue";
 
 import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
 import { useFileDialog } from "@vueuse/core";
 import changefreq from "assets/changefreq.json";
+import mimes from "assets/mimes.json";
 import themes from "assets/themes.json";
 import types from "assets/types.json";
 import VInteractiveTree from "components/VInteractiveTree.vue";
 import VSourceCode from "components/VSourceCode.vue";
 import VWysiwyg from "components/VWysiwyg.vue";
-import { useQuasar } from "quasar";
-import { config, putImage, rightDrawer, save } from "stores/app";
+import mime from "mime";
+import { uid, useQuasar } from "quasar";
+import { config, rightDrawer, save, urls } from "stores/app";
 import { $, views } from "stores/data";
 import {
   accept,
@@ -252,44 +251,62 @@ import {
   page,
   reset,
 } from "stores/defaults";
-import { base } from "stores/s3";
+import { getObject, putFile } from "stores/s3";
 import { computed, ref, watch } from "vue";
 
 const $q = useQuasar();
 const show = ref(false);
 const pagination = ref({ itemsPerPage, page });
 const icons = ref((materialIcons as Record<string, object[]>).icons);
-const the = computed(
+const the: ComputedRef<TView | undefined> = computed(
   () =>
     views.value.find(({ id }) => id === config.value.content.selected) ??
     views.value[0],
 );
 const onUnmounted = async (ext: string, key: keyof TView) => {
-  save.call(the.value, ext, (await the.value[key]) as string);
+  save.call(the.value, ext, (await the.value?.[key]) as string);
 };
 const loc = computed({
   get() {
-    return the.value.loc ?? null;
+    return the.value?.loc ?? null;
   },
   set(value) {
-    the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
+    if (the.value) the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
   },
 });
 const { files, open } = useFileDialog({ accept, capture, multiple, reset });
 const click = () => {
   open();
 };
+const src: Ref<string | undefined> = ref();
 watch(
   the,
-  (newValue, oldValue) => {
-    if (newValue !== oldValue) rightDrawer.value = true;
+  async (value) => {
+    if (value?.img) {
+      if (!urls.has(value.img))
+        urls.set(
+          value.img,
+          URL.createObjectURL(await (await getObject(value.img)).blob()),
+        );
+      src.value = urls.get(value.img);
+    } else src.value = undefined;
   },
   { immediate },
 );
-watch(files, async (newFiles) => {
-  const [file] = newFiles ?? [];
-  const { filePath, message } = await putImage(file);
-  if (message) $q.notify({ message });
-  else if (filePath) the.value.img = `/${filePath}`;
+const message =
+  "Тип графического файла не подходит для использования в сети интернет";
+watch(files, (value) => {
+  if (value && the.value) {
+    const [file] = value;
+    const { type } = file;
+    if (mimes.includes(type)) {
+      const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
+      putFile(filePath, type, file).catch(() => {});
+      urls.set(filePath, URL.createObjectURL(file));
+      the.value.img = filePath;
+      src.value = urls.get(filePath);
+    } else $q.notify({ message });
+  }
 });
+rightDrawer.value = true;
 </script>

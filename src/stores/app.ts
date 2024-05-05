@@ -76,7 +76,7 @@ const template = {
     setFile.call(this, "htm", value);
   },
 };
-export const urls: Record<string, string | undefined> = {};
+export const urls = new Map<string, string>();
 const html = {
   async get(this: TView) {
     const doc = parser.parseFromString(
@@ -95,7 +95,7 @@ const html = {
           await Promise.all(
             [...doc.images].map((image) =>
               image.src &&
-              urls[image.src] === undefined &&
+              !urls.has(image.src) &&
               window.location.origin ===
                 new URL(image.src, window.location.origin).origin
                 ? getObject(image.src)
@@ -107,13 +107,13 @@ const html = {
     ).forEach((image, index) => {
       if (image)
         if (image.size)
-          urls[doc.images[index].src] = URL.createObjectURL(image);
-        else urls[doc.images[index].src] = "";
-      if (urls[doc.images[index].src]) {
+          urls.set(doc.images[index].src, URL.createObjectURL(image));
+        else urls.set(doc.images[index].src, "");
+      if (urls.get(doc.images[index].src)) {
         doc.images[index].setAttribute("data-src", doc.images[index].src);
         doc.images[index].setAttribute(
           "src",
-          urls[doc.images[index].src] ?? "",
+          urls.get(doc.images[index].src) ?? "",
         );
       }
     });
@@ -161,14 +161,10 @@ const script = {
   },
 };
 watch(S3, async (value) => {
-  if (value)
+  if (value) {
     $.value = JSON.parse(
       (await (await getObject("data.json", cache)).text()) || "{}",
     ) as TData;
-  else $.value = undefined;
-});
-watch(S3, async (newValue) => {
-  if (newValue) {
     const [localManifest, serverManifest] = (
       (await Promise.all([
         (await fetch("monolit/.vite/manifest.json")).json(),
@@ -182,11 +178,11 @@ watch(S3, async (newValue) => {
         }),
       ])) as Record<string, Record<string, string | string[]>>[]
     ).map(
-      (value) =>
+      (element) =>
         new Set(
           [
-            ...Object.values(value).map(({ file }) => file),
-            ...(value["index.html"].css || []),
+            ...Object.values(element).map(({ file }) => file),
+            ...(element["index.html"].css || []),
           ].filter(Boolean) as string[],
         ),
     );
@@ -197,18 +193,24 @@ watch(S3, async (newValue) => {
         .add("robots.txt"),
     ]
       .filter((x) => !serverManifest.has(x))
-      .forEach((value) => {
+      .forEach((element) => {
         (async () => {
-          const body = await (await fetch(`monolit/${value}`)).blob();
-          putObject(value, body.type, body).catch(() => {});
+          const body = await (await fetch(`monolit/${element}`)).blob();
+          putObject(element, body.type, body).catch(() => {});
         })().catch(() => {});
       });
+  } else {
+    $.value = undefined;
+    urls.forEach((url, key) => {
+      URL.revokeObjectURL(url);
+      urls.delete(key);
+    });
   }
 });
 watchDebounced(
   $,
-  (value, oldValue) => {
-    if (value && oldValue)
+  (value) => {
+    if (value)
       putObject("data.json", "application/json", JSON.stringify(value)).catch(
         () => {},
       );
