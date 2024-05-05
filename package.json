@@ -44,7 +44,7 @@
     "daisyui": "^4.10.5",
     "glightbox": "^3.3.0",
     "js-beautify": "^1.15.1",
-    "json-schema-to-ts": "^3.0.1",
+    "json-schema-to-ts": "^3.1.0",
     "mime": "^4.0.3",
     "quasar": "^2.15.4",
     "to-xml": "^0.1.11",
