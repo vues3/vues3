@@ -8,6 +8,7 @@ q-page.column
             .col-12.col-md.min-w-300
               .text-overline WEBSITE
               q-select(
+                :input-debounce,
                 :options="creds",
                 clearable,
                 dark,
@@ -19,6 +20,7 @@ q-page.column
                 template(#prepend)
                   q-icon(name="save")
               q-input(
+                :debounce,
                 :rules="[(v) => !!v || 'Item is required']",
                 dark,
                 filled,
@@ -30,6 +32,7 @@ q-page.column
                 template(#prepend)
                   q-icon(name="language")
               q-input(
+                :debounce,
                 :rules="[(v) => !!v || 'Item is required']",
                 dark,
                 filled,
@@ -40,6 +43,7 @@ q-page.column
                 template(#prepend)
                   q-icon(name="key")
               q-input(
+                :debounce,
                 :rules="[(v) => !!v || 'Item is required']",
                 :type="isPwd ? 'password' : 'text'",
                 dark,
@@ -58,6 +62,7 @@ q-page.column
             .col-12.col-md.min-w-300
               .text-overline CLOUD
               q-select(
+                :input-debounce,
                 :options="providers",
                 clearable,
                 dark,
@@ -70,6 +75,7 @@ q-page.column
                   q-icon(name="cloud")
               q-select(
                 :disable="provider && provider.label === 'yandex'",
+                :input-debounce,
                 :options="regions",
                 :rules="[(v) => !!v || 'Item is required']",
                 @input-value="(val) => { region = val; }",
@@ -77,7 +83,6 @@ q-page.column
                 fill-input,
                 filled,
                 hide-selected,
-                input-debounce="0",
                 label="region",
                 lazy-rules,
                 use-input,
@@ -86,6 +91,7 @@ q-page.column
                 template(#prepend)
                   q-icon(name="flag")
               q-input(
+                :debounce,
                 :disable="!!provider",
                 dark,
                 filled,
@@ -109,6 +115,7 @@ import { FetchHttpHandler } from "@smithy/fetch-http-handler";
 import { set, useStorage } from "@vueuse/core";
 import { useQuasar } from "quasar";
 import { accessKeyId, rightDrawer } from "stores/app";
+import { debounce, inputDebounce } from "stores/defaults";
 import { S3, bucket } from "stores/s3";
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";

@@ -7,6 +7,7 @@ q-dialog(full-height, full-width, v-model="model")
       q-btn(dense, flat, icon="close", round, v-close-popup)
     q-card-section
       q-select(
+        :input-debounce,
         :options,
         emit-value,
         filled,
@@ -35,6 +36,7 @@ import type { QEditor } from "quasar";
 
 import options from "assets/templates.json";
 import { html_beautify } from "js-beautify";
+import { inputDebounce } from "stores/defaults";
 import { ref, watch } from "vue";
 
 defineProps<{

@@ -2,25 +2,25 @@ import type { ValidateFunction } from "ajv";
 import type { TData, TView } from "stores/data";
 import type { Ref } from "vue";
 
-import { useDebounceFn, useStorage, watchDebounced } from "@vueuse/core";
+import { useStorage } from "@vueuse/core";
 import Ajv from "ajv";
 import mimes from "assets/mimes.json";
 import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import { FromSchema } from "json-schema-to-ts";
 import mime from "mime";
-import { uid } from "quasar";
+import { debounce, uid } from "quasar";
 import Config from "src/schemas/config";
 import { $, code, views } from "stores/data";
 import {
   cache,
   coerceTypes,
   configurable,
-  debounce,
   deep,
   immediate,
   mergeDefaults,
   removeAdditional,
   useDefaults,
+  wait,
 } from "stores/defaults";
 import { S3, bucket, getObject, putFile, putObject } from "stores/s3";
 import { toXML } from "to-xml";
@@ -63,10 +63,10 @@ export function save(this: TView | undefined, ext: string, text: string) {
     Reflect.defineProperty(this, "lastmod", { value });
   }
 }
-const debounceFn = useDebounceFn(save, debounce);
+const debounceSave = debounce(save, wait);
 function setFile(this: TView, ext: string, value: string) {
   Object.defineProperty(this, ext, { configurable, value });
-  debounceFn.call(this, ext, value).catch(() => {});
+  debounceSave.call(this, ext, value);
 }
 const template = {
   async get(this: TView) {
@@ -207,15 +207,15 @@ watch(S3, async (value) => {
     });
   }
 });
-watchDebounced(
+watch(
   $,
-  (value) => {
+  debounce((value) => {
     if (value)
       putObject("data.json", "application/json", JSON.stringify(value)).catch(
         () => {},
       );
-  },
-  { debounce, deep },
+  }, wait),
+  { deep },
 );
 export const accessKeyId: Ref<string | undefined> = ref();
 export const config = useStorage(
@@ -237,12 +237,11 @@ const sitemap = computed(() => ({
     })),
   },
 }));
-watchDebounced(
+watch(
   sitemap,
-  (value) => {
+  debounce((value) => {
     putObject("sitemap.xml", "application/xml", toXML(value)).catch(() => {});
-  },
-  { debounce },
+  }, wait),
 );
 watch(
   config,

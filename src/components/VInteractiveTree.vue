@@ -25,6 +25,7 @@ q-btn-group.q-mx-xs(flat, spread)
         q-checkbox.q-mr-xs(dense, v-model="prop.node.enabled")
         q-input.full-width.min-w-96(
           :bg-color="prop.node.id === selected ? 'primary' : undefined",
+          :debounce,
           :readonly="!prop.node.contenteditable",
           :type,
           @click.stop="updateSelected(prop.node.id)",
@@ -40,7 +41,7 @@ import type { TResource, TView } from "stores/data";
 import type { Ref } from "vue";
 
 import { uid, useQuasar } from "quasar";
-import { cancel, immediate, persistent } from "stores/defaults";
+import { cancel, debounce, immediate, persistent } from "stores/defaults";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 
 interface IEmits {

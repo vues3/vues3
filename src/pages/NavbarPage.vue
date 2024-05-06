@@ -8,6 +8,7 @@ q-drawer(bordered, side="right", v-if="$?.navbar", v-model="rightDrawer")
         q-item-label Настройки панели навигации
     q-card-section
       q-select(
+        :input-debounce,
         :options="themes",
         clearable,
         label="Цветовая тема",
@@ -28,6 +29,7 @@ q-drawer(bordered, side="right", v-if="$?.navbar", v-model="rightDrawer")
             q-item-section
               q-item-label style scoped
       q-select(
+        :input-debounce,
         hide-dropdown-icon,
         label="Классы навигатора",
         multiple,
@@ -38,6 +40,7 @@ q-drawer(bordered, side="right", v-if="$?.navbar", v-model="rightDrawer")
         v-model.trim="$.navbar.classes"
       )
       q-select(
+        :input-debounce,
         hide-dropdown-icon,
         label="Скролл классы",
         multiple,
@@ -97,7 +100,7 @@ import { useQuasar } from "quasar";
 import Navbar from "src/schemas/navbar";
 import { config, rightDrawer } from "stores/app";
 import { $, validateNavbar } from "stores/data";
-import { cancel, persistent } from "stores/defaults";
+import { cancel, inputDebounce, persistent } from "stores/defaults";
 
 const $q = useQuasar();
 const title = "Сброс навбара";

@@ -22,6 +22,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
           q-item-label Настройки слоя
       q-card-section
         q-select(
+          :input-debounce,
           :options="themes",
           clearable,
           hint="the.theme",
@@ -59,6 +60,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
           q-item-label Настройки SEO
       q-card-section
         q-select(
+          :input-debounce,
           :options="types",
           clearable,
           hint="the.type",
@@ -66,11 +68,13 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
           v-model="the.type"
         )
         q-input(
+          :debounce,
           hint="the.title",
           label="Заголовок страницы",
           v-model.trim="the.title"
         )
         q-input(
+          :debounce,
           autogrow,
           hint="the.description",
           label="Описание страницы",
@@ -78,6 +82,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
           v-model.trim="the.description"
         )
         q-select(
+          :input-debounce,
           hide-dropdown-icon,
           hint="the.keywords",
           label="Ключевые слова",
@@ -89,6 +94,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
           v-model.trim="the.keywords"
         )
         q-input(
+          :debounce,
           hint="the.loc",
           label="Постоянная ссылка",
           prefix="/",
@@ -96,6 +102,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
           v-model.trim="loc"
         )
         q-select(
+          :input-debounce,
           :options="changefreq",
           clearable,
           hint="the.changefreq",
@@ -103,6 +110,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
           v-model="the.changefreq"
         )
         q-input(
+          :debounce,
           hint="the.priority",
           label="Приоритет",
           max="1",
@@ -112,6 +120,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
           v-model.number="the.priority"
         )
         q-input(
+          :debounce,
           clearable,
           hint="the.icon",
           label="Иконка",
@@ -121,6 +130,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
             q-icon.cursor-pointer(:name="the.icon ?? 'mdi-tray-arrow-up'")
               q-popup-proxy.column.items-center.justify-center(v-model="show")
                 q-input.q-ma-md(
+                  :debounce,
                   clearable,
                   dense,
                   label="Поиск...",
@@ -135,6 +145,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
                   v-model:model-pagination="pagination"
                 )
         q-input(
+          :debounce,
           autogrow,
           hint="the.alt",
           label="Описание картинки",
@@ -244,8 +255,10 @@ import { $, views } from "stores/data";
 import {
   accept,
   capture,
+  debounce,
   filter,
   immediate,
+  inputDebounce,
   itemsPerPage,
   multiple,
   page,
