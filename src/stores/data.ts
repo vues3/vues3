@@ -106,8 +106,8 @@ const path = {
   get(this: TView) {
     return this.branch
       .map(
-        ({ id, label }) =>
-          encodeURIComponent(label?.replace(" ", "_") ?? "") || id,
+        ({ id, text }) =>
+          encodeURIComponent(text?.replace(" ", "_") ?? "") || id,
       )
       .slice(1)
       .join("/");
@@ -122,7 +122,7 @@ const url = {
 };
 const name = {
   get(this: TView) {
-    return this.title ?? this.label;
+    return this.title ?? this.text;
   },
 };
 const favicon = {
@@ -185,6 +185,7 @@ watch(
   { deep },
 );
 const value = undefined;
+const flush = "sync";
 watch(
   $,
   (newValue) => {
@@ -196,5 +197,5 @@ watch(
       validate(newValue);
     }
   },
-  { deep },
+  { deep, flush },
 );

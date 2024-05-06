@@ -35,12 +35,12 @@ const properties = {
     items: { type: "string" },
     type: "array",
   },
-  label: { default: null, nullable, type: "string" },
   lastmod: { default: null, nullable, type: "string" },
   loc: { default: null, nullable, type: "string" },
   priority: { default: null, maximum: 1, minimum: 0, nullable, type: "number" },
   scoped: { default: true, type: "boolean" },
   setup: { default: true, type: "boolean" },
+  text: { default: null, nullable, type: "string" },
   theme: {
     default: null,
     enum: [

@@ -95,6 +95,8 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
         )
         q-input(
           :debounce,
+          :error="!!the.loc && !!views.find((element) => element.id !== the.id && (element.path === the.loc || element.loc === the.loc))",
+          error-message="Такой путь уже используется",
           hint="the.loc",
           label="Постоянная ссылка",
           prefix="/",

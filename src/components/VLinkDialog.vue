@@ -18,7 +18,7 @@ q-dialog(full-height, full-width, v-model="model")
           )
             template(#default-header="prop")
               q-icon.q-tree__icon.q-mr-sm(:name="prop.node.icon || 'mdi-web'")
-              div {{ prop.node.label }}
+              div {{ prop.node.text }}
     q-card-actions.text-primary(align="right")
       q-btn(flat, label="Отмена", v-close-popup)
       q-btn(
