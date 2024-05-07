@@ -73,7 +73,7 @@ v-head
         )
           Suspense
             component(:is="root", :the="views[0]")
-      label.sticky.right-1.top-1.col-start-1.row-start-1.flex.size-12.items-center.justify-center.justify-self-end.rounded-full.border.border-neutral-500.bg-neutral-50.text-neutral-500(
+      label.sticky.right-1.top-1.col-start-1.row-start-1.flex.size-12.items-center.justify-center.justify-self-end.rounded-full.border.border-neutral-500.bg-neutral-50.text-neutral-500.transition-colors(
         class="hover:border-neutral-600 hover:bg-neutral-100 hover:text-neutral-600",
         for="drawer",
         role="button"
