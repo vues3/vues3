@@ -56,12 +56,10 @@ v-head
   )
     .z-40(
       :class="[...(ready ? [] : $.navbar?.scroll ?? []), ...($.navbar?.classes ?? [])]",
-      :data-theme="$.navbar?.theme",
       v-if="views[0]?.enabled"
     )
-      .navbar
-        Suspense
-          component(:is="navigator", :the)
+      Suspense
+        component(:is="navigator", :the)
     router-view
   .drawer-side.z-50(v-if="views[0]?.enabled")
     label.drawer-overlay(for="drawer")
@@ -75,10 +73,12 @@ v-head
         )
           Suspense
             component(:is="root", :the="views[0]")
-      label.btn.btn-circle.btn-ghost.sticky.right-1.top-1.col-start-1.row-start-1.justify-self-end(
-        for="drawer"
+      label.sticky.right-1.top-1.col-start-1.row-start-1.flex.size-12.items-center.justify-center.justify-self-end.rounded-full.border.border-neutral-500.bg-neutral-50.text-neutral-500(
+        class="hover:border-neutral-600 hover:bg-neutral-100 hover:text-neutral-600",
+        for="drawer",
+        role="button"
       )
-        svg.h-6.w-6
+        svg.size-6.fill-current
           path(:d="mdi.mdiClose")
 </template>
 <script setup lang="ts">
