@@ -51,7 +51,7 @@ const value = ref(await props.modelValue);
 watch(
   () => props.modelValue,
   async (newValue) => {
-    value.value = await newValue;
+    if (value.value !== (await newValue)) value.value = await newValue;
   },
 );
 </script>

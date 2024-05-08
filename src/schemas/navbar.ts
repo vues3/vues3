@@ -2,78 +2,54 @@ import type { JSONSchema } from "json-schema-to-ts";
 
 const $id = "urn:jsonschema:navbar";
 const additionalProperties = false;
-const nullable = true;
 const properties = {
-  classes: {
-    default: [
-      "rounded-box",
-      "fixed",
-      "top-6",
-      "inset-x-6",
-      "opacity-0",
-      "shadow-xl",
-      "transition-opacity",
-      "duration-1000",
-      "ease-out",
-      "hover:opacity-100",
-    ],
-    description: "Классы",
-    items: { type: "string" },
-    type: "array",
-  },
   scoped: { default: true, description: "", type: "boolean" },
   script: {
     default: `import {
-  useSpeechSynthesis,
-  useNavigatorLanguage
+    useSpeechSynthesis,
+    useNavigatorLanguage
 } from "@vueuse/core";
- const {
-  the
-} = defineProps(["the"]);
+const props = defineProps(["the", "ready"]);
 const {
-  language: lang
+    language: lang
 } = useNavigatorLanguage();
 const {
-  speak
-} = useSpeechSynthesis(() => the?.description, {
-  lang
+    speak,
+    isSupported
+} = useSpeechSynthesis(() => props.the.description, {
+    lang
 });`,
     description: "Скрипты",
     type: "string",
   },
-  scroll: {
-    default: ["opacity-100"],
-    description: "Скролл классы",
-    items: { type: "string" },
-    type: "array",
-  },
   setup: { default: true, description: "", type: "boolean" },
   style: { default: "", description: "Стили", type: "string" },
   template: {
-    default: `<div class="flex-none">
-    <label class="btn btn-square btn-ghost" for="drawer">
-        <svg class="fill-current h-6 w-6">
-            <path :d="mdi.mdiMenu"></path>
-        </svg>
-    </label>
-</div>
-<div class="flex-1 truncate">
-    <svg class="fill-current h-6 w-6 mx-1">
-        <path :d="mdi[\`\${the?.favicon??'mdiWeb'}\`]"></path>
-    </svg>
-    {{ the?.name }}
-</div>
-<div v-if="the?.description" class="flex-none">
-    <button class="btn btn-square btn-ghost" @click="speak">
-        <svg class="fill-current h-6 w-6">
-            <path :d="mdi.mdiVolumeHigh"></path>
-        </svg>
-    </button>
+    default: `<div :class="{'opacity-100':!ready}" class="z-40 flex bg-base-100 pa-2 rounded-box fixed top-6 inset-x-6 opacity-0 shadow-xl transition-opacity duration-1000 hover:opacity-100">
+  <div class="inline-flex items-center flex-none">
+      <label class="flex size-12 items-center justify-center rounded-lg bg-base-100 text-neutral-500 transition-colors hover:bg-neutral-300 hover:text-neutral-600" role="button" for="drawer">
+          <svg class="fill-current size-6">
+              <path :d="mdi.mdiMenu"></path>
+          </svg>
+      </label>
+  </div>
+  <div class="inline-flex items-center flex-1 truncate">
+      <svg class="fill-current size-6 mx-1">
+          <path :d="mdi[\`\${the.favicon??'mdiWeb'}\`]"></path>
+      </svg>
+      {{ the?.name }}
+  </div>
+  <div class="inline-flex items-center flex-none" v-if="isSupported && the?.description">
+      <button class="flex size-12 items-center justify-center rounded-lg bg-base-100 text-neutral-500 transition-colors hover:bg-neutral-300 hover:text-neutral-600" @click="speak">
+          <svg class="fill-current size-6">
+              <path :d="mdi.mdiVolumeHigh"></path>
+          </svg>
+      </button>
+  </div>
 </div>`,
     description: "Шаблон",
     type: "string",
   },
-  theme: { default: null, description: "Тема", nullable, type: "string" },
 } as const;
 const type = "object";
 

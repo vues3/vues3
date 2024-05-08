@@ -45,8 +45,8 @@ v-head
     name="google-site-verification",
     v-if="$?.settings?.google"
   )
-.drawer.h-dvh
-  input#drawer.drawer-toggle(
+.relative.grid.h-dvh.w-full.auto-cols-auto
+  input#drawer.fixed.size-0.appearance-none.opacity-0(
     aria-labelledby="#drawer",
     type="checkbox",
     v-model="drawer"
@@ -54,12 +54,8 @@ v-head
   .drawer-content.snap-y.snap-mandatory.overflow-y-auto.scroll-smooth(
     @scroll.passive="start"
   )
-    .z-40(
-      :class="[...(ready ? [] : $.navbar?.scroll ?? []), ...($.navbar?.classes ?? [])]",
-      v-if="views[0]?.enabled"
-    )
-      Suspense
-        component(:is="navigator", :the)
+    Suspense
+      component(:is="navigator", :ready, :the, v-if="views[0]?.enabled")
     router-view
   .drawer-side.z-50(v-if="views[0]?.enabled")
     label.drawer-overlay(for="drawer")
@@ -121,3 +117,16 @@ router.beforeEach(() => {
   drawer.value = false;
 });
 </script>
+<style scoped>
+#drawer:checked ~ .drawer-side {
+  pointer-events: auto;
+  visibility: visible;
+  overflow-y: auto;
+}
+#drawer:checked ~ .drawer-side > *:not(.drawer-overlay) {
+  transform: translateX(0%);
+}
+#drawer:checked ~ .drawer-side > .drawer-overlay {
+  background-color: #0006;
+}
+</style>

@@ -7,49 +7,17 @@ q-drawer(bordered, side="right", v-if="$?.navbar", v-model="rightDrawer")
       q-item-section
         q-item-label Настройки панели навигации
     q-card-section
-      q-select(
-        :input-debounce,
-        :options="themes",
-        clearable,
-        label="Цветовая тема",
-        v-model="$.navbar.theme"
-      )
-        template(#prepend)
-          q-icon(name="mdi-theme-light-dark")
-      .q-pt-md
-        q-list
-          q-item(tag="label", v-ripple)
-            q-item-section(avatar)
-              q-checkbox(v-model="$.navbar.setup")
-            q-item-section
-              q-item-label script setup
-          q-item(tag="label", v-ripple)
-            q-item-section(avatar)
-              q-checkbox(v-model="$.navbar.scoped")
-            q-item-section
-              q-item-label style scoped
-      q-select(
-        :input-debounce,
-        hide-dropdown-icon,
-        label="Классы навигатора",
-        multiple,
-        new-value-mode="add",
-        stack-label,
-        use-chips,
-        use-input,
-        v-model.trim="$.navbar.classes"
-      )
-      q-select(
-        :input-debounce,
-        hide-dropdown-icon,
-        label="Скролл классы",
-        multiple,
-        new-value-mode="add",
-        stack-label,
-        use-chips,
-        use-input,
-        v-model.trim="$.navbar.scroll"
-      )
+      q-list
+        q-item(tag="label", v-ripple)
+          q-item-section(avatar)
+            q-checkbox(v-model="$.navbar.setup")
+          q-item-section
+            q-item-label script setup
+        q-item(tag="label", v-ripple)
+          q-item-section(avatar)
+            q-checkbox(v-model="$.navbar.scoped")
+          q-item-section
+            q-item-label style scoped
       q-btn.full-width.q-ma-md(
         @click="resetNavbar",
         color="primary",
@@ -94,13 +62,12 @@ q-page.column.full-height(v-if="$?.navbar")
 import type { QDialogSelectionPrompt } from "quasar";
 import type { TNavbar } from "stores/data";
 
-import themes from "assets/themes.json";
 import VSourceCode from "components/VSourceCode.vue";
 import { useQuasar } from "quasar";
 import Navbar from "src/schemas/navbar";
 import { config, rightDrawer } from "stores/app";
 import { $, validateNavbar } from "stores/data";
-import { cancel, inputDebounce, persistent } from "stores/defaults";
+import { cancel, persistent } from "stores/defaults";
 
 const $q = useQuasar();
 const title = "Сброс навбара";
@@ -121,5 +88,5 @@ const resetNavbar = () => {
     },
   );
 };
-rightDrawer.value = true;
+rightDrawer.value = false;
 </script>
