@@ -15,7 +15,7 @@
     "plugin:@typescript-eslint/stylistic-type-checked",
     "plugin:vue/vue3-strongly-recommended",
     "plugin:vue-pug/vue3-recommended",
-    "plugin:sonarjs/recommended",
+    "plugin:sonarjs/recommended-legacy",
     "plugin:perfectionist/recommended-natural",
     "plugin:prettier/recommended"
   ],
