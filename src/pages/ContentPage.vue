@@ -21,36 +21,25 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
         q-item-section
           q-item-label Настройки слоя
       q-card-section
-        q-select(
-          :input-debounce,
-          :options="themes",
-          clearable,
-          hint="the.theme",
-          label="Цветовая тема",
-          v-model="the.theme"
-        )
-          template(#prepend)
-            q-icon(name="mdi-theme-light-dark")
-        .q-pt-md
-          q-list
-            q-item(tag="label", v-ripple)
-              q-item-section(avatar)
-                q-checkbox(v-model="the.full")
-              q-item-section
-                q-item-label Полный экран
-                q-item-label(caption) the.full
-            q-item(tag="label", v-ripple)
-              q-item-section(avatar)
-                q-checkbox(v-model="the.setup")
-              q-item-section
-                q-item-label script setup
-                q-item-label(caption) the.setup
-            q-item(tag="label", v-ripple)
-              q-item-section(avatar)
-                q-checkbox(v-model="the.scoped")
-              q-item-section
-                q-item-label style scoped
-                q-item-label(caption) the.scoped
+        q-list
+          q-item(tag="label", v-ripple)
+            q-item-section(avatar)
+              q-checkbox(v-model="the.full")
+            q-item-section
+              q-item-label Полный экран
+              q-item-label(caption) the.full
+          q-item(tag="label", v-ripple)
+            q-item-section(avatar)
+              q-checkbox(v-model="the.setup")
+            q-item-section
+              q-item-label script setup
+              q-item-label(caption) the.setup
+          q-item(tag="label", v-ripple)
+            q-item-section(avatar)
+              q-checkbox(v-model="the.scoped")
+            q-item-section
+              q-item-label style scoped
+              q-item-label(caption) the.scoped
     q-separator
     q-card(flat)
       q-item.text-teal
@@ -245,7 +234,6 @@ import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set
 import { useFileDialog } from "@vueuse/core";
 import changefreq from "assets/changefreq.json";
 import mimes from "assets/mimes.json";
-import themes from "assets/themes.json";
 import types from "assets/types.json";
 import VInteractiveTree from "components/VInteractiveTree.vue";
 import VSourceCode from "components/VSourceCode.vue";
