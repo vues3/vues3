@@ -25,9 +25,9 @@ const {
   setup: { default: true, description: "", type: "boolean" },
   style: { default: "", description: "Стили", type: "string" },
   template: {
-    default: `<div :class="{'opacity-100':!ready}" class="z-40 flex bg-base-100 pa-2 rounded-box fixed top-6 inset-x-6 opacity-0 shadow-xl transition-opacity duration-1000 hover:opacity-100">
+    default: `<div :class="\`opacity-\${!ready*100}\`" class="flex bg-white pa-2 rounded-2xl fixed top-6 inset-x-6 shadow-xl transition-opacity duration-1000 hover:opacity-100">
   <div class="inline-flex items-center flex-none">
-      <label class="flex size-12 items-center justify-center rounded-lg bg-base-100 text-neutral-500 transition-colors hover:bg-neutral-300 hover:text-neutral-600" role="button" for="drawer">
+      <label class="flex size-12 items-center justify-center rounded-lg bg-white text-neutral-500 transition-colors hover:bg-neutral-300 hover:text-neutral-600" role="button" for="drawer">
           <svg class="fill-current size-6">
               <path :d="mdi.mdiMenu"></path>
           </svg>
@@ -40,7 +40,7 @@ const {
       {{ the?.name }}
   </div>
   <div class="inline-flex items-center flex-none" v-if="isSupported && the?.description">
-      <button class="flex size-12 items-center justify-center rounded-lg bg-base-100 text-neutral-500 transition-colors hover:bg-neutral-300 hover:text-neutral-600" @click="speak">
+      <button class="flex size-12 items-center justify-center rounded-lg bg-white text-neutral-500 transition-colors hover:bg-neutral-300 hover:text-neutral-600" @click="speak">
           <svg class="fill-current size-6">
               <path :d="mdi.mdiVolumeHigh"></path>
           </svg>

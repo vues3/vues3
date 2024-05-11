@@ -34,7 +34,6 @@ import { fonts } from "app/uno.config";
 import mimes from "assets/mimes.json";
 import VLinkDialog from "components/VLinkDialog.vue";
 import VTemplateDialog from "components/VTemplateDialog.vue";
-import "daisyui/dist/full.css";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { urls } from "stores/app";

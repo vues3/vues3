@@ -1,7 +1,6 @@
 <template lang="pug">
 .flex.snap-start(:class="{ 'min-h-full': the.full }", :id="the.id", v-if="the")
   .prose.w-full.max-w-none.flex-auto.text-sm(
-    :data-theme="the.theme",
     class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
     role="main",
     v-cloak

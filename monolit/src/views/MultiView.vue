@@ -8,7 +8,6 @@
   v-intersection-observer="[callback,{root,rootMargin,threshold}]"
 )
   .prose.w-full.max-w-none.flex-auto.text-sm(
-    :data-theme="a.theme",
     :role="a.id === the?.id ? 'main' : undefined",
     class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
     v-cloak

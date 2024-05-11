@@ -45,37 +45,42 @@ v-head
     name="google-site-verification",
     v-if="$?.settings?.google"
   )
-.relative.grid.h-dvh.w-full.auto-cols-auto
-  input#drawer.fixed.size-0.appearance-none.opacity-0(
-    aria-labelledby="#drawer",
-    type="checkbox",
-    v-model="drawer"
-  )
-  .drawer-content.snap-y.snap-mandatory.overflow-y-auto.scroll-smooth(
-    @scroll.passive="start"
-  )
-    Suspense
-      component(:is="navigator", :ready, :the, v-if="views[0]?.enabled")
-    router-view
-  .drawer-side.z-50(v-if="views[0]?.enabled")
-    label.drawer-overlay(for="drawer")
-    .grid.max-w-full.self-stretch.overflow-x-auto.scroll-smooth(
-      :class="{ 'justify-self-stretch': views[0]?.full }"
+input#drawer.peer.hidden(type="checkbox", v-model="drawer")
+.size-screen.snap-y.snap-mandatory.overflow-y-auto.scroll-smooth(
+  @scroll.passive="start"
+)
+  Suspense
+    component(
+      :is="navigator",
+      :ready,
+      :the,
+      un-cloak,
+      v-if="views[0]?.enabled"
     )
-      .col-start-1.row-start-1.flex
-        .prose.w-full.max-w-none.flex-auto.text-sm(
-          :data-theme="views[0]?.theme",
-          class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl"
-        )
-          Suspense
-            component(:is="root", :the="views[0]")
-      label.sticky.right-1.top-1.col-start-1.row-start-1.flex.size-12.items-center.justify-center.justify-self-end.rounded-full.border.border-neutral-500.bg-neutral-50.text-neutral-500.transition-colors(
-        class="hover:border-neutral-600 hover:bg-neutral-100 hover:text-neutral-600",
-        for="drawer",
-        role="button"
-      )
-        svg.size-6.fill-current
-          path(:d="mdi.mdiClose")
+  router-view
+label.pointer-events-none.fixed.inset-0.bg-black.bg-opacity-0.transition-opacity(
+  class="peer-checked:pointer-events-auto peer-checked:cursor-pointer peer-checked:bg-opacity-25",
+  for="drawer"
+)
+.fixed.inset-y-0.left-0.grid.-translate-x-full.overflow-auto.scroll-smooth.transition-transform(
+  :class="{ 'right-0': views[0]?.full }",
+  class="peer-checked:translate-x-0",
+  v-if="views[0]?.enabled"
+)
+  .col-start-1.row-start-1.flex
+    .prose.w-full.max-w-none.flex-auto.text-sm(
+      class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl"
+    )
+      Suspense
+        component(:is="root", :the="views[0]")
+  label.sticky.right-1.top-1.col-start-1.row-start-1.flex.size-12.items-center.justify-center.justify-self-end.rounded-full.border.border-neutral-500.bg-neutral-50.text-neutral-500.transition-colors(
+    class="hover:border-neutral-600 hover:bg-neutral-100 hover:text-neutral-600",
+    for="drawer",
+    role="button",
+    v-if="views[0]?.full"
+  )
+    svg.size-6.fill-current
+      path(:d="mdi.mdiClose")
 </template>
 <script setup lang="ts">
 import type { TResource, TView } from "app/src/stores/data";
@@ -117,16 +122,3 @@ router.beforeEach(() => {
   drawer.value = false;
 });
 </script>
-<style scoped>
-#drawer:checked ~ .drawer-side {
-  pointer-events: auto;
-  visibility: visible;
-  overflow-y: auto;
-}
-#drawer:checked ~ .drawer-side > *:not(.drawer-overlay) {
-  transform: translateX(0%);
-}
-#drawer:checked ~ .drawer-side > .drawer-overlay {
-  background-color: #0006;
-}
-</style>

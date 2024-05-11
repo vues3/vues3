@@ -23,7 +23,6 @@ import {
   once,
 } from "app/src/stores/defaults";
 import defaults from "app/uno.config";
-import "daisyui/dist/full.css";
 import "glightbox/dist/css/glightbox.css";
 import "virtual:uno.css";
 import { createApp, watch } from "vue";
