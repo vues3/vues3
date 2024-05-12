@@ -5,7 +5,6 @@ import * as mdi from "@mdi/js";
 import Ajv from "ajv";
 import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
 import Data, { plainData } from "app/src/schemas/data";
-import Navbar from "app/src/schemas/navbar";
 import Resource from "app/src/schemas/resource";
 import Settings from "app/src/schemas/settings";
 import View, { plainView } from "app/src/schemas/view";
@@ -51,17 +50,16 @@ export type TResource = {
   siblings: TView[];
 } & FromSchema<typeof Resource>;
 export type TSettings = FromSchema<typeof Settings>;
-export type TNavbar = FromSchema<typeof Navbar>;
 export type TData = {
   content: TView[];
   css: TResource[];
   js: TResource[];
 } & FromSchema<
   typeof plainData,
-  { references: [typeof Settings, typeof Resource, typeof Navbar] }
+  { references: [typeof Settings, typeof Resource] }
 >;
 dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uuid();
-const schemas = [Resource, View, Settings, Navbar, Data];
+const schemas = [Resource, View, Settings, Data];
 export const code = { esm };
 const keywords = [dynamicDefaults()];
 const ajv = new Ajv({
@@ -74,9 +72,6 @@ const ajv = new Ajv({
 });
 export const validate = ajv.getSchema(
   "urn:jsonschema:data",
-) as ValidateFunction;
-export const validateNavbar = ajv.getSchema(
-  "urn:jsonschema:navbar",
 ) as ValidateFunction;
 const getViews = (views: TView[]): TView[] =>
   views.flatMap((element) => [element, ...getViews(element.children)]);

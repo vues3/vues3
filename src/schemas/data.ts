@@ -19,12 +19,6 @@ const properties = {
     items: { $ref: "urn:jsonschema:resource" },
     type: "array",
   },
-  navbar: {
-    $ref: "urn:jsonschema:navbar",
-    default: {},
-    nullable,
-    type: "object",
-  },
   script: { default: "", nullable, type: "string" },
   settings: {
     $ref: "urn:jsonschema:settings",

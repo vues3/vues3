@@ -1,23 +1,21 @@
 <template lang="pug">
-.flex.snap-start(
-  :class="{ 'min-h-full': a.full }",
+.prose.min-w-full.max-w-none.snap-center(
+  :class="{ 'min-h-dvh': a.full }",
   :id="a.id",
   :key="a.id",
-  ref="refs",
+  :role="a.id === the?.id ? 'main' : undefined",
+  class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
+  ref="refs"
+  v-cloak,
   v-for="a in siblings",
   v-intersection-observer="[callback,{root,rootMargin,threshold}]"
 )
-  .prose.w-full.max-w-none.flex-auto.text-sm(
-    :role="a.id === the?.id ? 'main' : undefined",
-    class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
-    v-cloak
-  )
-    Suspense
-      component(
-        :is="<object>templates[<keyof object>a.id]",
-        :the="a",
-        @vue:mounted="(promises[<keyof object>a.id]).resolve"
-      )
+  Suspense
+    component(
+      :is="<object>templates[<keyof object>a.id]",
+      :the="a",
+      @vue:mounted="(promises[<keyof object>a.id]).resolve"
+    )
 </template>
 <script setup lang="ts">
 import type { Ref } from "vue";
