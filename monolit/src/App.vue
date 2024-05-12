@@ -46,7 +46,7 @@ v-head
     v-if="$?.settings?.google"
   )
 Suspense
-  component(:is="root", :the="views[0]")
+  component(:is="root", :the)
 </template>
 <script setup lang="ts">
 import type { TResource } from "app/src/stores/data";
