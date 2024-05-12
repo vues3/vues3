@@ -16,7 +16,7 @@ div
     placeholder="Добавьте контент на вашу страницу...",
     ref="editor"
   )
-  v-template-dialog(:editor, v-model="showTemplateDialog")
+  v-wind-dialog(:editor, v-model="showTemplateDialog")
   v-link-dialog(:editor, v-model="showLinkDialog")
 </template>
 <script setup lang="ts">
@@ -33,7 +33,8 @@ import { useFileDialog } from "@vueuse/core";
 import { fonts } from "app/uno.config";
 import mimes from "assets/mimes.json";
 import VLinkDialog from "components/VLinkDialog.vue";
-import VTemplateDialog from "components/VTemplateDialog.vue";
+// import VTemplateDialog from "components/VTemplateDialog.vue";
+import VWindDialog from "components/VWindDialog.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { urls } from "stores/app";

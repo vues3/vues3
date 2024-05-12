@@ -16,7 +16,7 @@ import { VAceEditor } from "vue3-ace-editor";
 // eslint-disable-next-line perfectionist/sort-imports
 import "ace-builds/esm-resolver";
 import { css, html, js } from "js-beautify";
-import { nextTick, ref, watch } from "vue";
+import { nextTick, ref } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -48,10 +48,4 @@ const beautify = (value: string) => {
 };
 const editor = ref();
 const value = ref(await props.modelValue);
-watch(
-  () => props.modelValue,
-  async (newValue) => {
-    if (value.value !== (await newValue)) value.value = await newValue;
-  },
-);
 </script>
