@@ -1,26 +1,403 @@
-[
-  {
-    "label": "Hero",
-    "value": "<!--hero--><div class=\"hero size-full overflow-hidden bg-neutral-content\" :style=\"($attrs.the??the).image?{'background-image':`url(${($attrs.the??the).image})`}:{}\"><!--div class=\"hero-overlay\"></div--><div v-motion-pop-visible class=\"hero-content w-full\"><router-link :to=\"`${($attrs.the??the).url}`\" class=\"card glass flex-auto transition-all duration-200 hover:-translate-y-1 !no-underline\"><div class=\"card-body items-center text-center\"><div class=\"avatar placeholder text-neutral\"><div class=\"glass rounded-full w-24 md:w-28 lg:w-32 xl:w-36 2xl:w-40\"><svg viewBox=\"0 0 24 24\" class=\"fill-current w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28\"><path :d=\"mdi[`${($attrs.the??the).favicon??'mdiWeb'}`]\"></path></svg></div></div><h1 v-if=\"($attrs.the??the).name\" class=\"text-ellipsis overflow-hidden mb-0\">{{ ($attrs.the??the).name }}</h1><p v-if=\"($attrs.the??the).description\" class=\"text-ellipsis overflow-hidden mb-0\">{{ ($attrs.the??the).description }}</p></div></router-link></div></div><!--/hero-->"
-  },
-  {
-    "label": "Hero Slider",
-    "value": "<!--slider--><div class=\"carousel size-full\"><div ref=\"el\" class=\"carousel-item relative w-full\" v-for=\"(a,i) in ($attrs.the??the).siblings\" :key=\"a.id\"><!--hero--><div class=\"hero size-full overflow-hidden bg-neutral-content\" :style=\"a.image?{'background-image':`url(${a.image})`}:{}\"><!--div class=\"hero-overlay\"></div--><div v-motion-pop-visible=\"\" class=\"hero-content w-full\"><router-link :to=\"`${a.url}`\" class=\"card glass flex-auto transition-all duration-200 hover:-translate-y-1 !no-underline\"><div class=\"card-body items-center text-center\"><div class=\"avatar placeholder text-neutral\"><div class=\"glass rounded-full w-24 md:w-28 lg:w-32 xl:w-36 2xl:w-40\"><svg viewBox=\"0 0 24 24\" class=\"fill-current w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28\"><path :d=\"mdi[`${a.favicon??'mdiWeb'}`]\"></path></svg></div></div><h1 v-if=\"a.name\" class=\"text-ellipsis overflow-hidden mb-0\">{{ a.name }}</h1><p v-if=\"a.description\" class=\"text-ellipsis overflow-hidden mb-0\">{{ a.description }}</p></div></router-link></div></div><!--/hero--><div class=\"absolute justify-between transform -translate-y-1/2 left-5 right-5 top-1/2 hidden 2xl:flex\"><a class=\"btn btn-circle\" @click=\"$refs.el[(i||($attrs.the??the).siblings.length)-1].scrollIntoView()\" :class=\"{'btn-disabled':!i}\">❮</a><a class=\"btn btn-circle\" @click=\"$refs.el[i+1===($attrs.the??the).siblings.length?0:i+1].scrollIntoView()\" :class=\"{'btn-disabled':i+1===($attrs.the??the).siblings.length}\">❯</a></div><div class=\"absolute flex justify-center w-full bottom-5 join\"><a class=\"join-item btn btn-xs\" @click=\"$refs.el[0].scrollIntoView()\" :class=\"{'btn-disabled':!i}\" v-if=\"($attrs.the??the).siblings.length>2\">«</a><a class=\"join-item btn btn-xs\" @click=\"$refs.el[(i||($attrs.the??the).siblings.length)-1].scrollIntoView()\" :class=\"{'btn-disabled':!i}\" v-if=\"($attrs.the??the).siblings.length>1\">‹</a><a class=\"join-item btn btn-xs\" @click=\"$refs.el[j].scrollIntoView()\" :class=\"{'btn-disabled':i===j}\" v-for=\"(a,j) in ($attrs.the??the).siblings\" :key=\"a.id\">{{ j+1 }}</a><a class=\"join-item btn btn-xs\" @click=\"$refs.el[i+1===($attrs.the??the).siblings.length?0:i+1].scrollIntoView()\" :class=\"{'btn-disabled':i+1===($attrs.the??the).siblings.length}\" v-if=\"($attrs.the??the).siblings.length>1\">›</a><a class=\"join-item btn btn-xs\" @click=\"$refs.el[($attrs.the??the).siblings.length-1].scrollIntoView()\" :class=\"{'btn-disabled':i+1===($attrs.the??the).siblings.length}\" v-if=\"($attrs.the??the).siblings.length>2\">»</a></div></div></div><!--/slider-->"
-  },
-  {
-    "label": "Card",
-    "value": "<!--card--><div v-motion-pop-visible class=\"not-prose shadow rounded-box w-60 md:w-64 lg:w-72 xl:w-80 2xl:w-96\"><router-link :to=\"`${($attrs.the??the).url}`\" class=\"card card-compact glass flex-auto\"><figure class=\"card image-full\"><figure v-if=\"($attrs.the??the).image\"><img :src=\"($attrs.the??the).image\" :alt=\"($attrs.the??the).alt\" decoding=\"async\" loading=\"lazy\"></figure><div class=\"card-body items-center\"><div class=\"avatar placeholder text-neutral transition-all duration-200 hover:-translate-y-1\"><div class=\"glass rounded-full w-24 md:w-28 lg:w-32 xl:w-36 2xl:w-40\"><svg viewBox=\"0 0 24 24\" class=\"fill-current w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28\"><path :d=\"mdi[`${($attrs.the??the).favicon??'mdiWeb'}`]\"></path></svg></div></div></div></figure><div v-if=\"($attrs.the??the).name||($attrs.the??the).description\" class=\"card-body\"><div v-if=\"($attrs.the??the).name\" class=\"card-title\"><h2 v-if=\"($attrs.the??the).name\" class=\"text-ellipsis overflow-hidden\">{{ ($attrs.the??the).name }}</h2></div><p v-if=\"($attrs.the??the).description\" class=\"text-ellipsis overflow-hidden\">{{ ($attrs.the??the).description }}</p></div></router-link></div><!--/card-->"
-  },
-  {
-    "label": "Card Slider",
-    "value": "<!--slider--><div class=\"relative\"><div class=\"carousel carousel-center w-full p-4 space-x-4\" ref=\"el\"><div class=\"carousel-item\" v-for=\"(a,i) in ($attrs.the??the).siblings\" :key=\"a.id\"><!--card--><div v-motion-pop-visible=\"\" class=\"not-prose shadow-md rounded-box flex w-60 md:w-64 lg:w-72 xl:w-80 2xl:w-96\"><router-link :to=\"`${a.url}`\" class=\"card card-compact glass flex-auto\"><figure class=\"card image-full\"><figure v-if=\"a.image\"><img :src=\"a.image\" :alt=\"a.alt\" decoding=\"async\" loading=\"lazy\"></figure><div class=\"card-body items-center\"><div class=\"avatar placeholder text-neutral transition-all duration-200 hover:-translate-y-1\"><div class=\"glass rounded-full w-24 md:w-28 lg:w-32 xl:w-36 2xl:w-40\"><svg viewBox=\"0 0 24 24\" class=\"fill-current w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28\"><path :d=\"mdi[`${a.favicon??'mdiWeb'}`]\"></path></svg></div></div></div></figure><div v-if=\"a.name||a.description\" class=\"card-body\"><div v-if=\"a.name\" class=\"card-title\"><h2 v-if=\"a.name\" class=\"text-ellipsis overflow-hidden\">{{ a.name }}</h2></div><p v-if=\"a.description\" class=\"text-ellipsis overflow-hidden\">{{ a.description }}</p></div></router-link></div><!--/card--></div></div><div class=\"absolute justify-between transform -translate-y-1/2 left-5 right-5 top-1/2 flex pointer-events-none\"><a class=\"btn btn-circle pointer-events-auto\" @click=\"$refs.el.scrollBy(-300,0)\">❮</a><a class=\"btn btn-circle pointer-events-auto\" @click=\"$refs.el.scrollBy(300,0)\">❯</a></div></div><!--/slider-->"
-  },
-  {
-    "label": "Icon",
-    "value": "<!--icon--><div class=\"flex flex-col items-center gap-3 w-60 md:w-64 lg:w-72 xl:w-80 2xl:w-96\"><div class=\"avatar placeholder\"><div class=\"bg-neutral text-neutral-content rounded-full w-24\"><svg viewBox=\"0 0 24 24\" class=\"fill-current w-14\"><path :d=\"mdi[`${($attrs.the??the).favicon??'mdiWeb'}`]\"></path></svg></div></div><div><div v-if=\"($attrs.the??the).name\" class=\"text-ellipsis overflow-hidden font-bold\">{{ ($attrs.the??the).name }}</div><div v-if=\"($attrs.the??the).description\" class=\"text-ellipsis overflow-hidden text-sm opacity-50\">{{ ($attrs.the??the).description }}</div></div></div><!--/icon-->"
-  },
-  {
-    "label": "Container",
-    "value": "<!--container--><div class=\"flex items-center size-full\"><div class=\"container mx-auto\"><div class=\"flex flex-col gap-4\"><div class=\"skeleton h-32 w-full\"></div><div class=\"skeleton h-4 w-1/2\"></div><div class=\"skeleton h-4 w-full\"></div><div class=\"skeleton h-4 w-full\"></div></div></div></div><!--/container-->"
-  }
-]
+{
+  "/components/accordions/": [
+    {
+      "label": "Basic accordion",
+      "value": "<!-- Component: Basic accordion --><section class=\"w-full divide-y rounded divide-slate-200\"><details class=\"p-4 group\" open><summary class=\"[&::-webkit-details-marker]:hidden relative pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\">How does TailwindCSS works? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac01 desc-ac01\"><title id=\"title-ac01\">Open icon</title><desc id=\"desc-ac01\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">Tailwind CSS works by scanning all of your HTML files, JavaScript components, and any other templates for class names, generating the corresponding styles and then writing them to a static CSS file.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\">How do I install TailwindCSS? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac02 desc-ac02\"><title id=\"title-ac02\">Open icon</title><desc id=\"desc-ac02\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">The simplest and fastest way to get up and running with Tailwind CSS from scratch is with the Tailwind CLI tool. The CLI is also available as a standalone executable if you want to use it without installing Node.js. Install tailwindcss via npm, and create your tailwind.config.js file.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\">What is Wind UI about? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac03 desc-ac03\"><title id=\"title-ac03\">Open icon</title><desc id=\"desc-ac03\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">Expertly made, responsive, accessible components in React and HTML ready to be used on your website or app. Just copy and paste them on your Tailwind CSS project.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\">How do I use Wind UI components? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac04 desc-ac04\"><title id=\"title-ac04\">Open icon</title><desc id=\"desc-ac04\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">All components can be copied and pasted and easily implemented in your tailwind css projects. You can choose which language you want to copy the desired component and just hover and click on the component you need and paste it on your project.</p></details></section><!-- End Basic accordion -->"
+    },
+    {
+      "label": "Basic with icons",
+      "value": "<!-- Component: Icon accordion --><section class=\"w-full divide-y rounded divide-slate-200\"><details class=\"p-4 group\" open><summary class=\"[&::-webkit-details-marker]:hidden relative flex gap-4 pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none group-hover:text-slate-800\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 stroke-emerald-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac05 desc-ac05\"><title id=\"title-ac05\">Leading icon</title><desc id=\"desc-ac05\">Icon that describes the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M3 8.25V18a2.25 2.25 0 002.25 2.25h13.5A2.25 2.25 0 0021 18V8.25m-18 0V6a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 6v2.25m-18 0h18M5.25 6h.008v.008H5.25V6zM7.5 6h.008v.008H7.5V6zm2.25 0h.008v.008H9.75V6z\"/></svg> What browsers are supported? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac06 desc-ac06\"><title id=\"title-ac06\">Open icon</title><desc id=\"desc-ac06\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">The components in Wind UI are designed to work in the latest, stable releases of all major browsers, including Chrome, Firefox, Safari, and Edge.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative flex gap-4 pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none group-hover:text-slate-800\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 stroke-emerald-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac07 desc-ac07\"><title id=\"title-ac07\">Leading icon</title><desc id=\"desc-ac07\">Icon that describes the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.879 2.88M6.75 17.25h.008v.008H6.75v-.008z\"/></svg> Are the components only available in green? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac08 desc-ac08\"><title id=\"title-ac08\">Open icon</title><desc id=\"desc-ac08\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">All components are easily customizable to match your own project.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative flex gap-4 pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none group-hover:text-slate-800\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 stroke-emerald-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac09 desc-ac09\"><title id=\"title-ac09\">Leading icon</title><desc id=\"desc-ac09\">Icon that describes the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z\"/></svg> Is WindUi open source? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac10 desc-ac10\"><title id=\"title-ac10\">Open icon</title><desc id=\"desc-ac10\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">WindUI is not an open source project yet, but we don't guarantee that it won't become in the future.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative flex gap-4 pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none group-hover:text-slate-800\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 stroke-emerald-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac11 desc-ac11\"><title id=\"title-ac11\">Leading icon</title><desc id=\"desc-ac11\">Icon that describes the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z\"/></svg> How can I help improve WindUI? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac12 desc-ac12\"><title id=\"title-ac12\">Open icon</title><desc id=\"desc-ac12\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">You can help our team improve WindUI by giving us feedback on our discord channel.</p></details></section><!-- End Icon accordion -->"
+    },
+    {
+      "label": "Outline",
+      "value": "<!-- Component: Outline accordion --><section class=\"w-full bg-white border divide-y rounded divide-slate-200 border-slate-200\"><details class=\"p-4 group\" open><summary class=\"[&::-webkit-details-marker]:hidden relative pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\">Which languages are available for the components? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac21 desc-ac21\"><title id=\"title-ac21\">Open icon</title><desc id=\"desc-ac21\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">Wind UI team currently releases it's components on HTML and React, but also thinking on adding more in the future. You can easily toggle between the two languages through the code blocks, on each page component.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\">Which icons are you using in the components? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac22 desc-ac22\"><title id=\"title-ac22\">Open icon</title><desc id=\"desc-ac22\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">All our icons related ui components are using, heroicons SVG icons, by the makers of Tailwind CSS.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\">How can I learn about the latest changes? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac24 desc-ac24\"><title id=\"title-ac24\">Open icon</title><desc id=\"desc-ac24\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">You can find all latest additions and updates in our Changelog page, where we have a detailed timeline for any changes.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\">Where can I find the official TailwindCSS documentation? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac23 desc-ac23\"><title id=\"title-ac23\">Open icon</title><desc id=\"desc-ac23\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">You can find the official TailwindCSS detailed documentation as well as the official TailwindCSS website link on our footer under Resources.</p></details></section><!-- End Outlined accordion -->"
+    },
+    {
+      "label": "Outline with icons",
+      "value": "<!-- Component: Outline accordion with icons --><section class=\"w-full bg-white border divide-y rounded divide-slate-200 border-slate-200\"><details class=\"p-4 group\" open><summary class=\"[&::-webkit-details-marker]:hidden relative flex gap-4 pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 stroke-emerald-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac25 desc-ac25\"><title id=\"title-ac25\">Leading icon</title><desc id=\"desc-ac25\">Icon that describes the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155\"/></svg> Do you have any social accounts? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac26 desc-ac26\"><title id=\"title-ac26\">Open icon</title><desc id=\"desc-ac26\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">Yes! You can find Wind UI in many social platforms, such as Facebook, Discord, Reddit and many more, which you can find on our footer under Socials.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative flex gap-4 pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 stroke-emerald-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac27 desc-ac27\"><title id=\"title-ac27\">Leading icon</title><desc id=\"desc-ac27\">Icon that describes the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M16.712 4.33a9.027 9.027 0 011.652 1.306c.51.51.944 1.064 1.306 1.652M16.712 4.33l-3.448 4.138m3.448-4.138a9.014 9.014 0 00-9.424 0M19.67 7.288l-4.138 3.448m4.138-3.448a9.014 9.014 0 010 9.424m-4.138-5.976a3.736 3.736 0 00-.88-1.388 3.737 3.737 0 00-1.388-.88m2.268 2.268a3.765 3.765 0 010 2.528m-2.268-4.796a3.765 3.765 0 00-2.528 0m4.796 4.796c-.181.506-.475.982-.88 1.388a3.736 3.736 0 01-1.388.88m2.268-2.268l4.138 3.448m0 0a9.027 9.027 0 01-1.306 1.652c-.51.51-1.064.944-1.652 1.306m0 0l-3.448-4.138m3.448 4.138a9.014 9.014 0 01-9.424 0m5.976-4.138a3.765 3.765 0 01-2.528 0m0 0a3.736 3.736 0 01-1.388-.88 3.737 3.737 0 01-.88-1.388m2.268 2.268L7.288 19.67m0 0a9.024 9.024 0 01-1.652-1.306 9.027 9.027 0 01-1.306-1.652m0 0l4.138-3.448M4.33 16.712a9.014 9.014 0 010-9.424m4.138 5.976a3.765 3.765 0 010-2.528m0 0c.181-.506.475-.982.88-1.388a3.736 3.736 0 011.388-.88m-2.268 2.268L4.33 7.288m6.406 1.18L7.288 4.33m0 0a9.024 9.024 0 00-1.652 1.306A9.025 9.025 0 004.33 7.288\"/></svg> How can I communicate with your support team? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac28 desc-ac28\"><title id=\"title-ac28\">Open icon</title><desc id=\"desc-ac28\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">You can communicate with our team for support through our discord channel. Once you have asked your question, one of our team members will answer you as soon as possible.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative flex gap-4 pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 stroke-emerald-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac29 desc-ac29\"><title id=\"title-ac29\">Leading icon</title><desc id=\"desc-ac29\">Icon that describes the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z\"/></svg> Do you have a newsletter? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac30 desc-ac30\"><title id=\"title-ac30\">Open icon</title><desc id=\"desc-ac30\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">Of course! You can join our community through our newsletter which is located on the bottom of every page on our website.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative flex gap-4 pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 stroke-emerald-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac31 desc-ac31\"><title id=\"title-ac31\">Leading icon</title><desc id=\"desc-ac31\">Icon that describes the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75\"/></svg> Is there any other way of communication? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac32 desc-ac32\"><title id=\"title-ac32\">Open icon</title><desc id=\"desc-ac32\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">You can always communicate with us through our social accounts and email address at info@wind-ui.com.</p></details></section><!-- End Outline accordion with icons -->"
+    },
+    {
+      "label": "Elevated",
+      "value": "<!-- Component: Elevated accordion --><section class=\"w-full bg-white divide-y rounded shadow-md divide-slate-200 shadow-slate-200\"><details class=\"p-4 group\" open><summary class=\"[&::-webkit-details-marker]:hidden relative pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\">How do I know what comes next? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac13 desc-ac13\"><title id=\"title-ac13\">Open icon</title><desc id=\"desc-ac13\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">Whenever the team is brewing something new, you will be able to find it, grayed out, on the main component page as well as the websites side navigation. The new component name will be there with a \"coming next\" badge.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\">How do I know what is new? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac14 desc-ac14\"><title id=\"title-ac14\">Open icon</title><desc id=\"desc-ac14\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">You will always get notified about new components through our discord and other social accounts. You can also see the newest components on the main component page as well as the websites side navigation with a \"new\" badge next to their name.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\">How do I know what is updated? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac15 desc-ac15\"><title id=\"title-ac15\">Open icon</title><desc id=\"desc-ac15\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">All updated components will be accompanied by an \"updated\" badge. YOu will be able to see that on our main components page as well as our side navigation.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\">How will I know about any major releases or news? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac16 desc-ac16\"><title id=\"title-ac16\">Open icon</title><desc id=\"desc-ac16\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">You will get notified by us about any major news or releases through our newsletter and our social accounts.</p></details></section><!-- End Elevated accordion -->"
+    },
+    {
+      "label": "Elevated with icons",
+      "value": "<!-- Component: Elevated accordion with icons --><section class=\"w-full bg-white divide-y rounded shadow-md divide-slate-200 shadow-slate-200\"><details class=\"p-4 group\" open><summary class=\"[&::-webkit-details-marker]:hidden relative flex gap-4 pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 stroke-emerald-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac05 desc-ac05\"><title id=\"title-ac05\">Leading icon</title><desc id=\"desc-ac05\">Icon that describes the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01\"/></svg> How do I use Wind UI components? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac06 desc-ac06\"><title id=\"title-ac06\">Open icon</title><desc id=\"desc-ac06\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">All components can be copied and pasted and easily implemented in your tailwind css projects. You can choose which language you want to copy the desired component and just hover and click on the component you need and paste it on your project.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative flex gap-4 pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 stroke-emerald-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac07 desc-ac07\"><title id=\"title-ac07\">Leading icon</title><desc id=\"desc-ac07\">Icon that describes the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z\"/></svg> What do you mean by accessible components? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac08 desc-ac08\"><title id=\"title-ac08\">Open icon</title><desc id=\"desc-ac08\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">All components come with proper attributes to ensure full accessibility with the WAI-ARIA standards. Web accessibility means that websites, tools, and technologies are designed and developed so that people with disabilities can use them.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative flex gap-4 pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 stroke-emerald-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac09 desc-ac09\"><title id=\"title-ac09\">Leading icon</title><desc id=\"desc-ac09\">Icon that describes the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25\"/></svg> What do you mean about fully responsive? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac10 desc-ac10\"><title id=\"title-ac10\">Open icon</title><desc id=\"desc-ac10\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">Every component is fully responsive and implemented to look great at any screen size.</p></details><details class=\"p-4 group\"><summary class=\"[&::-webkit-details-marker]:hidden relative flex gap-4 pr-8 font-medium list-none cursor-pointer text-slate-700 focus-visible:outline-none transition-colors duration-300 group-hover:text-slate-900\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 stroke-emerald-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac11 desc-ac11\"><title id=\"title-ac11\">Leading icon</title><desc id=\"desc-ac11\">Icon that describes the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z\"/></svg> Which version of TailwindCSS are you using for the components? <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"absolute right-0 w-4 h-4 transition duration-300 top-1 stroke-slate-700 shrink-0 group-open:rotate-45\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-ac12 desc-ac12\"><title id=\"title-ac12\">Open icon</title><desc id=\"desc-ac12\">icon that represents the state of the summary</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 4v16m8-8H4\"/></svg></summary><p class=\"mt-4 text-slate-500\">Our team has used the currently latest TailwindCSS version. The code is used in its original form without any customization or third party dependencies.</p></details></section><!-- End Elevated accordion with icons -->"
+    }
+  ],
+  "/components/avatars/": [
+    {
+      "label": "Basic Avatars",
+      "value": "<!-- Component: Rounded base sized basic text avatar --> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded bg-emerald-500\">CP</a><!-- End Rounded base sized basic text avatar -->"
+    },
+    {
+      "label": "With borders",
+      "value": "<!-- Component: Rounded base sized text avatar with borders --> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white border-2 border-white rounded bg-emerald-500\">CP</a><!-- End Rounded base sized text avatar with borders -->"
+    },
+    {
+      "label": "With top badge",
+      "value": "<!-- Component: Rounded base sized text avatar with top right badge --> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded bg-emerald-500\">CP <span class=\"absolute -top-2.5 -right-2.5 inline-flex items-center justify-center gap-1 rounded-full border-2 border-white bg-pink-500 px-1.5 text-sm text-white\">7 <span class=\"sr-only\">new emails</span></span></a><!-- End Rounded base sized text avatar with top right badge -->"
+    },
+    {
+      "label": "With bottom badge",
+      "value": "<!-- Component: Rounded base sized text avatar with bottom right badge --> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded bg-emerald-500\">CP <span class=\"absolute -bottom-2 -right-2 inline-flex items-center justify-center gap-1 rounded-full border-2 border-white bg-pink-500 px-1.5 text-sm text-white\">7 <span class=\"sr-only\">new emails</span></span></a><!-- End Rounded base sized text avatar with bottom right badge -->"
+    },
+    {
+      "label": "With top indicator",
+      "value": "<!-- Component: Rounded base sized text avatar with top right indicator badge --> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded bg-emerald-500\">CP <span class=\"absolute inline-flex items-center justify-center gap-1 p-1 text-sm text-white bg-pink-500 border-2 border-white rounded-full -top-1 -right-1\"><span class=\"sr-only\">7 new emails</span></span></a><!-- End Rounded base sized text avatar with top right indicator badge -->"
+    },
+    {
+      "label": "With bottom indicator",
+      "value": "<!-- Component: Rounded base sized text avatar with bottom right indicator badge --> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded bg-emerald-500\">CP <span class=\"absolute inline-flex items-center justify-center gap-1 p-1 text-sm text-white bg-pink-500 border-2 border-white rounded-full -bottom-1 -right-1\"><span class=\"sr-only\">7 new emails</span></span></a><!-- End Rounded base sized text avatar with bottom right indicator badge -->"
+    },
+    {
+      "label": "With tooltip",
+      "value": "<!-- Component: Rounded base sized text avatar with tooltips --> <span class=\"relative overflow-hidden cursor-pointer group hover:overflow-visible\" aria-describedby=\"tooltip-05\"><!-- Start Tooltip trigger --><a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded bg-emerald-500\">CP</a><!-- End Tooltip trigger --> <span role=\"tooltip\" id=\"tooltip-05\" class=\"invisible absolute bottom-full left-1/2 z-10 mb-2 w-[89px] -translate-x-1/2 rounded bg-slate-700 p-2 text-xs text-white opacity-0 transition-all before:invisible before:absolute before:left-1/2 before:top-full before:z-10 before:mb-2 before:-ml-1 before:border-x-4 before:border-t-4 before:border-x-transparent before:border-t-slate-700 before:opacity-0 before:transition-all before:content-[''] group-hover:visible group-hover:block group-hover:opacity-100 group-hover:before:visible group-hover:before:opacity-100\">User's Name</span></span><!-- End Rounded base sized text avatar with tooltips -->"
+    },
+    {
+      "label": "Full rounded",
+      "value": "<!-- Component: Rounded full base sized basic text avatar --> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded-full bg-emerald-500\">CP</a><!-- End Rounded base sized basic text avatar -->"
+    },
+    {
+      "label": "Full rounded with borders",
+      "value": "<!-- Component: Rounded full base sized text avatar with borders --> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white border-2 border-white rounded-full bg-emerald-500\">CP</a><!-- End Rounded base sized text avatar with borders -->"
+    },
+    {
+      "label": "Full rounded, top badge",
+      "value": "<!-- Component: Rounded full base sized text avatar with top right badge --> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded-full bg-emerald-500\">CP <span class=\"absolute -top-1.5 -right-1.5 inline-flex items-center justify-center gap-1 rounded-full border-2 border-white bg-pink-500 px-1.5 text-sm text-white\">7 <span class=\"sr-only\">new emails</span></span></a><!-- End Rounded base sized text avatar with top right badge -->"
+    },
+    {
+      "label": "Full rounded, bottom badge",
+      "value": "<!-- Component: Rounded full base sized text avatar with bottom right badge --> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded-full bg-emerald-500\">CP <span class=\"absolute -bottom-1.5 -right-1.5 inline-flex items-center justify-center gap-1 rounded-full border-2 border-white bg-pink-500 px-1.5 text-sm text-white\">7 <span class=\"sr-only\">new emails</span></span></a><!-- End Rounded base sized text avatar with bottom right badge -->"
+    },
+    {
+      "label": "Full rounded, top indicator",
+      "value": "<!-- Component: Rounded full base sized text avatar with top right indicator badge --> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded-full bg-emerald-500\">CP <span class=\"absolute top-0 right-0 inline-flex items-center justify-center gap-1 p-1 text-sm text-white bg-pink-500 border-2 border-white rounded-full\"><span class=\"sr-only\">7 new emails</span></span></a><!-- End Rounded base sized text avatar with top right indicator badge -->"
+    },
+    {
+      "label": "Full rounded, bottom indicator",
+      "value": "<!-- Component: Rounded full base sized text avatar with bottom right indicator badge --> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded-full bg-emerald-500\">CP <span class=\"absolute bottom-0 right-0 inline-flex items-center justify-center gap-1 p-1 text-sm text-white bg-pink-500 border-2 border-white rounded-full\"><span class=\"sr-only\">7 new emails</span></span></a><!-- End Rounded base sized text avatar with bottom right indicator badge -->"
+    },
+    {
+      "label": "Full rounded, tooltip",
+      "value": "<!-- Component: Rounded full base sized text avatar with tooltips --> <span class=\"relative overflow-hidden cursor-pointer group hover:overflow-visible\" aria-describedby=\"tooltip-05\"><!-- Start Tooltip trigger --><a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded-full bg-emerald-500\">CP</a><!-- End Tooltip trigger --> <span role=\"tooltip\" id=\"tooltip-05\" class=\"invisible absolute bottom-full left-1/2 z-10 mb-2 w-[89px] -translate-x-1/2 rounded bg-slate-700 p-2 text-xs text-white opacity-0 transition-all before:invisible before:absolute before:left-1/2 before:top-full before:z-10 before:mb-2 before:-ml-1 before:border-x-4 before:border-t-4 before:border-x-transparent before:border-t-slate-700 before:opacity-0 before:transition-all before:content-[''] group-hover:visible group-hover:block group-hover:opacity-100 group-hover:before:visible group-hover:before:opacity-100\">User's Name</span></span><!-- End Rounded base sized text avatar with tooltips -->"
+    },
+    {
+      "label": "Grouped",
+      "value": "<!-- Component: Rounded full base sized basic grouped avatars --><div class=\"flex items-center justify-center w-full p-10\"><div class=\"flex -space-x-2\"><a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-white rounded-full\"><img src=\"https://i.pravatar.cc/40?img=31\" alt=\"user name\" title=\"user name\" width=\"40\" height=\"40\" class=\"max-w-full border-2 border-white rounded-full\"></a> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-white border-2 border-white rounded-full bg-emerald-500\">JL</a> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-white rounded-full\"><img src=\"https://i.pravatar.cc/40?img=33\" alt=\"user name\" title=\"user name\" width=\"40\" height=\"40\" class=\"max-w-full border-2 border-white rounded-full\"></a> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-lg text-white rounded-full bg-emerald-500\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-labelledby=\"title-01 desc-01\" role=\"graphics-symbol\"><title id=\"title-01\">User Icon</title><desc id=\"desc-01\">User icon associated with a particular user account</desc><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z\"/></svg></a> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-white rounded-full\"><img src=\"https://i.pravatar.cc/40?img=34\" alt=\"user name\" title=\"user name\" width=\"40\" height=\"40\" class=\"max-w-full border-2 border-white rounded-full\"></a> <a href=\"#\" class=\"relative inline-flex items-center justify-center w-10 h-10 text-sm border-2 border-white rounded-full bg-slate-200 text-slate-500\">+4</a></div></div><!-- End Rounded full base sized basic grouped avatars -->"
+    }
+  ],
+  "/components/badges/": [
+    { "label": "Basic badge", "value": "" },
+    { "label": "Basic with icon", "value": "" },
+    { "label": "Full rounded", "value": "" },
+    { "label": "Full rounded with icon", "value": "" }
+  ],
+  "/components/cards/": [
+    { "label": "Basic Card", "value": "" },
+    { "label": "With icon", "value": "" },
+    { "label": "With subtitle", "value": "" },
+    { "label": "With image", "value": "" },
+    { "label": "Blog", "value": "" },
+    { "label": "Blog, avatar", "value": "" },
+    { "label": "Blog, action button", "value": "" },
+    { "label": "E-commerce", "value": "" },
+    { "label": "Social story", "value": "" },
+    { "label": "User profile", "value": "" },
+    { "label": "With form", "value": "" },
+    { "label": "Image overlay", "value": "" },
+    { "label": "Horizontal", "value": "" },
+    { "label": "Empty", "value": "" }
+  ],
+  "/components/carousels/": [
+    { "label": "Controls inside", "value": "" },
+    { "label": "Controls outside", "value": "" },
+    { "label": "Indicator outside", "value": "" },
+    { "label": "Indicator inside", "value": "" },
+    { "label": "Indicator & controls inside", "value": "" },
+    { "label": "Carousel with cards", "value": "" },
+    { "label": "Testimonial Carousel", "value": "" },
+    { "label": "Logo Carousel", "value": "" }
+  ],
+  "/components/features/": [
+    { "label": "Left icon", "value": "" },
+    { "label": "Left icon with title", "value": "" },
+    { "label": "Left square icon", "value": "" },
+    { "label": "Left square icon & title", "value": "" },
+    { "label": "Centered top icon", "value": "" },
+    { "label": "Centered top icon and title", "value": "" },
+    { "label": "Square icon centered top", "value": "" },
+    { "label": "Centered top square icon & title", "value": "" },
+    { "label": "Top left aligned icon", "value": "" },
+    { "label": "Top left aligned icon & title", "value": "" },
+    { "label": "Square icon top left aligned", "value": "" },
+    { "label": "Top left aligned square icon & title", "value": "" }
+  ],
+  "/components/feeds/": [
+    { "label": "User Feed Base", "value": "" },
+    { "label": "User Feed Sm", "value": "" },
+    { "label": "Nested User Feed Base", "value": "" },
+    { "label": "Nested User Feed Sm", "value": "" },
+    { "label": "Activity Feed Base", "value": "" },
+    { "label": "Activity Feed Sm", "value": "" },
+    { "label": "Colored Activity Feed Base", "value": "" },
+    { "label": "Colored Activity Feed Sm", "value": "" },
+    { "label": "Changelog Feed Base", "value": "" },
+    { "label": "Changelog Feed Sm", "value": "" },
+    { "label": "Alt Changelog Feed Base", "value": "" },
+    { "label": "Alt Changelog Feed Sm", "value": "" }
+  ],
+  "/components/layouts/": [
+    { "label": "One column layout", "value": "" },
+    { "label": "Two columns", "value": "" },
+    { "label": "Three columns", "value": "" },
+    { "label": "Four columns", "value": "" },
+    { "label": "Six columns", "value": "" },
+    { "label": "Five & seven columns", "value": "" },
+    { "label": "Seven & five columns", "value": "" },
+    { "label": "Four & eight columns", "value": "" },
+    { "label": "Eight & four columns", "value": "" },
+    { "label": "Three & nine columns", "value": "" },
+    { "label": "Nine & three columns", "value": "" },
+    { "label": "Six, three & three columns", "value": "" },
+    { "label": "Three six & three columns", "value": "" },
+    { "label": "Three, three & six columns", "value": "" }
+  ],
+  "/components/lists/": [
+    { "label": "Simple text lists", "value": "" },
+    { "label": "Lists with leading avatar", "value": "" },
+    { "label": "With leading icon", "value": "" },
+    { "label": "With leading image", "value": "" },
+    { "label": "With leading checkbox", "value": "" },
+    { "label": "Trailing text", "value": "" },
+    { "label": "Τrailing text and leading avatar", "value": "" },
+    { "label": "Τrailing text and leading image", "value": "" },
+    { "label": "Τrailing icon and leading avatar", "value": "" },
+    { "label": "Τrailing icon and leading icon", "value": "" },
+    { "label": "With trailing checkbox", "value": "" },
+    { "label": "Τrailing checkbox and leading avatar", "value": "" },
+    { "label": "Τrailing checkbox and leading icon", "value": "" },
+    { "label": "Τrailing checkbox with leading image", "value": "" },
+    { "label": "Τrailing badge and leading avatar", "value": "" },
+    { "label": "Τrailing badge and leading icon", "value": "" },
+    { "label": "With trailing switch", "value": "" },
+    { "label": "Τrailing switch and leading icon", "value": "" }
+  ],
+  "/components/pricing/": [
+    { "label": "Basic", "value": "" },
+    { "label": "Detailed", "value": "" },
+    { "label": "Gems", "value": "" }
+  ],
+  "/components/ratings/": [
+    { "label": "Basic", "value": "" },
+    { "label": "List", "value": "" },
+    { "label": "Detailed", "value": "" },
+    { "label": "Brand", "value": "" },
+    { "label": "Card", "value": "" },
+    { "label": "Card List", "value": "" },
+    { "label": "Card Detailed", "value": "" },
+    { "label": "Card Brand", "value": "" }
+  ],
+  "/components/sliders": [
+    { "label": "Controls Inside Slider", "value": "" },
+    { "label": "Controls Outside", "value": "" },
+    { "label": "Indicator Outside", "value": "" },
+    { "label": "Indicator Inside", "value": "" },
+    { "label": "Indicator & Controls Inside", "value": "" },
+    { "label": "Card", "value": "" },
+    { "label": "Testimonial", "value": "" }
+  ],
+  "/components/tables/": [
+    { "label": "Simple Table", "value": "" },
+    { "label": "Responsive", "value": "" },
+    { "label": "With Footer", "value": "" },
+    { "label": "Striped", "value": "" },
+    { "label": "With hover state", "value": "" },
+    { "label": "Borderless", "value": "" },
+    { "label": "Underline", "value": "" },
+    { "label": "Compact", "value": "" }
+  ],
+  "/components/tabs/": [
+    { "label": "Basic Tabs", "value": "" },
+    { "label": "Full Width", "value": "" },
+    { "label": "With leading icon", "value": "" },
+    { "label": "Pill", "value": "" },
+    { "label": "Pill with leading icon", "value": "" }
+  ],
+  "/components/testimonials/": [
+    { "label": "Simple Basic", "value": "" },
+    { "label": "Simple Card", "value": "" },
+    { "label": "With avatar", "value": "" },
+    { "label": "Blog post", "value": "" },
+    { "label": "With rating stars", "value": "" },
+    { "label": "With avatar & rating stars", "value": "" }
+  ],
+  "/components/app-buttons/": [
+    { "label": "Basic app buttons", "value": "" },
+    { "label": "Primary", "value": "" },
+    { "label": "Outlined", "value": "" }
+  ],
+  "/components/buttons/": [
+    { "label": "Primary buttons", "value": "" },
+    { "label": "Secondary", "value": "" },
+    { "label": "Rounded full primary", "value": "" },
+    { "label": "Rounded full secondary", "value": "" },
+    { "label": "Outline", "value": "" },
+    { "label": "Link", "value": "" },
+    { "label": "App", "value": "" }
+  ],
+  "/components/button-groups/": [
+    { "label": "Primary button groups", "value": "" },
+    { "label": "Secondary", "value": "" },
+    { "label": "Rounded full primary", "value": "" },
+    { "label": "Rounded full secondary", "value": "" },
+    { "label": "Outline", "value": "" },
+    { "label": "Link", "value": "" }
+  ],
+  "/components/button-switchers/": [
+    { "label": "Basic button switchers", "value": "" },
+    { "label": "Rounded Full", "value": "" }
+  ],
+  "/components/dropdowns/": [
+    { "label": "Basic Dropdown", "value": "" },
+    { "label": "Wth Icons", "value": "" }
+  ],
+  "/components/fabs/": [
+    { "label": "Basic floating action button", "value": "" },
+    { "label": "With tooltips", "value": "" },
+    { "label": "Inside text", "value": "" },
+    { "label": "Outside text", "value": "" },
+    { "label": "Horizontal", "value": "" },
+    { "label": "Rounded full basic", "value": "" },
+    { "label": "Rounded full with tooltips", "value": "" },
+    { "label": "Rounded full inside text", "value": "" },
+    { "label": "Rounded full outside text", "value": "" },
+    { "label": "Rounded full horizontal", "value": "" }
+  ],
+  "/components/breadcrumbs/": [
+    { "label": "Elevated breadcrumbs", "value": "" },
+    { "label": "Elevated, leading icon", "value": "" },
+    { "label": "Elevated, leading icon & text", "value": "" },
+    { "label": "Flat", "value": "" },
+    { "label": "Flat, leading icon", "value": "" },
+    { "label": "Flat, leading icon & text", "value": "" }
+  ],
+  "/components/footers/": [
+    { "label": "Three columns footer", "value": "" },
+    { "label": "Four columns", "value": "" },
+    { "label": "Three columns & sub-footer", "value": "" },
+    { "label": "Four columns & sub-footer", "value": "" },
+    { "label": "Five columns, logo", "value": "" },
+    { "label": "Five columns, logo & sub-footer", "value": "" },
+    { "label": "Dark theme", "value": "" },
+    { "label": "Dark primary theme", "value": "" },
+    { "label": "Light primary theme", "value": "" }
+  ],
+  "/components/pagination/": [
+    { "label": "Primary pagination", "value": "" },
+    { "label": "Overline", "value": "" },
+    { "label": "Underline", "value": "" },
+    { "label": "Outline", "value": "" },
+    { "label": "Minimal", "value": "" }
+  ],
+  "/components/side-navigation/": [
+    { "label": "Basic", "value": "" },
+    { "label": "With separator", "value": "" },
+    { "label": "Search Bar & Alert", "value": "" },
+    { "label": "User sidenavigation", "value": "" },
+    { "label": "With contact list", "value": "" }
+  ],
+  "/components/navbars/": [
+    { "label": "Basic navigation", "value": "" },
+    { "label": "With CTA button", "value": "" },
+    { "label": "With icons", "value": "" },
+    { "label": "With user avatar", "value": "" },
+    { "label": "With top bar", "value": "" }
+  ],
+  "/components/alerts/": [
+    { "label": "Simple alerts", "value": "" },
+    { "label": "With title and supportive text", "value": "" },
+    { "label": "With icons", "value": "" },
+    { "label": "Icons, title and supportive text", "value": "" },
+    { "label": "Dismissible alerts", "value": "" },
+    { "label": "Dismissible with action button", "value": "" },
+    { "label": "Dismissible with title, icon and actions", "value": "" }
+  ],
+  "/components/chip-notifications": [
+    { "label": "Leading button chip notifications", "value": "" },
+    { "label": "Trailing button", "value": "" },
+    { "label": "Rounded full leading button", "value": "" },
+    { "label": "Rounded full trailing button", "value": "" }
+  ],
+  "/components/modals/": [
+    { "label": "Basic modal", "value": "" },
+    { "label": "With single action button", "value": "" },
+    { "label": "With multiple action buttons", "value": "" },
+    { "label": "With icon & action buttons", "value": "" },
+    { "label": "With form", "value": "" }
+  ],
+  "/components/notifications/": [
+    { "label": "Dark Themed Notifications", "value": "" },
+    { "label": "Light Themed", "value": "" },
+    { "label": "Primary", "value": "" },
+    { "label": "Secondary", "value": "" }
+  ],
+  "/components/progress-bars/": [
+    { "label": "Basic progress bars", "value": "" },
+    { "label": "With labels above", "value": "" },
+    { "label": "With labels inside", "value": "" },
+    { "label": "With trailing labels", "value": "" },
+    { "label": "With trailing icons", "value": "" },
+    { "label": "Colored", "value": "" },
+    { "label": "Different sizes", "value": "" }
+  ],
+  "/components/spinners/": [
+    { "label": "Basic Spinners", "value": "" },
+    { "label": "Colored", "value": "" },
+    { "label": "Squared", "value": "" }
+  ],
+  "/components/tooltips/": [
+    { "label": "Base sized tooltips", "value": "" },
+    { "label": "Small Sized", "value": "" }
+  ],
+  "/components/form-elements/checkboxes/": [
+    { "label": "Primary Checkboxes", "value": "" },
+    { "label": "Secondary", "value": "" }
+  ],
+  "/components/form-elements/datepickers/": [
+    { "label": "Basic datepickers", "value": "" },
+    { "label": "Outline", "value": "" }
+  ],
+  "/components/form-elements/file-inputs": [
+    { "label": "Button file inputs", "value": "" },
+    { "label": "Basic", "value": "" },
+    { "label": "Outline", "value": "" },
+    { "label": "Dropzone", "value": "" }
+  ],
+  "/components/form-elements/input-groups/": [
+    { "label": "Basic input", "value": "" },
+    { "label": "Outline", "value": "" }
+  ],
+  "/components/form-elements/radio-groups/": [
+    { "label": "Primary radio buttons", "value": "" },
+    { "label": "Secondary", "value": "" }
+  ],
+  "/components/form-elements/search-inputs/": [
+    { "label": "Basic search input", "value": "" },
+    { "label": "Outline", "value": "" }
+  ],
+  "/components/form-elements/select-menus/": [
+    { "label": "Basic select", "value": "" },
+    { "label": "Outline", "value": "" }
+  ],
+  "/components/form-elements/textareas/": [
+    { "label": "Basic text area", "value": "" },
+    { "label": "Outline", "value": "" }
+  ],
+  "/components/form-elements/toggles/": [
+    { "label": "Primary toggles", "value": "" },
+    { "label": "Secondary", "value": "" },
+    { "label": "With icons", "value": "" },
+    { "label": "Day/Night", "value": "" }
+  ]
+}

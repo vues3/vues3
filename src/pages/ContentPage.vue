@@ -24,12 +24,6 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
         q-list
           q-item(tag="label", v-ripple)
             q-item-section(avatar)
-              q-checkbox(v-model="the.full")
-            q-item-section
-              q-item-label Полный экран
-              q-item-label(caption) the.full
-          q-item(tag="label", v-ripple)
-            q-item-section(avatar)
               q-checkbox(v-model="the.setup")
             q-item-section
               q-item-label script setup

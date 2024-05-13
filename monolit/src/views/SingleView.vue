@@ -1,12 +1,5 @@
 <template lang="pug">
-.prose.min-w-full.max-w-none.snap-center(
-  :class="{ 'min-h-dvh': the.full }",
-  :id="the.id",
-  class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
-  role="main",
-  v-cloak,
-  v-if="the"
-)
+.min-w-full.snap-center(:id="the.id", role="main", v-cloak, v-if="the")
   Suspense
     component(
       :is="template",

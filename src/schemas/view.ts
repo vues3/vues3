@@ -26,7 +26,6 @@ const properties = {
   contenteditable: { default: false, type: "boolean" },
   description: { default: null, nullable, type: "string" },
   enabled: { default: true, type: "boolean" },
-  full: { default: true, type: "boolean" },
   icon: { default: null, nullable, type: "string" },
   id: { type: "string" },
   img: { default: null, nullable, type: "string" },

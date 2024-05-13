@@ -1,10 +1,8 @@
 <template lang="pug">
-.prose.min-w-full.max-w-none.snap-center(
-  :class="{ 'min-h-dvh': a.full }",
+.min-w-full.snap-center(
   :id="a.id",
   :key="a.id",
   :role="a.id === the?.id ? 'main' : undefined",
-  class="md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
   ref="refs"
   v-cloak,
   v-for="a in siblings",
