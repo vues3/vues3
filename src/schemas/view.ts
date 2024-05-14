@@ -23,6 +23,12 @@ const properties = {
     nullable,
     type: "string",
   },
+  class: {
+    default: ["snap-center", "min-w-full", "min-h-dvh"],
+    description: "Классы",
+    items: { type: "string" },
+    type: "array",
+  },
   contenteditable: { default: false, type: "boolean" },
   description: { default: null, nullable, type: "string" },
   enabled: { default: true, type: "boolean" },

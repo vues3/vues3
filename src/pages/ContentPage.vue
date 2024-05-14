@@ -34,6 +34,16 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
             q-item-section
               q-item-label style scoped
               q-item-label(caption) the.scoped
+          q-select(
+            hide-dropdown-icon,
+            label="class",
+            multiple,
+            new-value-mode="add",
+            stack-label,
+            use-chips,
+            use-input,
+            v-model.trim="the.class"
+          )
     q-separator
     q-card(flat)
       q-item.text-teal

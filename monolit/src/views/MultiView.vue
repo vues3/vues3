@@ -1,5 +1,6 @@
 <template lang="pug">
-.min-w-full.snap-center(
+div(
+  :class="a.class",
   :id="a.id",
   :key="a.id",
   :role="a.id === the?.id ? 'main' : undefined",

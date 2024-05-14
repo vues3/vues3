@@ -1,5 +1,5 @@
 <template lang="pug">
-.min-w-full.snap-center(:id="the.id", role="main", v-cloak, v-if="the")
+div(:class="the.class", :id="the.id", role="main", v-cloak, v-if="the")
   Suspense
     component(
       :is="template",
