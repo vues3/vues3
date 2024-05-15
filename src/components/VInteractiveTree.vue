@@ -26,7 +26,7 @@ q-btn-group.q-mx-xs(flat, spread)
         q-input.full-width.min-w-96(
           :bg-color="prop.node.id === selected ? 'primary' : undefined",
           :debounce,
-          :error="!prop.node[type] || !!list.find((element) => element.id !== prop.node.id && (element.path === prop.node.path || element.loc === prop.node.path))",
+          :error="!prop.node[type] || !!list.find((element) => element.id !== prop.node.id && (('path' in element && element.path === prop.node.path) || ('loc' in element && element.loc === prop.node.path)))",
           :error-message="prop.node[type] ? 'Такое имя уже используется' : 'Пустое имя'",
           :readonly="!prop.node.contenteditable",
           :type,
