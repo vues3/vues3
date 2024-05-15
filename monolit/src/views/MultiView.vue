@@ -38,11 +38,13 @@ import { getAsyncComponent, selector } from "../stores/monolit";
 
 const route = useRoute();
 const router = useRouter();
-const the = computed(() => {
-  const index = views.value.findIndex(({ id }) => id === route.name);
-  const ret = views.value[index];
-  return index ? ret : ret.children[0];
-});
+const the = computed(
+  () =>
+    (route.path === "/"
+      ? undefined
+      : views.value.find(({ id }) => id === route.name)) ??
+    views.value[0].children[0],
+);
 const siblings = computed(() =>
   the.value.siblings.filter(({ enabled }) => enabled),
 );
@@ -92,9 +94,11 @@ watch(
     if (!push) {
       await all();
       pause = true;
-      refs.value
-        .find(({ id }) => id === the.value.id)
-        ?.scrollIntoView({ behavior });
+      if (route.path === "/") window.scrollTo(0, 0);
+      else
+        refs.value
+          .find(({ id }) => id === the.value.id)
+          ?.scrollIntoView({ behavior });
       pause = false;
     } else push = false;
   },

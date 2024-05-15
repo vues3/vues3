@@ -19,11 +19,13 @@ import { useRoute } from "vue-router";
 import { getAsyncComponent, selector } from "../stores/monolit";
 
 const route = useRoute();
-const the = computed(() => {
-  const index = views.value.findIndex(({ id }) => id === route.name);
-  const ret = views.value[index];
-  return index ? ret : ret.children[0];
-});
+const the = computed(
+  () =>
+    (route.path === "/"
+      ? undefined
+      : views.value.find(({ id }) => id === route.name)) ??
+    views.value[0].children[0],
+);
 const template: ComputedRef<object | undefined> = computed(() =>
   getAsyncComponent(the.value),
 );
