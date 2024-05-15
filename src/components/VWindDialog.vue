@@ -1,7 +1,11 @@
 <template lang="pug">
 q-dialog(full-height, full-width, v-model="model")
   q-card.column.w-full
-    q-tabs(align="justify", v-model="tab")
+    q-tabs(
+      @update:model-value="(value) => { group = options(wind[value].navigationSubCategories[0].subCategoryLink)?.[0].value; }",
+      align="justify",
+      v-model="tab"
+    )
       q-tab(
         :key="index",
         :label="category.navigationCategory",
@@ -20,6 +24,7 @@ q-dialog(full-height, full-width, v-model="model")
           q-expansion-item(
             :default-opened="!subIndex",
             :key="subIndex",
+            @after-show="group = options(subCategory.subCategoryLink)?.[0].value",
             group="group",
             header-class="text-subtitle2",
             v-for="(subCategory, subIndex) in category.navigationSubCategories.filter(({ subCategoryVarNumber }) => subCategoryVarNumber)"
@@ -50,7 +55,7 @@ q-dialog(full-height, full-width, v-model="model")
       )
 </template>
 <script setup lang="ts">
-import type { QEditor } from "quasar";
+import type { QEditor, QOptionGroupProps } from "quasar";
 
 import templates from "assets/templates.json";
 import wind from "assets/wind.json";
@@ -61,20 +66,16 @@ defineProps<{
   editor?: QEditor;
 }>();
 const model = defineModel<boolean>();
-const tab = ref(0);
-const group = ref("");
-const options = (value: string) => templates[value as keyof object];
-watch(group, (value) => {
-  console.log(value);
+const tab = ref();
+const group = ref();
+const options = (value: string) =>
+  templates[value as keyof object] as QOptionGroupProps["options"];
+watch(model, (value) => {
+  if (value) {
+    tab.value = 0;
+    group.value = options(
+      wind[0].navigationSubCategories[0].subCategoryLink,
+    )?.[0].value as string;
+  }
 });
-// console.log(wind);
-// console.log(
-//   Object.fromEntries(
-//     wind
-//       .map(({ navigationSubCategories }) => navigationSubCategories)
-//       .flat()
-//       .filter(({ subCategoryVarNumber }) => subCategoryVarNumber)
-//       .map(({ subCategoryLink }) => [subCategoryLink, []]),
-//   ),
-// );
 </script>
