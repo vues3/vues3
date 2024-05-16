@@ -2,19 +2,19 @@
 v-head
   title {{ the?.name || " " }}
   link(
-    :href="a.url",
-    :key="a.id",
+    :href="aCSS.url",
+    :key="aCSS.id",
     crossorigin="",
     rel="stylesheet",
-    v-for="a in theCSS"
+    v-for="aCSS in theCSS"
   )
   component(
     :is="'script'",
-    :key="a.id",
-    :src="a.url",
+    :key="aJS.id",
+    :src="aJS.url",
     crossorigin="",
     deffer,
-    v-for="a in theJS"
+    v-for="aJS in theJS"
   )
   meta(
     :content="the?.description",
@@ -46,7 +46,7 @@ v-head
     v-if="$?.settings?.google"
   )
 Suspense
-  component(:is="root", :the)
+  component(:a, :is="root", :the)
 </template>
 <script setup lang="ts">
 import type { TResource } from "app/src/stores/data";
@@ -60,9 +60,8 @@ import { favicon, getAsyncComponent } from "./stores/monolit";
 
 const route = useRoute();
 const router = useRouter();
-const root = computed(() =>
-  views.value.length ? getAsyncComponent(views.value[0]) : undefined,
-);
+const a = computed(() => (views.value.length ? views.value[0] : undefined));
+const root = computed(() => a.value && getAsyncComponent(a.value));
 const the = computed(() => views.value.find(({ id }) => id === route.name));
 const drawer = ref(false);
 const canonical = computed(

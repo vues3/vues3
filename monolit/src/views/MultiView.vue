@@ -3,7 +3,7 @@ div(
   :class="a.class",
   :id="a.id",
   :key="a.id",
-  :role="a.id === the?.id ? 'main' : undefined",
+  :role="a.id === that?.id ? 'main' : undefined",
   ref="refs"
   v-cloak,
   v-for="a in siblings",
@@ -11,8 +11,9 @@ div(
 )
   Suspense
     component(
+      :a,
       :is="<object>templates[<keyof object>a.id]",
-      :the="a",
+      :the,
       @vue:mounted="(promises[<keyof object>a.id]).resolve"
     )
 </template>
@@ -38,15 +39,13 @@ import { getAsyncComponent, selector } from "../stores/monolit";
 
 const route = useRoute();
 const router = useRouter();
-const the = computed(
+const the = computed(() => views.value.find(({ id }) => id === route.name));
+const that = computed(
   () =>
-    (route.path === "/"
-      ? undefined
-      : views.value.find(({ id }) => id === route.name)) ??
-    views.value[0].children[0],
+    (route.path === "/" ? undefined : the.value) ?? views.value[0].children[0],
 );
 const siblings = computed(() =>
-  the.value.siblings.filter(({ enabled }) => enabled),
+  that.value.siblings.filter(({ enabled }) => enabled),
 );
 const promises = computed(
   () =>
@@ -69,7 +68,7 @@ const callback = ([
     target: { id: name },
   },
 ]: IntersectionObserverEntry[]) => {
-  if (!pause && isIntersecting && name !== the.value.id) {
+  if (!pause && isIntersecting && name !== that.value.id) {
     push = true;
     router.push({ name }).catch(() => {});
   }
@@ -97,7 +96,7 @@ watch(
       if (route.path === "/") window.scrollTo(0, 0);
       else
         refs.value
-          .find(({ id }) => id === the.value.id)
+          .find(({ id }) => id === that.value.id)
           ?.scrollIntoView({ behavior });
       pause = false;
     } else push = false;

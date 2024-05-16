@@ -15,7 +15,7 @@
     "build": "bun run build:monolit && bun run build:vues3"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.576.0",
+    "@aws-sdk/client-s3": "^3.577.0",
     "@mdi/js": "^6.9.96",
     "@quasar/quasar-ui-qiconpicker": "^2.0.7",
     "@smithy/fetch-http-handler": "^3.0.1",
@@ -64,7 +64,7 @@
     "@types/js-beautify": "^1.14.3",
     "@typescript-eslint/eslint-plugin": "^7.9.0",
     "@typescript-eslint/parser": "^7.9.0",
-    "@vue/language-plugin-pug": "^2.0.18",
+    "@vue/language-plugin-pug": "^2.0.19",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
