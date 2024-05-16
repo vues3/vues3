@@ -31,6 +31,7 @@
     "@unocss/preset-web-fonts": "^0.60.2",
     "@unocss/reset": "^0.60.2",
     "@unocss/runtime": "^0.60.2",
+    "@unocss/transformer-compile-class": "^0.60.2",
     "@unocss/transformer-directives": "^0.60.2",
     "@unocss/transformer-variant-group": "^0.60.2",
     "@unocss/vite": "^0.60.2",

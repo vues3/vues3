@@ -1,10 +1,7 @@
 import initUnocssRuntime from "@unocss/runtime";
-import unocssConfig from "app/uno.config";
+import { autoPrefix } from "app/src/stores/defaults";
+import defaults from "app/uno.config";
 
 export default () => {
-  initUnocssRuntime({
-    autoPrefix: true,
-    defaults: unocssConfig,
-    // bypassDefined: true,
-  });
+  initUnocssRuntime({ autoPrefix, defaults });
 };

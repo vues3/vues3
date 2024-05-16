@@ -86,42 +86,38 @@ const html = {
     doc.querySelectorAll("router-link").forEach((link) => {
       const a = document.createElement("a");
       a.innerHTML = link.innerHTML;
-      a.setAttribute("href", link.attributes.getNamedItem("to")?.value ?? "");
+      [...link.attributes].forEach((attr) => {
+        a.setAttribute(
+          attr.nodeName === "to" ? "href" : attr.nodeName,
+          attr.nodeValue ?? "",
+        );
+      });
       link.replaceWith(a);
     });
     (
       await Promise.all(
         (
           await Promise.all(
-            [...doc.images].map((image) =>
-              image.getAttribute("src") &&
-              !urls.has(image.getAttribute("src") ?? "") &&
-              window.location.origin ===
-                new URL(image.getAttribute("src") ?? "", window.location.origin)
-                  .origin
-                ? getObject(image.getAttribute("src") ?? "")
-                : undefined,
-            ),
+            [...doc.images].map((image) => {
+              const src = image.getAttribute("src") ?? "";
+              return src &&
+                !urls.has(src) &&
+                window.location.origin ===
+                  new URL(src, window.location.origin).origin
+                ? getObject(src)
+                : undefined;
+            }),
           )
         ).map((image) => image?.blob()),
       )
     ).forEach((image, index) => {
+      const src = doc.images[index].getAttribute("src") ?? "";
       if (image)
-        if (image.size)
-          urls.set(
-            doc.images[index].getAttribute("src") ?? "",
-            URL.createObjectURL(image),
-          );
-        else urls.set(doc.images[index].getAttribute("src") ?? "", "");
-      if (urls.get(doc.images[index].getAttribute("src") ?? "")) {
-        doc.images[index].setAttribute(
-          "data-src",
-          doc.images[index].getAttribute("src") ?? "",
-        );
-        doc.images[index].setAttribute(
-          "src",
-          urls.get(doc.images[index].getAttribute("src") ?? "") ?? "",
-        );
+        if (image.size) urls.set(src, URL.createObjectURL(image));
+        else urls.set(src, "");
+      if (urls.get(src)) {
+        doc.images[index].setAttribute("data-src", src);
+        doc.images[index].setAttribute("src", urls.get(src) ?? "");
       }
     });
     return doc.body.innerHTML;
@@ -132,13 +128,22 @@ const html = {
       "text/html",
     );
     doc.querySelectorAll("a").forEach((a) => {
-      const href = a.attributes.getNamedItem("href")?.value ?? "";
+      const url = new URL(
+        a.attributes.getNamedItem("href")?.value ?? "",
+        window.location.origin,
+      );
       if (
-        window.location.origin === new URL(href, window.location.origin).origin
+        window.location.origin === url.origin &&
+        url.href === `${url.origin}${url.pathname}`
       ) {
         const link = document.createElement("router-link");
         link.innerHTML = a.innerHTML;
-        link.setAttribute("to", href);
+        [...a.attributes].forEach((attr) => {
+          link.setAttribute(
+            attr.nodeName === "href" ? "to" : attr.nodeName,
+            attr.nodeValue ?? "",
+          );
+        });
         a.replaceWith(link);
       }
     });
