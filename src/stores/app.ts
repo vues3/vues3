@@ -94,11 +94,12 @@ const html = {
         (
           await Promise.all(
             [...doc.images].map((image) =>
-              image.src &&
-              !urls.has(image.src) &&
+              image.getAttribute("src") &&
+              !urls.has(image.getAttribute("src") ?? "") &&
               window.location.origin ===
-                new URL(image.src, window.location.origin).origin
-                ? getObject(image.src)
+                new URL(image.getAttribute("src") ?? "", window.location.origin)
+                  .origin
+                ? getObject(image.getAttribute("src") ?? "")
                 : undefined,
             ),
           )
@@ -107,13 +108,19 @@ const html = {
     ).forEach((image, index) => {
       if (image)
         if (image.size)
-          urls.set(doc.images[index].src, URL.createObjectURL(image));
-        else urls.set(doc.images[index].src, "");
-      if (urls.get(doc.images[index].src)) {
-        doc.images[index].setAttribute("data-src", doc.images[index].src);
+          urls.set(
+            doc.images[index].getAttribute("src") ?? "",
+            URL.createObjectURL(image),
+          );
+        else urls.set(doc.images[index].getAttribute("src") ?? "", "");
+      if (urls.get(doc.images[index].getAttribute("src") ?? "")) {
+        doc.images[index].setAttribute(
+          "data-src",
+          doc.images[index].getAttribute("src") ?? "",
+        );
         doc.images[index].setAttribute(
           "src",
-          urls.get(doc.images[index].src) ?? "",
+          urls.get(doc.images[index].getAttribute("src") ?? "") ?? "",
         );
       }
     });
