@@ -1,16 +1,16 @@
 import type { S3Client } from "@aws-sdk/client-s3";
 import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
-import type { Ref } from "vue";
+import type { ShallowRef } from "vue";
 
 import {
   GetObjectCommand,
   HeadObjectCommand,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
-import { ref } from "vue";
+import { ref, shallowRef } from "vue";
 
 export const bucket = ref("");
-export const S3: Ref<S3Client | undefined> = ref();
+export const S3: ShallowRef<S3Client | undefined> = shallowRef();
 export const headObject = (Key: string) => {
   const Bucket = bucket.value;
   return S3.value?.send(new HeadObjectCommand({ Bucket, Key }));

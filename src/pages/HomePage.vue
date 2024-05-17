@@ -114,7 +114,7 @@ import { HeadBucketCommand, S3Client } from "@aws-sdk/client-s3";
 import { FetchHttpHandler } from "@smithy/fetch-http-handler";
 import { set, useStorage } from "@vueuse/core";
 import { useQuasar } from "quasar";
-import { accessKeyId, rightDrawer } from "stores/app";
+import { rightDrawer } from "stores/app";
 import { debounce, inputDebounce } from "stores/defaults";
 import { S3, bucket } from "stores/s3";
 import { ref, watch } from "vue";
@@ -138,7 +138,6 @@ interface ICred {
 
 const router = useRouter();
 const $q = useQuasar();
-accessKeyId.value = undefined;
 bucket.value = "";
 rightDrawer.value = undefined;
 const secretAccessKey = ref("");
@@ -146,6 +145,7 @@ const region = ref("");
 const endpoint = ref("");
 const isPwd = ref(true);
 const remember = ref(true);
+const accessKeyId: Ref<string | undefined> = ref();
 const providers: IRegion[] = [
   {
     endpoint: "",

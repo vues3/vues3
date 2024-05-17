@@ -1,8 +1,6 @@
 import type { ValidateFunction } from "ajv";
 import type { TData, TView } from "stores/data";
-import type { Ref } from "vue";
 
-import { useStorage } from "@vueuse/core";
 import Ajv from "ajv";
 import mimes from "assets/mimes.json";
 import { css_beautify, html_beautify, js_beautify } from "js-beautify";
@@ -16,8 +14,6 @@ import {
   coerceTypes,
   configurable,
   deep,
-  immediate,
-  mergeDefaults,
   removeAdditional,
   useDefaults,
   wait,
@@ -36,7 +32,7 @@ const ajv = new Ajv({
   schemas,
   useDefaults,
 });
-export const validateConfig = ajv.getSchema(
+export const validate = ajv.getSchema(
   "urn:jsonschema:config",
 ) as ValidateFunction;
 async function getFile(
@@ -100,7 +96,8 @@ const html = {
           await Promise.all(
             [...doc.images].map((image) => {
               const src = image.getAttribute("src") ?? "";
-              return src &&
+              return S3.value &&
+                src &&
                 !urls.has(src) &&
                 window.location.origin ===
                   new URL(src, window.location.origin).origin
@@ -229,13 +226,6 @@ watch(
   }, wait),
   { deep },
 );
-export const accessKeyId: Ref<string | undefined> = ref();
-export const config = useStorage(
-  `config-${accessKeyId.value ?? ""}`,
-  {} as TConfig,
-  localStorage,
-  { mergeDefaults },
-);
 export const rightDrawer = ref();
 const sitemap = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
@@ -254,13 +244,6 @@ watch(
   debounce((value) => {
     putObject("sitemap.xml", "application/xml", toXML(value)).catch(() => {});
   }, wait),
-);
-watch(
-  config,
-  (value) => {
-    validateConfig(value);
-  },
-  { immediate },
 );
 export const putImage = async (file: File) => {
   const { type } = file;

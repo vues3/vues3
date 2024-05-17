@@ -26,12 +26,27 @@ q-page.column.full-height
       )
 </template>
 <script setup lang="ts">
+import type { TConfig } from "stores/app";
+
+import { useStorage } from "@vueuse/core";
 import VInteractiveTree from "components/VInteractiveTree.vue";
 import VSourceCode from "components/VSourceCode.vue";
-import { config, rightDrawer } from "stores/app";
+import { rightDrawer, validate } from "stores/app";
 import { $ } from "stores/data";
+import { mergeDefaults } from "stores/defaults";
+import { bucket } from "stores/s3";
 import { computed } from "vue";
 
+const config = useStorage(
+  bucket.value,
+  () => {
+    const value = {} as TConfig;
+    validate(value);
+    return value;
+  },
+  localStorage,
+  { mergeDefaults },
+);
 const list = computed(() => $.value?.css);
 rightDrawer.value = undefined;
 </script>

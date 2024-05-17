@@ -231,11 +231,12 @@ q-page.column.full-height.bg-light(v-else)
     q-spinner-hourglass
 </template>
 <script setup lang="ts">
+import type { TConfig } from "stores/app";
 import type { TView } from "stores/data";
 import type { ComputedRef, Ref } from "vue";
 
 import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
-import { useFileDialog } from "@vueuse/core";
+import { useFileDialog, useStorage } from "@vueuse/core";
 import changefreq from "assets/changefreq.json";
 import mimes from "assets/mimes.json";
 import types from "assets/types.json";
@@ -244,7 +245,7 @@ import VSourceCode from "components/VSourceCode.vue";
 import VWysiwyg from "components/VWysiwyg.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
-import { config, rightDrawer, save, urls } from "stores/app";
+import { rightDrawer, save, urls, validate } from "stores/app";
 import { $, views } from "stores/data";
 import {
   accept,
@@ -254,13 +255,24 @@ import {
   immediate,
   inputDebounce,
   itemsPerPage,
+  mergeDefaults,
   multiple,
   page,
   reset,
 } from "stores/defaults";
-import { getObject, putFile } from "stores/s3";
+import { bucket, getObject, putFile } from "stores/s3";
 import { computed, ref, watch } from "vue";
 
+const config = useStorage(
+  bucket.value,
+  () => {
+    const value = {} as TConfig;
+    validate(value);
+    return value;
+  },
+  localStorage,
+  { mergeDefaults },
+);
 const $q = useQuasar();
 const show = ref(false);
 const pagination = ref({ itemsPerPage, page });

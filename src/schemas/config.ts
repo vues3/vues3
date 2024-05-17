@@ -40,18 +40,6 @@ const properties = {
     },
     type: "object",
   },
-  navbar: {
-    default: {},
-    properties: {
-      selected: { type: "string" },
-      tab: {
-        default: "template",
-        enum: ["template", "script", "style"],
-        type: "string",
-      },
-    },
-    type: "object",
-  },
 } as const;
 const type = "object";
 export default {
