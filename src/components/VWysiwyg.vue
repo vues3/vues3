@@ -16,8 +16,6 @@ div
     placeholder="Добавьте контент на вашу страницу...",
     ref="editor"
   )
-  v-wind-dialog(:editor, v-model="showTemplateDialog")
-  v-link-dialog(:editor, v-model="showLinkDialog")
 </template>
 <script setup lang="ts">
 import type {
@@ -33,12 +31,10 @@ import { useFileDialog } from "@vueuse/core";
 import { fonts } from "app/uno.config";
 import mimes from "assets/mimes.json";
 import VLinkDialog from "components/VLinkDialog.vue";
-// import VTemplateDialog from "components/VTemplateDialog.vue";
 import VWindDialog from "components/VWindDialog.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { urls } from "stores/app";
-import { $ } from "stores/data";
 import { accept } from "stores/defaults";
 import { putFile } from "stores/s3";
 import { nextTick, ref, watch } from "vue";
@@ -52,8 +48,6 @@ const props = withDefaults(
   },
 );
 defineEmits(["update:modelValue"]);
-const showTemplateDialog = ref(false);
-const showLinkDialog = ref(false);
 const $q = useQuasar();
 const editor: Ref<QEditor | undefined> = ref();
 const message =
@@ -90,14 +84,22 @@ const definitions = {
         "dashboard",
         "Выбор шаблона",
         () => {
-          showTemplateDialog.value = true;
+          $q.dialog({
+            component: VWindDialog,
+          }).onOk((value: string) => {
+            editor.value?.runCmd("insertHTML", value);
+          });
         },
       ],
       [
         "share",
         "Вставка внутренней ссылки",
         () => {
-          if ($.value?.content.length) showLinkDialog.value = true;
+          $q.dialog({
+            component: VLinkDialog,
+          }).onOk((value: string) => {
+            editor.value?.runCmd("createLink", `/${value}`);
+          });
         },
       ],
     ].map(([icon, tip, handler]) => [icon, { handler, icon, tip }]),

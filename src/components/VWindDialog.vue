@@ -1,9 +1,12 @@
 <template lang="pug">
-q-dialog(full-height, full-width, v-model="model")
-  q-card.column.w-full
+q-dialog(@hide="onDialogHide", ref="dialogRef")
+  q-card.q-dialog-plugin
     q-tabs(
       @update:model-value="(value) => { group = options(wind[value].navigationSubCategories[0].subCategoryLink)?.[0].value; }",
       align="justify",
+      inline-label,
+      mobile-arrows,
+      outside-arrows,
       v-model="tab"
     )
       q-tab(
@@ -13,7 +16,7 @@ q-dialog(full-height, full-width, v-model="model")
         v-for="(category, index) in wind"
       )
     q-separator
-    q-tab-panels.col.column.w-full(animated, v-model="tab")
+    q-tab-panels.scroll.q-dialog-plugin__form(v-model="tab")
       q-tab-panel(
         :key="index",
         :label="category.navigationCategory",
@@ -45,37 +48,30 @@ q-dialog(full-height, full-width, v-model="model")
                   type="radio",
                   v-model="group"
                 )
+    q-separator
     q-card-actions.text-primary(align="right")
-      q-btn(flat, label="Отмена", v-close-popup)
-      q-btn(
-        @click="editor?.runCmd('insertHTML', html_beautify(group))",
-        flat,
-        label="Ok",
-        v-close-popup
-      )
+      q-btn(@click="onDialogCancel", flat, label="Отмена")
+      q-btn(@click="onDialogOK(html_beautify(group))", flat, label="Ok")
 </template>
 <script setup lang="ts">
-import type { QEditor, QOptionGroupProps } from "quasar";
+import type { QOptionGroupProps } from "quasar";
 
 import templates from "assets/templates.json";
 import wind from "assets/wind.json";
 import { html_beautify } from "js-beautify";
-import { ref, watch } from "vue";
+import { useDialogPluginComponent } from "quasar";
+import { onMounted, ref } from "vue";
 
-defineProps<{
-  editor?: QEditor;
-}>();
-const model = defineModel<boolean>();
+defineEmits([...useDialogPluginComponent.emits]);
+const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
+  useDialogPluginComponent();
 const tab = ref();
 const group = ref();
 const options = (value: string) =>
   templates[value as keyof object] as QOptionGroupProps["options"];
-watch(model, (value) => {
-  if (value) {
-    tab.value = 0;
-    group.value = options(
-      wind[0].navigationSubCategories[0].subCategoryLink,
-    )?.[0].value as string;
-  }
+onMounted(() => {
+  tab.value = 0;
+  group.value = options(wind[0].navigationSubCategories[0].subCategoryLink)?.[0]
+    .value as string;
 });
 </script>
