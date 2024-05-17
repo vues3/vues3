@@ -84,9 +84,8 @@ const definitions = {
         "dashboard",
         "Выбор шаблона",
         () => {
-          $q.dialog({
-            component: VWindDialog,
-          }).onOk((value: string) => {
+          const component = VWindDialog;
+          $q.dialog({ component }).onOk((value: string) => {
             editor.value?.runCmd("insertHTML", value);
           });
         },
@@ -95,9 +94,8 @@ const definitions = {
         "share",
         "Вставка внутренней ссылки",
         () => {
-          $q.dialog({
-            component: VLinkDialog,
-          }).onOk((value: string) => {
+          const component = VLinkDialog;
+          $q.dialog({ component }).onOk((value: string) => {
             editor.value?.runCmd("createLink", `/${value}`);
           });
         },
