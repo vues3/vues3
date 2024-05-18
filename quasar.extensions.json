@@ -1,3 +1,4 @@
 {
-  "@quasar/qiconpicker": {}
+  "@quasar/qiconpicker": {},
+  "q-otp": {}
 }
