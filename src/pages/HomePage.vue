@@ -2,7 +2,24 @@
 q-page.column
   .col.column.q-ma-md
     q-img.col.rounded-borders(no-spinner, src="~/assets/bg.jpg")
-      q-card.absolute-center
+      q-card.absolute-right.min-w-300
+        q-list
+          q-item.shadow-12.q-my-md.rounded-borders(
+            :key="name",
+            clickable,
+            v-for="(credential, name) in credentials",
+            v-ripple
+          )
+            q-item-section(avatar)
+              q-avatar(color="white", icon="directions", text-color="black")
+            q-item-section
+              q-item-label {{ name }}
+            q-item-section(side)
+              .q-gutter-xs.text-white
+                q-btn.gt-xs(dense, flat, icon="delete", round, size="12px")
+                q-btn.gt-xs(dense, flat, icon="done", round, size="12px")
+                q-btn(dense, flat, icon="more_vert", round, size="12px")
+      q-card.absolute-left
         q-form(@submit="login")
           .row.q-col-gutter-x-md
             .col-12.col-md.min-w-300
@@ -108,14 +125,15 @@ q-page.column
 <script setup lang="ts">
 import type { S3ClientConfig } from "@aws-sdk/client-s3";
 import type { RemovableRef } from "@vueuse/core";
+import type { TCredentials } from "stores/app";
 import type { Ref } from "vue";
 
 import { HeadBucketCommand, S3Client } from "@aws-sdk/client-s3";
 import { FetchHttpHandler } from "@smithy/fetch-http-handler";
 import { set, useStorage } from "@vueuse/core";
 import { useQuasar } from "quasar";
-import { rightDrawer } from "stores/app";
-import { debounce, inputDebounce } from "stores/defaults";
+import { rightDrawer, validateCredentials } from "stores/app";
+import { debounce, inputDebounce, mergeDefaults } from "stores/defaults";
 import { S3, bucket } from "stores/s3";
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
@@ -262,6 +280,17 @@ const login = async () => {
       $q.notify({ message });
     }
 };
+
+const credentials = useStorage(
+  "@",
+  () => {
+    const value = {} as TCredentials;
+    validateCredentials(value);
+    return value;
+  },
+  localStorage,
+  { mergeDefaults },
+);
 </script>
 <style lang="sass" scoped>
 .min-w-300

@@ -245,7 +245,7 @@ import VSourceCode from "components/VSourceCode.vue";
 import VWysiwyg from "components/VWysiwyg.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
-import { rightDrawer, save, urls, validate } from "stores/app";
+import { rightDrawer, save, urls, validateConfig } from "stores/app";
 import { $, views } from "stores/data";
 import {
   accept,
@@ -267,7 +267,7 @@ const config = useStorage(
   `.${bucket.value}`,
   () => {
     const value = {} as TConfig;
-    validate(value);
+    validateConfig(value);
     return value;
   },
   localStorage,

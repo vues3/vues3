@@ -10,7 +10,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       v-model="tab"
     )
       q-tab(
-        :key="index",
+        :key="category.navigationCategory",
         :label="category.navigationCategory",
         :name="index",
         v-for="(category, index) in wind"
@@ -18,7 +18,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
     q-separator
     q-tab-panels.scroll.q-dialog-plugin__form(v-model="tab")
       q-tab-panel(
-        :key="index",
+        :key="category.navigationCategory",
         :label="category.navigationCategory",
         :name="index",
         v-for="(category, index) in wind"

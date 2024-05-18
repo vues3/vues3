@@ -31,7 +31,7 @@ import type { TConfig } from "stores/app";
 import { useStorage } from "@vueuse/core";
 import VInteractiveTree from "components/VInteractiveTree.vue";
 import VSourceCode from "components/VSourceCode.vue";
-import { rightDrawer, validate } from "stores/app";
+import { rightDrawer, validateConfig } from "stores/app";
 import { $ } from "stores/data";
 import { mergeDefaults } from "stores/defaults";
 import { bucket } from "stores/s3";
@@ -41,7 +41,7 @@ const config = useStorage(
   `.${bucket.value}`,
   () => {
     const value = {} as TConfig;
-    validate(value);
+    validateConfig(value);
     return value;
   },
   localStorage,

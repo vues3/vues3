@@ -70,9 +70,7 @@ const ajv = new Ajv({
   schemas,
   useDefaults,
 });
-export const validate = ajv.getSchema(
-  "urn:jsonschema:data",
-) as ValidateFunction;
+const validate = ajv.getSchema("urn:jsonschema:data") as ValidateFunction;
 const getViews = (views: TView[]): TView[] =>
   views.flatMap((element) => [element, ...getViews(element.children)]);
 const index = {

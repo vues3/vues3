@@ -8,6 +8,7 @@ import { FromSchema } from "json-schema-to-ts";
 import mime from "mime";
 import { debounce, uid } from "quasar";
 import Config from "src/schemas/config";
+import Credentials from "src/schemas/credentials";
 import { $, code, views } from "stores/data";
 import {
   cache,
@@ -23,8 +24,9 @@ import { toXML } from "to-xml";
 import { computed, ref, watch } from "vue";
 
 const parser = new DOMParser();
+export type TCredentials = FromSchema<typeof Credentials>;
 export type TConfig = FromSchema<typeof Config>;
-const schemas = [Config];
+const schemas = [Config, Credentials];
 const ajv = new Ajv({
   code,
   coerceTypes,
@@ -32,8 +34,11 @@ const ajv = new Ajv({
   schemas,
   useDefaults,
 });
-export const validate = ajv.getSchema(
+export const validateConfig = ajv.getSchema(
   "urn:jsonschema:config",
+) as ValidateFunction;
+export const validateCredentials = ajv.getSchema(
+  "urn:jsonschema:credentials",
 ) as ValidateFunction;
 async function getFile(
   this: TView,
