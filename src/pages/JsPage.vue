@@ -38,7 +38,7 @@ import { bucket } from "stores/s3";
 import { computed } from "vue";
 
 const config = useStorage(
-  bucket.value,
+  `.${bucket.value}`,
   () => {
     const value = {} as TConfig;
     validate(value);
