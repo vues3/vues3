@@ -8,7 +8,7 @@ q-page.column
             :key="name",
             @click="login(name)",
             clickable,
-            v-for="(credential, name) in credentials",
+            v-for="(cred, name) in creds",
             v-ripple
           )
             q-item-section(avatar)
@@ -22,25 +22,20 @@ q-page.column
                 q-btn(dense, flat, icon="more_vert", round, size="12px")
 </template>
 <script setup lang="ts">
-import type { S3ClientConfig } from "@aws-sdk/client-s3";
 import type { TCredentials } from "stores/types";
 
-import { HeadBucketCommand, S3Client } from "@aws-sdk/client-s3";
-import { FetchHttpHandler } from "@smithy/fetch-http-handler";
 import { useStorage } from "@vueuse/core";
 import { useQuasar } from "quasar";
 import { rightDrawer } from "stores/app";
 import { mergeDefaults } from "stores/defaults";
-import { S3, bucket } from "stores/s3";
+import { bucket, headBucket } from "stores/s3";
 import { validateCredentials } from "stores/types";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const $q = useQuasar();
-bucket.value = "";
 rightDrawer.value = undefined;
-let s3Client: S3Client | undefined;
-const credentials = useStorage(
+const creds = useStorage(
   "@",
   () => {
     const value = {} as TCredentials;
@@ -50,26 +45,14 @@ const credentials = useStorage(
   localStorage,
   { mergeDefaults },
 );
-
 const login = async (key: number | string) => {
-  if (!s3Client)
+  if (!bucket.value)
     try {
-      const requestHandler = new FetchHttpHandler({ keepAlive: false });
-      const { Bucket, accessKeyId, endpoint, region, secretAccessKey } =
-        credentials.value[key];
-      s3Client = new S3Client({
-        credentials: { accessKeyId, secretAccessKey },
-        endpoint,
-        region,
-        requestHandler,
-      } as S3ClientConfig);
-      await s3Client.send(new HeadBucketCommand({ Bucket }));
-      bucket.value = Bucket;
-      S3.value = s3Client;
+      await headBucket(key.toString());
+      bucket.value = key.toString();
       router.push("/content").catch(() => {});
     } catch (err) {
       bucket.value = "";
-      s3Client = undefined;
       const { message } = err as Error;
       $q.notify({ message });
     }

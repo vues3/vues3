@@ -28,3 +28,4 @@ export const autoPrefix = true;
 export const bypassDefined = true;
 export const once = true;
 export const mergeDefaults = true;
+export const keepAlive = false;
