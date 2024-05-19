@@ -1,4 +1,4 @@
-import type { TData, TSettings } from "app/src/stores/data";
+import type { TData, TSettings } from "app/src/stores/types";
 import type { App } from "vue";
 import type {
   RouteComponent,

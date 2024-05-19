@@ -40,7 +40,7 @@ q-btn-group.q-mx-xs(flat, spread)
 </template>
 <script setup lang="ts">
 import type { QInputProps, QTree, QTreeNode } from "quasar";
-import type { TResource, TView } from "stores/data";
+import type { TResource, TView } from "stores/types";
 import type { Ref } from "vue";
 
 import { uid, useQuasar } from "quasar";
@@ -153,7 +153,11 @@ const leftView = () => {
       } = parent;
       if (grandparent) {
         qtree.value?.setExpanded(id, false);
-        siblings.splice(grandindex + 1, 0, ...children.splice(index, 1));
+        siblings.splice(
+          grandindex + 1,
+          0,
+          ...(children ?? []).splice(index, 1),
+        );
       }
     }
   }

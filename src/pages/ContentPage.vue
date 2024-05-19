@@ -231,8 +231,7 @@ q-page.column.full-height.bg-light(v-else)
     q-spinner-hourglass
 </template>
 <script setup lang="ts">
-import type { TConfig } from "stores/app";
-import type { TView } from "stores/data";
+import type { TConfig, TView } from "stores/types";
 import type { ComputedRef, Ref } from "vue";
 
 import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
@@ -245,7 +244,7 @@ import VSourceCode from "components/VSourceCode.vue";
 import VWysiwyg from "components/VWysiwyg.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
-import { rightDrawer, save, urls, validateConfig } from "stores/app";
+import { rightDrawer, save, urls } from "stores/app";
 import { $, views } from "stores/data";
 import {
   accept,
@@ -261,6 +260,7 @@ import {
   reset,
 } from "stores/defaults";
 import { bucket, getObject, putFile } from "stores/s3";
+import { validateConfig } from "stores/types";
 import { computed, ref, watch } from "vue";
 
 const config = useStorage(

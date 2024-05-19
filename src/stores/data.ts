@@ -1,78 +1,12 @@
-import type { ValidateFunction } from "ajv";
+import type { TData, TResource, TView } from "app/src/stores/types";
 import type { Ref } from "vue";
 
-import * as mdi from "@mdi/js";
-import Ajv from "ajv";
-import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
-import Data, { plainData } from "app/src/schemas/data";
-import Resource from "app/src/schemas/resource";
-import Settings from "app/src/schemas/settings";
-import View, { plainView } from "app/src/schemas/view";
-import {
-  coerceTypes,
-  configurable,
-  deep,
-  esm,
-  removeAdditional,
-  useDefaults,
-} from "app/src/stores/defaults";
-import { FromSchema } from "json-schema-to-ts";
-import uuid from "uuid-random";
+import { configurable, deep } from "app/src/stores/defaults";
+import { validate } from "app/src/stores/types";
 import { computed, ref, watch } from "vue";
 
-export type TView = {
-  branch: TView[];
-  children: TView[];
-  css: string;
-  favicon: keyof typeof mdi;
-  htm: string;
-  html: Promise<string> | string;
-  index: number;
-  js: string;
-  name: string;
-  next?: TView;
-  parent?: TView;
-  path: string;
-  prev?: TView;
-  script: Promise<string> | string;
-  siblings: TView[];
-  style: Promise<string> | string;
-  template: Promise<string> | string;
-  url: string;
-  views: TView[];
-} & FromSchema<typeof plainView>;
-export type TResource = {
-  children?: undefined;
-  index: number;
-  next?: TView;
-  parent?: undefined;
-  prev?: TView;
-  siblings: TView[];
-} & FromSchema<typeof Resource>;
-export type TSettings = FromSchema<typeof Settings>;
-export type TData = {
-  content: TView[];
-  css: TResource[];
-  js: TResource[];
-} & FromSchema<
-  typeof plainData,
-  { references: [typeof Settings, typeof Resource] }
->;
-dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uuid();
-const schemas = [Resource, View, Settings, Data];
-export const code = { esm };
-const keywords = [dynamicDefaults()];
-const ajv = new Ajv({
-  code,
-  coerceTypes,
-  keywords,
-  removeAdditional,
-  schemas,
-  useDefaults,
-});
-const validate = ajv.getSchema("urn:jsonschema:data") as ValidateFunction;
 const getViews = (views: TView[]): TView[] =>
-  views.flatMap((element) => [element, ...getViews(element.children)]);
+  views.flatMap((element) => [element, ...getViews(element.children ?? [])]);
 const index = {
   get(this: TView) {
     return this.siblings.findIndex(({ id }) => this.id === id);
@@ -145,7 +79,10 @@ const fixDeep = (
       siblings,
       url,
     });
-    fixDeep({ configurable, value: value.children }, { configurable, value });
+    fixDeep(
+      { configurable, value: value.children ?? [] },
+      { configurable, value },
+    );
   });
 };
 export const $: Ref<TData | undefined> = ref();
@@ -157,23 +94,26 @@ export const views = computed(() =>
   }),
 );
 watch(
-  () => $.value?.content ?? [],
+  () => $.value?.content,
   (value) => {
-    fixDeep({ value });
+    if (value) {
+      const [{ id }] = value;
+      if (id) fixDeep({ value });
+    }
   },
   { deep },
 );
 watch(
-  () => $.value?.css ?? [],
-  (value: TResource[]) => {
-    fixPlain({ value });
+  () => $.value?.css,
+  (value) => {
+    if (value) fixPlain({ value });
   },
   { deep },
 );
 watch(
-  () => $.value?.js ?? [],
-  (value: TResource[]) => {
-    fixPlain({ value });
+  () => $.value?.js,
+  (value) => {
+    if (value) fixPlain({ value });
   },
   { deep },
 );
@@ -181,13 +121,16 @@ const value = undefined;
 const flush = "sync";
 watch(
   $,
-  (newValue) => {
-    if (newValue) {
-      ["content", "css", "js"].forEach((key) => {
-        if (!(newValue[key as keyof TData] as TResource[] | TView[]).length)
-          Reflect.defineProperty(newValue, key, { value });
+  (obj) => {
+    if (obj) {
+      ["content", "css", "js"].forEach((prop) => {
+        if (
+          Object.hasOwn(obj, prop) &&
+          !(obj[prop as keyof TData] as TResource[] | TView[]).length
+        )
+          Reflect.defineProperty(obj, prop, { value });
       });
-      validate(newValue);
+      validate(obj);
     }
   },
   { deep, flush },

@@ -1,45 +1,16 @@
-import type { ValidateFunction } from "ajv";
-import type { TData, TView } from "stores/data";
+import type { TData, TView } from "stores/types";
 
-import Ajv from "ajv";
 import mimes from "assets/mimes.json";
 import { css_beautify, html_beautify, js_beautify } from "js-beautify";
-import { FromSchema } from "json-schema-to-ts";
 import mime from "mime";
 import { debounce, uid } from "quasar";
-import Config from "src/schemas/config";
-import Credentials from "src/schemas/credentials";
-import { $, code, views } from "stores/data";
-import {
-  cache,
-  coerceTypes,
-  configurable,
-  deep,
-  removeAdditional,
-  useDefaults,
-  wait,
-} from "stores/defaults";
-import { S3, bucket, getObject, putFile, putObject } from "stores/s3";
+import { $, views } from "stores/data";
+import { cache, configurable, deep, wait } from "stores/defaults";
+import { bucket, getObject, putFile, putObject } from "stores/s3";
 import { toXML } from "to-xml";
 import { computed, ref, watch } from "vue";
 
 const parser = new DOMParser();
-export type TCredentials = FromSchema<typeof Credentials>;
-export type TConfig = FromSchema<typeof Config>;
-const schemas = [Config, Credentials];
-const ajv = new Ajv({
-  code,
-  coerceTypes,
-  removeAdditional,
-  schemas,
-  useDefaults,
-});
-export const validateConfig = ajv.getSchema(
-  "urn:jsonschema:config",
-) as ValidateFunction;
-export const validateCredentials = ajv.getSchema(
-  "urn:jsonschema:credentials",
-) as ValidateFunction;
 async function getFile(
   this: TView,
   ext: keyof TView,
@@ -101,7 +72,7 @@ const html = {
           await Promise.all(
             [...doc.images].map((image) => {
               const src = image.getAttribute("src") ?? "";
-              return S3.value &&
+              return bucket.value &&
                 src &&
                 !urls.has(src) &&
                 window.location.origin ===
@@ -174,7 +145,7 @@ const script = {
     setFile.call(this, "js", value);
   },
 };
-watch(S3, async (value) => {
+watch(bucket, async (value) => {
   if (value) {
     $.value = JSON.parse(
       (await (await getObject("data.json", cache)).text()) || "{}",

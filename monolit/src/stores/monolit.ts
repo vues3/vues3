@@ -1,4 +1,4 @@
-import type { TView } from "app/src/stores/data";
+import type { TView } from "app/src/stores/types";
 import type { AsyncComponentLoader } from "vue";
 import type { Options } from "vue3-sfc-loader";
 

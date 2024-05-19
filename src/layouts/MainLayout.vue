@@ -46,10 +46,10 @@ q-layout(view="hHh Lpr lff")
 import privateItems from "assets/private.json";
 import publicItems from "assets/public.json";
 import { rightDrawer } from "stores/app";
-import { S3 } from "stores/s3";
+import { bucket } from "stores/s3";
 import { computed, ref } from "vue";
 
 const leftDrawer = ref(false);
 const miniState = ref(true);
-const items = computed(() => (S3.value ? privateItems : publicItems));
+const items = computed(() => (bucket.value ? privateItems : publicItems));
 </script>

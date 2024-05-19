@@ -4,11 +4,11 @@ const $id = "urn:jsonschema:credentials";
 const nullable = true;
 const additionalProperties = {
   properties: {
-    Bucket: { default: null, nullable, type: "string" },
-    accessKeyId: { default: null, nullable, type: "string" },
+    Bucket: { default: "", type: "string" },
+    accessKeyId: { default: "", type: "string" },
     endpoint: { default: null, nullable, type: "string" },
     region: { default: null, nullable, type: "string" },
-    secretAccessKey: { default: null, nullable, type: "string" },
+    secretAccessKey: { default: "", type: "string" },
   },
   type: "object",
 } as const;
