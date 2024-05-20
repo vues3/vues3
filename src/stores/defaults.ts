@@ -29,3 +29,5 @@ export const bypassDefined = true;
 export const once = true;
 export const mergeDefaults = true;
 export const keepAlive = false;
+export const enumerable = true;
+export const writable = true;

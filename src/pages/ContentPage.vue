@@ -1,5 +1,11 @@
 <template lang="pug">
-q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
+q-drawer(
+  bordered,
+  show-if-above,
+  side="right",
+  v-if="the",
+  v-model="rightDrawer"
+)
   q-list
     q-expansion-item(
       default-opened,

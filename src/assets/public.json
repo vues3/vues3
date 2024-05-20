@@ -5,8 +5,8 @@
     "to": "/"
   },
   {
-    "title": "About",
+    "title": "License",
     "icon": "info",
-    "to": "/about"
+    "to": "/license"
   }
 ]

@@ -1,17 +1,5 @@
 <template lang="pug">
-q-page.q-pa-xl
-  q-timeline(layout="comfortable", side="right")
-    q-timeline-entry(icon="rocket_launch", title="Homepage")
-      template(#subtitle)
-        a(href="https://vues3.ru", rel="noopener noreferrer", target="_blank") vues3.ru
-    q-timeline-entry(icon="share", title="Repository")
-      template(#subtitle)
-        a(
-          href="https://github.com/vues3/vues3",
-          rel="noopener noreferrer",
-          target="_blank"
-        ) github.com/vues3/vues3
-  q-separator
+q-page(padding)
   h3(style="text-align: center") GNU AFFERO GENERAL PUBLIC LICENSE
   p(style="text-align: center") Version 3, 19 November 2007
   p

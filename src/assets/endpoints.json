@@ -1,0 +1,6 @@
+[
+  { "label": "aws", "value": "" },
+  { "label": "yandex", "value": "https://storage.yandexcloud.net" },
+  { "label": "vk", "value": "https://hb.ru-msk.vkcs.cloud" },
+  { "label": "cloud", "value": "https://s3.cloud.ru" }
+]
