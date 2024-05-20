@@ -61,26 +61,68 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
     q-card-actions.text-primary(align="right")
       q-btn(@click="onDialogCancel", flat, label="Отмена")
       q-btn(
-        @click="() => { bucket.validate(); if (!bucket.hasError) onDialogOK({ Bucket, secretAccessKey, region, endpoint, accessKeyId }); }",
+        @click="() => { bucket.validate(); if (!bucket.hasError) click({ Bucket, secretAccessKey, region, endpoint, accessKeyId }); }",
         flat,
         label="Ok"
       )
 </template>
 <script setup lang="ts">
+import type { TCredentials } from "stores/types";
+
+import { useStorage } from "@vueuse/core";
 import endpoints from "assets/endpoints.json";
 import regions from "assets/regions.json";
-import { useDialogPluginComponent } from "quasar";
-import { ref } from "vue";
+import { useDialogPluginComponent, useQuasar } from "quasar";
+import { enumerable, mergeDefaults, writable } from "stores/defaults";
+import { validateCredentials } from "stores/types";
+import { ref, triggerRef } from "vue";
 
+// const props =
+const props = defineProps<{
+  value?: string;
+}>();
 defineEmits([...useDialogPluginComponent.emits]);
+const $q = useQuasar();
 const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
   useDialogPluginComponent();
+const creds = useStorage(
+  "@",
+  () => {
+    const value = {} as TCredentials;
+    validateCredentials(value);
+    return value;
+  },
+  localStorage,
+  { mergeDefaults },
+);
 const bucket = ref();
-const Bucket = ref("");
-const secretAccessKey = ref("");
-const region = ref("");
-const endpoint = ref("");
+const cred = creds.value[props.value ?? ""] as
+  | Record<string, null | string>
+  | undefined;
+const Bucket = ref(cred?.Bucket ?? "");
+const secretAccessKey = ref(cred?.secretAccessKey ?? null);
+const region = ref(cred?.region ?? null);
+const endpoint = ref(cred?.endpoint ?? null);
 const isPwd = ref(true);
-const accessKeyId = ref("");
-const getRegions = (value: string) => regions[value as keyof object];
+const accessKeyId = ref(cred?.accessKeyId ?? null);
+const getRegions = (value: null | string) => regions[value as keyof object];
+const click = (value: Record<string, null | string>) => {
+  if (value.Bucket)
+    if (props.value !== value.Bucket && Reflect.has(creds.value, value.Bucket))
+      $q.dialog({
+        message: "Такая учетная запись уже существует",
+        title: "Предупреждение",
+      });
+    else {
+      if (props.value && props.value !== value.Bucket)
+        Reflect.deleteProperty(creds.value, props.value);
+      Reflect.defineProperty(creds.value, value.Bucket, {
+        enumerable,
+        value,
+        writable,
+      });
+      triggerRef(creds);
+      onDialogOK();
+    }
+};
 </script>

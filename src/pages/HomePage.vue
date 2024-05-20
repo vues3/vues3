@@ -23,7 +23,14 @@ q-drawer(bordered, side="right", v-model="rightDrawer")
               round,
               size="12px"
             )
-            q-btn.gt-xs(dense, flat, icon="done", round, size="12px")
+            q-btn.gt-xs(
+              @click="(evt) => { evt.stopPropagation(); edit(name); }",
+              dense,
+              flat,
+              icon="edit",
+              round,
+              size="12px"
+            )
             q-btn(dense, flat, icon="lock", round, size="12px")
     q-card-actions(vertical)
       q-btn(@click="add", fab, icon="add", round)
@@ -57,7 +64,7 @@ import { useStorage } from "@vueuse/core";
 import VCredsDialog from "components/VCredsDialog.vue";
 import { useQuasar } from "quasar";
 import { rightDrawer } from "stores/app";
-import { enumerable, mergeDefaults, writable } from "stores/defaults";
+import { mergeDefaults } from "stores/defaults";
 import { bucket, headBucket } from "stores/s3";
 import { validateCredentials } from "stores/types";
 import { triggerRef } from "vue";
@@ -90,15 +97,13 @@ const login = async (key: number | string) => {
 };
 const add = () => {
   const component = VCredsDialog;
-  $q.dialog({ component }).onOk((value: Record<string, string>) => {
-    const { Bucket } = value;
-    Reflect.defineProperty(creds.value, Bucket, {
-      enumerable,
-      value,
-      writable,
-    });
-    triggerRef(creds);
-  });
+  $q.dialog({ component });
+};
+const edit = (name: number | string) => {
+  const component = VCredsDialog;
+  const value = name;
+  const componentProps = { value };
+  $q.dialog({ component, componentProps });
 };
 const remove = (name: number | string) => {
   $q.dialog({
