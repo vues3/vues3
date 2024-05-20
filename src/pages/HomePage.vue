@@ -1,5 +1,5 @@
 <template lang="pug">
-q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
+q-drawer(bordered, side="right", v-model="rightDrawer")
   q-card(flat)
     q-list(padding)
       q-item(
