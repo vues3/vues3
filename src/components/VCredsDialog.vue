@@ -77,7 +77,6 @@ import { enumerable, mergeDefaults, writable } from "stores/defaults";
 import { validateCredentials } from "stores/types";
 import { ref, triggerRef } from "vue";
 
-// const props =
 const props = defineProps<{
   value?: string;
 }>();

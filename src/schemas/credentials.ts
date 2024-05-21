@@ -5,10 +5,10 @@ const nullable = true;
 const additionalProperties = {
   properties: {
     Bucket: { default: "", type: "string" },
-    accessKeyId: { default: "", type: "string" },
-    endpoint: { default: null, nullable, type: "string" },
-    region: { default: null, nullable, type: "string" },
-    secretAccessKey: { default: "", type: "string" },
+    accessKeyId: { default: null, nullable, type: "string" },
+    endpoint: { default: "", type: "string" },
+    region: { default: "", type: "string" },
+    secretAccessKey: { default: null, nullable, type: "string" },
   },
   type: "object",
 } as const;

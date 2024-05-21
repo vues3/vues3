@@ -31,7 +31,14 @@ q-drawer(bordered, side="right", v-model="rightDrawer")
               round,
               size="12px"
             )
-            q-btn(dense, flat, icon="lock", round, size="12px")
+            q-btn(
+              :icon="name === cred.Bucket ? 'lock_open' : 'lock'",
+              @click="(evt) => { evt.stopPropagation(); lock(name); }",
+              dense,
+              flat,
+              round,
+              size="12px"
+            )
     q-card-actions(vertical)
       q-btn(@click="add", fab, icon="add", round)
 q-page.column
@@ -62,6 +69,8 @@ import type { TCredentials } from "stores/types";
 
 import { useStorage } from "@vueuse/core";
 import VCredsDialog from "components/VCredsDialog.vue";
+import VOtpDialog from "components/VOtpDialog.vue";
+import CryptoJS from "crypto-js";
 import { useQuasar } from "quasar";
 import { rightDrawer } from "stores/app";
 import { mergeDefaults } from "stores/defaults";
@@ -113,6 +122,61 @@ const remove = (name: number | string) => {
   }).onOk(() => {
     Reflect.deleteProperty(creds.value, name.toString());
     triggerRef(creds);
+  });
+};
+const lock = (name: number | string) => {
+  $q.dialog({
+    component: VOtpDialog,
+    componentProps: {
+      value:
+        name === creds.value[name].Bucket
+          ? undefined
+          : creds.value[name].Bucket,
+    },
+  }).onOk((data: string) => {
+    if (name === creds.value[name].Bucket) {
+      creds.value[name].Bucket = CryptoJS.AES.encrypt(
+        creds.value[name].Bucket,
+        data,
+      ).toString();
+      creds.value[name].accessKeyId = CryptoJS.AES.encrypt(
+        creds.value[name].accessKeyId ?? "",
+        data,
+      ).toString();
+      creds.value[name].endpoint = CryptoJS.AES.encrypt(
+        creds.value[name].endpoint,
+        data,
+      ).toString();
+      creds.value[name].region = CryptoJS.AES.encrypt(
+        creds.value[name].region,
+        data,
+      ).toString();
+      creds.value[name].secretAccessKey = CryptoJS.AES.encrypt(
+        creds.value[name].secretAccessKey ?? "",
+        data,
+      ).toString();
+    } else {
+      creds.value[name].Bucket = CryptoJS.AES.decrypt(
+        creds.value[name].Bucket,
+        data,
+      ).toString(CryptoJS.enc.Utf8);
+      creds.value[name].accessKeyId = CryptoJS.AES.decrypt(
+        creds.value[name].accessKeyId ?? "",
+        data,
+      ).toString(CryptoJS.enc.Utf8);
+      creds.value[name].endpoint = CryptoJS.AES.decrypt(
+        creds.value[name].endpoint,
+        data,
+      ).toString(CryptoJS.enc.Utf8);
+      creds.value[name].region = CryptoJS.AES.decrypt(
+        creds.value[name].region,
+        data,
+      ).toString(CryptoJS.enc.Utf8);
+      creds.value[name].secretAccessKey = CryptoJS.AES.decrypt(
+        creds.value[name].secretAccessKey ?? "",
+        data,
+      ).toString(CryptoJS.enc.Utf8);
+    }
   });
 };
 </script>
