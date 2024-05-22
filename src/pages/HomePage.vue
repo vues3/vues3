@@ -10,7 +10,13 @@ q-drawer(bordered, side="right", v-model="rightDrawer")
         v-ripple
       )
         q-item-section(avatar)
-          q-avatar(color="black", icon="directions", text-color="white")
+          q-btn(
+            :icon="name === cred.Bucket ? 'lock_open' : 'lock'",
+            @click="(evt) => { evt.stopPropagation(); lock(name); }",
+            outline,
+            padding="md",
+            round
+          )
         q-item-section
           q-item-label {{ name }}
         q-item-section(side)
@@ -21,7 +27,7 @@ q-drawer(bordered, side="right", v-model="rightDrawer")
               flat,
               icon="delete",
               round,
-              size="12px"
+              size="md"
             )
             q-btn.gt-xs(
               @click="(evt) => { evt.stopPropagation(); edit(name); }",
@@ -29,15 +35,7 @@ q-drawer(bordered, side="right", v-model="rightDrawer")
               flat,
               icon="edit",
               round,
-              size="12px"
-            )
-            q-btn(
-              :icon="name === cred.Bucket ? 'lock_open' : 'lock'",
-              @click="(evt) => { evt.stopPropagation(); lock(name); }",
-              dense,
-              flat,
-              round,
-              size="12px"
+              size="md"
             )
     q-card-actions(vertical)
       q-btn(@click="add", fab, icon="add", round)

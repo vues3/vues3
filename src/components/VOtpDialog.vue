@@ -19,6 +19,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         maxlength="1",
         outlined,
         style="width: 6ch",
+        type="password",
         v-for="i in length",
         v-model="fieldValues[i - 1]"
       )
