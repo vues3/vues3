@@ -13,9 +13,8 @@ q-drawer(bordered, side="right", v-model="rightDrawer")
           q-btn(
             :icon="name === cred.Bucket ? 'lock_open' : 'lock'",
             @click="(evt) => { evt.stopPropagation(); lock(name); }",
-            outline,
-            padding="md",
-            round
+            flat,
+            padding="sm"
           )
         q-item-section
           q-item-label {{ name }}
@@ -26,7 +25,6 @@ q-drawer(bordered, side="right", v-model="rightDrawer")
               dense,
               flat,
               icon="delete",
-              round,
               size="md"
             )
             q-btn.gt-xs(
@@ -34,7 +32,6 @@ q-drawer(bordered, side="right", v-model="rightDrawer")
               dense,
               flat,
               icon="edit",
-              round,
               size="md"
             )
     q-card-actions(vertical)
@@ -91,7 +88,14 @@ const creds = useStorage(
   { mergeDefaults },
 );
 const login = async (key: number | string) => {
-  if (!bucket.value)
+  if (!bucket.value) {
+    // if (key !== creds.value[name].Bucket)
+    //   $q.dialog({
+    //     component: VOtpDialog,
+    //     componentProps: {
+    //       value: key,
+    //     },
+    //   }).onOk((data: string) => {});
     try {
       await headBucket(key.toString());
       bucket.value = key.toString();
@@ -101,6 +105,7 @@ const login = async (key: number | string) => {
       const { message } = err as Error;
       $q.notify({ message });
     }
+  }
 };
 const add = () => {
   const component = VCredsDialog;
@@ -123,15 +128,11 @@ const remove = (name: number | string) => {
   });
 };
 const lock = (name: number | string) => {
-  $q.dialog({
-    component: VOtpDialog,
-    componentProps: {
-      value:
-        name === creds.value[name].Bucket
-          ? undefined
-          : creds.value[name].Bucket,
-    },
-  }).onOk((data: string) => {
+  const value =
+    name === creds.value[name].Bucket ? undefined : creds.value[name].Bucket;
+  const componentProps = { value };
+  const component = VOtpDialog;
+  $q.dialog({ component, componentProps }).onOk((data: string) => {
     if (name === creds.value[name].Bucket) {
       creds.value[name].Bucket = CryptoJS.AES.encrypt(
         creds.value[name].Bucket,
