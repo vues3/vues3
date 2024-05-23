@@ -61,7 +61,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
     q-card-actions.text-primary(align="right")
       q-btn(@click="onDialogCancel", flat, label="Отмена")
       q-btn(
-        @click="() => { bucket.validate(); if (!bucket.hasError) click({ Bucket, secretAccessKey, region, endpoint, accessKeyId }); }",
+        @click="() => { bucket.validate(); if (!bucket.hasError) click(encrypt({ Bucket, secretAccessKey, region, endpoint, accessKeyId })); }",
         flat,
         label="Ok"
       )
@@ -72,12 +72,14 @@ import type { TCredentials } from "stores/types";
 import { useStorage } from "@vueuse/core";
 import endpoints from "assets/endpoints.json";
 import regions from "assets/regions.json";
+import CryptoJS from "crypto-js";
 import { useDialogPluginComponent, useQuasar } from "quasar";
 import { enumerable, mergeDefaults, writable } from "stores/defaults";
 import { validateCredentials } from "stores/types";
 import { ref, triggerRef } from "vue";
 
 const props = defineProps<{
+  pin?: string;
   value?: string;
 }>();
 defineEmits([...useDialogPluginComponent.emits]);
@@ -98,24 +100,37 @@ const bucket = ref();
 const cred = creds.value[props.value ?? ""] as
   | Record<string, null | string>
   | undefined;
-const Bucket = ref(cred?.Bucket ?? "");
-const secretAccessKey = ref(cred?.secretAccessKey ?? null);
-const region = ref(cred?.region ?? null);
-const endpoint = ref(cred?.endpoint ?? null);
+const decrypt = (value?: null | string) =>
+  props.pin
+    ? CryptoJS.AES.decrypt(value ?? "", props.pin).toString(CryptoJS.enc.Utf8)
+    : value ?? null;
+const Bucket = ref(decrypt(cred?.Bucket));
+const secretAccessKey = ref(decrypt(cred?.secretAccessKey));
+const region = ref(decrypt(cred?.region));
+const endpoint = ref(decrypt(cred?.endpoint));
 const isPwd = ref(true);
-const accessKeyId = ref(cred?.accessKeyId ?? null);
+const accessKeyId = ref(decrypt(cred?.accessKeyId));
 const getRegions = (value: null | string) => regions[value as keyof object];
+const encrypt = (obj: Record<string, null | string>) =>
+  props.pin
+    ? Object.fromEntries(
+        Object.entries(obj).map(([key, value]) => [
+          key,
+          CryptoJS.AES.encrypt(value ?? "", props.pin ?? "").toString(),
+        ]),
+      )
+    : obj;
 const click = (value: Record<string, null | string>) => {
-  if (value.Bucket)
-    if (props.value !== value.Bucket && Reflect.has(creds.value, value.Bucket))
+  if (Bucket.value)
+    if (props.value !== Bucket.value && Reflect.has(creds.value, Bucket.value))
       $q.dialog({
         message: "Такая учетная запись уже существует",
         title: "Предупреждение",
       });
     else {
-      if (props.value && props.value !== value.Bucket)
+      if (props.value && props.value !== Bucket.value)
         Reflect.deleteProperty(creds.value, props.value);
-      Reflect.defineProperty(creds.value, value.Bucket, {
+      Reflect.defineProperty(creds.value, Bucket.value, {
         enumerable,
         value,
         writable,

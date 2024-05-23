@@ -11,6 +11,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { FetchHttpHandler } from "@smithy/fetch-http-handler";
 import { useStorage } from "@vueuse/core";
+import CryptoJS from "crypto-js";
 import { keepAlive, mergeDefaults } from "stores/defaults";
 import { validateCredentials } from "stores/types";
 import { ref, watch } from "vue";
@@ -28,9 +29,18 @@ const creds = useStorage(
   { mergeDefaults },
 );
 export const bucket = ref("");
-export const headBucket = async (Bucket: string) => {
-  const { accessKeyId, endpoint, region, secretAccessKey } =
-    creds.value[Bucket];
+export const headBucket = async (Bucket: string, pin?: string) => {
+  let { accessKeyId, endpoint, region, secretAccessKey } = creds.value[Bucket];
+  if (pin) {
+    accessKeyId = CryptoJS.AES.decrypt(accessKeyId ?? "", pin).toString(
+      CryptoJS.enc.Utf8,
+    );
+    endpoint = CryptoJS.AES.decrypt(endpoint, pin).toString(CryptoJS.enc.Utf8);
+    region = CryptoJS.AES.decrypt(region, pin).toString(CryptoJS.enc.Utf8);
+    secretAccessKey = CryptoJS.AES.decrypt(secretAccessKey ?? "", pin).toString(
+      CryptoJS.enc.Utf8,
+    );
+  }
   const credentials = { accessKeyId, secretAccessKey };
   s3Client = new S3Client({
     credentials,

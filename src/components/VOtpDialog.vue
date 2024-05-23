@@ -52,9 +52,7 @@ watch(
   (value) => {
     if (value.length === length.value) {
       if (props.value)
-        error.value = !CryptoJS.AES.decrypt(props.value, value).toString(
-          CryptoJS.enc.Utf8,
-        );
+        error.value = !CryptoJS.AES.decrypt(props.value, value).toString();
       if (!error.value) onDialogOK(value);
     } else error.value = false;
   },

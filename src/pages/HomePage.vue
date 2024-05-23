@@ -87,35 +87,48 @@ const creds = useStorage(
   localStorage,
   { mergeDefaults },
 );
-const login = async (key: number | string) => {
-  if (!bucket.value) {
-    // if (key !== creds.value[name].Bucket)
-    //   $q.dialog({
-    //     component: VOtpDialog,
-    //     componentProps: {
-    //       value: key,
-    //     },
-    //   }).onOk((data: string) => {});
+const getPin = async (name: string): Promise<string | undefined> =>
+  new Promise((resolve, reject) => {
+    if (name !== creds.value[name].Bucket) {
+      const component = VOtpDialog;
+      const value = creds.value[name].Bucket;
+      const componentProps = { value };
+      $q.dialog({ component, componentProps })
+        .onOk((payload: string) => {
+          resolve(payload);
+        })
+        .onCancel(() => {
+          reject(new Error("Код не введен"));
+        });
+    } else resolve(undefined);
+  });
+const login = async (name: number | string) => {
+  if (!bucket.value)
     try {
-      await headBucket(key.toString());
-      bucket.value = key.toString();
+      await headBucket(name.toString(), await getPin(name.toString()));
+      bucket.value = name.toString();
       router.push("/content").catch(() => {});
     } catch (err) {
       bucket.value = "";
       const { message } = err as Error;
       $q.notify({ message });
     }
-  }
 };
 const add = () => {
   const component = VCredsDialog;
   $q.dialog({ component });
 };
-const edit = (name: number | string) => {
+const edit = async (name: number | string) => {
   const component = VCredsDialog;
   const value = name;
-  const componentProps = { value };
-  $q.dialog({ component, componentProps });
+  try {
+    const pin = await getPin(name.toString());
+    const componentProps = { pin, value };
+    $q.dialog({ component, componentProps });
+  } catch (err) {
+    const { message } = err as Error;
+    $q.notify({ message });
+  }
 };
 const remove = (name: number | string) => {
   $q.dialog({
@@ -132,54 +145,23 @@ const lock = (name: number | string) => {
     name === creds.value[name].Bucket ? undefined : creds.value[name].Bucket;
   const componentProps = { value };
   const component = VOtpDialog;
-  $q.dialog({ component, componentProps }).onOk((data: string) => {
-    if (name === creds.value[name].Bucket) {
-      creds.value[name].Bucket = CryptoJS.AES.encrypt(
-        creds.value[name].Bucket,
-        data,
-      ).toString();
-      creds.value[name].accessKeyId = CryptoJS.AES.encrypt(
-        creds.value[name].accessKeyId ?? "",
-        data,
-      ).toString();
-      creds.value[name].endpoint = CryptoJS.AES.encrypt(
-        creds.value[name].endpoint,
-        data,
-      ).toString();
-      creds.value[name].region = CryptoJS.AES.encrypt(
-        creds.value[name].region,
-        data,
-      ).toString();
-      creds.value[name].secretAccessKey = CryptoJS.AES.encrypt(
-        creds.value[name].secretAccessKey ?? "",
-        data,
-      ).toString();
+  $q.dialog({ component, componentProps }).onOk((payload: string) => {
+    const cred = creds.value[name];
+    if (name === cred.Bucket) {
+      Object.keys(cred).forEach((key) => {
+        cred[key] = CryptoJS.AES.encrypt(
+          (cred[key] ?? "") as string,
+          payload,
+        ).toString();
+      });
     } else {
-      creds.value[name].Bucket = CryptoJS.AES.decrypt(
-        creds.value[name].Bucket,
-        data,
-      ).toString(CryptoJS.enc.Utf8);
-      creds.value[name].accessKeyId = CryptoJS.AES.decrypt(
-        creds.value[name].accessKeyId ?? "",
-        data,
-      ).toString(CryptoJS.enc.Utf8);
-      creds.value[name].endpoint = CryptoJS.AES.decrypt(
-        creds.value[name].endpoint,
-        data,
-      ).toString(CryptoJS.enc.Utf8);
-      creds.value[name].region = CryptoJS.AES.decrypt(
-        creds.value[name].region,
-        data,
-      ).toString(CryptoJS.enc.Utf8);
-      creds.value[name].secretAccessKey = CryptoJS.AES.decrypt(
-        creds.value[name].secretAccessKey ?? "",
-        data,
-      ).toString(CryptoJS.enc.Utf8);
+      Object.keys(cred).forEach((key) => {
+        cred[key] = CryptoJS.AES.decrypt(
+          (cred[key] ?? "") as string,
+          payload,
+        ).toString(CryptoJS.enc.Utf8);
+      });
     }
   });
 };
 </script>
-<style lang="sass" scoped>
-.min-w-300
-  min-width: 300px !important
-</style>
