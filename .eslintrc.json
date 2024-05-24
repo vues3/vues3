@@ -8,6 +8,7 @@
     "project": "./tsconfig.json",
     "extraFileExtensions": [".vue"]
   },
+  "plugins": ["eslint-plugin-tsdoc"],
   "extends": [
     "airbnb-base",
     "airbnb-typescript/base",
@@ -23,5 +24,8 @@
     "import/resolver": {
       "typescript": true
     }
+  },
+  "rules": {
+    "tsdoc/syntax": "warn"
   }
 }

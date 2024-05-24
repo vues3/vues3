@@ -54,7 +54,7 @@ const name = {
 };
 const favicon = {
   get(this: TView) {
-    return this.icon?.replace(/-./g, (x) => x[1].toUpperCase());
+    return this.icon?.replace("-", ":");
   },
 };
 const fixPlain = (siblings: { value: TResource[] }) => {

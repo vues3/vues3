@@ -8,7 +8,7 @@ import type {
 } from "vue-router";
 import type { Config } from "yandex-metrika-vue3/src/types";
 
-import * as mdi from "@mdi/js";
+import { Icon } from "@iconify/vue";
 import Tres from "@tresjs/core";
 import { createHead } from "@unhead/vue";
 import { Head } from "@unhead/vue/components";
@@ -42,7 +42,6 @@ window.console.info(
 );
 initUnocssRuntime({ autoPrefix, bypassDefined, defaults });
 const app: App = createApp(vueApp);
-app.config.globalProperties.mdi = mdi;
 (async () => {
   const response: Response = await fetch("/data.json", {
     cache,
@@ -102,5 +101,8 @@ app.use(router);
 app.use(createHead());
 app.use(Tres);
 app.use(MotionPlugin);
-app.component("VHead", Head);
+// eslint-disable-next-line vue/multi-word-component-names, vue/no-reserved-component-names
+app.component("Head", Head);
+// eslint-disable-next-line vue/multi-word-component-names
+app.component("Icon", Icon);
 app.mount("#app");

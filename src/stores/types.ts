@@ -1,6 +1,5 @@
 import type { ValidateFunction } from "ajv";
 
-import * as mdi from "@mdi/js";
 import Ajv from "ajv";
 import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
 import Config from "app/src/schemas/config";
@@ -22,7 +21,7 @@ export type TView = {
   branch: TView[];
   children?: TView[];
   css: string;
-  favicon: keyof typeof mdi;
+  favicon: string;
   htm: string;
   html: Promise<string> | string;
   index: number;

@@ -1,5 +1,5 @@
 <template lang="pug">
-v-head
+Head
   title {{ the?.name || " " }}
   link(
     :href="aCSS.url",
@@ -26,12 +26,7 @@ v-head
   meta(:content="canonical", property="og:url", v-if="canonical")
   meta(:content="the?.img", property="og:image", v-if="the?.img")
   meta(:content="the?.alt", property="og:image:alt", v-if="the?.alt")
-  link(
-    :href="`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='${mdi[the?.favicon ?? 'mdiWeb']}'/></svg>`",
-    :key="favicon",
-    rel="icon",
-    type="image/svg+xml"
-  )
+  link(:href="favicon", :key, rel="icon", type="image/svg+xml")
   link(:href="canonical", rel="canonical", v-if="canonical")
   component(:is="'style'", v-if="$?.style") {{ $.style }}
   component(:is="'script'", v-if="$?.script") {{ $.script }}
@@ -49,14 +44,15 @@ Suspense
   component(:a, :is="root", :the)
 </template>
 <script setup lang="ts">
-import type { TResource } from "app/src/stores/data";
+import type { TResource } from "app/src/stores/types";
 
-import * as mdi from "@mdi/js";
+import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { $, views } from "app/src/stores/data";
-import { computed, ref } from "vue";
+import uuid from "uuid-random";
+import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { favicon, getAsyncComponent } from "./stores/monolit";
+import { getAsyncComponent } from "./stores/monolit";
 
 const route = useRoute();
 const router = useRouter();
@@ -74,5 +70,15 @@ const theJS = computed(() => $.value?.js.filter(alive) ?? []);
 const theCSS = computed(() => $.value?.css.filter(alive) ?? []);
 router.beforeEach(() => {
   drawer.value = false;
+});
+const key = uuid();
+const favicon = ref("");
+watch(the, async (value) => {
+  const name = value?.favicon ?? "mdi:web";
+  const icon = iconExists(name) ? getIcon(name) : await loadIcon(name);
+  if (icon) {
+    const { body, height, left, top, width } = icon;
+    favicon.value = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
+  }
 });
 </script>

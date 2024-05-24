@@ -1,5 +1,5 @@
 <template lang="pug">
-v-head
+Head
   title Page Not Found
 .hero.h-full
   .hero-content
