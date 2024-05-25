@@ -1,6 +1,7 @@
 import type { Preset, SourceCodeTransformer } from "@unocss/core";
 
 import presetAttributify from "@unocss/preset-attributify";
+import presetIcons from "@unocss/preset-icons/browser";
 import presetTagify from "@unocss/preset-tagify";
 import presetTypography from "@unocss/preset-typography";
 import presetUno from "@unocss/preset-uno";
@@ -35,12 +36,15 @@ const fonts: Record<string, string> = Object.fromEntries(
     ...handwrittenFonts,
   ].map((value) => [value.toLowerCase().replaceAll(" ", "_"), value]),
 );
+const mdi = () => import("@iconify-json/mdi/icons.json").then((i) => i.default);
+const collections = { mdi };
 const presets: Preset[] = [
   presetUno(),
   presetAttributify(),
   presetTypography(),
   presetTagify(),
   presetWebFonts({ fonts }),
+  presetIcons({ collections }),
 ];
 const transformers: SourceCodeTransformer[] = [
   transformerDirectives(),
