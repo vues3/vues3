@@ -52,11 +52,6 @@ const name = {
     return this.title ?? this.text;
   },
 };
-const favicon = {
-  get(this: TView) {
-    return this.icon?.replace("-", ":");
-  },
-};
 const fixPlain = (siblings: { value: TResource[] }) => {
   siblings.value.forEach((element) => {
     Object.defineProperties(element, { index, next, prev, siblings });
@@ -69,7 +64,6 @@ const fixDeep = (
   siblings.value.forEach((value) => {
     Object.defineProperties(value, {
       branch,
-      favicon,
       index,
       name,
       next,

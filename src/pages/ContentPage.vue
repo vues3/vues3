@@ -122,7 +122,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
           v-model.trim="the.icon"
         )
           template(#prepend)
-            q-icon.cursor-pointer(:name="the.icon ?? 'mdi-tray-arrow-up'")
+            q-icon.cursor-pointer(:name="icon ?? 'mdi-tray-arrow-up'")
               q-popup-proxy.column.items-center.justify-center(v-model="show")
                 q-input.q-ma-md(
                   :debounce,
@@ -132,11 +132,11 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
                   v-model="filter"
                 )
                 q-icon-picker(
-                  :filter="filter",
-                  :icons="icons",
+                  :filter,
+                  :icons,
                   dense,
                   tooltips,
-                  v-model="the.icon",
+                  v-model="icon",
                   v-model:model-pagination="pagination"
                 )
         q-input(
@@ -234,7 +234,7 @@ q-page.column.full-height.bg-light(v-else)
 import type { TConfig, TView } from "stores/types";
 import type { ComputedRef, Ref } from "vue";
 
-import materialIcons from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
+import mdi from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
 import { useFileDialog, useStorage } from "@vueuse/core";
 import changefreq from "assets/changefreq.json";
 import mimes from "assets/mimes.json";
@@ -276,12 +276,20 @@ const config = useStorage(
 const $q = useQuasar();
 const show = ref(false);
 const pagination = ref({ itemsPerPage, page });
-const icons = ref((materialIcons as Record<string, object[]>).icons);
+const { icons } = mdi as Record<string, object[]>;
 const the: ComputedRef<TView | undefined> = computed(
   () =>
     views.value.find(({ id }) => id === config.value.content.selected) ??
     views.value[0],
 );
+const icon = computed({
+  get() {
+    return the.value?.icon?.replace(/^mdi:/, "mdi-");
+  },
+  set(value) {
+    if (value && the.value) the.value.icon = value.replace(/^mdi-/, "mdi:");
+  },
+});
 const onUnmounted = async (ext: string, key: keyof TView) => {
   save.call(the.value, ext, (await the.value?.[key]) as string);
 };

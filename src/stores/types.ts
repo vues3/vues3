@@ -21,7 +21,6 @@ export type TView = {
   branch: TView[];
   children?: TView[];
   css: string;
-  favicon: string;
   htm: string;
   html: Promise<string> | string;
   index: number;

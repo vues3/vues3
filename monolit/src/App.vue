@@ -74,11 +74,18 @@ router.beforeEach(() => {
 const key = uuid();
 const favicon = ref("");
 watch(the, async (value) => {
-  const name = value?.favicon ?? "mdi:web";
-  const icon = iconExists(name) ? getIcon(name) : await loadIcon(name);
-  if (icon) {
-    const { body, height, left, top, width } = icon;
-    favicon.value = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
+  const name = value?.icon ?? "mdi:web";
+  let icon = null;
+  try {
+    icon = iconExists(name) ? getIcon(name) : await loadIcon(name);
+  } catch (e) {
+    icon = getIcon("mdi:web");
+  } finally {
+    if (icon) {
+      const { body, height, left, top, width } = icon;
+      favicon.value = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
+    }
   }
 });
+if (!iconExists("mdi:web")) loadIcon("mdi:web").catch(() => {});
 </script>
