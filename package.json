@@ -43,7 +43,7 @@
     "@vueuse/core": "^10.9.0",
     "@vueuse/motion": "^2.1.0",
     "ace-builds": "^1.34.1",
-    "ajv": "^8.13.0",
+    "ajv": "^8.14.0",
     "ajv-keywords": "^5.1.0",
     "crypto-js": "^4.2.0",
     "glightbox": "^3.3.0",
