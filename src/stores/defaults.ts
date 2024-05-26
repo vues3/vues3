@@ -10,7 +10,6 @@ export const debounce = 1000;
 export const immediate = true;
 export const cancel = true;
 export const persistent = false;
-export const filter = "";
 export const itemsPerPage = 75;
 export const page = 0;
 export const multiple = false;

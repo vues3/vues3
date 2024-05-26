@@ -8,10 +8,10 @@ import type {
 
 import { configure } from "quasar/wrappers";
 
-const boot: string[] = ["uno", "route"];
+const boot: string[] = ["uno", "route", "icon"];
 const css: string[] = ["app.sass"];
 const extras: (QuasarFonts | QuasarIconSets)[] = [
-  "mdi-v6",
+  "mdi-v7",
   "roboto-font",
   "material-icons",
 ];

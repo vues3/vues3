@@ -21,11 +21,11 @@ Head
     name="description",
     v-if="the?.description"
   )
-  meta(:content="the?.name", property="og:title", v-if="the?.name")
-  meta(:content="the?.type", property="og:type", v-if="the?.type")
+  meta(:content="the.name", property="og:title", v-if="the?.name")
+  meta(:content="the.type", property="og:type", v-if="the?.type")
   meta(:content="canonical", property="og:url", v-if="canonical")
-  meta(:content="the?.img", property="og:image", v-if="the?.img")
-  meta(:content="the?.alt", property="og:image:alt", v-if="the?.alt")
+  meta(:content="image", property="og:image", v-if="image")
+  meta(:content="the.alt[0]", property="og:image:alt", v-if="the?.alt[0]")
   link(:href="favicon", :key, rel="icon", type="image/svg+xml")
   link(:href="canonical", rel="canonical", v-if="canonical")
   component(:is="'style'", v-if="$?.style") {{ $.style }}
@@ -62,8 +62,13 @@ const the = computed(() => views.value.find(({ id }) => id === route.name));
 const drawer = ref(false);
 const canonical = computed(
   () =>
-    the.value?.url.constructor === String &&
+    typeof the.value?.url === "string" &&
     `${window.location.origin}/${the.value.url}`,
+);
+const image = computed(
+  () =>
+    typeof the.value?.image[0] === "string" &&
+    `${window.location.origin}/${the.value.image[0]}`,
 );
 const alive = ({ enabled, url }: TResource) => !!(enabled && url);
 const theJS = computed(() => $.value?.js.filter(alive) ?? []);

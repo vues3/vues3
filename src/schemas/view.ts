@@ -7,7 +7,11 @@ const id = "uuid";
 const dynamicDefaults = { id };
 const children = { default: [], items: { $ref: "#" }, type: "array" } as const;
 const properties = {
-  alt: { default: null, nullable, type: "string" },
+  alt: {
+    default: [],
+    items: { type: "string" },
+    type: "array",
+  },
   changefreq: {
     default: null,
     enum: [
@@ -34,7 +38,11 @@ const properties = {
   enabled: { default: true, type: "boolean" },
   icon: { default: null, nullable, type: "string" },
   id: { type: "string" },
-  img: { default: null, nullable, type: "string" },
+  image: {
+    default: [],
+    items: { type: "string" },
+    type: "array",
+  },
   keywords: {
     default: [],
     items: { type: "string" },

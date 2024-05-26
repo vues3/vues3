@@ -122,34 +122,38 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
           v-model.trim="the.icon"
         )
           template(#prepend)
-            q-icon.cursor-pointer(:name="icon ?? 'mdi-tray-arrow-up'")
-              q-popup-proxy.column.items-center.justify-center(v-model="show")
-                q-input.q-ma-md(
-                  :debounce,
-                  clearable,
-                  dense,
-                  label="Поиск...",
-                  v-model="filter"
-                )
-                q-icon-picker(
-                  :filter,
-                  :icons,
-                  dense,
-                  tooltips,
-                  v-model="icon",
-                  v-model:model-pagination="pagination"
-                )
+            Icon.cursor-pointer(:icon="icon ?? 'mdi:tray-arrow-up'")
+            q-popup-proxy.column.items-center.justify-center
+              q-input.q-ma-md(
+                :debounce,
+                clearable,
+                dense,
+                label="Поиск...",
+                v-model="filter"
+              )
+              q-icon-picker(
+                :filter,
+                :icons,
+                dense,
+                tooltips,
+                v-model="icon",
+                v-model:model-pagination="pagination"
+              )
         q-input(
           :debounce,
           autogrow,
           hint="the.alt",
           label="Описание картинки",
           type="textarea",
-          v-model.trim="the.alt"
+          v-model.trim="alt"
         )
-        q-img.q-mt-md.rounded-borders(:ratio="16 / 9", :src, v-if="the.img")
+        q-img.q-mt-md.rounded-borders(
+          :ratio="16 / 9",
+          :src,
+          v-if="the.image[0]"
+        )
           q-btn.all-pointer-events.absolute(
-            @click="the.img = null",
+            @click="the.image.splice(0, 1)",
             color="white",
             dense,
             icon="close",
@@ -158,7 +162,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
             style="top: 8px; right: 8px",
             text-color="black"
           )
-          .absolute-bottom.text-center the.img
+          .absolute-bottom.text-center the.image
           template(#error)
             .absolute-full.flex-center.flex
               q-btn(
@@ -166,7 +170,7 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
                 color="primary",
                 label="Загрузить картинку"
               )
-        q-img.q-mt-md.rounded-borders(:ratio="16 / 9", v-if="!the.img")
+        q-img.q-mt-md.rounded-borders(:ratio="16 / 9", v-if="!the.image[0]")
           .absolute-full.flex-center.flex
             q-btn(@click="click", color="primary", label="Загрузить картинку")
 q-page.column.full-height(v-if="the")
@@ -250,7 +254,6 @@ import {
   accept,
   capture,
   debounce,
-  filter,
   immediate,
   inputDebounce,
   itemsPerPage,
@@ -274,7 +277,7 @@ const config = useStorage(
   { mergeDefaults },
 );
 const $q = useQuasar();
-const show = ref(false);
+const filter = ref("");
 const pagination = ref({ itemsPerPage, page });
 const { icons } = mdi as Record<string, object[]>;
 const the: ComputedRef<TView | undefined> = computed(
@@ -282,6 +285,16 @@ const the: ComputedRef<TView | undefined> = computed(
     views.value.find(({ id }) => id === config.value.content.selected) ??
     views.value[0],
 );
+const alt = computed({
+  get() {
+    return the.value?.alt[0];
+  },
+  set(value) {
+    if (the.value)
+      if (value) the.value.alt[0] = value;
+      else the.value.alt.splice(0, 1);
+  },
+});
 const icon = computed({
   get() {
     return the.value?.icon?.replace(/^mdi:/, "mdi-");
@@ -309,13 +322,13 @@ const src: Ref<string | undefined> = ref();
 watch(
   the,
   async (value) => {
-    if (value?.img) {
-      if (!urls.has(value.img))
+    if (value?.image[0]) {
+      if (!urls.has(value.image[0]))
         urls.set(
-          value.img,
-          URL.createObjectURL(await (await getObject(value.img)).blob()),
+          value.image[0],
+          URL.createObjectURL(await (await getObject(value.image[0])).blob()),
         );
-      src.value = urls.get(value.img);
+      src.value = urls.get(value.image[0]);
     } else src.value = undefined;
   },
   { immediate },
@@ -330,7 +343,7 @@ watch(files, (value) => {
       const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
       putFile(filePath, type, file).catch(() => {});
       urls.set(filePath, URL.createObjectURL(file));
-      the.value.img = filePath;
+      the.value.image[0] = filePath;
       src.value = urls.get(filePath);
     } else $q.notify({ message });
   }
