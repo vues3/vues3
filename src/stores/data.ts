@@ -33,8 +33,8 @@ const path = {
   get(this: TView) {
     return this.branch
       .map(
-        ({ id, text }) =>
-          encodeURIComponent(text?.replace(" ", "_") ?? "") || id,
+        ({ id, name }) =>
+          encodeURIComponent(name?.replace(" ", "_") ?? "") || id,
       )
       .slice(1)
       .join("/");
@@ -47,9 +47,9 @@ const url = {
     );
   },
 };
-const name = {
+const title = {
   get(this: TView) {
-    return this.title ?? this.text;
+    return this.header ?? this.name;
   },
 };
 const fixPlain = (siblings: { value: TResource[] }) => {
@@ -65,12 +65,12 @@ const fixDeep = (
     Object.defineProperties(value, {
       branch,
       index,
-      name,
       next,
       parent,
       path,
       prev,
       siblings,
+      title,
       url,
     });
     fixDeep(

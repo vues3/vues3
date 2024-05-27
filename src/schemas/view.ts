@@ -36,6 +36,7 @@ const properties = {
   contenteditable: { default: false, type: "boolean" },
   description: { default: null, nullable, type: "string" },
   enabled: { default: true, type: "boolean" },
+  header: { default: null, nullable, type: "string" },
   icon: { default: null, nullable, type: "string" },
   id: { type: "string" },
   image: {
@@ -50,11 +51,10 @@ const properties = {
   },
   lastmod: { default: null, nullable, type: "string" },
   loc: { default: null, nullable, type: "string" },
+  name: { default: null, nullable, type: "string" },
   priority: { default: null, maximum: 1, minimum: 0, nullable, type: "number" },
   scoped: { default: true, type: "boolean" },
   setup: { default: true, type: "boolean" },
-  text: { default: null, nullable, type: "string" },
-  title: { default: null, nullable, type: "string" },
   type: {
     default: null,
     enum: [

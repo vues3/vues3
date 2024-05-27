@@ -62,9 +62,9 @@ q-drawer(bordered, side="right", v-if="the", v-model="rightDrawer")
         )
         q-input(
           :debounce,
-          hint="the.title",
+          hint="the.header",
           label="Заголовок страницы",
-          v-model.trim="the.title"
+          v-model.trim="the.header"
         )
         q-input(
           :debounce,

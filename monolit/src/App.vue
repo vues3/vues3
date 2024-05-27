@@ -1,6 +1,6 @@
 <template lang="pug">
 Head
-  title {{ the?.name || " " }}
+  title {{ the?.title || " " }}
   link(
     :href="aCSS.url",
     :key="aCSS.id",
@@ -21,7 +21,7 @@ Head
     name="description",
     v-if="the?.description"
   )
-  meta(:content="the.name", property="og:title", v-if="the?.name")
+  meta(:content="the.title", property="og:title", v-if="the?.title")
   meta(:content="the.type", property="og:type", v-if="the?.type")
   meta(:content="canonical", property="og:url", v-if="canonical")
   meta(:content="image", property="og:image", v-if="image")

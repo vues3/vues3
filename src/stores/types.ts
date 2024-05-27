@@ -25,7 +25,6 @@ export type TView = {
   html: Promise<string> | string;
   index: number;
   js: string;
-  name: string;
   next?: TView;
   parent?: TView;
   path: string;
@@ -34,6 +33,7 @@ export type TView = {
   siblings: TView[];
   style: Promise<string> | string;
   template: Promise<string> | string;
+  title: string;
   url: string;
   views: TView[];
 } & FromSchema<typeof plainView>;

@@ -51,14 +51,13 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
     q-separator
     q-card-actions.text-primary(align="right")
       q-btn(@click="onDialogCancel", flat, label="Отмена")
-      q-btn(@click="onDialogOK(html_beautify(group))", flat, label="Ok")
+      q-btn(@click="onDialogOK(group)", flat, label="Ok")
 </template>
 <script setup lang="ts">
 import type { QOptionGroupProps } from "quasar";
 
 import templates from "assets/templates.json";
 import wind from "assets/wind.json";
-import { html_beautify } from "js-beautify";
 import { useDialogPluginComponent } from "quasar";
 import { onMounted, ref } from "vue";
 
