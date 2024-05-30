@@ -23,7 +23,6 @@ import {
   once,
 } from "app/src/stores/defaults";
 import defaults from "app/uno.config";
-import "glightbox/dist/css/glightbox.css";
 import "virtual:uno.css";
 import { createApp, watch } from "vue";
 import VueGtag from "vue-gtag";

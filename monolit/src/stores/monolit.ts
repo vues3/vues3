@@ -13,8 +13,6 @@ import { defineAsyncComponent } from "vue";
 import * as vueRouter from "vue-router";
 import { loadModule } from "vue3-sfc-loader";
 
-import selectors from "../assets/glightbox.json";
-
 const moduleCache = {
   "@tresjs/cientos": tresjsCientos,
   "@tresjs/core": tresjsCore,
@@ -87,4 +85,3 @@ export const fix = (siblings: TView[]) => {
     if (value.children) fix(value.children);
   });
 };
-export const selector = selectors.map((el) => `a[href${el}]`).join();

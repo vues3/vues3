@@ -26,16 +26,13 @@ import { views } from "app/src/stores/data";
 import {
   behavior,
   immediate,
-  loop,
   rootMargin,
   threshold,
-  zoomable,
 } from "app/src/stores/defaults";
-import GLightbox from "glightbox";
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { getAsyncComponent, selector } from "../stores/monolit";
+import { getAsyncComponent } from "../stores/monolit";
 
 const route = useRoute();
 const router = useRouter();
@@ -79,14 +76,6 @@ const all = async () => {
     Object.values(promises.value).map(({ promise }) => promise),
   );
 };
-watch(
-  siblings,
-  async () => {
-    await all();
-    GLightbox({ loop, selector, zoomable });
-  },
-  { immediate },
-);
 watch(
   route,
   async () => {
