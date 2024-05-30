@@ -5,7 +5,7 @@ Vue.S3 is a program for creating websites from dynamically loaded vue.js templat
 ## Acknowledgements
 
 - [Vue3/Vue2 Single File Component loader](https://github.com/FranckFreiburger/vue3-sfc-loader)
-- [UnoCSS: Instant On-demand Atomic CSS Engine](https://github.com/unocss/unocss)
+- [UnoCSS: Instant On-demand Atomic CSS Engine](https://unocss.dev)
 
 ## License
 
