@@ -1,6 +1,13 @@
 <template lang="pug">
 q-drawer(bordered, side="right", v-model="rightDrawer")
   q-card(flat)
+    q-card-section
+      q-item
+        q-item-section(avatar)
+          q-icon(name="storage")
+        q-item-section
+          .text-overline учетные записи
+    q-separator
     q-list(padding)
       q-item(
         :key="name",
@@ -46,18 +53,20 @@ q-page.column
           q-timeline(color="black", layout="comfortable", side="left")
             q-timeline-entry(icon="rocket_launch", title="Homepage")
               template(#subtitle)
-                a.text-white(
+                a.text-no-wrap.text-white(
                   href="https://vues3.ru",
                   rel="noopener noreferrer",
                   target="_blank"
                 ) vues3.ru
             q-timeline-entry(icon="share", title="Repository")
               template(#subtitle)
-                a.text-white(
+                a.text-no-wrap.text-white(
                   href="https://github.com/vues3",
                   rel="noopener noreferrer",
                   target="_blank"
                 ) github.com/vues3
+        q-card-section
+          .text-overline ver.: {{ APP_VERSION }}
 </template>
 <script setup lang="ts">
 import type { TCredentials } from "stores/types";
@@ -74,6 +83,7 @@ import { validateCredentials } from "stores/types";
 import { triggerRef } from "vue";
 import { useRouter } from "vue-router";
 
+const { APP_VERSION } = process.env;
 const router = useRouter();
 const $q = useQuasar();
 rightDrawer.value = true;

@@ -650,3 +650,8 @@ q-page(padding)
     ) https://www.gnu.org/licenses/
     | &gt;.
 </template>
+<script setup lang="ts">
+import { rightDrawer } from "stores/app";
+
+rightDrawer.value = undefined;
+</script>

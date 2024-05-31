@@ -16,9 +16,9 @@ const extras: (QuasarFonts | QuasarIconSets)[] = [
   "material-icons",
 ];
 const vueRouterMode = "history";
-const build: object = {
-  vueRouterMode,
-};
+const APP_VERSION = process.env.npm_package_version;
+const env = { APP_VERSION };
+const build: object = { env, vueRouterMode };
 const open = false;
 const devServer: object = { open };
 const lang: keyof QuasarLanguageCodesHolder = "ru";

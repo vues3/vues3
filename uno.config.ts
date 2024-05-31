@@ -36,12 +36,13 @@ const fonts: Record<string, string> = Object.fromEntries(
     ...handwrittenFonts,
   ].map((value) => [value.toLowerCase().replaceAll(" ", "_"), value]),
 );
+const customFetch = async (url: string) => (await fetch(url)).text();
 const presets: Preset[] = [
   presetUno(),
   presetAttributify(),
   presetTypography(),
   presetTagify(),
-  presetWebFonts({ fonts }),
+  presetWebFonts({ customFetch, fonts }),
   presetIcons(),
 ];
 const transformers: SourceCodeTransformer[] = [
