@@ -16,7 +16,7 @@ const extras: (QuasarFonts | QuasarIconSets)[] = [
   "material-icons",
 ];
 const vueRouterMode = "history";
-const APP_VERSION = process.env.npm_package_version;
+const APP_VERSION = JSON.stringify(process.env.npm_package_version);
 const env = { APP_VERSION };
 const build: object = { env, vueRouterMode };
 const open = false;
