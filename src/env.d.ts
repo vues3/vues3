@@ -8,3 +8,5 @@ declare namespace NodeJS {
     // Define any custom env variables you have here, if you wish
   }
 }
+
+declare const __APP_VERSION__: string;

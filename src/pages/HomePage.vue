@@ -83,7 +83,8 @@ import { validateCredentials } from "stores/types";
 import { triggerRef } from "vue";
 import { useRouter } from "vue-router";
 
-const { APP_VERSION } = process.env;
+// eslint-disable-next-line no-undef
+const APP_VERSION = __APP_VERSION__;
 const router = useRouter();
 const $q = useQuasar();
 rightDrawer.value = true;

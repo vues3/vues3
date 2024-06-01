@@ -7,6 +7,7 @@ import type {
 } from "quasar";
 
 import { configure } from "quasar/wrappers";
+import { mergeConfig } from "vite";
 
 const boot: string[] = ["uno", "route", "icon"];
 const css: string[] = ["app.sass"];
@@ -16,9 +17,13 @@ const extras: (QuasarFonts | QuasarIconSets)[] = [
   "material-icons",
 ];
 const vueRouterMode = "history";
-const APP_VERSION = JSON.stringify(process.env.npm_package_version);
-const env = { APP_VERSION };
-const build: object = { env, vueRouterMode };
+const extendViteConf = (viteConf: Record<string, object>) => {
+  const value = mergeConfig(viteConf.define, {
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+  });
+  Reflect.defineProperty(viteConf, "define", { value });
+};
+const build: object = { extendViteConf, vueRouterMode };
 const open = false;
 const devServer: object = { open };
 const lang: keyof QuasarLanguageCodesHolder = "ru";
