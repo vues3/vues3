@@ -19,5 +19,6 @@
     "unocss",
     "urlset",
     "vueuse"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
