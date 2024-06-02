@@ -1,5 +1,5 @@
 <template lang="pug">
-q-drawer(bordered, side="right", v-model="rightDrawer")
+q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
   q-card(flat)
     q-card-section
       q-item
@@ -87,7 +87,7 @@ import { useRouter } from "vue-router";
 const APP_VERSION = __APP_VERSION__;
 const router = useRouter();
 const $q = useQuasar();
-rightDrawer.value = true;
+rightDrawer.value = false;
 const creds = useStorage(
   "@",
   () => {
