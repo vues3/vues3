@@ -33,12 +33,12 @@ const cordova: object = {};
 const hideSplashscreen = true;
 const capacitor: object = { hideSplashscreen };
 const inspectPort = 5858;
-const bundler: QuasarElectronConfiguration["bundler"] = "packager";
-const packager: object = {};
+const bundler: QuasarElectronConfiguration["bundler"] = "builder";
+const builder: object = {};
 const electron: QuasarElectronConfiguration = {
+  builder,
   bundler,
   inspectPort,
-  packager,
 };
 export default configure(() => ({
   boot,

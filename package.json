@@ -10,6 +10,7 @@
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.cjs,.mjs --ignore-path .gitignore",
     "format": "prettier --write \"**/*.{js,ts,vue,css,scss,html,htm,md,json}\" --ignore-path .gitignore",
     "dev": "quasar dev",
+    "dev:electron": "quasar dev -m electron",
     "build:monolit": "vite build monolit --emptyOutDir",
     "build:vues3": "quasar build",
     "build": "bun run build:monolit && bun run build:vues3"
