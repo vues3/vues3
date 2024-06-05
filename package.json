@@ -14,7 +14,7 @@
     "dev:electron": "quasar dev -m electron",
     "build:monolit": "vite build monolit --emptyOutDir",
     "build:vues3": "quasar build",
-    "build": "bun run build:monolit && bun run build:vues3"
+    "build": "npm run build:monolit && npm run build:vues3"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.591.0",
