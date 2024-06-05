@@ -1,68 +1,50 @@
+import { enable, initialize } from "@electron/remote/main/index.js";
 import { BrowserWindow, app } from "electron";
-import os from "os";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// needed in case process is undefined under Linux
-const platform = process.platform || os.platform();
-
+initialize();
 const currentDir = fileURLToPath(new URL(".", import.meta.url));
-
-let mainWindow: BrowserWindow | undefined;
-
-function createWindow() {
-  /**
-   * Initial window options
-   */
-  mainWindow = new BrowserWindow({
-    height: 600,
-    icon: path.resolve(currentDir, "icons/icon.png"), // tray icon
-    useContentSize: true,
-    webPreferences: {
-      contextIsolation: true,
-      // More info: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/electron-preload-script
-      preload: path.resolve(
-        currentDir,
-        path.join(
-          process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
-          `electron-preload${process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION}`,
-        ),
-      ),
-    },
-    width: 1000,
+const frame = false;
+const height = 600;
+const icon = path.resolve(currentDir, "icons/icon.png");
+const useContentSize = true;
+const contextIsolation = true;
+const width = 1000;
+const sandbox = false;
+const preload = path.resolve(
+  currentDir,
+  path.join(
+    process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
+    `electron-preload${process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION}`,
+  ),
+);
+const webPreferences = { contextIsolation, preload, sandbox };
+const createWindow = () => {
+  const mainWindow = new BrowserWindow({
+    frame,
+    height,
+    icon,
+    useContentSize,
+    webPreferences,
+    width,
   });
-
-  if (process.env.DEV) {
-    mainWindow.loadURL(process.env.APP_URL);
-  } else {
-    mainWindow.loadFile("index.html");
-  }
-
-  if (process.env.DEBUGGING) {
-    // if on DEV or Production with debug enabled
-    mainWindow.webContents.openDevTools();
-  } else {
-    // we're on production; no access to devtools pls
+  enable(mainWindow.webContents);
+  if (process.env.DEBUGGING) mainWindow.webContents.openDevTools();
+  else
     mainWindow.webContents.on("devtools-opened", () => {
-      mainWindow?.webContents.closeDevTools();
+      mainWindow.webContents.closeDevTools();
     });
-  }
-
-  mainWindow.on("closed", () => {
-    mainWindow = undefined;
-  });
-}
-
-app.whenReady().then(createWindow);
-
+  if (process.env.DEV) mainWindow.loadURL(process.env.APP_URL).catch(() => {});
+  else mainWindow.loadFile("index.html").catch(() => {});
+};
 app.on("window-all-closed", () => {
-  if (platform !== "darwin") {
-    app.quit();
-  }
+  if (process.platform !== "darwin") app.quit();
 });
-
 app.on("activate", () => {
-  if (mainWindow === undefined) {
-    createWindow();
-  }
+  if (!BrowserWindow.getAllWindows().length) createWindow();
 });
+app
+  .whenReady()
+  .then(createWindow)
+  .catch(() => {});

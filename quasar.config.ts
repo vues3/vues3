@@ -35,10 +35,12 @@ const capacitor: object = { hideSplashscreen };
 const inspectPort = 5858;
 const bundler: QuasarElectronConfiguration["bundler"] = "builder";
 const builder: object = {};
+const preloadScripts = ["electron-preload"];
 const electron: QuasarElectronConfiguration = {
   builder,
   bundler,
   inspectPort,
+  preloadScripts,
 };
 export default configure(() => ({
   boot,
