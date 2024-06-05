@@ -90,6 +90,10 @@
     "vue-eslint-parser": "^9.4.3"
   },
   "optionalDependencies": {
-    "three": "^0.165.0"
+    "three": "^0.165.0",
+    "tweakpane": "^4.0.3",
+    "typescript": "^5.4.5",
+    "postcss": "^8.4.38",
+    "eslint-plugin-import": "^2.29.1"
   }
 }
