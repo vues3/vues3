@@ -16,7 +16,7 @@
     "build": "bun run build:monolit && bun run build:vues3"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.588.0",
+    "@aws-sdk/client-s3": "^3.590.0",
     "@iconify-json/mdi": "^1.1.66",
     "@iconify/vue": "^4.1.2",
     "@quasar/quasar-ui-qiconpicker": "^2.0.7",
@@ -44,7 +44,7 @@
     "@vueuse/core": "^10.10.0",
     "@vueuse/motion": "^2.2.3",
     "ace-builds": "^1.34.2",
-    "ajv": "^8.15.0",
+    "ajv": "^8.16.0",
     "ajv-keywords": "^5.1.0",
     "crypto-js": "^4.2.0",
     "electron": "^30.0.9",
@@ -84,7 +84,7 @@
     "eslint-plugin-vue": "^9.26.0",
     "eslint-plugin-vue-pug": "^0.6.2",
     "prettier": "^3.3.0",
-    "prettier-plugin-tailwindcss": "^0.5.14",
+    "prettier-plugin-tailwindcss": "^0.6.1",
     "pug": "^3.0.3",
     "vue-eslint-parser": "^9.4.3"
   }
