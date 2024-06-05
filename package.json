@@ -48,7 +48,6 @@
     "ajv": "^8.16.0",
     "ajv-keywords": "^5.1.0",
     "crypto-js": "^4.2.0",
-    "electron": "^30.0.9",
     "js-beautify": "^1.15.1",
     "json-schema-to-ts": "^3.1.0",
     "mime": "^4.0.3",
@@ -73,6 +72,7 @@
     "@typescript-eslint/parser": "^7.12.0",
     "@vue/language-plugin-pug": "^2.0.19",
     "autoprefixer": "^10.4.19",
+    "electron": "^30.0.9",
     "electron-builder": "^25.0.0-alpha.9",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -95,6 +95,7 @@
     "tweakpane": "^4.0.3",
     "typescript": "^5.4.5",
     "postcss": "^8.4.38",
-    "eslint-plugin-import": "^2.29.1"
+    "eslint-plugin-import": "^2.29.1",
+    "electron-builder-squirrel-windows": "^25.0.0-alpha.9"
   }
 }
