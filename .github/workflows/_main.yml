@@ -1,0 +1,56 @@
+on:
+  push:
+    branches: ["#main"]
+jobs:
+  release:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.release.outputs.upload_url }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: version
+        run: echo ::set-output name=version::$(npm pkg get version | tr -d '"')
+      - id: release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: Release ${{ steps.version.outputs.version }}
+          body: ${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: false
+  build:
+    permissions: write-all
+    needs: release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: bun i
+      - run: bun run build:electron
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: dist/electron/Packaged/vues3_${{ needs.release.outputs.version }}_amd64.snap
+          asset_name: vues3_${{ needs.release.outputs.version }}_amd64.snap
+          asset_content_type: application/octet-stream
+      - if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: dist/electron/Packaged/Vue.S3-${{ needs.release.outputs.version }}.AppImage
+          asset_name: Vue.S3-${{ needs.release.outputs.version }}.AppImage
+          asset_content_type: application/x-executable
