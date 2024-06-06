@@ -1,9 +1,9 @@
-name: Build & Release
 on:
   push:
     branches: ["main"]
 jobs:
   release:
+    permissions: write-all
     runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.release.outputs.upload_url }}
