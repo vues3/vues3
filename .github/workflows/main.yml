@@ -1,12 +1,11 @@
-name: Main
-
 on:
   push:
-    tags:
-      - "v*.*.*"
-
+    branches: ["main"]
+    tags: "v*.*.*"
 jobs:
   build:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
