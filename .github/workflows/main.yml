@@ -1,14 +1,24 @@
 on:
   push:
-    branches: ["main"]
     tags: "v*.*.*"
 jobs:
   build:
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Release
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: bun i
+      - run: bun run build:electron
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - if: matrix.os == 'ubuntu-latest'
         uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/electron/Packaged/Vue.S3-3.5.13.AppImage
+            dist/electron/Packaged/vues3_3.5.13_amd64.snap
