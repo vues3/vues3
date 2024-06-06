@@ -33,6 +33,8 @@ jobs:
       - uses: oven-sh/setup-bun@v1
       - run: bun i
       - run: bun run build:electron
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-release-asset@v1
         env:
@@ -44,8 +46,6 @@ jobs:
           asset_content_type: application/octet-stream
       - if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
           asset_path: dist/electron/Packaged/Vue.S3-${{ needs.release.outputs.version }}.AppImage
