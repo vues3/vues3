@@ -4,8 +4,7 @@ on:
       - "v*.*.*"
 jobs:
   build:
-    permissions:
-      contents: write
+    permissions: write-all
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -21,5 +20,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/electron/Packaged/Vue.S3-3.5.13.AppImage
-            dist/electron/Packaged/vues3_3.5.13_amd64.snap
+            dist/electron/Packaged/Vue.S3-3.5.15.AppImage
+            dist/electron/Packaged/vues3_3.5.15_amd64.snap
