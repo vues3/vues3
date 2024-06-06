@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-      - "vv*.*.*"
+      - "v*.*.*"
 jobs:
   build:
     permissions: write-all
