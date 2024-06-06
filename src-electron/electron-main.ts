@@ -1,4 +1,5 @@
 import { enable, initialize } from "@electron/remote/main/index.js";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { BrowserWindow, app } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
