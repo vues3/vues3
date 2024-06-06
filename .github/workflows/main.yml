@@ -20,5 +20,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/electron/Packaged/Vue.S3-3.5.15.AppImage
-            dist/electron/Packaged/vues3_3.5.15_amd64.snap
+            dist/electron/Packaged/Vue.S3-3.5.17.AppImage
+            dist/electron/Packaged/vues3_3.5.17_amd64.snap
