@@ -34,8 +34,7 @@ const hideSplashscreen = true;
 const capacitor: object = { hideSplashscreen };
 const inspectPort = 5858;
 const bundler: QuasarElectronConfiguration["bundler"] = "builder";
-const publish = undefined;
-const builder: object = { publish };
+const builder: object = {};
 const preloadScripts = ["electron-preload"];
 const electron: QuasarElectronConfiguration = {
   builder,
