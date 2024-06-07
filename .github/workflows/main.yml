@@ -4,6 +4,8 @@ on:
       - "v*.*.*"
 jobs:
   build:
+    environment:
+      name: vues3
     permissions: write-all
     runs-on: ${{ matrix.os }}
     strategy:
