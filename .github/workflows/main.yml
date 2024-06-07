@@ -4,13 +4,14 @@ on:
       - "v*.*.*"
 jobs:
   build:
+    permissions:
+      contents: write
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os:
           - macos-latest
           - windows-latest,
-          #- ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
