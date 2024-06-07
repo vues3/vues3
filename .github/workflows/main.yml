@@ -4,12 +4,13 @@ on:
       - "v*.*.*"
 jobs:
   build:
-    permissions: write-all
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os:
-          - ubuntu-latest
+          - macos-latest
+          - windows-latest,
+          -  #ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
@@ -18,5 +19,5 @@ jobs:
         run: sudo snap install snapcraft --classic
       - run: bun run build:electron
         env:
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
