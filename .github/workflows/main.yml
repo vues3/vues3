@@ -16,9 +16,7 @@ jobs:
       - run: bun i
       - if: matrix.os == 'ubuntu-latest'
         run: sudo snap install snapcraft --classic
-        env:
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ vars.SNAPCRAFT_STORE_CREDENTIALS }}
-      - run: env
       - run: bun run build:electron
         env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ vars.SNAPCRAFT_STORE_CREDENTIALS }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
