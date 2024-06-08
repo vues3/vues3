@@ -70,7 +70,7 @@
     "@types/js-beautify": "^1.14.3",
     "@typescript-eslint/eslint-plugin": "^7.12.0",
     "@typescript-eslint/parser": "^7.12.0",
-    "@vue/language-plugin-pug": "^2.0.19",
+    "@vue/language-plugin-pug": "^2.0.20",
     "autoprefixer": "^10.4.19",
     "electron": "^30.1.0",
     "electron-builder": "^24.3.0",
@@ -86,7 +86,7 @@
     "eslint-plugin-vue": "^9.26.0",
     "eslint-plugin-vue-pug": "^0.6.2",
     "prettier": "^3.3.0",
-    "prettier-plugin-tailwindcss": "^0.6.1",
+    "prettier-plugin-tailwindcss": "^0.6.2",
     "pug": "^3.0.3",
     "vue-eslint-parser": "^9.4.3"
   }
