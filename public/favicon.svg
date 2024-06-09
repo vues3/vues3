@@ -1,10 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1200 -1200 2400 2400" height="1200" width="1200" >
-    <circle fill="white" r="900" />
-		<g transform="rotate(-90)"><circle r="450" stroke-width="900" pathLength="360" stroke-dasharray="90 270" fill="none" stroke="#35495e"/></g>
-		<g fill="none"  stroke-linecap="round" stroke-linejoin="round" stroke-width="175">
-      <path stroke="#42b883" d="M0 -600v600h600"/>
-      <line stroke="#35495e" x1="0" x2="0" y1="650" y2="750" />
-      <line stroke="#35495e" x1="-750" x2="-650" y1="0" y2="0" />
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100" width="1024" height="1024">
+  <circle r="50" fill="white" />
+  <circle
+    fill="none"
+    r="25"
+    stroke="#35495e"
+    stroke-width="50"
+    pathLength="4"
+    stroke-dasharray="1 4"
+    transform="rotate(-90)"
+  />
+  <path fill="none" stroke-width="20" stroke="#42b883" d="M0-35v35h35" />
 </svg>
-

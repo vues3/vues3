@@ -11,7 +11,7 @@ q-layout(view="hHh Lpr lff")
     q-toolbar
       q-btn(@click="leftDrawer = !leftDrawer", dense, flat, icon="menu", round)
       q-toolbar-title
-        q-avatar(icon="rocket_launch", size="xl")
+        q-avatar(icon="img:/favicon.svg", size="xl")
         | Vue.S3
       q-btn(
         @click="rightDrawer = !rightDrawer",

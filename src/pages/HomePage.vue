@@ -51,7 +51,7 @@ q-page.column
           .text-h5 Vue.S3
         q-card-section
           q-timeline(color="black", layout="comfortable", side="left")
-            q-timeline-entry(icon="rocket_launch", title="Homepage")
+            q-timeline-entry(icon="home", title="Homepage")
               template(#subtitle)
                 a.text-no-wrap.text-white(
                   href="https://vues3.ru",
