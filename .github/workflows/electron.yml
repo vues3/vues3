@@ -13,7 +13,7 @@ jobs:
         os:
           - macos-latest
           - windows-latest
-          - ubuntu-latest
+          # - ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
@@ -24,5 +24,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
-          EP_DRAFT: ${{ vars.EP_DRAFT }}
-          EP_PRE_RELEASE: ${{ vars.EP_PRE_RELEASE }}
