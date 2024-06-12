@@ -40,10 +40,10 @@
     "@unocss/transformer-variant-group": "^0.60.4",
     "@unocss/vite": "^0.60.4",
     "@vitejs/plugin-vue": "^5.0.5",
-    "@vueuse/components": "^10.10.0",
-    "@vueuse/core": "^10.10.0",
+    "@vueuse/components": "^10.11.0",
+    "@vueuse/core": "^10.11.0",
     "@vueuse/motion": "^2.2.3",
-    "ace-builds": "^1.34.2",
+    "ace-builds": "^1.35.0",
     "ajv": "^8.16.0",
     "ajv-keywords": "^5.1.0",
     "crypto-js": "^4.2.0",
@@ -85,7 +85,7 @@
     "eslint-plugin-vue": "^9.26.0",
     "eslint-plugin-vue-pug": "^0.6.2",
     "prettier": "^3.3.2",
-    "prettier-plugin-tailwindcss": "^0.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.3",
     "pug": "^3.0.3",
     "vue-eslint-parser": "^9.4.3"
   }
