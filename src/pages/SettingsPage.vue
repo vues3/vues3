@@ -38,7 +38,7 @@ q-page.column.full-height(v-if="$?.settings")
         template(#prepend)
           q-icon(name="mdi-google-analytics")
     q-card-section
-      .text-h6 НАСТРОЙКИ САЙТА
+      .text-h6 SITE SETTINGS
     q-separator
     q-card-section
       q-list

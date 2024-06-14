@@ -229,7 +229,7 @@ export const putImage = async (file: File) => {
     if (mimes.includes(type)) await putFile(filePath, type, file);
     else
       throw new Error(
-        "Тип графического файла не подходит для использования в сети интернет",
+        "The graphic file type is not suitable for use on the Internet",
       );
   } catch (err) {
     ({ message } = err as Error);

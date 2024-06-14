@@ -25,7 +25,7 @@ q-drawer(
         q-item-section(avatar)
           q-icon(name="travel_explore")
         q-item-section
-          q-item-label Настройки слоя
+          q-item-label Layer settings
       q-card-section
         q-list
           q-item(tag="label", v-ripple)
@@ -56,27 +56,27 @@ q-drawer(
         q-item-section(avatar)
           q-icon(name="travel_explore")
         q-item-section
-          q-item-label Настройки SEO
+          q-item-label SEO settings
       q-card-section
         q-select(
           :input-debounce,
           :options="types",
           clearable,
           hint="the.type",
-          label="Тип содержимого страницы",
+          label="Page content type",
           v-model="the.type"
         )
         q-input(
           :debounce,
           hint="the.header",
-          label="Заголовок страницы",
+          label="Page header",
           v-model.trim="the.header"
         )
         q-input(
           :debounce,
           autogrow,
           hint="the.description",
-          label="Описание страницы",
+          label="Page Description",
           type="textarea",
           v-model.trim="the.description"
         )
@@ -84,7 +84,7 @@ q-drawer(
           :input-debounce,
           hide-dropdown-icon,
           hint="the.keywords",
-          label="Ключевые слова",
+          label="Keywords",
           multiple,
           new-value-mode="add",
           stack-label,
@@ -95,9 +95,9 @@ q-drawer(
         q-input(
           :debounce,
           :error="!!the.loc && !!views.find((element) => element.id !== the?.id && (element.path === the?.loc || element.loc === the?.loc))",
-          error-message="Такой путь уже используется",
+          error-message="The path is already in use",
           hint="the.loc",
-          label="Постоянная ссылка",
+          label="Permanent link",
           prefix="/",
           type="url",
           v-model.trim="loc"
@@ -107,13 +107,13 @@ q-drawer(
           :options="changefreq",
           clearable,
           hint="the.changefreq",
-          label="Частота обновления",
+          label="Change frequency",
           v-model="the.changefreq"
         )
         q-input(
           :debounce,
           hint="the.priority",
-          label="Приоритет",
+          label="Priority",
           max="1",
           min="0",
           step="0.1",
@@ -124,7 +124,7 @@ q-drawer(
           :debounce,
           clearable,
           hint="the.icon",
-          label="Иконка",
+          label="Icon",
           v-model.trim="the.icon"
         )
           template(#prepend)
@@ -134,7 +134,7 @@ q-drawer(
                 :debounce,
                 clearable,
                 dense,
-                label="Поиск...",
+                label="Searching...",
                 v-model="filter"
               )
               q-icon-picker(
@@ -149,7 +149,7 @@ q-drawer(
           :debounce,
           autogrow,
           hint="the.alt",
-          label="Описание картинки",
+          label="Image description",
           type="textarea",
           v-model.trim="alt"
         )
@@ -171,14 +171,10 @@ q-drawer(
           .absolute-bottom.text-center the.image
           template(#error)
             .absolute-full.flex-center.flex
-              q-btn(
-                @click="click",
-                color="primary",
-                label="Загрузить картинку"
-              )
+              q-btn(@click="click", color="primary", label="Upload image")
         q-img.q-mt-md.rounded-borders(:ratio="16 / 9", v-if="!the.image[0]")
           .absolute-full.flex-center.flex
-            q-btn(@click="click", color="primary", label="Загрузить картинку")
+            q-btn(@click="click", color="primary", label="Upload image")
 q-page.column.full-height(v-if="the")
   q-tabs.text-grey(
     active-color="primary",
@@ -339,8 +335,7 @@ watch(
   },
   { immediate },
 );
-const message =
-  "Тип графического файла не подходит для использования в сети интернет";
+const message = "The graphic file type is not suitable for use on the Internet";
 watch(files, (value) => {
   if (value && the.value) {
     const [file] = value;
