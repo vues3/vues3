@@ -144,8 +144,8 @@ const edit = async (name: number | string) => {
 const remove = (name: number | string) => {
   $q.dialog({
     cancel: true,
-    message: "Do you really want to remove an account from the list?",
-    title: "Confirmation",
+    message: "Вы действительно хотите удалить учетную запись из списка?",
+    title: "Подтверждение",
   }).onOk(() => {
     Reflect.deleteProperty(creds.value, name.toString());
     triggerRef(creds);

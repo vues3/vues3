@@ -83,8 +83,8 @@ const updateSelected = (value: string | undefined) => {
 };
 const $q = useQuasar();
 const qtree: Ref<QTree | undefined> = ref();
-const title = "Confirmation";
-const message = "Do you really want to delete?";
+const title = "Подтверждение";
+const message = "Вы действительно хотите удалить?";
 const deleteView = () => {
   if (the.value) {
     const { index, next, parent, prev, siblings } = the.value;

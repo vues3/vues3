@@ -13,7 +13,7 @@ div
     content-class="col prose max-w-none text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
     flat,
     paragraph-tag="div",
-    placeholder="Add content to your page...",
+    placeholder="Добавьте контент на вашу страницу...",
     ref="editor"
   )
 </template>
@@ -50,7 +50,8 @@ const props = withDefaults(
 defineEmits(["update:modelValue"]);
 const $q = useQuasar();
 const editor: Ref<QEditor | undefined> = ref();
-const message = "The graphic file type is not suitable for use on the Internet";
+const message =
+  "Тип графического файла не подходит для использования в сети интернет";
 const insertImage = (file: File) => {
   const { type } = file;
   if (mimes.includes(type)) {
@@ -91,7 +92,7 @@ const definitions = {
       ],
       [
         "share",
-        "Insert internal link",
+        "Вставка внутренней ссылки",
         () => {
           const component = VLinkDialog;
           $q.dialog({ component }).onOk((value: string) => {
