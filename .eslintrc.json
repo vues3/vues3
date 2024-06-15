@@ -8,7 +8,11 @@
     "project": "./tsconfig.json",
     "extraFileExtensions": [".vue"]
   },
-  "plugins": ["eslint-plugin-tsdoc"],
+  "env": {
+    "browser": true,
+    "es2024": true,
+    "node": true
+  },
   "extends": [
     "airbnb-base",
     "airbnb-typescript/base",
@@ -20,12 +24,25 @@
     "plugin:perfectionist/recommended-natural",
     "plugin:prettier/recommended"
   ],
+  "plugins": ["eslint-plugin-tsdoc"],
+  "globals": {
+    "ga": "readonly",
+    "cordova": "readonly",
+    "__statics": "readonly",
+    "__QUASAR_SSR__": "readonly",
+    "__QUASAR_SSR_SERVER__": "readonly",
+    "__QUASAR_SSR_CLIENT__": "readonly",
+    "__QUASAR_SSR_PWA__": "readonly",
+    "process": "readonly",
+    "Capacitor": "readonly",
+    "chrome": "readonly"
+  },
+  "rules": {
+    "tsdoc/syntax": "warn"
+  },
   "settings": {
     "import/resolver": {
       "typescript": true
     }
-  },
-  "rules": {
-    "tsdoc/syntax": "warn"
   }
 }

@@ -6,10 +6,11 @@ import type {
   QuasarPlugins,
 } from "quasar";
 
+import { fileURLToPath } from "node:url";
 import { configure } from "quasar/wrappers";
 import { mergeConfig } from "vite";
 
-const boot: string[] = ["uno", "route", "icon"];
+const boot: string[] = ["uno", "route", "icon", "i18n"];
 const css: string[] = ["app.sass"];
 const extras: (QuasarFonts | QuasarIconSets)[] = [
   "mdi-v7",
@@ -23,18 +24,33 @@ const extendViteConf = (viteConf: Record<string, object>) => {
   });
   Reflect.defineProperty(viteConf, "define", { value });
 };
-const build: object = { extendViteConf, vueRouterMode };
+// const tsconfigPath = "tsconfig.vue-tsc.json";
+// const vueTsc = { tsconfigPath };
+const server = false;
+const lintCommand = 'eslint "./**/*.{js,ts,mjs,cjs,vue}"';
+const eslint = { lintCommand };
+const include = [fileURLToPath(new URL("./src/i18n", import.meta.url))];
+const vitePlugins = [
+  ["@intlify/unplugin-vue-i18n/vite", { include }],
+  [
+    "vite-plugin-checker",
+    {
+      eslint,
+      // vueTsc,
+    },
+    { server },
+  ],
+];
+const build: object = { extendViteConf, vitePlugins, vueRouterMode };
 const open = false;
-const devServer: object = { open };
+const devServer = { open };
 const lang: keyof QuasarLanguageCodesHolder = "ru";
 const plugins: (keyof QuasarPlugins)[] = ["Dialog", "Notify"];
-const framework: object = { lang, plugins };
-const cordova: object = {};
-const hideSplashscreen = true;
-const capacitor: object = { hideSplashscreen };
+const framework = { lang, plugins };
 const inspectPort = 5858;
-const bundler: QuasarElectronConfiguration["bundler"] = "builder";
-const builder: object = { snap: { publish: { provider: "github" } } };
+const bundler = "builder";
+const appId = "com.electron.vues3";
+const builder = { appId };
 const preloadScripts = ["electron-preload"];
 const electron: QuasarElectronConfiguration = {
   builder,
@@ -45,8 +61,6 @@ const electron: QuasarElectronConfiguration = {
 export default configure(() => ({
   boot,
   build,
-  capacitor,
-  cordova,
   css,
   devServer,
   electron,
