@@ -27,7 +27,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
           q-expansion-item(
             :default-opened="!subIndex",
             :key="subIndex",
-            @after-show="group = options(subCategory.subCategoryLink)?.[0].value",
+            @before-show="group = options(subCategory.subCategoryLink)?.[0].value",
             group="group",
             header-class="text-subtitle2",
             v-for="(subCategory, subIndex) in category.navigationSubCategories.filter(({ subCategoryVarNumber }) => subCategoryVarNumber)"
