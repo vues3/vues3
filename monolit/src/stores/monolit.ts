@@ -43,7 +43,7 @@ export const getAsyncComponent = ({
     useStyleTag(styles);
   };
   return defineAsyncComponent((() =>
-    loadModule(`${["", "~"].includes(path) ? "" : "/"}${path}/view.vue`, {
+    loadModule(`${path && "/"}${path}/view.vue`, {
       addStyle,
       getFile,
       log,
