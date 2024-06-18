@@ -5,7 +5,7 @@ div(
   :key="a.id",
   :role="a.id === that?.id ? 'main' : undefined",
   ref="refs"
-  v-cloak,
+  un-cloak,
   v-for="a in siblings",
   v-intersection-observer="[callback,{root,rootMargin,threshold}]"
 )
