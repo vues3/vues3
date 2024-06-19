@@ -38,7 +38,13 @@
     "chrome": "readonly"
   },
   "rules": {
-    "tsdoc/syntax": "warn"
+    "tsdoc/syntax": "warn",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ]
   },
   "settings": {
     "import/resolver": {
