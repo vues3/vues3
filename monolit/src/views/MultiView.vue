@@ -4,18 +4,19 @@ div(
   :id="a.id",
   :key="a.id",
   :role="a.id === that?.id ? 'main' : undefined",
-  ref="refs"
-  un-cloak,
+  ref="refs",
+  v-cloak,
   v-for="a in siblings",
   v-intersection-observer="[callback,{rootMargin,threshold}]"
 )
-  Suspense
-    component(
-      :a,
-      :is="<object>templates[<keyof object>a.id]",
-      :the,
-      @vue:mounted="(promises[<keyof object>a.id]).resolve"
-    )
+  component(
+    :a,
+    :is="<object>templates[<keyof object>a.id]",
+    :the,
+    @vue:mounted="(promises[<keyof object>a.id]).resolve",
+    un-cloak,
+    v-cloak
+  )
 </template>
 <script setup lang="ts">
 import type { Ref } from "vue";
@@ -55,7 +56,7 @@ const templates = computed(
       siblings.value.map((a) => [a.id, getAsyncComponent(a)]),
     ) as object,
 );
-let pause = true;
+let pause = false;
 let push = false;
 const callback = ([
   {
@@ -75,18 +76,17 @@ const all = async () => {
   );
 };
 watch(
-  route,
-  async () => {
-    if (!push) {
-      await all();
-      pause = true;
+  () => route.name,
+  async (value) => {
+    if (!push)
       if (route.path === "/") window.scrollTo(0, 0);
-      else
-        refs.value
-          .find(({ id }) => id === that.value.id)
-          ?.scrollIntoView({ behavior });
-      pause = false;
-    } else push = false;
+      else {
+        pause = true;
+        await all();
+        refs.value.find(({ id }) => id === value)?.scrollIntoView({ behavior });
+        pause = false;
+      }
+    else push = false;
   },
   { immediate },
 );

@@ -40,8 +40,7 @@ Head
     name="google-site-verification",
     v-if="$?.settings?.google"
   )
-Suspense
-  component(:a, :is="root", :the)
+component(:a, :is="root", :the, un-cloak, v-cloak)
 </template>
 <script setup lang="ts">
 import type { TResource } from "app/src/stores/types";

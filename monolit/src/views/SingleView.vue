@@ -1,7 +1,6 @@
 <template lang="pug">
-div(:class="a.class", :id, role="main", v-cloak, v-if="a")
-  Suspense
-    component(:a, :is, :the)
+div(:class="a.class", :id, role="main", v-if="a")
+  component(:a, :is="is", :the, un-cloak, v-cloak)
 </template>
 <script setup lang="ts">
 import { views } from "app/src/stores/data";
