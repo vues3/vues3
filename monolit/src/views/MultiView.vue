@@ -7,7 +7,7 @@ div(
   ref="refs"
   un-cloak,
   v-for="a in siblings",
-  v-intersection-observer="[callback,{root,rootMargin,threshold}]"
+  v-intersection-observer="[callback,{rootMargin,threshold}]"
 )
   Suspense
     component(
@@ -21,7 +21,6 @@ div(
 import type { Ref } from "vue";
 
 import { vIntersectionObserver } from "@vueuse/components";
-import { useParentElement } from "@vueuse/core";
 import { views } from "app/src/stores/data";
 import {
   behavior,
@@ -56,7 +55,6 @@ const templates = computed(
       siblings.value.map((a) => [a.id, getAsyncComponent(a)]),
     ) as object,
 );
-const root = useParentElement() as Ref<HTMLElement>;
 let pause = true;
 let push = false;
 const callback = ([
