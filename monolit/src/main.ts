@@ -37,7 +37,7 @@ window.console.info(
   "👨‍🚀",
   "The vues3 framework",
   `ver:${__APP_VERSION__}`,
-  "https://vues3.ru",
+  "https://vues3.com",
 );
 initUnocssRuntime({ autoPrefix, bypassDefined, defaults });
 const app: App = createApp(vueApp);

@@ -11,10 +11,9 @@ import { getAsyncComponent } from "../stores/monolit";
 
 const route = useRoute();
 const the = computed(() => views.value.find(({ id }) => id === route.name));
-const a = computed(
-  () =>
-    (route.path === "/" ? undefined : the.value) ?? views.value[0].children[0],
+const a = computed(() =>
+  route.path === "/" ? the.value?.children?.[0] : the.value,
 );
-const id = computed(() => a.value.id);
-const is = computed(() => getAsyncComponent(a.value));
+const id = computed(() => a.value?.id);
+const is = computed(() => a.value && getAsyncComponent(a.value));
 </script>

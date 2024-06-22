@@ -25,7 +25,6 @@ q-btn-group.q-mx-xs(flat, spread)
         q-checkbox.q-mr-xs(dense, v-model="prop.node.enabled")
         q-input.full-width.min-w-96(
           :bg-color="prop.node.id === selected ? 'primary' : undefined",
-          :debounce,
           :error="!prop.node[node] || !!list.find((element) => element.id !== prop.node.id && (('path' in element && element.path === prop.node.path) || ('loc' in element && element.loc === prop.node.path)))",
           :error-message="prop.node[node] ? 'Такое имя уже используется' : 'Пустое имя'",
           :readonly="!prop.node.contenteditable",
@@ -44,7 +43,7 @@ import type { TResource, TView } from "stores/types";
 import type { Ref } from "vue";
 
 import { uid, useQuasar } from "quasar";
-import { cancel, debounce, immediate, persistent } from "stores/defaults";
+import { cancel, immediate, persistent } from "stores/defaults";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 
 interface IEmits {

@@ -24,22 +24,15 @@ const extendViteConf = (viteConf: Record<string, object>) => {
   });
   Reflect.defineProperty(viteConf, "define", { value });
 };
-// const tsconfigPath = "tsconfig.vue-tsc.json";
-// const vueTsc = { tsconfigPath };
+const tsconfigPath = "tsconfig.vue-tsc.json";
+const vueTsc = { tsconfigPath };
 const server = false;
 const lintCommand = 'eslint "./**/*.{js,ts,mjs,cjs,vue}"';
 const eslint = { lintCommand };
 const include = [fileURLToPath(new URL("./src/i18n", import.meta.url))];
 const vitePlugins = [
   ["@intlify/unplugin-vue-i18n/vite", { include }],
-  [
-    "vite-plugin-checker",
-    {
-      eslint,
-      // vueTsc,
-    },
-    { server },
-  ],
+  ["vite-plugin-checker", { eslint, vueTsc }, { server }],
 ];
 const build: object = { extendViteConf, vitePlugins, vueRouterMode };
 const open = false;

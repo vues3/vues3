@@ -5,7 +5,7 @@ import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import mime from "mime";
 import { debounce, uid } from "quasar";
 import { $, views } from "stores/data";
-import { cache, configurable, deep, wait } from "stores/defaults";
+import { cache, configurable, deep } from "stores/defaults";
 import { bucket, getObject, putFile, putObject } from "stores/s3";
 import { toXML } from "to-xml";
 import { computed, ref, watch } from "vue";
@@ -35,7 +35,7 @@ export function save(this: TView | undefined, ext: string, text: string) {
     Reflect.defineProperty(this, "lastmod", { value });
   }
 }
-const debounceSave = debounce(save, wait);
+const debounceSave = debounce(save);
 function setFile(this: TView, ext: string, value: string) {
   Object.defineProperty(this, ext, { configurable, value });
   debounceSave.call(this, ext, value);
@@ -199,7 +199,7 @@ watch(
       putObject("data.json", "application/json", JSON.stringify(value)).catch(
         () => {},
       );
-  }, wait),
+  }),
   { deep },
 );
 export const rightDrawer = ref();
@@ -219,7 +219,7 @@ watch(
   sitemap,
   debounce((value) => {
     putObject("sitemap.xml", "application/xml", toXML(value)).catch(() => {});
-  }, wait),
+  }),
 );
 export const putImage = async (file: File) => {
   const { type } = file;

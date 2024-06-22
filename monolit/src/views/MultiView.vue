@@ -6,8 +6,7 @@ div(
   :role="a.id === that?.id ? 'main' : undefined",
   ref="refs",
   v-cloak,
-  v-for="a in siblings",
-  v-intersection-observer="[callback,{rootMargin,threshold}]"
+  v-for="a in siblings"
 )
   component(
     :a,
@@ -21,10 +20,14 @@ div(
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { vIntersectionObserver } from "@vueuse/components";
+import {
+  useDebounceFn,
+  useIntersectionObserver,
+  useScroll,
+} from "@vueuse/core";
 import { views } from "app/src/stores/data";
 import {
-  behavior,
+  deep,
   immediate,
   rootMargin,
   threshold,
@@ -34,15 +37,24 @@ import { useRoute, useRouter } from "vue-router";
 
 import { getAsyncComponent } from "../stores/monolit";
 
+let pause = false;
+let push = false;
+const refs: Ref<HTMLElement[]> = ref([]);
+const onStop = () => {
+  pause = false;
+};
+useScroll(document, { onStop });
 const route = useRoute();
 const router = useRouter();
 const the = computed(() => views.value.find(({ id }) => id === route.name));
-const that = computed(
-  () =>
-    (route.path === "/" ? undefined : the.value) ?? views.value[0].children[0],
+const that = computed(() =>
+  route.path === "/" ? the.value?.children?.[0] : the.value,
 );
-const siblings = computed(() =>
-  that.value.siblings.filter(({ enabled }) => enabled),
+const parent = computed(() => that.value?.parent);
+const siblings = computed(
+  () =>
+    parent.value?.children?.filter(({ enabled }) => enabled) ??
+    (that.value ? [that.value] : []),
 );
 const promises = computed(
   () =>
@@ -56,20 +68,27 @@ const templates = computed(
       siblings.value.map((a) => [a.id, getAsyncComponent(a)]),
     ) as object,
 );
-let pause = false;
-let push = false;
+const intersecting = computed(
+  () => new Map(siblings.value.map((a) => [a.id, false])),
+);
+const debouncedFn = useDebounceFn(() => {
+  const [name] =
+    [...intersecting.value.entries()].find(([, value]) => value) ?? [];
+  if (!pause && name && name !== that.value?.id) {
+    push = true;
+    router.push({ name }).catch(() => {});
+  }
+});
 const callback = ([
   {
     isIntersecting,
     target: { id: name },
   },
 ]: IntersectionObserverEntry[]) => {
-  if (!pause && isIntersecting && name !== that.value.id) {
-    push = true;
-    router.push({ name }).catch(() => {});
-  }
+  intersecting.value.set(name, isIntersecting);
+  debouncedFn().catch(() => {});
 };
-const refs: Ref<HTMLElement[]> = ref([]);
+const stops: (() => void)[] = [];
 const all = async () => {
   await Promise.all(
     Object.values(promises.value).map(({ promise }) => promise),
@@ -78,16 +97,31 @@ const all = async () => {
 watch(
   () => route.name,
   async (value) => {
-    if (!push)
-      if (route.path === "/") window.scrollTo(0, 0);
-      else {
-        pause = true;
-        await all();
-        refs.value.find(({ id }) => id === value)?.scrollIntoView({ behavior });
-        pause = false;
-      }
-    else push = false;
+    if (!push) {
+      pause = true;
+      await all();
+      const index = refs.value.findIndex(({ id }) => id === value);
+      if (index <= 0) window.scrollTo(0, 0);
+      else refs.value[index]?.scrollIntoView();
+    } else push = false;
   },
   { immediate },
+);
+watch(
+  refs,
+  (value) => {
+    stops.forEach((stop: () => void) => {
+      stop();
+    });
+    stops.length = 0;
+    value.forEach((target) => {
+      const { stop } = useIntersectionObserver(target, callback, {
+        rootMargin,
+        threshold,
+      });
+      stops.push(stop);
+    });
+  },
+  { deep },
 );
 </script>

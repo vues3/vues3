@@ -54,10 +54,10 @@ q-page.column
             q-timeline-entry(icon="home", title="Homepage")
               template(#subtitle)
                 a.text-no-wrap.text-white(
-                  href="https://vues3.ru",
+                  href="https://vues3.com",
                   rel="noopener noreferrer",
                   target="_blank"
-                ) vues3.ru
+                ) vues3.com
             q-timeline-entry(icon="share", title="Repository")
               template(#subtitle)
                 a.text-no-wrap.text-white(

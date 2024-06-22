@@ -40,7 +40,8 @@ Head
     name="google-site-verification",
     v-if="$?.settings?.google"
   )
-component(:a, :is="root", :the, un-cloak, v-cloak)
+div(:class="a.class", :id, v-if="a && a.enabled")
+  component(:a, :is="root", :the, un-cloak, v-cloak)
 </template>
 <script setup lang="ts">
 import type { TResource } from "app/src/stores/types";
@@ -58,6 +59,7 @@ const router = useRouter();
 const a = computed(() => (views.value.length ? views.value[0] : undefined));
 const root = computed(() => a.value && getAsyncComponent(a.value));
 const the = computed(() => views.value.find(({ id }) => id === route.name));
+const id = computed(() => a.value?.id);
 const drawer = ref(false);
 const canonical = computed(
   () =>
