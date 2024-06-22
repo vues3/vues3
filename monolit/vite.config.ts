@@ -4,18 +4,18 @@ import { templateCompilerOptions } from "@tresjs/core";
 import { Extractor } from "@unocss/core";
 import extractorPug from "@unocss/extractor-pug";
 import UnoCSS from "@unocss/vite";
-import legacy from "@vitejs/plugin-legacy";
+// import legacy from "@vitejs/plugin-legacy";
 import vue from "@vitejs/plugin-vue";
 import { URL, fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 
 const extractors: Extractor[] = [extractorPug()];
-const modernPolyfills: string[] = ["es.promise.with-resolvers"];
+// const modernPolyfills: string[] = ["es.promise.with-resolvers"];
 const configFile = "../uno.config.js";
 const plugins: PluginOption[] = [
   vue({ ...templateCompilerOptions }),
   UnoCSS({ configFile, extractors }),
-  legacy({ modernPolyfills }),
+  // legacy({ modernPolyfills }),
 ];
 const alias: object = {
   "@": ".",
