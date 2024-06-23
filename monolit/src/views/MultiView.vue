@@ -20,90 +20,95 @@ div(
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import {
-  useDebounceFn,
-  useIntersectionObserver,
-  useScroll,
-} from "@vueuse/core";
+import { useIntersectionObserver, useScroll } from "@vueuse/core";
 import { views } from "app/src/stores/data";
 import {
+  behavior,
   deep,
   immediate,
+  left,
   rootMargin,
   threshold,
+  top,
 } from "app/src/stores/defaults";
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { getAsyncComponent } from "../stores/monolit";
 
-let pause = false;
-let push = false;
 const refs: Ref<HTMLElement[]> = ref([]);
-const onStop = () => {
-  pause = false;
-};
-useScroll(document, { onStop });
 const route = useRoute();
 const router = useRouter();
 const the = computed(() => views.value.find(({ id }) => id === route.name));
 const that = computed(() =>
   route.path === "/" ? the.value?.children?.[0] : the.value,
 );
-const parent = computed(() => that.value?.parent);
-const siblings = computed(
-  () =>
-    parent.value?.children?.filter(({ enabled }) => enabled) ??
-    (that.value ? [that.value] : []),
-);
+const siblings = computed(() => that.value?.siblings ?? []);
 const promises = computed(
   () =>
     Object.fromEntries(
-      siblings.value.map(({ id }) => [id, Promise.withResolvers()]),
+      siblings.value
+        .filter(({ enabled }) => enabled)
+        .map(({ id }) => [
+          id,
+          () => {
+            let resolve;
+            let reject;
+            const promise = new Promise((res, rej) => {
+              resolve = res;
+              reject = rej;
+            });
+            return { promise, reject, resolve };
+          },
+        ]),
     ) as Record<string, PromiseWithResolvers<undefined>>,
 );
 const templates = computed(
   () =>
     Object.fromEntries(
-      siblings.value.map((a) => [a.id, getAsyncComponent(a)]),
+      siblings.value
+        .filter(({ enabled }) => enabled)
+        .map((a) => [a.id, getAsyncComponent(a)]),
     ) as object,
 );
 const intersecting = computed(
-  () => new Map(siblings.value.map((a) => [a.id, false])),
+  () =>
+    new Map(
+      siblings.value
+        .filter(({ enabled }) => enabled)
+        .map(({ id }) => [id, false]),
+    ),
 );
-const debouncedFn = useDebounceFn(() => {
-  const [name] =
-    [...intersecting.value.entries()].find(([, value]) => value) ?? [];
-  if (!pause && name && name !== that.value?.id) {
-    push = true;
-    router.push({ name }).catch(() => {});
-  }
-});
+const getName = () =>
+  [...intersecting.value.entries()].find(([, value]) => value)?.[0];
+const onStop = () => {
+  setTimeout(() => {
+    const name = getName();
+    if (name && name !== that.value?.id) router.push({ name }).catch(() => {});
+  }, 100);
+};
+useScroll(document, { behavior, onStop });
 const callback = ([
   {
     isIntersecting,
-    target: { id: name },
+    target: { id },
   },
 ]: IntersectionObserverEntry[]) => {
-  intersecting.value.set(name, isIntersecting);
-  debouncedFn().catch(() => {});
+  intersecting.value.set(id, isIntersecting);
 };
 const stops: (() => void)[] = [];
-const all = async () => {
-  await Promise.all(
-    Object.values(promises.value).map(({ promise }) => promise),
-  );
-};
 watch(
   () => route.name,
   async (value) => {
-    if (!push) {
-      pause = true;
-      await all();
-      const index = refs.value.findIndex(({ id }) => id === value);
-      if (index <= 0) window.scrollTo(0, 0);
-      else refs.value[index]?.scrollIntoView();
-    } else push = false;
+    if (getName() !== value)
+      if (siblings.value.findIndex(({ id }) => id === value) <= 0)
+        window.scrollTo({ behavior, left, top });
+      else {
+        await Promise.all(
+          Object.values(promises.value).map(({ promise }) => promise),
+        );
+        refs.value.find(({ id }) => id === value)?.scrollIntoView({ behavior });
+      }
   },
   { immediate },
 );

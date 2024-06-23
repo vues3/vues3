@@ -43,7 +43,6 @@
     "@vueuse/components": "^10.11.0",
     "@vueuse/core": "^10.11.0",
     "@vueuse/motion": "^2.2.3",
-    "@vitejs/plugin-legacy": "^5.4.1",
     "ace-builds": "^1.35.0",
     "ajv": "^8.16.0",
     "ajv-keywords": "^5.1.0",
