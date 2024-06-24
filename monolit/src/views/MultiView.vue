@@ -10,9 +10,9 @@ div(
 )
   component(
     :a,
-    :is="<object>templates[<keyof object>a.id]",
+    :is="templates[a.id as keyof object] as object",
     :the,
-    @vue:mounted="(promises[<keyof object>a.id]).resolve",
+    @vue:mounted="promises[a.id as keyof object].resolve",
     un-cloak,
     v-cloak
   )
@@ -20,7 +20,11 @@ div(
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { useIntersectionObserver, useScroll } from "@vueuse/core";
+import {
+  useDebounceFn,
+  useIntersectionObserver,
+  useScroll,
+} from "@vueuse/core";
 import { views } from "app/src/stores/data";
 import {
   behavior,
@@ -44,23 +48,21 @@ const that = computed(() =>
   route.path === "/" ? the.value?.children?.[0] : the.value,
 );
 const siblings = computed(() => that.value?.siblings ?? []);
+const promiseWithResolvers = () => {
+  let resolve;
+  let reject;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, reject, resolve };
+};
 const promises = computed(
   () =>
     Object.fromEntries(
       siblings.value
         .filter(({ enabled }) => enabled)
-        .map(({ id }) => [
-          id,
-          () => {
-            let resolve;
-            let reject;
-            const promise = new Promise((res, rej) => {
-              resolve = res;
-              reject = rej;
-            });
-            return { promise, reject, resolve };
-          },
-        ]),
+        .map(({ id }) => [id, promiseWithResolvers()]),
     ) as Record<string, PromiseWithResolvers<undefined>>,
 );
 const templates = computed(
@@ -81,13 +83,7 @@ const intersecting = computed(
 );
 const getName = () =>
   [...intersecting.value.entries()].find(([, value]) => value)?.[0];
-const onStop = () => {
-  setTimeout(() => {
-    const name = getName();
-    if (name && name !== that.value?.id) router.push({ name }).catch(() => {});
-  }, 100);
-};
-useScroll(document, { behavior, onStop });
+const { isScrolling } = useScroll(document, { behavior });
 const callback = ([
   {
     isIntersecting,
@@ -97,18 +93,28 @@ const callback = ([
   intersecting.value.set(id, isIntersecting);
 };
 const stops: (() => void)[] = [];
+const all = () =>
+  Promise.all(Object.values(promises.value).map(({ promise }) => promise));
+const debounce = useDebounceFn(() => {
+  if (!isScrolling.value) {
+    const name = getName();
+    if (name && name !== that.value?.id) router.push({ name }).catch(() => {});
+  }
+});
 watch(
   () => route.name,
   async (value) => {
-    if (getName() !== value)
-      if (siblings.value.findIndex(({ id }) => id === value) <= 0)
-        window.scrollTo({ behavior, left, top });
-      else {
-        await Promise.all(
-          Object.values(promises.value).map(({ promise }) => promise),
-        );
-        refs.value.find(({ id }) => id === value)?.scrollIntoView({ behavior });
-      }
+    if (getName() !== value) {
+      await all();
+      setTimeout(() => {
+        if (siblings.value.findIndex(({ id }) => id === value) <= 0)
+          window.scrollTo({ behavior, left, top });
+        else
+          refs.value
+            .find(({ id }) => id === value)
+            ?.scrollIntoView({ behavior });
+      }, 100);
+    }
   },
   { immediate },
 );
@@ -129,4 +135,10 @@ watch(
   },
   { deep },
 );
+watch(isScrolling, async (value) => {
+  if (!value) {
+    await all();
+    debounce().catch(() => {});
+  }
+});
 </script>
