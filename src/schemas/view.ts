@@ -28,7 +28,7 @@ const properties = {
     type: "string",
   },
   class: {
-    default: ["snap-center", "min-h-dvh"],
+    default: [],
     description: "Классы",
     items: { type: "string" },
     type: "array",
