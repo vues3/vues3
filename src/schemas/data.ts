@@ -9,24 +9,17 @@ const content = {
   type: "array",
 } as const;
 const properties = {
-  css: {
-    default: [{}],
-    items: { $ref: "urn:jsonschema:resource" },
-    type: "array",
-  },
   js: {
     default: [{}],
     items: { $ref: "urn:jsonschema:resource" },
     type: "array",
   },
-  script: { default: "", nullable, type: "string" },
   settings: {
     $ref: "urn:jsonschema:settings",
     default: {},
     nullable,
     type: "object",
   },
-  style: { default: "", nullable, type: "string" },
 } as const;
 const type = "object";
 

@@ -1,13 +1,6 @@
 <template lang="pug">
 Head
   title {{ the?.title || " " }}
-  link(
-    :href="aCSS.url",
-    :key="aCSS.id",
-    crossorigin="",
-    rel="stylesheet",
-    v-for="aCSS in theCSS"
-  )
   component(
     :is="'script'",
     :key="aJS.id",
@@ -28,8 +21,6 @@ Head
   meta(:content="the.alt[0]", property="og:image:alt", v-if="the?.alt[0]")
   link(:href="favicon", :key, rel="icon", type="image/svg+xml")
   link(:href="canonical", rel="canonical", v-if="canonical")
-  component(:is="'style'", v-if="$?.style") {{ $.style }}
-  component(:is="'script'", v-if="$?.script") {{ $.script }}
   meta(
     :content="$.settings?.yandex",
     name="yandex-verification",
@@ -73,7 +64,6 @@ const image = computed(
 );
 const alive = ({ enabled, url }: TResource) => !!(enabled && url);
 const theJS = computed(() => $.value?.js.filter(alive) ?? []);
-const theCSS = computed(() => $.value?.css.filter(alive) ?? []);
 router.beforeEach(() => {
   drawer.value = false;
 });

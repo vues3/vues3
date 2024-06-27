@@ -5,11 +5,6 @@
     "to": "/content"
   },
   {
-    "title": "CSS",
-    "icon": "css",
-    "to": "/css"
-  },
-  {
     "title": "JavaScript",
     "icon": "javascript",
     "to": "/js"

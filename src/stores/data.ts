@@ -98,13 +98,6 @@ watch(
   { deep },
 );
 watch(
-  () => $.value?.css,
-  (value) => {
-    if (value) fixPlain({ value });
-  },
-  { deep },
-);
-watch(
   () => $.value?.js,
   (value) => {
     if (value) fixPlain({ value });
@@ -117,7 +110,7 @@ watch(
   $,
   (obj) => {
     if (obj) {
-      ["content", "css", "js"].forEach((prop) => {
+      ["content", "js"].forEach((prop) => {
         if (
           Object.hasOwn(obj, prop) &&
           !(obj[prop as keyof TData] as TResource[] | TView[]).length

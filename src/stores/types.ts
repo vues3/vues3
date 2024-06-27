@@ -48,7 +48,6 @@ export type TResource = {
 export type TSettings = FromSchema<typeof Settings>;
 export type TData = {
   content: TView[];
-  css: TResource[];
   js: TResource[];
 } & FromSchema<
   typeof plainData,

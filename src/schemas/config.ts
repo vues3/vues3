@@ -16,27 +16,10 @@ const properties = {
     },
     type: "object",
   },
-  css: {
-    default: {},
-    properties: {
-      selected: { type: "string" },
-      tab: {
-        default: "style",
-        enum: ["style", "css"],
-        type: "string",
-      },
-    },
-    type: "object",
-  },
   js: {
     default: {},
     properties: {
       selected: { type: "string" },
-      tab: {
-        default: "script",
-        enum: ["script", "js"],
-        type: "string",
-      },
     },
     type: "object",
   },

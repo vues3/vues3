@@ -33,6 +33,11 @@ import vueApp from "./App.vue";
 import { fix } from "./stores/monolit";
 import "./style.sass";
 
+declare const window: {
+  app: App;
+} & Window &
+  typeof globalThis;
+
 window.console.info(
   "👨‍🚀",
   "The vues3 framework",
@@ -40,7 +45,7 @@ window.console.info(
   "https://vues3.com",
 );
 initUnocssRuntime({ autoPrefix, bypassDefined, defaults });
-const app: App = createApp(vueApp);
+window.app = createApp(vueApp);
 (async () => {
   const response: Response = await fetch("/data.json", {
     cache,
@@ -86,22 +91,22 @@ watch(
   ({ analytics, metrika }) => {
     if (metrika) {
       const id: string = metrika;
-      app.use(initYandexMetrika, { env, id, router } as Config);
+      window.app.use(initYandexMetrika, { env, id, router } as Config);
     }
     if (analytics) {
       const id: string = analytics;
       const config: { id: string } = { id };
-      app.use(VueGtag, { config }, router);
+      window.app.use(VueGtag, { config }, router);
     }
   },
   { once },
 );
-app.use(router);
-app.use(createHead());
-app.use(Tres);
-app.use(MotionPlugin);
+window.app.use(router);
+window.app.use(createHead());
+window.app.use(Tres);
+window.app.use(MotionPlugin);
 // eslint-disable-next-line vue/multi-word-component-names, vue/no-reserved-component-names
-app.component("Head", Head);
+window.app.component("Head", Head);
 // eslint-disable-next-line vue/multi-word-component-names
-app.component("Icon", Icon);
-app.mount("#app");
+window.app.component("Icon", Icon);
+window.app.mount("#app");
