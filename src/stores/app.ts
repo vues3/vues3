@@ -5,7 +5,7 @@ import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import mime from "mime";
 import { debounce, uid } from "quasar";
 import { $, views } from "stores/data";
-import { cache, configurable, deep } from "stores/defaults";
+import { cache, configurable, deep, flush } from "stores/defaults";
 import { bucket, getObject, putFile, putObject } from "stores/s3";
 import { toXML } from "to-xml";
 import { computed, ref, watch } from "vue";
@@ -236,7 +236,6 @@ export const putImage = async (file: File) => {
   }
   return { filePath, message };
 };
-const flush = "sync";
 watch(
   views,
   (newValue) => {

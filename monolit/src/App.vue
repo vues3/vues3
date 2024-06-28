@@ -1,14 +1,6 @@
 <template lang="pug">
 Head
   title {{ the?.title || " " }}
-  component(
-    :is="'script'",
-    :key="aJS.id",
-    :src="aJS.url",
-    crossorigin="",
-    deffer,
-    v-for="aJS in theJS"
-  )
   meta(
     :content="the?.description",
     name="description",
@@ -35,8 +27,6 @@ div(:class="a.class", :id, v-if="a && a.enabled")
   component(:a, :is="root", :the, un-cloak, v-cloak)
 </template>
 <script setup lang="ts">
-import type { TResource } from "app/src/stores/types";
-
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { $, views } from "app/src/stores/data";
 import uuid from "uuid-random";
@@ -62,8 +52,6 @@ const image = computed(
     typeof the.value?.image[0] === "string" &&
     `${window.location.origin}/${the.value.image[0]}`,
 );
-const alive = ({ enabled, url }: TResource) => !!(enabled && url);
-const theJS = computed(() => $.value?.js.filter(alive) ?? []);
 router.beforeEach(() => {
   drawer.value = false;
 });

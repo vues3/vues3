@@ -17,6 +17,6 @@ export default route((/* { store, ssrContext } */) => {
   return createRouter({
     history: createHistory(process.env.VUE_ROUTER_BASE),
     routes,
-    scrollBehavior: () => ({ left: 0, top: 0 }),
+    // scrollBehavior: () => ({ left: 0, top: 0 }),
   });
 });

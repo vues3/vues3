@@ -1,7 +1,7 @@
 import type { TData, TResource, TView } from "app/src/stores/types";
 import type { Ref } from "vue";
 
-import { configurable, deep } from "app/src/stores/defaults";
+import { configurable, deep, flush } from "app/src/stores/defaults";
 import { validate } from "app/src/stores/types";
 import { computed, ref, watch } from "vue";
 
@@ -95,17 +95,16 @@ watch(
       if (id) fixDeep({ value });
     }
   },
-  { deep },
+  { deep, flush },
 );
 watch(
   () => $.value?.js,
   (value) => {
     if (value) fixPlain({ value });
   },
-  { deep },
+  { deep, flush },
 );
 const value = undefined;
-const flush = "sync";
 watch(
   $,
   (obj) => {

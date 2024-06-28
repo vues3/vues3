@@ -1,6 +1,6 @@
 <template lang="pug">
 q-page.column.full-height
-  v-interactive-tree(:list, type="url", v-model:selected="config.js.selected")
+  v-interactive-tree(:list, v-model:selected="config.js.selected")
 </template>
 <script setup lang="ts">
 import type { TConfig } from "stores/types";

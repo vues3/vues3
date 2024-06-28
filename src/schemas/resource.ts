@@ -6,7 +6,7 @@ const properties = {
   contenteditable: { default: false, type: "boolean" },
   enabled: { default: true, type: "boolean" },
   id: { type: "string" },
-  url: { default: "", type: "string" },
+  name: { default: "", type: "string" },
 } as const;
 const type = "object";
 const Resource = {
