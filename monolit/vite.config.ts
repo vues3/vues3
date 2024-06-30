@@ -25,8 +25,10 @@ const manualChunks = (id = ""): string =>
   id.split("node_modules/")[1]?.split("/")?.[0] ?? "";
 const output: object = { manualChunks };
 const rollupOptions: object = { output };
-const build: object = { manifest, outDir, rollupOptions };
+const target = "esnext";
+const build: object = { manifest, outDir, rollupOptions, target };
 const define: object = {
   __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+  __VUE_PROD_DEVTOOLS__: true,
 };
 export default defineConfig({ build, define, plugins, resolve });

@@ -70,7 +70,7 @@
     "@types/node": "^20.14.9",
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.14.1",
-    "@vue/language-plugin-pug": "^2.0.22",
+    "@vue/language-plugin-pug": "^2.0.24",
     "autoprefixer": "^10.4.19",
     "electron": "^31.1.0",
     "electron-builder": "^24.13.3",
