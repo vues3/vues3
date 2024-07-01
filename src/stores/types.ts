@@ -57,6 +57,9 @@ const ajv = new Ajv({
 export const validateConfig = ajv.getSchema(
   "urn:jsonschema:config",
 ) as ValidateFunction;
+export const validateSettings = ajv.getSchema(
+  "urn:jsonschema:settings",
+) as ValidateFunction;
 export const validateCredentials = ajv.getSchema(
   "urn:jsonschema:credentials",
 ) as ValidateFunction;

@@ -1,8 +1,8 @@
-import type { TData, TView } from "app/src/stores/types";
+import type { TData, TSettings, TView } from "app/src/stores/types";
 import type { Ref } from "vue";
 
 import { configurable, deep, flush } from "app/src/stores/defaults";
-import { validate } from "app/src/stores/types";
+import { validate, validateSettings } from "app/src/stores/types";
 import { computed, ref, watch } from "vue";
 
 const getViews = (views: TView[]): TView[] =>
@@ -75,6 +75,7 @@ const fixDeep = (
   });
 };
 export const data: Ref<TData | undefined> = ref();
+export const settings: Ref<TSettings | undefined> = ref();
 const get = () => getViews(data.value?.content ?? []);
 export const views = computed(() =>
   get().map((value: TView) => {
@@ -104,6 +105,13 @@ watch(
         Reflect.defineProperty(obj, "content", { value });
       validate(obj);
     }
+  },
+  { deep, flush },
+);
+watch(
+  settings,
+  (obj) => {
+    if (obj) validateSettings(obj);
   },
   { deep, flush },
 );

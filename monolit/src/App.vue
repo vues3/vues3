@@ -14,21 +14,21 @@ Head
   link(:href="favicon", :key, rel="icon", type="image/svg+xml")
   link(:href="canonical", rel="canonical", v-if="canonical")
   meta(
-    :content="data.settings?.yandex",
+    :content="settings?.yandex",
     name="yandex-verification",
-    v-if="data?.settings?.yandex"
+    v-if="settings?.yandex"
   )
   meta(
-    :content="data.settings?.google",
+    :content="settings?.google",
     name="google-site-verification",
-    v-if="data?.settings?.google"
+    v-if="settings?.google"
   )
 div(:class="a.class", :id, v-if="a && a.enabled")
   component(:a, :is="root", :the, un-cloak, v-cloak)
 </template>
 <script setup lang="ts">
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
-import { data, views } from "app/src/stores/data";
+import { settings, views } from "app/src/stores/data";
 import uuid from "uuid-random";
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
