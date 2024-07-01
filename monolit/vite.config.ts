@@ -1,6 +1,5 @@
 import type { PluginOption } from "vite";
 
-import { templateCompilerOptions } from "@tresjs/core";
 import { Extractor } from "@unocss/core";
 import extractorPug from "@unocss/extractor-pug";
 import UnoCSS from "@unocss/vite";
@@ -10,10 +9,7 @@ import { defineConfig } from "vite";
 
 const extractors: Extractor[] = [extractorPug()];
 const configFile = "../uno.config.js";
-const plugins: PluginOption[] = [
-  vue({ ...templateCompilerOptions }),
-  UnoCSS({ configFile, extractors }),
-];
+const plugins: PluginOption[] = [vue(), UnoCSS({ configFile, extractors })];
 const alias: object = {
   "@": ".",
   app: fileURLToPath(new URL("..", import.meta.url)),

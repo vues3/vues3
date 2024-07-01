@@ -31,7 +31,6 @@ import { useFileDialog } from "@vueuse/core";
 import { fonts } from "app/uno.config";
 import mimes from "assets/mimes.json";
 import VLinkDialog from "components/VLinkDialog.vue";
-import VWindDialog from "components/VWindDialog.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { urls } from "stores/app";
@@ -80,16 +79,6 @@ const definitions = {
   ...(Object.fromEntries(
     [
       ["upload", "Загрузка картинки", open],
-      [
-        "dashboard",
-        "Выбор шаблона",
-        () => {
-          const component = VWindDialog;
-          $q.dialog({ component }).onOk((value: string) => {
-            editor.value?.runCmd("insertHTML", value);
-          });
-        },
-      ],
       [
         "share",
         "Вставка внутренней ссылки",

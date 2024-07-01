@@ -1,4 +1,4 @@
-import type { TResource, TView } from "app/src/stores/types";
+import type { TView } from "app/src/stores/types";
 import type { AsyncComponentLoader } from "vue";
 import type {
   RouteRecordRaw,
@@ -6,51 +6,57 @@ import type {
   RouterHistory,
   RouterScrollBehavior,
 } from "vue-router";
-import type { Options } from "vue3-sfc-loader";
+import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 
+import * as vueuseCore from "@vueuse/core";
 import { useStyleTag } from "@vueuse/core";
 import { $, views } from "app/src/stores/data";
-import { behavior, cache, left, once, top } from "app/src/stores/defaults";
+import { behavior, cache, left, top } from "app/src/stores/defaults";
 import * as vue from "vue";
-import { computed, defineAsyncComponent, watch } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 import * as vueRouter from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
 import { loadModule } from "vue3-sfc-loader";
 
-const moduleCachePromise = new Promise((resolve) => {
-  watch(
-    () => $.value?.js as TResource[],
-    async (js) => {
-      resolve(
-        Object.fromEntries(
-          new Map<string, object>([
-            ["vue", vue] as readonly [string, object],
-            ["vue-router", vueRouter] as readonly [string, object],
-            ...(
-              (await Promise.allSettled(
-                js
-                  .filter(({ enabled, name }) => !!(enabled && name))
-                  .map(({ name }) => [
-                    name,
-                    `https://cdn.jsdelivr.net/npm/${name}/+esm`,
-                  ])
-                  .map(
-                    async ([name, url]) =>
-                      [name, await import(url)] as [string, object],
-                  ),
-              )) as PromiseFulfilledResult<[string, object]>[]
-            )
-              .map(({ value }) => value)
-              .filter(Boolean),
-          ]),
-        ),
-      );
-    },
-    { once },
-  );
-});
+const moduleCache = {
+  "@vueuse/core": vueuseCore,
+  vue,
+  "vue-router": vueRouter,
+};
+const getResource: Options["getResource"] = (pathCx, options) => {
+  const { getPathname, pathResolve } = options;
+  const path = pathResolve(pathCx, options);
+  const id = path.toString();
+  const getContent = async () => {
+    if (URL.canParse(id)) {
+      const getContentData: File["getContentData"] = () =>
+        import(id) as Promise<ContentData>;
+      return { getContentData } as File;
+    }
+    const res = await options.getFile(path);
+    if (typeof res === "string" || res instanceof ArrayBuffer) {
+      const getContentData = () => Promise.resolve(res);
+      const ext = getPathname(id).split(".").pop() ?? "";
+      const type = ext && `.${ext}`;
+      return { getContentData, type };
+    }
+    return res;
+  };
+  return { getContent, id, path };
+};
+const handleModule = (
+  type: string,
+  getContentData: File["getContentData"],
+  path: AbstractPath,
+) => {
+  if (URL.canParse(path.toString())) return getContentData(false);
+  return undefined;
+};
 const log = (type: keyof Console, ...args: string[]) => {
   (window.console[type] as (...optionalParams: string[]) => void)(...args);
+};
+const addStyle = (styles: string) => {
+  useStyleTag(styles);
 };
 export const getAsyncComponent = ({
   path,
@@ -67,20 +73,18 @@ export const getAsyncComponent = ({
     const cntStyle = css && `<style${scoped ? " scoped" : ""}>${css}</style>`;
     return `${cntScript}${cntTemplate}${cntStyle}`;
   };
-  const addStyle = (styles: string) => {
-    useStyleTag(styles);
-  };
   return defineAsyncComponent((async () => {
-    const moduleCache = await moduleCachePromise;
     return loadModule(`${path && "/"}${path}/view.vue`, {
       addStyle,
       getFile,
+      getResource,
+      handleModule,
       log,
       moduleCache,
     } as unknown as Options);
   }) as AsyncComponentLoader<Promise<object>>);
 };
-async function getResource(this: TView, ext: keyof TView) {
+async function resource(this: TView, ext: keyof TView) {
   if (this[ext] == null) {
     const response = await fetch(`/views/${this.id ?? ""}.${ext}`, {
       cache,
@@ -92,17 +96,17 @@ async function getResource(this: TView, ext: keyof TView) {
 }
 const template = {
   async get(this: TView) {
-    return getResource.call(this, "htm");
+    return resource.call(this, "htm");
   },
 };
 const style = {
   async get(this: TView) {
-    return getResource.call(this, "css");
+    return resource.call(this, "css");
   },
 };
 const script = {
   async get(this: TView) {
-    return getResource.call(this, "js");
+    return resource.call(this, "js");
   },
 };
 export const fix = (siblings: TView[]) => {

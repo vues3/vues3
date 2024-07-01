@@ -1,5 +1,5 @@
 export default [
-  ...["License", "Content", "Js", "Settings", "Home"].map((value) => ({
+  ...["License", "Content", "Settings", "Home"].map((value) => ({
     children: [
       {
         component: (): object => import(`pages/${value}Page.vue`),

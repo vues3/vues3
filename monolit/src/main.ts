@@ -4,7 +4,6 @@ import type { RouteComponent } from "vue-router";
 import type { Config } from "yandex-metrika-vue3/src/types";
 
 import { Icon } from "@iconify/vue";
-import Tres from "@tresjs/core";
 import { createHead } from "@unhead/vue";
 import { Head } from "@unhead/vue/components";
 import "@unocss/reset/tailwind.css";
@@ -38,7 +37,6 @@ initUnocssRuntime({ autoPrefix, bypassDefined, defaults });
 window.app = createApp(vueApp);
 window.app.use(router);
 window.app.use(createHead());
-window.app.use(Tres);
 window.app.use(MotionPlugin);
 // eslint-disable-next-line vue/multi-word-component-names, vue/no-reserved-component-names
 window.app.component("Head", Head);

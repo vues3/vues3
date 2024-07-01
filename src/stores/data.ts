@@ -1,4 +1,4 @@
-import type { TData, TResource, TView } from "app/src/stores/types";
+import type { TData, TView } from "app/src/stores/types";
 import type { Ref } from "vue";
 
 import { configurable, deep, flush } from "app/src/stores/defaults";
@@ -52,11 +52,6 @@ const title = {
     return this.header ?? this.name;
   },
 };
-const fixPlain = (siblings: { value: TResource[] }) => {
-  siblings.value.forEach((element) => {
-    Object.defineProperties(element, { index, next, prev, siblings });
-  });
-};
 const fixDeep = (
   siblings: { configurable?: boolean; value: TView[] },
   parent: { configurable?: boolean; value?: TView } = { value: undefined },
@@ -97,25 +92,16 @@ watch(
   },
   { deep, flush },
 );
-watch(
-  () => $.value?.js,
-  (value) => {
-    if (value) fixPlain({ value });
-  },
-  { deep, flush },
-);
 const value = undefined;
 watch(
   $,
   (obj) => {
     if (obj) {
-      ["content", "js"].forEach((prop) => {
-        if (
-          Object.hasOwn(obj, prop) &&
-          !(obj[prop as keyof TData] as TResource[] | TView[]).length
-        )
-          Reflect.defineProperty(obj, prop, { value });
-      });
+      if (
+        Object.hasOwn(obj, "content") &&
+        !(obj["content" as keyof TData] as TView[]).length
+      )
+        Reflect.defineProperty(obj, "content", { value });
       validate(obj);
     }
   },

@@ -9,11 +9,6 @@ const content = {
   type: "array",
 } as const;
 const properties = {
-  js: {
-    default: [{}],
-    items: { $ref: "urn:jsonschema:resource" },
-    type: "array",
-  },
   settings: {
     $ref: "urn:jsonschema:settings",
     default: {},

@@ -39,7 +39,7 @@ q-btn-group.q-mx-xs(flat, spread)
 </template>
 <script setup lang="ts">
 import type { QInputProps, QTree, QTreeNode } from "quasar";
-import type { TResource, TView } from "stores/types";
+import type { TView } from "stores/types";
 import type { Ref } from "vue";
 
 import { uid, useQuasar } from "quasar";
@@ -53,7 +53,7 @@ interface IEmits {
 const props = withDefaults(
   defineProps<{
     expanded?: string[];
-    list: TResource[] | TView[];
+    list: TView[];
     selected?: string;
     tree?: TView[];
     type?: QInputProps["type"];

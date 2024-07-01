@@ -5,7 +5,6 @@ import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
 import Config from "app/src/schemas/config";
 import Credentials from "app/src/schemas/credentials";
 import Data, { plainData } from "app/src/schemas/data";
-import Resource from "app/src/schemas/resource";
 import Settings from "app/src/schemas/settings";
 import View, { plainView } from "app/src/schemas/view";
 import {
@@ -37,27 +36,15 @@ export type TView = {
   url: string;
   views: TView[];
 } & FromSchema<typeof plainView>;
-export type TResource = {
-  children?: undefined;
-  index: number;
-  next?: TView;
-  parent?: undefined;
-  prev?: TView;
-  siblings: TView[];
-} & FromSchema<typeof Resource>;
 export type TSettings = FromSchema<typeof Settings>;
 export type TData = {
   content: TView[];
-  js: TResource[];
-} & FromSchema<
-  typeof plainData,
-  { references: [typeof Settings, typeof Resource] }
->;
+} & FromSchema<typeof plainData, { references: [typeof Settings] }>;
 dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uuid();
 const code = { esm };
 export type TCredentials = FromSchema<typeof Credentials>;
 export type TConfig = FromSchema<typeof Config>;
-const schemas = [Config, Credentials, Resource, View, Settings, Data];
+const schemas = [Config, Credentials, View, Settings, Data];
 const keywords = [dynamicDefaults()];
 const ajv = new Ajv({
   code,

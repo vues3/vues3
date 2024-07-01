@@ -16,13 +16,6 @@ const properties = {
     },
     type: "object",
   },
-  js: {
-    default: {},
-    properties: {
-      selected: { type: "string" },
-    },
-    type: "object",
-  },
 } as const;
 const type = "object";
 export default {
