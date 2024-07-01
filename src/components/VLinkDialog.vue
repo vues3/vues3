@@ -22,7 +22,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 import type { QTreeNode } from "quasar";
 
 import { useDialogPluginComponent } from "quasar";
-import { $, views } from "stores/data";
+import { data, views } from "stores/data";
 import { computed, onMounted, ref } from "vue";
 
 defineEmits([...useDialogPluginComponent.emits]);
@@ -30,9 +30,9 @@ const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
   useDialogPluginComponent();
 const selected = ref();
 const the = computed(() => views.value.find(({ id }) => id === selected.value));
-const nodes = computed(() => $.value?.content as QTreeNode[]);
+const nodes = computed(() => data.value?.content as QTreeNode[]);
 onMounted(() => {
-  const [{ id }] = $.value?.content ?? [];
+  const [{ id }] = data.value?.content ?? [];
   selected.value = id;
 });
 </script>

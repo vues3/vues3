@@ -74,8 +74,8 @@ const fixDeep = (
     );
   });
 };
-export const $: Ref<TData | undefined> = ref();
-const get = () => getViews($.value?.content ?? []);
+export const data: Ref<TData | undefined> = ref();
+const get = () => getViews(data.value?.content ?? []);
 export const views = computed(() =>
   get().map((value: TView) => {
     Object.defineProperty(value, "views", { get });
@@ -83,7 +83,7 @@ export const views = computed(() =>
   }),
 );
 watch(
-  () => $.value?.content,
+  () => data.value?.content,
   (value) => {
     if (value) {
       const [{ id }] = value;
@@ -94,7 +94,7 @@ watch(
 );
 const value = undefined;
 watch(
-  $,
+  data,
   (obj) => {
     if (obj) {
       if (

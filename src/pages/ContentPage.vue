@@ -3,7 +3,7 @@ q-drawer(
   bordered,
   show-if-above,
   side="right",
-  v-if="the",
+  v-if="data && the",
   v-model="rightDrawer"
 )
   q-list
@@ -15,7 +15,7 @@ q-drawer(
     )
       v-interactive-tree(
         :list="views",
-        :tree="$.content",
+        :tree="data.content",
         v-model:expanded="config.expanded",
         v-model:selected="config.selected"
       )
@@ -245,7 +245,7 @@ import VWysiwyg from "components/VWysiwyg.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { rightDrawer, save, urls } from "stores/app";
-import { $, views } from "stores/data";
+import { data, views } from "stores/data";
 import {
   accept,
   capture,

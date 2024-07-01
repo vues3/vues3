@@ -10,7 +10,7 @@ import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 
 import * as vueuseCore from "@vueuse/core";
 import { useStyleTag } from "@vueuse/core";
-import { $, views } from "app/src/stores/data";
+import { data, views } from "app/src/stores/data";
 import { behavior, cache, left, top } from "app/src/stores/defaults";
 import * as vue from "vue";
 import { computed, defineAsyncComponent } from "vue";
@@ -154,7 +154,7 @@ export const promises = computed(
 export const all = () =>
   Promise.all(Object.values(promises.value).map(({ promise }) => promise));
 onScroll = async (to, from, savedPosition) => {
-  if ($.value?.settings?.landing) {
+  if (data.value?.settings?.landing) {
     await all();
     if (savedPosition) return { behavior, ...savedPosition };
     const el = `#${String(to.name)}`;

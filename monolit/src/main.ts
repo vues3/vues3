@@ -9,7 +9,7 @@ import { Head } from "@unhead/vue/components";
 import "@unocss/reset/tailwind.css";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
-import { $, views } from "app/src/stores/data";
+import { data, views } from "app/src/stores/data";
 import { autoPrefix, bypassDefined, cache } from "app/src/stores/defaults";
 import defaults from "app/uno.config";
 import "virtual:uno.css";
@@ -46,9 +46,9 @@ window.app.mount("#app");
 const response: Response = await fetch("/data.json", {
   cache,
 });
-$.value = response.ok ? ((await response.json()) as TData) : ({} as TData);
-fix($.value.content);
-const { analytics, metrika } = $.value.settings ?? {};
+data.value = response.ok ? ((await response.json()) as TData) : ({} as TData);
+fix(data.value.content);
+const { analytics, metrika } = data.value.settings ?? {};
 if (metrika) {
   const id: string = metrika;
   window.app.use(initYandexMetrika, { env, id, router } as Config);
@@ -66,7 +66,7 @@ views.value.forEach(({ id: name, loc, path }) => {
     ...(loc && { alias }),
     component(): RouteComponent {
       return import(
-        $.value?.settings?.landing
+        data.value?.settings?.landing
           ? "@/views/MultiView.vue"
           : "@/views/SingleView.vue"
       );

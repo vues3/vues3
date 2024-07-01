@@ -4,7 +4,7 @@ import mimes from "assets/mimes.json";
 import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import mime from "mime";
 import { debounce, uid } from "quasar";
-import { $, views } from "stores/data";
+import { data, views } from "stores/data";
 import { cache, configurable, deep, flush } from "stores/defaults";
 import { bucket, getObject, putFile, putObject } from "stores/s3";
 import { toXML } from "to-xml";
@@ -147,7 +147,7 @@ const script = {
 };
 watch(bucket, async (value) => {
   if (value) {
-    $.value = JSON.parse(
+    data.value = JSON.parse(
       (await (await getObject("data.json", cache)).text()) || "{}",
     ) as TData;
     const [localManifest, serverManifest] = (
@@ -185,7 +185,7 @@ watch(bucket, async (value) => {
         })().catch(() => {});
       });
   } else {
-    $.value = undefined;
+    data.value = undefined;
     urls.forEach((url, key) => {
       URL.revokeObjectURL(url);
       urls.delete(key);
@@ -193,7 +193,7 @@ watch(bucket, async (value) => {
   }
 });
 watch(
-  $,
+  data,
   debounce((value) => {
     if (value)
       putObject("data.json", "application/json", JSON.stringify(value)).catch(
