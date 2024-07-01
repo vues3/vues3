@@ -16,8 +16,8 @@ q-drawer(
       v-interactive-tree(
         :list="views",
         :tree="$.content",
-        v-model:expanded="config.content.expanded",
-        v-model:selected="config.content.selected"
+        v-model:expanded="config.expanded",
+        v-model:selected="config.selected"
       )
     q-separator
     q-card(flat)
@@ -176,14 +176,14 @@ q-page.column.full-height(v-if="the")
     dense,
     indicator-color="primary",
     narrow-indicator,
-    v-model="config.content.tab"
+    v-model="config.tab"
   )
     q-tab(label="wysiwyg", name="wysiwyg")
     q-tab(label="template", name="template")
     q-tab(:label="`script${the.setup ? ' setup' : ''}`", name="script")
     q-tab(:label="`style${the.scoped ? ' scoped' : ''}`", name="style")
   q-separator
-  q-tab-panels.full-width.col(v-model="config.content.tab")
+  q-tab-panels.full-width.col(v-model="config.tab")
     q-tab-panel.column(name="wysiwyg")
       Suspense
         v-wysiwyg.full-width.col.column(
@@ -276,7 +276,7 @@ const pagination = ref({ itemsPerPage, page });
 const { icons } = mdi as Record<string, object[]>;
 const the: ComputedRef<TView | undefined> = computed(
   () =>
-    views.value.find(({ id }) => id === config.value.content.selected) ??
+    views.value.find(({ id }) => id === config.value.selected) ??
     views.value[0],
 );
 const alt = computed({
