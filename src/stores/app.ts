@@ -168,13 +168,13 @@ watch(bucket, async (value) => {
             ),
           );
         }),
-      ])) as Record<string, Record<string, string | string[]>>[]
+      ])) as Record<string, Record<string, string | string[]> | undefined>[]
     ).map(
       (element) =>
         new Set(
           [
-            ...Object.values(element).map(({ file }) => file),
-            ...(element["index.html"].css || []),
+            ...Object.values(element).map(({ file } = {}) => file),
+            ...(element["index.html"]?.css ?? []),
           ].filter(Boolean) as string[],
         ),
     );
