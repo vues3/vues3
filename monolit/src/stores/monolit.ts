@@ -10,7 +10,7 @@ import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 
 import * as vueuseCore from "@vueuse/core";
 import { useStyleTag } from "@vueuse/core";
-import { settings, views } from "app/src/stores/data";
+import { data, views } from "app/src/stores/data";
 import { behavior, cache, left, top } from "app/src/stores/defaults";
 import * as vue from "vue";
 import { computed, defineAsyncComponent } from "vue";
@@ -109,16 +109,6 @@ const script = {
     return resource.call(this, "js");
   },
 };
-export const fix = (siblings: TView[]) => {
-  siblings.forEach((value) => {
-    Object.defineProperties(value, {
-      script,
-      style,
-      template,
-    });
-    if (value.children) fix(value.children);
-  });
-};
 const history: RouterHistory = createWebHistory(import.meta.env.BASE_URL);
 const routes: RouteRecordRaw[] = [];
 let onScroll: RouterScrollBehavior | undefined;
@@ -127,11 +117,27 @@ const scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) => {
   return false;
 };
 export const router: Router = createRouter({ history, routes, scrollBehavior });
-export const the = computed(() =>
+export const a = computed(() =>
   views.value.find(({ id }) => id === router.currentRoute.value.name),
 );
+const view = {
+  get() {
+    return a.value;
+  },
+};
+export const fix = (siblings: TView[]) => {
+  siblings.forEach((value) => {
+    Object.defineProperties(value, {
+      script,
+      style,
+      template,
+      view,
+    });
+    if (value.children) fix(value.children);
+  });
+};
 export const that = computed(() =>
-  router.currentRoute.value.path === "/" ? the.value?.children?.[0] : the.value,
+  router.currentRoute.value.path === "/" ? a.value?.children?.[0] : a.value,
 );
 export const siblings = computed(() => that.value?.siblings ?? []);
 const promiseWithResolvers = () => {
@@ -154,7 +160,7 @@ export const promises = computed(
 export const all = () =>
   Promise.all(Object.values(promises.value).map(({ promise }) => promise));
 onScroll = async (to, from, savedPosition) => {
-  if (settings.value?.landing) {
+  if (data.value?.settings?.landing) {
     await all();
     if (savedPosition) return { behavior, ...savedPosition };
     const el = `#${String(to.name)}`;

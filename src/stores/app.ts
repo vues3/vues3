@@ -1,10 +1,10 @@
-import type { TData, TSettings, TView } from "stores/types";
+import type { TData, TView } from "stores/types";
 
 import mimes from "assets/mimes.json";
 import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import mime from "mime";
 import { debounce, uid } from "quasar";
-import { data, settings, views } from "stores/data";
+import { data, views } from "stores/data";
 import { cache, configurable, deep, flush } from "stores/defaults";
 import { bucket, getObject, putFile, putObject } from "stores/s3";
 import { toXML } from "to-xml";
@@ -152,11 +152,6 @@ watch(bucket, async (value) => {
         (await (await getObject("data.json", cache)).text()) || "{}",
       ) as TData;
     })().catch(() => {});
-    (async () => {
-      settings.value = JSON.parse(
-        (await (await getObject("settings.json", cache)).text()) || "{}",
-      ) as TSettings;
-    })().catch(() => {});
     const [localManifest, serverManifest] = (
       (await Promise.all([
         (await fetch("monolit/.vite/manifest.json")).json(),
@@ -206,18 +201,6 @@ watch(
       putObject("data.json", "application/json", JSON.stringify(value)).catch(
         () => {},
       );
-  }),
-  { deep },
-);
-watch(
-  settings,
-  debounce((value) => {
-    if (value)
-      putObject(
-        "settings.json",
-        "application/json",
-        JSON.stringify(value),
-      ).catch(() => {});
   }),
   { deep },
 );

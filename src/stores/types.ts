@@ -36,7 +36,6 @@ export type TView = {
   url: string;
   views: TView[];
 } & FromSchema<typeof plainView>;
-export type TSettings = FromSchema<typeof Settings>;
 export type TData = {
   content: TView[];
 } & FromSchema<typeof plainData, { references: [typeof Settings] }>;
@@ -56,9 +55,6 @@ const ajv = new Ajv({
 });
 export const validateConfig = ajv.getSchema(
   "urn:jsonschema:config",
-) as ValidateFunction;
-export const validateSettings = ajv.getSchema(
-  "urn:jsonschema:settings",
 ) as ValidateFunction;
 export const validateCredentials = ajv.getSchema(
   "urn:jsonschema:credentials",

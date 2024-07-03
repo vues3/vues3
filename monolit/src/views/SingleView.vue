@@ -1,12 +1,12 @@
 <template lang="pug">
-div(:class="a.class", :id, role="main", v-if="a")
-  component(:a, :is="is", :the, un-cloak, v-cloak)
+div(:class="that.class", :id, role="main", v-if="that")
+  component(:is="is", :the="that", un-cloak, v-cloak)
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { that as a, getAsyncComponent, the } from "../stores/monolit";
+import { getAsyncComponent, that } from "../stores/monolit";
 
-const id = computed(() => a.value?.id);
-const is = computed(() => a.value && getAsyncComponent(a.value));
+const id = computed(() => that.value?.id);
+const is = computed(() => that.value && getAsyncComponent(that.value));
 </script>

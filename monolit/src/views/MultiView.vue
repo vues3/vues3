@@ -1,18 +1,17 @@
 <template lang="pug">
 div(
-  :class="a.class",
-  :id="a.id",
-  :key="a.id",
-  :role="a.id === that?.id ? 'main' : undefined",
+  :class="the.class",
+  :id="the.id",
+  :key="the.id",
+  :role="the.id === that?.id ? 'main' : undefined",
   ref="refs",
   v-cloak,
-  v-for="a in siblings"
+  v-for="the in siblings"
 )
   component(
-    :a,
-    :is="template(a)",
+    :is="template(the)",
     :the,
-    @vue:mounted="resolve(a)",
+    @vue:mounted="resolve(the)",
     un-cloak,
     v-cloak
   )
@@ -37,7 +36,6 @@ import {
   promises,
   siblings,
   that,
-  the,
 } from "../stores/monolit";
 
 const refs: Ref<HTMLElement[]> = ref([]);
@@ -47,7 +45,7 @@ const templates = computed(
     Object.fromEntries(
       siblings.value
         .filter(({ enabled }) => enabled)
-        .map((a) => [a.id, getAsyncComponent(a)]),
+        .map((value) => [value.id, getAsyncComponent(value)]),
     ) as object,
 );
 const template = ({ id }: TView) =>
