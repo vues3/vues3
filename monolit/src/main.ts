@@ -10,7 +10,7 @@ import "@unocss/reset/tailwind.css";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
 import { data, views } from "app/src/stores/data";
-import { autoPrefix, bypassDefined, cache } from "app/src/stores/defaults";
+import { autoPrefix, bypassDefined } from "app/src/stores/defaults";
 import defaults from "app/uno.config";
 import "virtual:uno.css";
 import { createApp } from "vue";
@@ -43,9 +43,7 @@ window.app.component("Head", Head);
 // eslint-disable-next-line vue/multi-word-component-names
 window.app.component("Icon", Icon);
 window.app.mount("#app");
-const response: Response = await fetch("/data.json", {
-  cache,
-});
+const response: Response = await fetch("/data.json");
 data.value = response.ok ? ((await response.json()) as TData) : ({} as TData);
 fix(data.value.content);
 const { analytics, metrika } = data.value.settings ?? {};
