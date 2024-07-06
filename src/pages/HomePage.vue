@@ -82,12 +82,10 @@ import { bucket, headBucket } from "stores/s3";
 import { validateCredentials } from "stores/types";
 import { triggerRef } from "vue";
 import { useRouter } from "vue-router";
-
 // eslint-disable-next-line no-undef
 const APP_VERSION = __APP_VERSION__;
 const router = useRouter();
 const $q = useQuasar();
-rightDrawer.value = false;
 const creds = useStorage(
   "@",
   () => {
@@ -118,7 +116,18 @@ const login = async (name: number | string) => {
     try {
       await headBucket(name.toString(), await getPin(name.toString()));
       bucket.value = name.toString();
-      router.push("/content").catch(() => {});
+      router.addRoute({
+        children: [
+          {
+            component: (): object => import("pages/ContentPage.vue"),
+            name: bucket.value,
+            path: "",
+          },
+        ],
+        component: (): object => import("layouts/MainLayout.vue"),
+        path: `/${bucket.value}`,
+      });
+      router.push(`/${bucket.value}`).catch(() => {});
     } catch (err) {
       bucket.value = "";
       const { message } = err as Error;
