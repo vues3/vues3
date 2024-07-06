@@ -58,8 +58,9 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       )
         template(#prepend)
           q-icon(name="flag")
+    q-separator
     q-card-actions.text-primary(align="right")
-      q-btn(@click="onDialogCancel", flat, label="Отмена")
+      q-btn(@click="onDialogCancel", flat, label="Cancel")
       q-btn(
         @click="() => { bucket.validate(); if (!bucket.hasError) click(encrypt({ Bucket, secretAccessKey, region, endpoint, accessKeyId })); }",
         flat,
