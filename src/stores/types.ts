@@ -43,6 +43,7 @@ dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uuid();
 const code = { esm };
 export type TCredentials = FromSchema<typeof Credentials>;
 export type TConfig = FromSchema<typeof Config>;
+export type TSettings = FromSchema<typeof Settings>;
 const schemas = [Config, Credentials, View, Settings, Data];
 const keywords = [dynamicDefaults()];
 const ajv = new Ajv({
