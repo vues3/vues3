@@ -291,10 +291,10 @@ const alt = computed({
 });
 const icon = computed({
   get() {
-    return the.value?.icon?.replace(/^mdi:/, "mdi-");
+    return the.value?.icon?.replace(":", "-");
   },
   set(value) {
-    if (value && the.value) the.value.icon = value.replace(/^mdi-/, "mdi:");
+    if (value && the.value) the.value.icon = value.replace("-", ":");
   },
 });
 const onUnmounted = async (ext: string, key: keyof TView) => {
@@ -342,5 +342,4 @@ watch(files, (value) => {
     } else $q.notify({ message });
   }
 });
-rightDrawer.value = false;
 </script>
