@@ -8,7 +8,7 @@ import {
 
 import routes from "./routes";
 
-export default route((/* { store, ssrContext } */) => {
+export default route(() => {
   let createHistory;
   if (process.env.SERVER) createHistory = createMemoryHistory;
   else if (process.env.VUE_ROUTER_MODE === "history")
@@ -17,6 +17,5 @@ export default route((/* { store, ssrContext } */) => {
   return createRouter({
     history: createHistory(process.env.VUE_ROUTER_BASE),
     routes,
-    // scrollBehavior: () => ({ left: 0, top: 0 }),
   });
 });
