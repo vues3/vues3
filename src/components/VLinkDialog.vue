@@ -11,8 +11,10 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         v-model:selected="selected"
       )
         template(#default-header="prop")
-          q-icon.q-tree__icon.q-mr-sm(:name="prop.node.icon || 'mdi-web'")
-          div {{ prop.node.text }}
+          q-icon.q-tree__icon.q-mr-sm(
+            :name="prop.node.icon?.replace(':', '-') || 'mdi-web'"
+          )
+          div {{ prop.node.name }}
     q-separator
     q-card-actions.text-primary(align="right")
       q-btn(@click="onDialogCancel", flat, label="Отмена")
