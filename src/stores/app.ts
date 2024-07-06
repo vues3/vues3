@@ -204,7 +204,7 @@ watch(
   }),
   { deep },
 );
-export const rightDrawer = ref();
+export const rightDrawer = ref(false);
 const sitemap = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
   urlset: {
