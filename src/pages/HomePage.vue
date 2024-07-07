@@ -75,6 +75,8 @@ import { useStorage } from "@vueuse/core";
 import VCredsDialog from "components/VCredsDialog.vue";
 import VOtpDialog from "components/VOtpDialog.vue";
 import CryptoJS from "crypto-js";
+import mainLayout from "layouts/MainLayout.vue";
+import contentPage from "pages/ContentPage.vue";
 import { useQuasar } from "quasar";
 import { rightDrawer } from "stores/app";
 import { mergeDefaults } from "stores/defaults";
@@ -119,12 +121,12 @@ const login = async (name: number | string) => {
       router.addRoute({
         children: [
           {
-            component: (): object => import("pages/ContentPage.vue"),
+            component: contentPage,
             name: bucket.value,
             path: "",
           },
         ],
-        component: (): object => import("layouts/MainLayout.vue"),
+        component: mainLayout,
         path: `/${bucket.value}`,
       });
       router.push(`/${bucket.value}`).catch(() => {});
