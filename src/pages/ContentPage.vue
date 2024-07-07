@@ -1,12 +1,6 @@
 <template lang="pug">
-q-drawer(
-  bordered,
-  show-if-above,
-  side="right",
-  v-if="data && the",
-  v-model="rightDrawer"
-)
-  q-list
+q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
+  q-list(v-if="data && the")
     q-expansion-item(
       default-opened,
       header-class="text-primary",
