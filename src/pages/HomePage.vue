@@ -75,7 +75,6 @@ import { useStorage } from "@vueuse/core";
 import VCredsDialog from "components/VCredsDialog.vue";
 import VOtpDialog from "components/VOtpDialog.vue";
 import CryptoJS from "crypto-js";
-import mainLayout from "layouts/MainLayout.vue";
 import contentPage from "pages/ContentPage.vue";
 import { useQuasar } from "quasar";
 import { rightDrawer } from "stores/app";
@@ -113,23 +112,16 @@ const getPin = async (name: string): Promise<string | undefined> =>
         });
     } else resolve(undefined);
   });
-const login = async (name: number | string) => {
+const login = async (value: number | string) => {
+  const name = value as string;
+  const path = `/${name}`;
+  const component = contentPage;
   if (!bucket.value)
     try {
-      await headBucket(name.toString(), await getPin(name.toString()));
-      bucket.value = name.toString();
-      router.addRoute({
-        children: [
-          {
-            component: contentPage,
-            name: bucket.value,
-            path: "",
-          },
-        ],
-        component: mainLayout,
-        path: `/${bucket.value}`,
-      });
-      router.push(`/${bucket.value}`).catch(() => {});
+      await headBucket(name, await getPin(name));
+      bucket.value = name;
+      router.addRoute({ component, name, path });
+      router.push(path).catch(() => {});
     } catch (err) {
       bucket.value = "";
       const { message } = err as Error;
