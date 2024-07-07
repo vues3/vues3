@@ -1,13 +1,16 @@
+import mainLayout from "layouts/MainLayout.vue";
+import homePage from "pages/HomePage.vue";
+
 export default [
   {
     children: [
       {
-        component: (): object => import("pages/HomePage.vue"),
+        component: homePage,
         name: "Home",
         path: "",
       },
     ],
-    component: (): object => import("layouts/MainLayout.vue"),
+    component: mainLayout,
     path: "/:catchAll(.*)*",
   },
 ];
