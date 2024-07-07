@@ -74,14 +74,17 @@ export const getAsyncComponent = ({
     return `${cntScript}${cntTemplate}${cntStyle}`;
   };
   return defineAsyncComponent((async () => {
-    return loadModule(`${path && "/"}${path}/view.vue`, {
-      addStyle,
-      getFile,
-      getResource,
-      handleModule,
-      log,
-      moduleCache,
-    } as unknown as Options);
+    return loadModule(
+      `${data.value?.content[0].name ?? ""}${path && "/"}${path}.vue`,
+      {
+        addStyle,
+        getFile,
+        getResource,
+        handleModule,
+        log,
+        moduleCache,
+      } as unknown as Options,
+    );
   }) as AsyncComponentLoader<Promise<object>>);
 };
 async function resource(this: TView, ext: keyof TView) {
