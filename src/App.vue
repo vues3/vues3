@@ -1,3 +1,77 @@
 <template lang="pug">
-router-view
+q-layout(view="hHh Lpr lff")
+  q-header
+    q-bar.q-electron-drag(v-if="$q.platform.is.electron")
+      q-icon(name="laptop_chromebook")
+      div Vue.S3
+      q-space
+      q-btn(@click="minimize", dense, flat, icon="minimize")
+      q-btn(@click="toggleMaximize", dense, flat, icon="crop_square")
+      q-btn(@click="closeApp", dense, flat, icon="close")
+    q-toolbar
+      q-toolbar-title
+        q-avatar(icon="img:/favicon.svg", size="xl")
+        | Vue.S3
+      q-btn-dropdown.q-mr-xs(
+        dropdown-icon="apps",
+        flat,
+        square,
+        stretch,
+        v-if="bucket"
+      )
+        q-list(padding)
+          q-item(@click="click", clickable, v-close-popup)
+            q-item-section(avatar)
+              q-avatar(color="primary", icon="settings", text-color="white")
+            q-item-section
+              q-item-label Settings
+          q-item(clickable, to="/", v-close-popup)
+            q-item-section(avatar)
+              q-avatar(color="primary", icon="logout", text-color="white")
+            q-item-section
+              q-item-label Logout
+      q-btn(
+        @click="rightDrawer = !rightDrawer",
+        dense,
+        flat,
+        icon="more_vert",
+        round
+      )
+  q-page-container.window-height
+    router-view
 </template>
+
+<script setup lang="ts">
+import type { TSettings } from "stores/types";
+
+import VSettingsDialog from "components/VSettingsDialog.vue";
+import { useQuasar } from "quasar";
+import { rightDrawer } from "stores/app";
+import { data } from "stores/data";
+import { bucket } from "stores/s3";
+
+declare global {
+  interface Window {
+    myWindowAPI: Record<string, () => void> | undefined;
+  }
+}
+const $q = useQuasar();
+const minimize = () => {
+  window.myWindowAPI?.minimize();
+};
+const toggleMaximize = () => {
+  window.myWindowAPI?.toggleMaximize();
+};
+const closeApp = () => {
+  window.myWindowAPI?.close();
+};
+const component = VSettingsDialog;
+const click = () => {
+  const componentProps = {
+    ...(data.value?.settings ?? {}),
+  };
+  $q.dialog({ component, componentProps }).onOk((value: TSettings) => {
+    if (data.value) data.value.settings = value;
+  });
+};
+</script>
