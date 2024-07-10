@@ -34,6 +34,7 @@ export type TView = {
   template: Promise<string> | string;
   title: string;
   url: string;
+  view: TView;
   views: TView[];
 } & FromSchema<typeof plainView>;
 export type TData = {
