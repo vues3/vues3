@@ -72,12 +72,17 @@ const html = {
           await Promise.all(
             [...doc.images].map((image) => {
               const src = image.getAttribute("src") ?? "";
+              const { pathname } = new URL(
+                src,
+                new URL(`${window.location.origin}/${this.url}`),
+              );
+              const url = src && pathname.replace(/^\//, "");
+              const { origin } = new URL(url, window.location.origin);
               return bucket.value &&
-                src &&
-                !urls.has(src) &&
-                window.location.origin ===
-                  new URL(src, window.location.origin).origin
-                ? getObject(src)
+                url &&
+                !urls.has(url) &&
+                window.location.origin === origin
+                ? getObject(url)
                 : undefined;
             }),
           )
@@ -85,12 +90,17 @@ const html = {
       )
     ).forEach((image, index) => {
       const src = doc.images[index].getAttribute("src") ?? "";
+      const { pathname } = new URL(
+        src,
+        new URL(`${window.location.origin}/${this.url}`),
+      );
+      const url = src && pathname.replace(/^\//, "");
       if (image)
-        if (image.size) urls.set(src, URL.createObjectURL(image));
-        else urls.set(src, "");
-      if (urls.get(src)) {
+        if (image.size) urls.set(url, URL.createObjectURL(image));
+        else urls.set(url, "");
+      if (urls.get(url)) {
         doc.images[index].setAttribute("data-src", src);
-        doc.images[index].setAttribute("src", urls.get(src) ?? "");
+        doc.images[index].setAttribute("src", urls.get(url) ?? "");
       }
     });
     return doc.body.innerHTML;
