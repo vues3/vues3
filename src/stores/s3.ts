@@ -78,10 +78,11 @@ export const getObject = async (Key: string, ResponseCacheControl?: string) => {
   const Bucket = bucket.value;
   if (s3Client)
     try {
-      const { Body } = await s3Client.send(
+      const { Body, ContentType } = await s3Client.send(
         new GetObjectCommand({ Bucket, Key, ResponseCacheControl }),
       );
-      return new Response(Body as BodyInit);
+      const headers = new Headers({ "content-type": ContentType ?? "" });
+      return new Response(Body as BodyInit, { headers });
     } catch (e) {
       //
     }
