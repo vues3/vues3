@@ -41,7 +41,7 @@
     "@vueuse/core": "^10.11.0",
     "@vueuse/motion": "^2.2.3",
     "ace-builds": "^1.35.2",
-    "ajv": "^8.16.0",
+    "ajv": "^8.17.1",
     "ajv-keywords": "^5.1.0",
     "crypto-js": "^4.2.0",
     "js-beautify": "^1.15.1",
