@@ -9,11 +9,13 @@
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
     "format": "prettier --write \"**/*.{js,ts,vue,,html,md,json}\" --ignore-path .gitignore",
-    "dev": "quasar dev",
-    "dev:electron": "quasar dev -m electron",
-    "build:monolit": "vite build monolit --emptyOutDir",
-    "build": "bun run build:monolit && quasar build",
-    "build:electron": "bun run build:monolit && quasar build -m electron"
+    "dev": "bun run --bun quasar dev",
+    "dev:electron": "bun run --bun quasar dev -m electron",
+    "build:monolit": "bun run --bun vite build monolit --emptyOutDir",
+    "build:vues3": "bun run quasar build",
+    "build:electron:vues3": "bun run quasar build -m electron",
+    "build": "bun run --bun build:monolit && bun run build:vues3",
+    "build:electron": "bun run --bun build:monolit && bun run build:electron:vues3"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.614.0",
