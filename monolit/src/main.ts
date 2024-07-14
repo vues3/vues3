@@ -1,6 +1,5 @@
 import type { TData } from "app/src/stores/types";
 import type { App } from "vue";
-import type { RouteComponent } from "vue-router";
 import type { Config } from "yandex-metrika-vue3/src/types";
 
 import { Icon } from "@iconify/vue";
@@ -56,28 +55,22 @@ if (analytics) {
   const config: { id: string } = { id };
   window.app.use(VueGtag, { config }, router);
 }
-views.value.forEach(({ id: name, loc, path }) => {
+views.value.forEach(({ id: name, loc, path: relative }) => {
   const alias = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
-  router.addRoute({
-    name,
-    path: `/${path}`,
-    ...(loc && { alias }),
-    component(): RouteComponent {
-      return import(
+  const children = ((path, component) => [{ component, name, path }])(
+    "",
+    () =>
+      import(
         data.value?.settings?.landing
           ? "@/views/MultiView.vue"
           : "@/views/SingleView.vue"
-      );
-    },
-  });
+      ),
+  );
+  ((path, component) => {
+    router.addRoute({ path, ...(loc && { alias }), children, component });
+  })(`/${relative}`, () => import("@/views/SingleView.vue"));
 });
 const path = "/:pathMatch(.*)*";
-const name = "";
-router.addRoute({
-  component(): RouteComponent {
-    return import("@/views/NotFoundView.vue");
-  },
-  name,
-  path,
-});
+const component = () => import("@/views/NotFoundView.vue");
+router.addRoute({ component, path });
 router.replace(router.currentRoute.value.fullPath).catch(() => {});
