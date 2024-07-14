@@ -1,5 +1,5 @@
 import component from "pages/HomePage.vue";
 
 const name = "Home";
-const path = "/:catchAll(.*)*";
+const path = "/:pathMatch(.*)*";
 export default [{ component, name, path }];
