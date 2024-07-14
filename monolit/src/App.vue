@@ -19,11 +19,13 @@ Head
     name="google-site-verification",
     v-if="data?.settings?.google"
   )
-div(:class="the.class", :id, v-if="the && the.enabled")
-  component(:is="is", :the, un-cloak, v-cloak)
+div(:class="the?.class", :id, v-if="route.name !== ''")
+  component(:is="is", :the, un-cloak, v-cloak, v-if="the?.enabled")
+not-found-view(v-else)
 </template>
 <script setup lang="ts">
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
+import NotFoundView from "app/monolit/src/views/NotFoundView.vue";
 import { data, views } from "app/src/stores/data";
 import uuid from "uuid-random";
 import { computed, ref, watch } from "vue";

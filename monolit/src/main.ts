@@ -71,11 +71,13 @@ views.value.forEach(({ id: name, loc, path }) => {
     },
   });
 });
-const path = "/:catchAll(.*)*";
+const path = "/:pathMatch(.*)*";
+const name = "";
 router.addRoute({
   component(): RouteComponent {
     return import("@/views/NotFoundView.vue");
   },
+  name,
   path,
 });
 router.replace(router.currentRoute.value.fullPath).catch(() => {});
