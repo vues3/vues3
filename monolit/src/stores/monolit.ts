@@ -167,7 +167,7 @@ onScroll = async (to, from, savedPosition) => {
     await all();
     if (savedPosition) return { behavior, ...savedPosition };
     const el = `#${String(to.name)}`;
-    if (to.name) return { behavior, el };
+    if (to.name && that.value?.index) return { behavior, el };
     return { behavior, left, top };
   }
   return false;
