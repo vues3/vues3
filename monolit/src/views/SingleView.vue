@@ -1,12 +1,16 @@
 <template lang="pug">
-div(:class="that.class", :id, role="main", v-if="that")
-  component(:is="is", :the="that", un-cloak, v-cloak)
+div(:class="the?.class", :id)
+  component(:is="is", :the, un-cloak, v-cloak)
 </template>
 <script setup lang="ts">
+import type { TView } from "src/stores/types";
+
 import { computed } from "vue";
 
 import { getAsyncComponent, that } from "../stores/monolit";
 
-const id = computed(() => that.value?.id);
-const is = computed(() => that.value && getAsyncComponent(that.value));
+const props = defineProps<{ the?: TView }>();
+const the = computed(() => props.the ?? that.value);
+const id = computed(() => the.value?.id);
+const is = computed(() => the.value && getAsyncComponent(the.value));
 </script>
