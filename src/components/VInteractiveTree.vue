@@ -70,7 +70,7 @@ const node = props.type === "text" ? "name" : props.type;
 const nodes = computed(() => (props.tree ?? props.list) as QTreeNode[]);
 const the = computed(() =>
   props.list.length
-    ? props.list.find(({ id }) => id === props.selected) ?? null
+    ? (props.list.find(({ id }) => id === props.selected) ?? null)
     : undefined,
 );
 const emits = defineEmits<IEmits>();
