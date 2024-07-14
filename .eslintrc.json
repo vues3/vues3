@@ -1,10 +1,7 @@
 {
   "root": true,
-  "parser": "vue-eslint-parser",
   "parserOptions": {
     "parser": "@typescript-eslint/parser",
-    "ecmaVersion": "latest",
-    "sourceType": "module",
     "project": "./tsconfig.json",
     "extraFileExtensions": [".vue"]
   },
@@ -37,15 +34,7 @@
     "Capacitor": "readonly",
     "chrome": "readonly"
   },
-  "rules": {
-    "tsdoc/syntax": "warn",
-    "prettier/prettier": [
-      "error",
-      {
-        "endOfLine": "auto"
-      }
-    ]
-  },
+  "rules": { "tsdoc/syntax": "warn" },
   "settings": {
     "import/resolver": {
       "typescript": true
