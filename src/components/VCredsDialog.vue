@@ -104,7 +104,7 @@ const cred = creds.value[props.value ?? ""] as
 const decrypt = (value?: null | string) =>
   props.pin
     ? CryptoJS.AES.decrypt(value ?? "", props.pin).toString(CryptoJS.enc.Utf8)
-    : value ?? null;
+    : (value ?? null);
 const Bucket = ref(decrypt(cred?.Bucket));
 const secretAccessKey = ref(decrypt(cred?.secretAccessKey));
 const region = ref(decrypt(cred?.region));
