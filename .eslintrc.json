@@ -34,7 +34,15 @@
     "Capacitor": "readonly",
     "chrome": "readonly"
   },
-  "rules": { "tsdoc/syntax": "warn" },
+  "rules": {
+    "tsdoc/syntax": "warn",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ]
+  },
   "settings": {
     "import/resolver": {
       "typescript": true
