@@ -19,26 +19,20 @@ Head
     name="google-site-verification",
     v-if="data?.settings?.google"
   )
-div(:class="the?.class", :id, v-if="route.name !== ''")
-  component(:is="is", :the, un-cloak, v-cloak, v-if="the?.enabled")
-not-found-view(v-else)
+router-view(v-slot="{ Component }")
+  component(:is="Component", :the)
 </template>
 <script setup lang="ts">
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
-import NotFoundView from "app/monolit/src/views/NotFoundView.vue";
 import { data, views } from "app/src/stores/data";
 import uuid from "uuid-random";
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { getAsyncComponent } from "./stores/monolit";
-
 const route = useRoute();
 const router = useRouter();
-const the = computed(() => (views.value.length ? views.value[0] : undefined));
-const is = computed(() => the.value && getAsyncComponent(the.value));
+const the = computed(() => views.value[0]);
 const a = computed(() => views.value.find(({ id }) => id === route.name));
-const id = computed(() => the.value?.id);
 const drawer = ref(false);
 const canonical = computed(
   () =>
