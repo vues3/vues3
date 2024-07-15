@@ -27,13 +27,13 @@ export type TView = {
   next?: TView;
   parent?: TView;
   path: string;
+  pathname: string;
   prev?: TView;
   script: Promise<string> | string;
   siblings: TView[];
   style: Promise<string> | string;
   template: Promise<string> | string;
   title: string;
-  url: string;
   view: TView;
   views: TView[];
 } & FromSchema<typeof plainView>;
