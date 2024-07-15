@@ -32,11 +32,11 @@ const branch = {
 const path = {
   get(this: TView) {
     return this.branch
+      .slice(1)
       .map(
         ({ id, name }) =>
           encodeURIComponent(name?.replace(" ", "_") ?? "") || id,
       )
-      .slice(1)
       .join("/");
   },
 };
