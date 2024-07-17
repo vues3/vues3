@@ -180,21 +180,13 @@ q-page.column.full-height(v-if="the")
   q-tab-panels.full-width.col(v-model="config.tab")
     q-tab-panel.column(name="wysiwyg")
       Suspense
-        v-wysiwyg.full-width.col.column(
-          :key="the.id",
-          @vue:unmounted="onUnmounted('htm', 'template')",
-          v-model="the.html"
-        )
+        v-wysiwyg.full-width.col.column(:key="the.id", v-model="the.html")
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
     q-tab-panel.column(name="template")
       Suspense
-        v-source-code.col(
-          :key="the.id",
-          @vue:unmounted="onUnmounted('htm', 'template')",
-          v-model="the.template"
-        )
+        v-source-code.col(:key="the.id", v-model="the.template")
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
@@ -202,7 +194,6 @@ q-page.column.full-height(v-if="the")
       Suspense
         v-source-code.col(
           :key="the.id",
-          @vue:unmounted="onUnmounted('js', 'script')",
           lang="javascript",
           v-model="the.script"
         )
@@ -211,12 +202,7 @@ q-page.column.full-height(v-if="the")
             q-spinner-hourglass
     q-tab-panel.column(name="style")
       Suspense
-        v-source-code.col(
-          :key="the.id",
-          @vue:unmounted="onUnmounted('css', 'style')",
-          lang="css",
-          v-model="the.style"
-        )
+        v-source-code.col(:key="the.id", lang="css", v-model="the.style")
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
@@ -238,7 +224,7 @@ import VSourceCode from "components/VSourceCode.vue";
 import VWysiwyg from "components/VWysiwyg.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
-import { rightDrawer, save, urls } from "stores/app";
+import { rightDrawer, urls } from "stores/app";
 import { data, views } from "stores/data";
 import {
   accept,
@@ -291,9 +277,6 @@ const icon = computed({
     if (value && the.value) the.value.icon = value.replace("-", ":");
   },
 });
-const onUnmounted = async (ext: string, key: keyof TView) => {
-  save.call(the.value, ext, (await the.value?.[key]) as string);
-};
 const loc = computed({
   get() {
     return the.value?.loc ?? null;
