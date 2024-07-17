@@ -45,7 +45,7 @@ window.app.mount("#app");
 const response: Response = await fetch("/data.json");
 data.value = response.ok ? ((await response.json()) as TData) : ({} as TData);
 fix(data.value.content);
-const { analytics, metrika } = data.value.settings ?? {};
+const { analytics, metrika } = data.value.settings;
 if (metrika) {
   const id: string = metrika;
   window.app.use(initYandexMetrika, { env, id, router } as Config);
@@ -61,7 +61,7 @@ views.value.forEach(({ id: name, loc, path: relative }) => {
     "",
     () =>
       import(
-        data.value?.settings?.landing
+        data.value?.settings.landing
           ? "@/views/MultiView.vue"
           : "@/views/SingleView.vue"
       ),
