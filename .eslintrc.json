@@ -19,8 +19,7 @@
     "plugin:vue-pug/vue3-recommended",
     "plugin:sonarjs/recommended-legacy",
     "plugin:perfectionist/recommended-natural",
-    "plugin:prettier/recommended",
-    "@unocss"
+    "plugin:prettier/recommended"
   ],
   "plugins": ["eslint-plugin-tsdoc"],
   "globals": {
