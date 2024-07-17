@@ -2,7 +2,7 @@ import type { TData, TView } from "app/src/stores/types";
 import type { Ref } from "vue";
 
 import { configurable, deep, flush } from "app/src/stores/defaults";
-import { validate } from "app/src/stores/types";
+import { validateData } from "app/src/stores/types";
 import { computed, ref, watch } from "vue";
 
 const getViews = (views: TView[]): TView[] =>
@@ -99,7 +99,7 @@ watch(
         !(obj["content" as keyof TData] as TView[]).length
       )
         Reflect.defineProperty(obj, "content", { value });
-      validate(obj);
+      validateData(obj);
     }
   },
   { deep, flush },
