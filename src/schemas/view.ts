@@ -33,7 +33,6 @@ const properties = {
     items: { type: "string" },
     type: "array",
   },
-  contenteditable: { default: false, type: "boolean" },
   description: { default: null, nullable, type: "string" },
   enabled: { default: true, type: "boolean" },
   header: { default: null, nullable, type: "string" },
