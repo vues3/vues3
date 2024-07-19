@@ -78,7 +78,7 @@ export const data: Ref<TData | undefined> = ref();
 const get = () => getViews(data.value?.content ?? []);
 export const views = computed(() =>
   get().map((value: TView) => {
-    Object.defineProperty(value, "views", { get });
+    Reflect.defineProperty(value, "views", { get });
     return value;
   }),
 );
