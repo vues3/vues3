@@ -1,51 +1,62 @@
-import type { TData, TView } from "stores/types";
+import type { TComponent, TData, TView } from "stores/types";
 
 import mimes from "assets/mimes.json";
-import { css_beautify, html_beautify, js_beautify } from "js-beautify";
 import mime from "mime";
 import { debounce, uid } from "quasar";
 import { data, views } from "stores/data";
-import { cache, configurable, deep, flush } from "stores/defaults";
+import { cache, configurable, deep, flush, writable } from "stores/defaults";
 import { bucket, getObject, putFile, putObject } from "stores/s3";
+import { validateComponent } from "stores/types";
 import { toXML } from "to-xml";
 import { computed, ref, watch } from "vue";
 
 const parser = new DOMParser();
-async function getFile(
-  this: TView,
-  ext: keyof TView,
-  beautify: (js_source_text: string) => string,
-) {
-  if (this[ext] == null && this.id) {
-    const value = beautify(
-      (await (await getObject(`views/${this.id}.${ext}`, cache)).text()) || "",
-    );
-    Object.defineProperty(this, ext, { configurable, value });
-  }
-  return this[ext];
-}
-export function save(this: TView | undefined, ext: string, text: string) {
-  if (this?.id) {
-    putObject(
-      `views/${this.id}.${ext}`,
-      mime.getType(ext) ?? "text/plain",
-      text,
-    ).catch(() => {});
-    const value = new Date().toISOString();
-    Reflect.defineProperty(this, "lastmod", { value });
-  }
-}
-const debounceSave = debounce(save);
-function setFile(this: TView, ext: string, value: string) {
-  Object.defineProperty(this, ext, { configurable, value });
-  debounceSave.call(this, ext, value);
-}
+const sfc = {
+  async get(this: TView) {
+    if (!this.buffer && this.id) {
+      const value = JSON.parse(
+        (await (await getObject(`views/${this.id}.json`, cache)).text()) ||
+          "{}",
+      ) as TComponent;
+      validateComponent(value);
+      Reflect.defineProperty(this, "buffer", { configurable, value });
+      watch(
+        this.buffer,
+        debounce((component) => {
+          if (this.id)
+            putObject(
+              `views/${this.id}.json`,
+              "application/json",
+              JSON.stringify(component),
+            ).catch(() => {});
+        }),
+      );
+    }
+    return this.buffer;
+  },
+};
 const template = {
   async get(this: TView) {
-    return getFile.call(this, "htm", html_beautify);
+    return (await this.sfc).template;
   },
   set(this: TView, value: string) {
-    setFile.call(this, "htm", value);
+    if (this.buffer) this.buffer.template = value;
+  },
+};
+const style = {
+  async get(this: TView) {
+    return (await this.sfc).style;
+  },
+  set(this: TView, value: string) {
+    if (this.buffer) this.buffer.style = value;
+  },
+};
+const script = {
+  async get(this: TView) {
+    return (await this.sfc).script;
+  },
+  set(this: TView, value: string) {
+    if (this.buffer) this.buffer.script = value;
   },
 };
 export const urls = new Map<string, string>();
@@ -137,22 +148,6 @@ const html = {
       }
     });
     this.template = doc.body.innerHTML;
-  },
-};
-const style = {
-  async get(this: TView) {
-    return getFile.call(this, "css", css_beautify);
-  },
-  set(this: TView, value: string) {
-    setFile.call(this, "css", value);
-  },
-};
-const script = {
-  async get(this: TView) {
-    return getFile.call(this, "js", js_beautify);
-  },
-  set(this: TView, value: string) {
-    setFile.call(this, "js", value);
   },
 };
 watch(bucket, async (value) => {
@@ -248,11 +243,20 @@ export const putImage = async (file: File) => {
   }
   return { filePath, message };
 };
+const value = false;
+const contenteditable = { value, writable };
 watch(
   views,
-  (newValue) => {
-    newValue.forEach((value) => {
-      Object.defineProperties(value, { html, script, style, template });
+  (objects) => {
+    objects.forEach((object) => {
+      Object.defineProperties(object, {
+        contenteditable,
+        html,
+        script,
+        sfc,
+        style,
+        template,
+      });
     });
   },
   { flush },
