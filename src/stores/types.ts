@@ -2,6 +2,7 @@ import type { ValidateFunction } from "ajv";
 
 import Ajv from "ajv";
 import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
+import Component from "app/src/schemas/component";
 import Config from "app/src/schemas/config";
 import Credentials from "app/src/schemas/credentials";
 import Data, { plainData } from "app/src/schemas/data";
@@ -16,20 +17,21 @@ import {
 import { FromSchema } from "json-schema-to-ts";
 import uuid from "uuid-random";
 
+export type TComponent = FromSchema<typeof Component>;
 export type TView = {
   branch: TView[];
+  buffer?: TComponent;
   children?: TView[];
-  css: string;
-  htm: string;
+  contenteditable: boolean;
   html: Promise<string> | string;
   index: number;
-  js: string;
   next?: TView;
   parent?: TView;
   path: string;
   pathname: string;
   prev?: TView;
   script: Promise<string> | string;
+  sfc: Promise<TComponent>;
   siblings: TView[];
   style: Promise<string> | string;
   template: Promise<string> | string;
@@ -45,7 +47,7 @@ const code = { esm };
 export type TCredentials = FromSchema<typeof Credentials>;
 export type TConfig = FromSchema<typeof Config>;
 export type TSettings = FromSchema<typeof Settings>;
-const schemas = [Config, Credentials, View, Settings, Data];
+const schemas = [Config, Credentials, View, Settings, Data, Component];
 const keywords = [dynamicDefaults()];
 const ajv = new Ajv({
   code,
@@ -58,9 +60,12 @@ const ajv = new Ajv({
 export const validateConfig = ajv.getSchema(
   "urn:jsonschema:config",
 ) as ValidateFunction;
+export const validateComponent = ajv.getSchema(
+  "urn:jsonschema:component",
+) as ValidateFunction;
 export const validateCredentials = ajv.getSchema(
   "urn:jsonschema:credentials",
 ) as ValidateFunction;
-export const validate = ajv.getSchema(
+export const validateData = ajv.getSchema(
   "urn:jsonschema:data",
 ) as ValidateFunction;
