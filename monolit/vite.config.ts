@@ -17,8 +17,8 @@ const alias: object = {
 const resolve: object = { alias };
 const manifest = true;
 const outDir = "../public/monolit";
-const manualChunks = (id = ""): string =>
-  id.split("node_modules/")[1]?.split("/")?.[0] ?? "";
+const manualChunks = (id: string) =>
+  id.split("node_modules/")[1]?.split("/")[0];
 const output: object = { manualChunks };
 const rollupOptions: object = { output };
 const target = "esnext";
