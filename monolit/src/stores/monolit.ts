@@ -1,4 +1,4 @@
-import type { TView } from "app/src/stores/types";
+import type { TComponent, TView } from "app/src/stores/types";
 import type { AsyncComponentLoader } from "vue";
 import type {
   RouteRecordRaw,
@@ -12,8 +12,9 @@ import * as vueuseCore from "@vueuse/core";
 import { useStyleTag } from "@vueuse/core";
 import { data, views } from "app/src/stores/data";
 import { behavior, cache, left, top } from "app/src/stores/defaults";
+import { validateComponent } from "app/src/stores/types";
 import * as vue from "vue";
-import { computed, defineAsyncComponent } from "vue";
+import { computed, defineAsyncComponent, markRaw } from "vue";
 import * as vueRouter from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
 import { loadModule } from "vue3-sfc-loader";
@@ -58,19 +59,14 @@ const log = (type: keyof Console, ...args: string[]) => {
 const addStyle = (styles: string) => {
   useStyleTag(styles);
 };
-export const getAsyncComponent = ({
-  path,
-  scoped,
-  script,
-  setup,
-  style,
-  template,
-}: TView) => {
+export const getAsyncComponent = ({ path, scoped, setup, sfc }: TView) => {
   const getFile = async () => {
-    const [htm, js, css] = await Promise.all([template, script, style]);
-    const cntScript = js && `<script${setup ? " setup" : ""}>${js}</script>`;
-    const cntTemplate = htm && `<template>${htm}</template>`;
-    const cntStyle = css && `<style${scoped ? " scoped" : ""}>${css}</style>`;
+    const { script, style, template } = await sfc;
+    const cntScript =
+      script && `<script${setup ? " setup" : ""}>${script}</script>`;
+    const cntTemplate = template && `<template>${template}</template>`;
+    const cntStyle =
+      style && `<style${scoped ? " scoped" : ""}>${style}</style>`;
     return `${cntScript}${cntTemplate}${cntStyle}`;
   };
   return defineAsyncComponent((async () => {
@@ -87,29 +83,19 @@ export const getAsyncComponent = ({
     );
   }) as AsyncComponentLoader<Promise<object>>);
 };
-async function resource(this: TView, ext: keyof TView) {
-  if (this[ext] == null) {
-    const response = await fetch(`/views/${this.id ?? ""}.${ext}`, {
-      cache,
-    });
-    const value = response.ok ? await response.text() : "";
-    Object.defineProperty(this, ext, { value });
-  }
-  return this[ext] as string;
-}
-const template = {
+const sfc = {
   async get(this: TView) {
-    return resource.call(this, "htm");
-  },
-};
-const style = {
-  async get(this: TView) {
-    return resource.call(this, "css");
-  },
-};
-const script = {
-  async get(this: TView) {
-    return resource.call(this, "js");
+    if (!this.buffer) {
+      const response = await fetch(`/views/${this.id ?? ""}.json`, {
+        cache,
+      });
+      const value = markRaw(
+        JSON.parse(response.ok ? await response.text() : "{}"),
+      ) as TComponent;
+      validateComponent(value);
+      Reflect.defineProperty(this, "buffer", { value });
+    }
+    return this.buffer;
   },
 };
 const history: RouterHistory = createWebHistory(import.meta.env.BASE_URL);
@@ -130,12 +116,7 @@ const view = {
 };
 export const fix = (siblings: TView[]) => {
   siblings.forEach((value) => {
-    Object.defineProperties(value, {
-      script,
-      style,
-      template,
-      view,
-    });
+    Object.defineProperties(value, { sfc, view });
     if (value.children) fix(value.children);
   });
 };
@@ -163,7 +144,7 @@ export const promises = computed(
 export const all = () =>
   Promise.all(Object.values(promises.value).map(({ promise }) => promise));
 onScroll = async (to, from, savedPosition) => {
-  if (data.value?.settings?.landing) {
+  if (data.value?.settings.landing) {
     await all();
     if (savedPosition) return { behavior, ...savedPosition };
     const el = `#${String(to.name)}`;
