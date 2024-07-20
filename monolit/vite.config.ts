@@ -1,6 +1,6 @@
+import type { Extractor } from "@unocss/core";
 import type { PluginOption } from "vite";
 
-import { Extractor } from "@unocss/core";
 import extractorPug from "@unocss/extractor-pug";
 import UnoCSS from "@unocss/vite";
 import vue from "@vitejs/plugin-vue";
