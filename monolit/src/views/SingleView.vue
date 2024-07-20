@@ -1,5 +1,5 @@
 <template lang="pug">
-div(:class="the?.class", :id)
+div(:class="the?.class", :id, v-cloak)
   component(:is="is", :the, un-cloak, v-cloak)
 </template>
 <script setup lang="ts">
