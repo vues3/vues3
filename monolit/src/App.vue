@@ -36,8 +36,7 @@ const a = computed(() => views.value.find(({ id }) => id === route.name));
 const drawer = ref(false);
 const canonical = computed(
   () =>
-    typeof a.value?.pathname === "string" &&
-    `${window.location.origin}${a.value.pathname}`,
+    typeof a.value?.to === "string" && `${window.location.origin}${a.value.to}`,
 );
 const image = computed(
   () =>
