@@ -28,7 +28,6 @@ export type TView = {
   next?: TView;
   parent?: TView;
   path: string;
-  pathname: string;
   prev?: TView;
   script: Promise<string> | string;
   sfc: Promise<TComponent>;
@@ -36,6 +35,7 @@ export type TView = {
   style: Promise<string> | string;
   template: Promise<string> | string;
   title: string;
+  to: string;
   view: TView;
   views: TView[];
 } & FromSchema<typeof plainView>;
