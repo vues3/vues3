@@ -4,7 +4,14 @@ import mimes from "assets/mimes.json";
 import mime from "mime";
 import { debounce, uid } from "quasar";
 import { data, views } from "stores/data";
-import { cache, configurable, deep, flush, writable } from "stores/defaults";
+import {
+  cache,
+  configurable,
+  deep,
+  flush,
+  wait,
+  writable,
+} from "stores/defaults";
 import { bucket, getObject, putFile, putObject } from "stores/s3";
 import { validateComponent } from "stores/types";
 import { toXML } from "to-xml";
@@ -29,7 +36,7 @@ const sfc = {
               "application/json",
               JSON.stringify(component),
             ).catch(() => {});
-        }),
+        }, wait),
       );
     }
     return this.buffer;
@@ -206,7 +213,7 @@ watch(
       putObject("data.json", "application/json", JSON.stringify(value)).catch(
         () => {},
       );
-  }),
+  }, wait),
   { deep },
 );
 export const rightDrawer = ref(false);
@@ -226,7 +233,7 @@ watch(
   sitemap,
   debounce((value) => {
     putObject("sitemap.xml", "application/xml", toXML(value)).catch(() => {});
-  }),
+  }, wait),
 );
 export const putImage = async (file: File) => {
   const { type } = file;
