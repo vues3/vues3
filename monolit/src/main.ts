@@ -5,7 +5,7 @@ import type { Config } from "yandex-metrika-vue3/src/types";
 import { Icon } from "@iconify/vue";
 import { createHead } from "@unhead/vue";
 import { Head } from "@unhead/vue/components";
-import "@unocss/reset/tailwind.css";
+import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
 import { data, views } from "app/src/stores/data";
