@@ -92,7 +92,7 @@ const html = {
               const src = image.getAttribute("src") ?? "";
               const { pathname } = new URL(
                 src,
-                new URL(`${window.location.origin}${this.pathname}`),
+                new URL(`${window.location.origin}${this.to}`),
               );
               const url = src && pathname.replace(/^\//, "");
               const { origin } = new URL(url, window.location.origin);
@@ -110,7 +110,7 @@ const html = {
       const src = doc.images[index].getAttribute("src") ?? "";
       const { pathname } = new URL(
         src,
-        new URL(`${window.location.origin}${this.pathname}`),
+        new URL(`${window.location.origin}${this.to}`),
       );
       const url = src && pathname.replace(/^\//, "");
       if (image)
@@ -221,10 +221,10 @@ const sitemap = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
   urlset: {
     "@xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
-    url: views.value.map(({ changefreq, lastmod, pathname, priority }) => ({
+    url: views.value.map(({ changefreq, lastmod, priority, to }) => ({
       changefreq,
       lastmod,
-      loc: `https://${bucket.value}${pathname}`,
+      loc: `https://${bucket.value}${to}`,
       priority,
     })),
   },
