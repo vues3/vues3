@@ -120,7 +120,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           v-model.trim="the.icon"
         )
           template(#prepend)
-            Icon.cursor-pointer(:icon="icon ?? 'mdi:tray-arrow-up'")
+            Icon.cursor-pointer(:icon="the.icon ?? 'mdi:tray-arrow-up'")
             q-popup-proxy.column.items-center.justify-center
               q-input.q-ma-md(
                 clearable,
@@ -277,10 +277,10 @@ const alt = computed({
 });
 const icon = computed({
   get() {
-    return the.value?.icon?.replace(":", "-");
+    return the.value?.icon?.replace(/^mdi:/, "mdi-");
   },
   set(value) {
-    if (value && the.value) the.value.icon = value.replace("-", ":");
+    if (value && the.value) the.value.icon = value.replace(/^mdi-/, "mdi:");
   },
 });
 const loc = computed({
