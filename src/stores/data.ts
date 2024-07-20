@@ -40,7 +40,7 @@ const path = {
       .join("/");
   },
 };
-const pathname = {
+const to = {
   get(this: TView) {
     const ret =
       (this.loc && encodeURI(this.loc.replace(" ", "_") || "")) ?? this.path;
@@ -63,10 +63,10 @@ const fixDeep = (
       next,
       parent,
       path,
-      pathname,
       prev,
       siblings,
       title,
+      to,
     });
     fixDeep(
       { configurable, value: value.children ?? [] },
