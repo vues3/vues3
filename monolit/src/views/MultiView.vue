@@ -6,7 +6,7 @@ div(
   :role="the.id === that?.id ? 'main' : undefined",
   ref="refs",
   v-cloak,
-  v-for="the in siblings"
+  v-for="the in views"
 )
   component(
     :is="template(the)",
@@ -40,12 +40,11 @@ import {
 
 const refs: Ref<HTMLElement[]> = ref([]);
 const router = useRouter();
+const views = computed(() => siblings.value.filter(({ enabled }) => enabled));
 const templates = computed(
   () =>
     Object.fromEntries(
-      siblings.value
-        .filter(({ enabled }) => enabled)
-        .map((value) => [value.id, getAsyncComponent(value)]),
+      views.value.map((value) => [value.id, getAsyncComponent(value)]),
     ) as object,
 );
 const template = ({ id }: TView) =>
@@ -54,12 +53,7 @@ const resolve = ({ id }: TView) => {
   promises.value[id as keyof object].resolve(undefined);
 };
 const intersecting = computed(
-  () =>
-    new Map(
-      siblings.value
-        .filter(({ enabled }) => enabled)
-        .map(({ id }) => [id, false]),
-    ),
+  () => new Map(views.value.map(({ id }) => [id, false])),
 );
 let debounce: PromisifyFn<() => void> | undefined;
 const onStop = () => {
