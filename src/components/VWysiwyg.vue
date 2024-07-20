@@ -10,7 +10,7 @@ div
     @paste="capture",
     @update:model-value="$emit('update:modelValue', $event)",
     @vue:mounted="nextTick(editor?.focus)",
-    content-class="col prose max-w-none text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl",
+    content-class="col prose max-w-none",
     flat,
     paragraph-tag="div",
     placeholder="Добавьте контент на вашу страницу...",
