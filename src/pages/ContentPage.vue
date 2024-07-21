@@ -108,6 +108,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           v-model.number="the.priority"
         )
         q-input(
+          clearable,
           hint="the.lastmod",
           label="Дата последнего изменения",
           type="datetime-local",
