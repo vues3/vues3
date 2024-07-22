@@ -7,12 +7,9 @@ import { fileURLToPath } from "url";
 initialize();
 const currentDir = fileURLToPath(new URL(".", import.meta.url));
 const frame = false;
-const height = 600;
 const icon = path.resolve(currentDir, "icons/icon.png");
-const useContentSize = true;
-const contextIsolation = true;
-const width = 1000;
 const sandbox = false;
+const devTools = false;
 const preload = path.resolve(
   currentDir,
   path.join(
@@ -20,30 +17,22 @@ const preload = path.resolve(
     `electron-preload${process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION}`,
   ),
 );
-const webPreferences = { contextIsolation, preload, sandbox };
-const createWindow = () => {
-  const mainWindow = new BrowserWindow({
-    frame,
-    height,
-    icon,
-    useContentSize,
-    webPreferences,
-    width,
-  });
+const webPreferences = { devTools, preload, sandbox };
+const show = false;
+const createWindow = async () => {
+  const mainWindow = new BrowserWindow({ frame, icon, show, webPreferences });
   enable(mainWindow.webContents);
-  if (process.env.DEBUGGING) mainWindow.webContents.openDevTools();
-  else
-    mainWindow.webContents.on("devtools-opened", () => {
-      mainWindow.webContents.closeDevTools();
-    });
-  if (process.env.DEV) mainWindow.loadURL(process.env.APP_URL).catch(() => {});
-  else mainWindow.loadFile("index.html").catch(() => {});
+  if (process.env.DEV)
+    await mainWindow.loadURL(process.env.APP_URL).catch(() => {});
+  else await mainWindow.loadFile("index.html").catch(() => {});
+  mainWindow.maximize();
+  mainWindow.show();
 };
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
 app.on("activate", () => {
-  if (!BrowserWindow.getAllWindows().length) createWindow();
+  if (!BrowserWindow.getAllWindows().length) createWindow().catch(() => {});
 });
 app
   .whenReady()
