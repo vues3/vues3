@@ -20,7 +20,8 @@ q-btn-group.q-mx-xs(flat, spread)
   )
     template(#default-header="prop")
       .row.no-wrap.full-width.items-center(
-        @dblclick="prop.node.contenteditable = true"
+        @dblclick="prop.node.contenteditable = true",
+        @keypress.stop
       )
         q-checkbox.q-mr-xs(dense, v-model="prop.node.enabled")
         q-input.full-width.min-w-96(
