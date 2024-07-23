@@ -101,6 +101,7 @@ const sfc = {
 const history: RouterHistory = createWebHistory(import.meta.env.BASE_URL);
 const routes: RouteRecordRaw[] = [];
 let onScroll: RouterScrollBehavior | undefined;
+// eslint-disable-next-line sonarjs/function-return-type
 const scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) => {
   if (onScroll) return onScroll(to, from, savedPosition);
   return false;
