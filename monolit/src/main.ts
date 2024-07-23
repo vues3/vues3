@@ -22,8 +22,8 @@ import "./style.sass";
 
 declare const window: {
   app: App;
-} & Window &
-  typeof globalThis;
+} & typeof globalThis &
+  Window;
 
 window.console.info(
   "👨‍🚀",
