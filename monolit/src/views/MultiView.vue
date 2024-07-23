@@ -5,16 +5,10 @@ div(
   :key="the.id",
   :role="the.id === that?.id ? 'main' : undefined",
   ref="refs",
-  v-cloak,
+  un-cloak,
   v-for="the in views"
 )
-  component(
-    :is="template(the)",
-    :the,
-    @vue:mounted="resolve(the)",
-    un-cloak,
-    v-cloak
-  )
+  component(:is="template(the)", :the, @vue:mounted="resolve(the)")
 </template>
 <script setup lang="ts">
 import type { PromisifyFn } from "@vueuse/core";
