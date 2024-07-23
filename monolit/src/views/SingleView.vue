@@ -1,6 +1,6 @@
 <template lang="pug">
-div(:class="the?.class", :id, v-cloak)
-  component(:is="is", :the, un-cloak, v-cloak)
+div(:class="the?.class", :id, un-cloak)
+  component(:is="is", :the)
 </template>
 <script setup lang="ts">
 import type { TView } from "src/stores/types";
