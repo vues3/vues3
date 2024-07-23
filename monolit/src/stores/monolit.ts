@@ -1,8 +1,8 @@
 import type { TComponent, TView } from "app/src/stores/types";
 import type { AsyncComponentLoader } from "vue";
 import type {
-  RouteRecordRaw,
   Router,
+  RouteRecordRaw,
   RouterHistory,
   RouterScrollBehavior,
 } from "vue-router";
