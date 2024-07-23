@@ -289,7 +289,7 @@ const loc = computed({
     return the.value?.loc ?? null;
   },
   set(value) {
-    if (the.value) the.value.loc = value?.replace(/^\/|\/$/g, "") ?? null;
+    if (the.value) the.value.loc = value?.replace(/(^\/)|(\/$)/g, "") ?? null;
   },
 });
 const { files, open } = useFileDialog({ accept, capture, multiple, reset });
