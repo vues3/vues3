@@ -7,7 +7,9 @@ Head
   meta(:content="canonical", property="og:url", v-if="canonical")
   meta(:content="image", property="og:image", v-if="image")
   meta(:content="a.alt[0]", property="og:image:alt", v-if="a?.alt[0]")
+  // eslint-disable-next-line sonarjs/no-vue-bypass-sanitization
   link(:href="favicon", :key, rel="icon", type="image/svg+xml")
+  // eslint-disable-next-line sonarjs/no-vue-bypass-sanitization
   link(:href="canonical", rel="canonical", v-if="canonical")
   meta(
     :content="data.settings?.yandex",
@@ -53,7 +55,9 @@ watch(a, async (value) => {
   let icon = null;
   try {
     icon = iconExists(name) ? getIcon(name) : await loadIcon(name);
-  } catch (e) {
+  } catch (err) {
+    const { message } = err as Error;
+    window.console.log(message);
     icon = getIcon("mdi:web");
   } finally {
     if (icon) {
