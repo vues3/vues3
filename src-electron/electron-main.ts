@@ -1,15 +1,14 @@
-import { enable, initialize } from "@electron/remote/main/index.js";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, app } from "electron";
+import { app, BrowserWindow, Menu } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 
-initialize();
+Menu.setApplicationMenu(null);
 const currentDir = fileURLToPath(new URL(".", import.meta.url));
-const frame = false;
+let mainWindow: BrowserWindow | undefined;
 const icon = path.resolve(currentDir, "icons/icon.png");
-const sandbox = false;
 const devTools = false;
+const show = false;
 const preload = path.resolve(
   currentDir,
   path.join(
@@ -17,24 +16,24 @@ const preload = path.resolve(
     `electron-preload${process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION}`,
   ),
 );
-const webPreferences = { devTools, preload, sandbox };
-const show = false;
+const webPreferences = { devTools, preload };
 const createWindow = async () => {
-  const mainWindow = new BrowserWindow({ frame, icon, show, webPreferences });
-  enable(mainWindow.webContents);
+  mainWindow = new BrowserWindow({ icon, show, webPreferences });
   if (process.env.DEV)
     await mainWindow.loadURL(process.env.APP_URL).catch(() => {});
   else await mainWindow.loadFile("index.html").catch(() => {});
-  mainWindow.maximize();
+  mainWindow.on("closed", () => {
+    mainWindow = undefined;
+  });
   mainWindow.show();
 };
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
-});
-app.on("activate", () => {
-  if (!BrowserWindow.getAllWindows().length) createWindow().catch(() => {});
-});
 app
   .whenReady()
   .then(createWindow)
   .catch(() => {});
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
+});
+app.on("activate", () => {
+  if (mainWindow === undefined) createWindow().catch(() => {});
+});
