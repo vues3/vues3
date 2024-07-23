@@ -1,13 +1,6 @@
 <template lang="pug">
 q-layout(view="hHh Lpr lff")
   q-header
-    q-bar.q-electron-drag(v-if="$q.platform.is.electron")
-      q-icon(name="laptop_chromebook")
-      div Vue.S3
-      q-space
-      q-btn(@click="minimize", dense, flat, icon="minimize")
-      q-btn(@click="toggleMaximize", dense, flat, icon="crop_square")
-      q-btn(@click="closeApp", dense, flat, icon="close")
     q-toolbar
       q-toolbar-title
         q-avatar(icon="img:/favicon.svg", size="xl")
@@ -56,15 +49,6 @@ declare global {
   }
 }
 const $q = useQuasar();
-const minimize = () => {
-  window.myWindowAPI?.minimize();
-};
-const toggleMaximize = () => {
-  window.myWindowAPI?.toggleMaximize();
-};
-const closeApp = () => {
-  window.myWindowAPI?.close();
-};
 const component = VSettingsDialog;
 const click = () => {
   const componentProps = {
