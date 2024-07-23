@@ -167,14 +167,12 @@ watch(bucket, async (value) => {
     const [localManifest, serverManifest] = (
       (await Promise.all([
         (await fetch("monolit/.vite/manifest.json")).json(),
-        new Promise((resolve) => {
-          resolve(
-            (async (response) =>
-              JSON.parse((await (await response).text()) || "{}") as object)(
-              getObject(".vite/manifest.json", cache),
-            ),
-          );
-        }),
+        Promise.resolve(
+          (async (response) =>
+            JSON.parse((await (await response).text()) || "{}") as object)(
+            getObject(".vite/manifest.json", cache),
+          ),
+        ),
       ])) as Record<string, Record<string, string | string[]> | undefined>[]
     ).map(
       (element) =>
@@ -220,7 +218,7 @@ export const rightDrawer = ref(false);
 const sitemap = computed(() => ({
   "?": 'xml version="1.0" encoding="UTF-8"',
   urlset: {
-    "@xmlns": "http://www.sitemaps.org/schemas/sitemap/0.9",
+    "@xmlns": "https://www.sitemaps.org/schemas/sitemap/0.9",
     url: views.value.map(({ changefreq, lastmod, priority, to }) => ({
       changefreq,
       lastmod,
