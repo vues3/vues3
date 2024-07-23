@@ -4,7 +4,7 @@ import type { PluginOption } from "vite";
 import extractorPug from "@unocss/extractor-pug";
 import UnoCSS from "@unocss/vite";
 import vue from "@vitejs/plugin-vue";
-import { URL, fileURLToPath } from "node:url";
+import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 
 const extractors: Extractor[] = [extractorPug()];
