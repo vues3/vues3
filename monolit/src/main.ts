@@ -2,9 +2,7 @@ import type { TData } from "app/src/stores/types";
 import type { App } from "vue";
 import type { Config } from "yandex-metrika-vue3/src/types";
 
-import { Icon } from "@iconify/vue";
 import { createHead } from "@unhead/vue";
-import { Head } from "@unhead/vue/components";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
@@ -36,10 +34,6 @@ window.app = createApp(vueApp);
 window.app.use(router);
 window.app.use(createHead());
 window.app.use(MotionPlugin);
-// eslint-disable-next-line vue/multi-word-component-names, vue/no-reserved-component-names
-window.app.component("Head", Head);
-// eslint-disable-next-line vue/multi-word-component-names
-window.app.component("Icon", Icon);
 window.app.mount("#app");
 const response: Response = await fetch("/data.json");
 data.value = response.ok ? ((await response.json()) as TData) : ({} as TData);
