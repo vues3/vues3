@@ -24,7 +24,9 @@ router-view(v-slot="{ Component }")
 </template>
 <script setup lang="ts">
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
+import { Head } from "@unhead/vue/components";
 import { data, views } from "app/src/stores/data";
+import { immediate } from "app/src/stores/defaults";
 import uuid from "uuid-random";
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -48,19 +50,22 @@ router.beforeEach(() => {
 });
 const key = uuid();
 const favicon = ref("");
-watch(a, async (value) => {
-  const name = value?.icon ?? "mdi:web";
-  let icon = null;
-  try {
-    icon = iconExists(name) ? getIcon(name) : await loadIcon(name);
-  } catch (err) {
-    icon = getIcon("mdi:web");
-  } finally {
-    if (icon) {
-      const { body, height, left, top, width } = icon;
-      favicon.value = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
+watch(
+  a,
+  async (value) => {
+    const name = value?.icon ?? "mdi:web";
+    let icon = null;
+    try {
+      icon = iconExists(name) ? getIcon(name) : await loadIcon(name);
+    } catch (err) {
+      icon = getIcon("mdi:web");
+    } finally {
+      if (icon) {
+        const { body, height, left, top, width } = icon;
+        favicon.value = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
+      }
     }
-  }
-});
-if (!iconExists("mdi:web")) loadIcon("mdi:web").catch(() => {});
+  },
+  { immediate },
+);
 </script>
