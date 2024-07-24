@@ -9,9 +9,8 @@ import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
 import { MotionPlugin } from "@vueuse/motion";
 import { data, views } from "app/src/stores/data";
-import { autoPrefix, bypassDefined } from "app/src/stores/defaults";
+import { autoPrefix } from "app/src/stores/defaults";
 import defaults from "app/uno.config";
-import "virtual:uno.css";
 import { createApp } from "vue";
 import VueGtag from "vue-gtag";
 import { initYandexMetrika } from "yandex-metrika-vue3";
@@ -32,7 +31,7 @@ window.console.info(
   "https://vues3.com",
 );
 const env: string = process.env.NODE_ENV;
-initUnocssRuntime({ autoPrefix, bypassDefined, defaults });
+initUnocssRuntime({ autoPrefix, defaults });
 window.app = createApp(vueApp);
 window.app.use(router);
 window.app.use(createHead());
