@@ -1,9 +1,13 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { app, BrowserWindow, Menu } from "electron";
+import {
+  app,
+  BrowserWindow,
+  //  Menu
+} from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 
-Menu.setApplicationMenu(null);
+// Menu.setApplicationMenu(null);
 const currentDir = fileURLToPath(new URL(".", import.meta.url));
 let mainWindow: BrowserWindow | undefined;
 const icon = path.resolve(currentDir, "icons/icon.png");
