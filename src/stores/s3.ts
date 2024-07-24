@@ -84,8 +84,7 @@ export const getObject = async (Key: string, ResponseCacheControl?: string) => {
       const headers = new Headers({ "content-type": ContentType ?? "" });
       return new Response(Body as BodyInit, { headers });
     } catch (err) {
-      const { message } = err as Error;
-      window.console.log(message);
+      //
     }
   return new Response();
 };
