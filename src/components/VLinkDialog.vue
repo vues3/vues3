@@ -11,9 +11,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         v-model:selected="selected"
       )
         template(#default-header="prop")
-          q-icon.q-tree__icon.q-mr-sm(
-            :name="prop.node.icon?.replace(':', '-') || 'mdi-web'"
-          )
+          Icon.q-icon.q-tree__icon.q-mr-sm(:icon="prop.node.icon || 'mdi:web'")
           div {{ prop.node.name }}
     q-separator
     q-card-actions.text-primary(align="right")
@@ -23,6 +21,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 <script setup lang="ts">
 import type { QTreeNode } from "quasar";
 
+import { Icon } from "@iconify/vue";
 import { useDialogPluginComponent } from "quasar";
 import { data, views } from "stores/data";
 import { computed, onMounted, ref } from "vue";
