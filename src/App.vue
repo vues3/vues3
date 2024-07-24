@@ -3,7 +3,7 @@ q-layout(view="hHh Lpr lff")
   q-header
     q-toolbar
       q-toolbar-title
-        q-avatar(icon="img:/src/assets/favicon.svg", size="xl")
+        q-avatar(icon="img:favicon.svg", size="xl")
         | Vue.S3
       q-btn-dropdown.q-mr-xs(
         dropdown-icon="apps",
