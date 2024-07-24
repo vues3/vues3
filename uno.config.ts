@@ -38,13 +38,14 @@ const fonts: Record<string, string> = Object.fromEntries(
 );
 const customFetch = async (url: string) => (await fetch(url)).text();
 const cdn = "https://esm.sh/";
+const prefix = "";
 const presets: Preset[] = [
   presetUno(),
   presetAttributify(),
   presetTypography(),
   presetTagify(),
   presetWebFonts({ customFetch, fonts }),
-  presetIcons({ cdn }),
+  presetIcons({ cdn, prefix }),
 ];
 const transformers: SourceCodeTransformer[] = [
   transformerDirectives(),
