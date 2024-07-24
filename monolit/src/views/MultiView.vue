@@ -5,7 +5,6 @@ div(
   :key="the.id",
   :role="the.id === that?.id ? 'main' : undefined",
   ref="refs",
-  un-cloak,
   v-for="the in views"
 )
   component(:is="template(the)", :the, @vue:mounted="resolve(the)")
