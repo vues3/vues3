@@ -7,7 +7,7 @@ Menu.setApplicationMenu(null);
 const currentDir = fileURLToPath(new URL(".", import.meta.url));
 let mainWindow: BrowserWindow | undefined;
 const icon = path.resolve(currentDir, "icons/icon.png");
-const devTools = false;
+const devTools = true;
 const show = false;
 const preload = path.resolve(
   currentDir,
