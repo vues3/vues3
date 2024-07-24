@@ -1,5 +1,5 @@
 <template lang="pug">
-div(:class="the?.class", :id)
+div(:class="the?.class", :id, v-if="the?.enabled")
   component(:is="is", :the)
 </template>
 <script setup lang="ts">
