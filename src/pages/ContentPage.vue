@@ -221,6 +221,7 @@ q-page.column.full-height.bg-light(v-else)
 import type { TConfig, TView } from "stores/types";
 import type { ComputedRef, Ref } from "vue";
 
+import { Icon } from "@iconify/vue";
 import mdi from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
 import { useFileDialog, useStorage } from "@vueuse/core";
 import changefreq from "assets/changefreq.json";
