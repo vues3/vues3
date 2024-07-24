@@ -8,6 +8,8 @@ import type {
 } from "vue-router";
 import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 
+import * as iconifyVue from "@iconify/vue";
+import * as unheadVueComponents from "@unhead/vue/components";
 import * as vueuseCore from "@vueuse/core";
 import { useStyleTag } from "@vueuse/core";
 import { data, views } from "app/src/stores/data";
@@ -20,6 +22,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import { loadModule } from "vue3-sfc-loader";
 
 const moduleCache = {
+  "@iconify/vue": iconifyVue,
+  "@unhead/vue/components": unheadVueComponents,
   "@vueuse/core": vueuseCore,
   vue,
   "vue-router": vueRouter,
