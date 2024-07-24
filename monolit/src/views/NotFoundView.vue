@@ -6,3 +6,6 @@ Head
     .text-9xl 404
     p Oops. Nothing here...
 </template>
+<script setup lang="ts">
+import { Head } from "@unhead/vue/components";
+</script>
