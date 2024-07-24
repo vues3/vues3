@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100" width="1024" height="1024">
+  <circle r="50" fill="white" />
+  <circle
+    fill="none"
+    r="25"
+    stroke="#35495e"
+    stroke-width="50"
+    pathLength="4"
+    stroke-dasharray="1 4"
+    transform="rotate(-90)"
+  />
+  <path fill="none" stroke-width="20" stroke="#42b883" d="M0-35v35h35" />
+</svg>
