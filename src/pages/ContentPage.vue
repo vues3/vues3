@@ -121,7 +121,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           v-model.trim="the.icon"
         )
           template(#prepend)
-            Icon.cursor-pointer(:icon="the.icon ?? 'mdi:tray-arrow-up'")
+            Icon.q-icon.cursor-pointer(:icon="the.icon ?? 'mdi:tray-arrow-up'")
             q-popup-proxy.column.items-center.justify-center
               q-input.q-ma-md(
                 clearable,
