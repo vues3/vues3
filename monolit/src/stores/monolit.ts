@@ -13,10 +13,10 @@ import * as unheadVueComponents from "@unhead/vue/components";
 import * as vueuseCore from "@vueuse/core";
 import { useStyleTag } from "@vueuse/core";
 import { data, views } from "app/src/stores/data";
-import { behavior, cache, left, top } from "app/src/stores/defaults";
+import { behavior, cache, hundred, left, top } from "app/src/stores/defaults";
 import { validateComponent } from "app/src/stores/types";
 import * as vue from "vue";
-import { computed, defineAsyncComponent, markRaw } from "vue";
+import { computed, defineAsyncComponent, markRaw, ref } from "vue";
 import * as vueRouter from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
 import { loadModule } from "vue3-sfc-loader";
@@ -104,11 +104,10 @@ const sfc = {
 };
 const history: RouterHistory = createWebHistory(import.meta.env.BASE_URL);
 const routes: RouteRecordRaw[] = [];
+export const scroll = ref(true);
 let onScroll: RouterScrollBehavior | undefined;
-const scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) => {
-  if (onScroll) return onScroll(to, from, savedPosition);
-  return false;
-};
+const scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) =>
+  onScroll && onScroll(to, from, savedPosition);
 export const router: Router = createRouter({ history, routes, scrollBehavior });
 export const a = computed(() =>
   views.value.find(({ id }) => id === router.currentRoute.value.name),
@@ -147,13 +146,17 @@ export const promises = computed(
 );
 export const all = () =>
   Promise.all(Object.values(promises.value).map(({ promise }) => promise));
-onScroll = async (to, from, savedPosition) => {
+onScroll = async ({ name }) => {
+  const el = `#${String(name)}`;
   if (data.value?.settings.landing) {
     await all();
-    if (savedPosition) return { behavior, ...savedPosition };
-    const el = `#${String(to.name)}`;
-    if (to.name && that.value?.index) return { behavior, el };
-    return { behavior, left, top };
+    await new Promise((resolve) => {
+      setTimeout(resolve, hundred);
+    });
+    if (scroll.value)
+      if (name && that.value?.index) return { behavior, el };
+      else return { behavior, left, top };
+    scroll.value = true;
   }
   return false;
 };
