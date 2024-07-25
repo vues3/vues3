@@ -46,9 +46,6 @@
   "settings": {
     "import/resolver": {
       "typescript": true
-    },
-    "react": {
-      "version": "detect"
     }
   }
 }
