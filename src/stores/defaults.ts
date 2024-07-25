@@ -17,7 +17,6 @@ export const cache: RequestCache = "no-cache";
 export const rootMargin = "-1%";
 export const threshold = 0;
 export const controls = true;
-export const autoPrefix = true;
 export const once = true;
 export const mergeDefaults = true;
 export const keepAlive = false;
