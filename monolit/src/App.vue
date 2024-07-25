@@ -29,13 +29,11 @@ import { data, views } from "app/src/stores/data";
 import { immediate } from "app/src/stores/defaults";
 import uuid from "uuid-random";
 import { computed, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
 const route = useRoute();
-const router = useRouter();
 const the = computed(() => views.value[0]);
 const a = computed(() => views.value.find(({ id }) => id === route.name));
-const drawer = ref(false);
 const canonical = computed(
   () =>
     typeof a.value?.to === "string" && `${window.location.origin}${a.value.to}`,
@@ -45,9 +43,6 @@ const image = computed(
     typeof a.value?.image[0] === "string" &&
     `${window.location.origin}/${a.value.image[0]}`,
 );
-router.beforeEach(() => {
-  drawer.value = false;
-});
 const key = uuid();
 const favicon = ref("");
 watch(
