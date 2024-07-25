@@ -19,7 +19,7 @@
     "@aws-sdk/client-s3": "^3.617.0",
     "@iconify/vue": "^4.1.2",
     "@quasar/quasar-ui-qiconpicker": "^2.0.7",
-    "@smithy/fetch-http-handler": "^3.2.2",
+    "@smithy/fetch-http-handler": "^3.2.3",
     "@types/crypto-js": "^4.2.2",
     "@unhead/vue": "^1.9.16",
     "@unocss/core": "^0.61.5",
@@ -49,8 +49,8 @@
     "quasar": "^2.16.6",
     "to-xml": "^0.1.11",
     "uuid-random": "^1.3.2",
-    "vite": "^5.3.4",
-    "vue": "^3.4.33",
+    "vite": "^5.3.5",
+    "vue": "^3.4.34",
     "vue-i18n": "^9.13.1",
     "vue-gtag": "^2.0.1",
     "vue-router": "^4.4.0",
@@ -67,9 +67,9 @@
     "@types/js-beautify": "^1.14.3",
     "@typescript-eslint/eslint-plugin": "^7.17.0",
     "@typescript-eslint/parser": "^7.17.0",
-    "@vue/language-plugin-pug": "^2.0.28",
+    "@vue/language-plugin-pug": "^2.0.29",
     "autoprefixer": "^10.4.19",
-    "electron": "^31.2.1",
+    "electron": "^31.3.0",
     "electron-builder": "^24.13.3",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -85,10 +85,9 @@
     "prettier": "^3.3.3",
     "prettier-plugin-jsdoc": "^1.3.0",
     "prettier-plugin-tailwindcss": "^0.6.5",
-    "react": "^18.3.1",
     "vite-plugin-checker": "^0.7.2",
     "pug": "^3.0.3",
     "typescript": "^5.5.4",
-    "vue-tsc": "^2.0.28"
+    "vue-tsc": "^2.0.29"
   }
 }
