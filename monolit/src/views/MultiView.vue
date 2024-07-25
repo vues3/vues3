@@ -27,6 +27,7 @@ import {
   all,
   getAsyncComponent,
   promises,
+  scroll,
   siblings,
   that,
 } from "../stores/monolit";
@@ -63,7 +64,10 @@ debounce = useDebounceFn(() => {
     const name = [...intersecting.value.entries()].find(
       ([, value]) => value,
     )?.[0];
-    if (name && name !== that.value?.id) router.push({ name }).catch(() => {});
+    if (name && name !== that.value?.id) {
+      scroll.value = false;
+      router.push({ name }).catch(() => {});
+    }
   }
 });
 const callback = ([
