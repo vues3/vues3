@@ -19,7 +19,7 @@ import {
   useIntersectionObserver,
   useScroll,
 } from "@vueuse/core";
-import { behavior, deep, rootMargin, threshold } from "app/src/stores/defaults";
+import { behavior, deep } from "app/src/stores/defaults";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
@@ -87,10 +87,7 @@ watch(
     });
     stops.length = 0;
     value.forEach((target) => {
-      const { stop } = useIntersectionObserver(target, callback, {
-        rootMargin,
-        threshold,
-      });
+      const { stop } = useIntersectionObserver(target, callback);
       stops.push(stop);
     });
   },
