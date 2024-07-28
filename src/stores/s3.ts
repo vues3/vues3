@@ -56,9 +56,14 @@ export const headBucket = async (Bucket: string, pin?: string) => {
     throw new Error(message);
   }
 };
-export const headObject = async (Key: string) => {
+export const headObject = async (
+  Key: string,
+  ResponseCacheControl?: string,
+) => {
   const Bucket = bucket.value;
-  return s3Client?.send(new HeadObjectCommand({ Bucket, Key }));
+  return s3Client?.send(
+    new HeadObjectCommand({ Bucket, Key, ResponseCacheControl }),
+  );
 };
 export const putObject = async (
   Key: string,
