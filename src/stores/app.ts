@@ -12,10 +12,10 @@ import {
   wait,
   writable,
 } from "stores/defaults";
-import { bucket, getObject, putFile, putObject } from "stores/s3";
+import { bucket, getObject, headObject, putFile, putObject } from "stores/s3";
 import { validateComponent } from "stores/types";
 import { toXML } from "to-xml";
-import { computed, ref, watch } from "vue";
+import { computed, ref, version, watch } from "vue";
 
 const parser = new DOMParser();
 const sfc = {
@@ -183,6 +183,11 @@ watch(bucket, async (value) => {
           ].filter(Boolean) as string[],
         ),
     );
+    try {
+      await headObject(`assets/vue.esm-browser.prod-${version}.js`, cache);
+    } catch (e) {
+      localManifest.add(`assets/vue.esm-browser.prod-${version}.js`);
+    }
     [
       ...localManifest
         .add("index.html")
