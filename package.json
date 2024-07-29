@@ -22,7 +22,6 @@
     "@smithy/fetch-http-handler": "^3.2.4",
     "@tresjs/cientos": "^3.9.0",
     "@tresjs/core": "^4.2.3",
-    "@tresjs/post-processing": "^0.7.1",
     "@types/crypto-js": "^4.2.2",
     "@unhead/vue": "^1.9.16",
     "@unocss/core": "^0.61.6",
