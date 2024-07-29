@@ -6,6 +6,7 @@ import type {
 } from "vite";
 import type { RenameFunc } from "vite-plugin-static-copy";
 
+import { templateCompilerOptions } from "@tresjs/core";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
@@ -17,7 +18,10 @@ const src = "../node_modules/vue/dist/vue.esm-browser.prod.js";
 const rename: RenameFunc = (fileName, fileExtension) =>
   `${fileName}-${version}.${fileExtension}`;
 const targets = [{ dest, rename, src }];
-const plugins: PluginOption[] = [vue(), viteStaticCopy({ targets })];
+const plugins: PluginOption[] = [
+  vue(templateCompilerOptions),
+  viteStaticCopy({ targets }),
+];
 const app = fileURLToPath(new URL("..", import.meta.url));
 const alias: AliasOptions = { "@": ".", app };
 const resolve: UserConfig["resolve"] = { alias };
