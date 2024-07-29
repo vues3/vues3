@@ -8,32 +8,35 @@ import type {
 } from "vue-router";
 import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 
+import * as iconifyVue from "@iconify/vue";
+import * as tresjsCientos from "@tresjs/cientos";
+import * as tresjsCore from "@tresjs/core";
+import * as unheadVue from "@unhead/vue";
+import * as vueuseCore from "@vueuse/core";
 import { useStyleTag } from "@vueuse/core";
+import * as vueuseMath from "@vueuse/math";
+import * as vueuseMotion from "@vueuse/motion";
+import * as ajv from "ajv";
 import { data, views } from "app/src/stores/data";
 import { behavior, cache, hundred, left, top } from "app/src/stores/defaults";
 import { validateComponent } from "app/src/stores/types";
 import * as vue from "vue";
 import { computed, defineAsyncComponent, markRaw, ref } from "vue";
+import * as vueRouter from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
 import { loadModule } from "vue3-sfc-loader";
 
 const moduleCache = {
+  "@iconify/vue": iconifyVue,
+  "@tresjs/cientos": tresjsCientos,
+  "@tresjs/core": tresjsCore,
+  "@unhead/vue": unheadVue,
+  "@vueuse/core": vueuseCore,
+  "@vueuse/math": vueuseMath,
+  "@vueuse/motion": vueuseMotion,
+  ajv,
   vue,
-  ...import.meta.glob(
-    [
-      "@iconify/vue",
-      "@unhead/vue",
-      "@vueuse/core",
-      "vue-router",
-      "@vueuse/motion",
-      "@vueuse/math",
-      "@tresjs/core",
-      "@tresjs/cientos",
-      "@tresjs/post-processing",
-      "ajv",
-    ],
-    { eager: true },
-  ),
+  "vue-router": vueRouter,
 };
 const getResource: Options["getResource"] = (pathCx, options) => {
   const { getPathname, pathResolve } = options;
