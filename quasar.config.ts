@@ -1,4 +1,5 @@
 import type { QuasarElectronConfiguration } from "@quasar/app-vite/types/configuration/electron-conf";
+import type { SnapOptions } from "app-builder-lib";
 import type {
   QuasarFonts,
   QuasarIconSets,
@@ -42,8 +43,11 @@ const plugins: (keyof QuasarPlugins)[] = ["Dialog", "Notify"];
 const framework = { lang, plugins };
 const inspectPort = 5858;
 const bundler = "builder";
-const appId = "com.electron.vues3";
-const builder = { appId };
+// eslint-disable-next-line no-template-curly-in-string
+const appId = "com.electron.${name}";
+const grade: SnapOptions["grade"] = "stable";
+const snap = { grade };
+const builder = { appId, snap };
 const preloadScripts = ["electron-preload"];
 const electron: QuasarElectronConfiguration = {
   builder,
