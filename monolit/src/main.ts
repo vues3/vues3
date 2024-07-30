@@ -18,6 +18,7 @@ import { initYandexMetrika } from "yandex-metrika-vue3";
 import vueApp from "./App.vue";
 import { fix, router } from "./stores/monolit";
 import "./style.sass";
+import singleView from "./views/SingleView.vue";
 
 declare const window: {
   app: App;
@@ -57,16 +58,13 @@ views.value.forEach(({ id: name, loc, path: relative }) => {
   const alias = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
   const children = ((path, component) => [{ component, name, path }])(
     "",
-    () =>
-      import(
-        data.value?.settings.landing
-          ? "@/views/MultiView.vue"
-          : "@/views/SingleView.vue"
-      ),
+    data.value?.settings.landing
+      ? () => import("@/views/MultiView.vue")
+      : singleView,
   );
   ((path, component) => {
     router.addRoute({ path, ...(loc && { alias }), children, component });
-  })(`/${relative}`, () => import("@/views/SingleView.vue"));
+  })(`/${relative}`, singleView);
 });
 const path = "/:pathMatch(.*)*";
 const component = () => import("@/views/NotFoundView.vue");
