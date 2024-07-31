@@ -43,8 +43,7 @@ const plugins: (keyof QuasarPlugins)[] = ["Dialog", "Notify"];
 const framework = { lang, plugins };
 const inspectPort = 5858;
 const bundler = "builder";
-// eslint-disable-next-line no-template-curly-in-string
-const appId = "com.electron.${name}";
+const appId = "com.electron.vues3";
 const grade: SnapOptions["grade"] = "stable";
 const snap = { grade };
 const builder = { appId, snap };
