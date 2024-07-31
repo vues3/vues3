@@ -4,9 +4,7 @@ import type { Config } from "yandex-metrika-vue3/src/types";
 
 import { createHead } from "@unhead/vue";
 import "@unocss/reset/tailwind-compat.css";
-import initUnocssRuntime from "@unocss/runtime";
 import { data, views } from "app/src/stores/data";
-import defaults from "app/uno.config";
 import { createApp } from "vue";
 import VueGtag from "vue-gtag";
 import { initYandexMetrika } from "yandex-metrika-vue3";
@@ -23,12 +21,11 @@ declare const window: {
 
 window.console.info(
   "👨‍🚀",
-  "The vues3 framework",
+  "The Vue.S3",
   `ver:${__APP_VERSION__}`,
   "https://vues3.com",
 );
 const env: string = process.env.NODE_ENV;
-initUnocssRuntime({ defaults });
 window.app = createApp(vueApp);
 window.app.use(router);
 window.app.use(createHead());
