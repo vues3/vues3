@@ -1,3 +1,4 @@
+import type { RuntimeOptions } from "@unocss/runtime";
 import type { TComponent, TView } from "app/src/stores/types";
 import type { AsyncComponentLoader } from "vue";
 import type {
@@ -8,15 +9,17 @@ import type {
 } from "vue-router";
 import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 
+import initUnocssRuntime from "@unocss/runtime";
 import { useStyleTag } from "@vueuse/core";
 import { data, views } from "app/src/stores/data";
-import { behavior, cache, hundred, left, top } from "app/src/stores/defaults";
+import { behavior, cache, left, once, top } from "app/src/stores/defaults";
 import { validateComponent } from "app/src/stores/types";
+import defaults from "app/uno.config";
 import * as vue from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { loadModule } from "vue3-sfc-loader";
 
-const { computed, defineAsyncComponent, markRaw, ref } = vue;
+const { computed, defineAsyncComponent, markRaw, ref, watch } = vue;
 const moduleCache = { vue };
 const getResource: Options["getResource"] = (pathCx, options) => {
   const { getPathname, pathResolve } = options;
@@ -136,17 +139,24 @@ export const promises = computed(
 );
 export const all = () =>
   Promise.all(Object.values(promises.value).map(({ promise }) => promise));
-onScroll = async ({ name }) => {
-  const el = `#${String(name)}`;
-  if (data.value?.settings.landing) {
-    await all();
-    await new Promise((resolve) => {
-      setTimeout(resolve, hundred);
-    });
-    if (scroll.value)
-      if (name && that.value?.index) return { behavior, el };
-      else return { behavior, left, top };
-    scroll.value = true;
-  }
-  return false;
+const ready: RuntimeOptions["ready"] = (runtime) => {
+  onScroll = async ({ name }) => {
+    const el = `#${String(name)}`;
+    if (data.value?.settings.landing) {
+      await all();
+      await runtime.extractAll();
+      if (scroll.value)
+        if (name && that.value?.index) return { behavior, el };
+        else return { behavior, left, top };
+      scroll.value = true;
+    }
+    return false;
+  };
 };
+watch(
+  router.currentRoute,
+  () => {
+    initUnocssRuntime({ defaults, ready });
+  },
+  { once },
+);
