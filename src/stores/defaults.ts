@@ -24,5 +24,4 @@ export const behavior = "smooth";
 export const top = 0;
 export const left = 0;
 export const flush = "sync";
-export const wait = 2000;
-export const hundred = 100;
+export const wait = 1000;
