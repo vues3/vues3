@@ -5,14 +5,14 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       q-input(
         :class="{ 'bg-negative': error }",
         :key="i",
-        :ref="(el) => { updateFieldRef(el, i - 1); }",
+        :ref="(el: QInput) => { updateFieldRef(el, i - 1); }",
         @blur="fields[selected].focus()",
         @click="selected = i - 1",
         @keydown.tab.prevent,
         @keyup.delete="focus(i - 2)",
         @keyup.left="focus(i - 2)",
         @keyup.right="focus(i)",
-        @update:model-value="(ev) => { if (ev) focus(i); }",
+        @update:model-value="(ev: number) => { if (ev) focus(i); }",
         autofocus,
         input-class="text-center",
         mask="#",
@@ -58,8 +58,8 @@ watch(
   },
   { deep },
 );
-const updateFieldRef = (element: unknown, index: number) => {
-  fields.value[index] = element as QInput;
+const updateFieldRef = (element: QInput, index: number) => {
+  fields.value[index] = element;
 };
 const focus = (index: number) => {
   if (index >= 0 && index < length.value) selected.value = index;
