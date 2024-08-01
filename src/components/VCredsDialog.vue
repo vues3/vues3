@@ -3,7 +3,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
   q-card.q-dialog-plugin
     q-card-section
       q-input(
-        :rules="[(v) => !!v || 'Item is required']",
+        :rules="[(v: string) => !!v || 'Item is required']",
         clearable,
         label="domain",
         placeholder="example.com",
@@ -31,7 +31,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
           )
       q-select(
         :options="endpoints",
-        @input-value="(value) => { endpoint = value; }",
+        @input-value="(value: string) => { endpoint = value; }",
         clearable,
         emit-value,
         fill-input,
@@ -46,7 +46,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
           q-icon(name="link")
       q-select(
         :options="getRegions(endpoint)",
-        @input-value="(value) => { region = value; }",
+        @input-value="(value: string) => { region = value; }",
         clearable,
         emit-value,
         fill-input,
