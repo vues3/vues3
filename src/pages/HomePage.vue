@@ -19,7 +19,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-item-section(avatar)
           q-btn(
             :icon="name === cred.Bucket ? 'lock_open' : 'lock'",
-            @click="(evt) => { evt.stopPropagation(); lock(name); }",
+            @click="(evt: Event) => { evt.stopPropagation(); lock(name); }",
             flat,
             padding="sm"
           )
@@ -28,14 +28,14 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-item-section(side)
           .q-gutter-xs
             q-btn.gt-xs(
-              @click="(evt) => { evt.stopPropagation(); remove(name); }",
+              @click="(evt: Event) => { evt.stopPropagation(); remove(name); }",
               dense,
               flat,
               icon="delete",
               size="md"
             )
             q-btn.gt-xs(
-              @click="(evt) => { evt.stopPropagation(); edit(name); }",
+              @click="(evt: Event) => { evt.stopPropagation(); edit(name); }",
               dense,
               flat,
               icon="edit",
