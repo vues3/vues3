@@ -47,6 +47,11 @@ const to = {
     return ret && `/${ret}`;
   },
 };
+const i = {
+  get(this: TView) {
+    return this.icon && `i-${this.icon}`;
+  },
+};
 const title = {
   get(this: TView) {
     return this.header ?? this.name;
@@ -59,6 +64,7 @@ const fixDeep = (
   siblings.value.forEach((value) => {
     Object.defineProperties(value, {
       branch,
+      i,
       index,
       next,
       parent,
