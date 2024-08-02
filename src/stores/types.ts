@@ -24,6 +24,7 @@ export type TView = {
   children?: TView[];
   contenteditable: boolean;
   html: Promise<string> | string;
+  i: string;
   index: number;
   next?: TView;
   parent?: TView;
