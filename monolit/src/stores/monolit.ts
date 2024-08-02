@@ -51,7 +51,9 @@ const handleModule = (
   return undefined;
 };
 const log = (type: keyof Console, ...args: string[]) => {
-  (window.console[type] as (...optionalParams: string[]) => void)(...args);
+  (window.console[type] as (...optionalParams: string[]) => void)(
+    ...args.map((value) => decodeURIComponent(value)),
+  );
 };
 const addStyle = (styles: string) => {
   useStyleTag(styles);
