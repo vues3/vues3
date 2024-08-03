@@ -39,15 +39,18 @@ const fonts: Record<string, string> = Object.fromEntries(
 const customFetch = async (url: string) => (await fetch(url)).text();
 const cdn = "https://esm.sh/";
 const display = "inline-block";
-const extraProperties = (matched: string) =>
-  matched.startsWith("i-") ? { display } : {};
+const extraProperties = { display, "vertical-align": "middle" };
 const presets: Preset[] = [
   presetUno(),
   presetAttributify(),
   presetTypography(),
-  presetTagify({ extraProperties }),
+  presetTagify({
+    extraProperties(matched: string) {
+      return matched.startsWith("i-") ? { display } : {};
+    },
+  }),
   presetWebFonts({ customFetch, fonts }),
-  presetIcons({ cdn }),
+  presetIcons({ cdn, extraProperties }),
 ];
 const transformers: SourceCodeTransformer[] = [
   transformerDirectives(),
