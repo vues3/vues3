@@ -93,7 +93,7 @@ const definitions = {
   ) as Record<string, QEditorCommand>),
   ...Object.fromEntries(
     [
-      ...[...Array(4).keys()].map((key) => [
+      ...[...Array(6).keys()].map((key) => [
         `h${String(key + 1)}`,
         `heading${String(key + 1)}`,
       ]),
@@ -119,7 +119,7 @@ const toolbar = [
         "formatting",
         [
           "p",
-          ...[...Array(4).keys()].map((key) => `h${String(key + 1)}`),
+          ...[...Array(6).keys()].map((key) => `h${String(key + 1)}`),
           "code",
         ],
         false,
