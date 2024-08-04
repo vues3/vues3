@@ -1,14 +1,9 @@
-import type { Preset, SourceCodeTransformer } from "@unocss/core";
+import type { Preset } from "@unocss/core";
 
-import presetAttributify from "@unocss/preset-attributify";
 import presetIcons from "@unocss/preset-icons/browser";
-import presetTagify from "@unocss/preset-tagify";
 import presetTypography from "@unocss/preset-typography";
 import presetUno from "@unocss/preset-uno";
 import presetWebFonts from "@unocss/preset-web-fonts";
-import transformerCompileClass from "@unocss/transformer-compile-class";
-import transformerDirectives from "@unocss/transformer-directives";
-import transformerVariantGroup from "@unocss/transformer-variant-group";
 
 /** @see {@link https://type.today/ru/journal/old-style} Динамические антиквы */
 import dynamicSerifs from "./src/assets/fonts/DynamicSerifs.json";
@@ -38,24 +33,12 @@ const fonts: Record<string, string> = Object.fromEntries(
 );
 const customFetch = async (url: string) => (await fetch(url)).text();
 const cdn = "https://esm.sh/";
-const display = "inline-block";
-const extraProperties = { display, "vertical-align": "middle" };
+const prefix = "";
 const presets: Preset[] = [
   presetUno(),
-  presetAttributify(),
   presetTypography(),
-  presetTagify({
-    extraProperties(matched: string) {
-      return matched.startsWith("i-") ? { display } : {};
-    },
-  }),
   presetWebFonts({ customFetch, fonts }),
-  presetIcons({ cdn, extraProperties }),
-];
-const transformers: SourceCodeTransformer[] = [
-  transformerDirectives(),
-  transformerVariantGroup(),
-  transformerCompileClass(),
+  presetIcons({ cdn, prefix }),
 ];
 export { fonts };
-export default { presets, transformers };
+export default { presets };
