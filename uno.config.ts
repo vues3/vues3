@@ -33,12 +33,11 @@ const fonts: Record<string, string> = Object.fromEntries(
 );
 const customFetch = async (url: string) => (await fetch(url)).text();
 const cdn = "https://esm.sh/";
-const prefix = "";
 const presets: Preset[] = [
   presetUno(),
   presetTypography(),
   presetWebFonts({ customFetch, fonts }),
-  presetIcons({ cdn, prefix }),
+  presetIcons({ cdn }),
 ];
 export { fonts };
 export default { presets };
