@@ -9,7 +9,7 @@ import {
   configurable,
   deep,
   flush,
-  wait,
+  second,
   writable,
 } from "stores/defaults";
 import { bucket, getObject, headObject, putFile, putObject } from "stores/s3";
@@ -36,7 +36,7 @@ const sfc = {
               "application/json",
               JSON.stringify(component),
             ).catch(() => {});
-        }, wait),
+        }, second),
       );
     }
     return this.buffer;
@@ -216,7 +216,7 @@ watch(
       putObject("data.json", "application/json", JSON.stringify(value)).catch(
         () => {},
       );
-  }, wait),
+  }, second),
   { deep },
 );
 export const rightDrawer = ref(false);
@@ -236,7 +236,7 @@ watch(
   sitemap,
   debounce((value) => {
     putObject("sitemap.xml", "application/xml", toXML(value)).catch(() => {});
-  }, wait),
+  }, second),
 );
 export const putImage = async (file: File) => {
   const { type } = file;
