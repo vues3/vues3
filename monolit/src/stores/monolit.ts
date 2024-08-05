@@ -12,7 +12,14 @@ import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 import initUnocssRuntime from "@unocss/runtime";
 import { useStyleTag } from "@vueuse/core";
 import { data, views } from "app/src/stores/data";
-import { behavior, cache, left, once, top } from "app/src/stores/defaults";
+import {
+  behavior,
+  cache,
+  left,
+  once,
+  second,
+  top,
+} from "app/src/stores/defaults";
 import { validateComponent } from "app/src/stores/types";
 import defaults from "app/uno.config";
 import * as vue from "vue";
@@ -148,8 +155,15 @@ const ready: RuntimeOptions["ready"] = (runtime) => {
       await all();
       await runtime.extractAll();
       if (scroll.value)
-        if (name && that.value?.index) return { behavior, el };
-        else return { behavior, left, top };
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(
+              name && that.value?.index
+                ? { behavior, el }
+                : { behavior, left, top },
+            );
+          }, 0.1 * second);
+        });
       scroll.value = true;
     }
     return false;
