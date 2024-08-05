@@ -12,12 +12,12 @@ import {
 import { FetchHttpHandler } from "@smithy/fetch-http-handler";
 import { useStorage } from "@vueuse/core";
 import CryptoJS from "crypto-js";
-import { keepAlive, mergeDefaults } from "stores/defaults";
+import { mergeDefaults } from "stores/defaults";
 import { validateCredentials } from "stores/types";
 import { ref, watch } from "vue";
 
 let s3Client: S3Client | undefined;
-const requestHandler = new FetchHttpHandler({ keepAlive });
+const requestHandler = new FetchHttpHandler();
 const creds = useStorage(
   "@",
   () => {
