@@ -35,7 +35,7 @@ const path = {
       .slice(1)
       .map(
         ({ id, name }) =>
-          encodeURIComponent(name?.replace(" ", "_") ?? "") || id,
+          encodeURIComponent(name?.replaceAll(" ", "_") ?? "") || id,
       )
       .join("/");
   },
@@ -43,7 +43,7 @@ const path = {
 const to = {
   get(this: TView) {
     const ret =
-      (this.loc && encodeURI(this.loc.replace(" ", "_") || "")) ?? this.path;
+      (this.loc && encodeURI(this.loc.replaceAll(" ", "_") || "")) ?? this.path;
     return ret && `/${ret}`;
   },
 };
