@@ -44,7 +44,7 @@ if (analytics) {
   window.app.use(VueGtag, { config }, router);
 }
 views.value.forEach(({ id: name, loc, path: relative }) => {
-  const alias = `/${encodeURI(loc?.replace(" ", "_") ?? "")}`;
+  const alias = `/${encodeURI(loc?.replaceAll(" ", "_") ?? "")}`;
   const children = ((path, component) => [{ component, name, path }])(
     "",
     data.value?.settings.landing
