@@ -5,8 +5,7 @@ import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
 import Component from "app/src/schemas/component";
 import Config from "app/src/schemas/config";
 import Credentials from "app/src/schemas/credentials";
-import Data, { plainData } from "app/src/schemas/data";
-import Settings from "app/src/schemas/settings";
+import Data from "app/src/schemas/data";
 import View, { plainView } from "app/src/schemas/view";
 import {
   coerceTypes,
@@ -40,15 +39,14 @@ export type TView = {
   view: TView;
   views: TView[];
 } & FromSchema<typeof plainView>;
-export type TData = {
+export interface TData {
   content: TView[];
-} & FromSchema<typeof plainData, { references: [typeof Settings] }>;
+}
 dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uuid();
 const code = { esm };
 export type TCredentials = FromSchema<typeof Credentials>;
 export type TConfig = FromSchema<typeof Config>;
-export type TSettings = FromSchema<typeof Settings>;
-const schemas = [Config, Credentials, View, Settings, Data, Component];
+const schemas = [Config, Credentials, View, Data, Component];
 const keywords = [dynamicDefaults()];
 const ajv = new Ajv({
   code,
