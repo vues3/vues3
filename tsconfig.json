@@ -3,7 +3,8 @@
   "compilerOptions": {
     "lib": ["esnext", "dom", "dom.iterable"],
     "baseUrl": ".",
-    "types": ["vite/client", "node"]
+    "types": ["vite/client", "node"],
+    "resolvePackageJsonExports": false
   },
   "exclude": [
     "./dist",
