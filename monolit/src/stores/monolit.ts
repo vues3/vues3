@@ -151,7 +151,7 @@ export const all = () =>
 const ready: RuntimeOptions["ready"] = (runtime) => {
   onScroll = async ({ name }) => {
     const el = `#${String(name)}`;
-    if (data.value?.settings.landing) {
+    if (that.value?.along) {
       await all();
       await runtime.extractAll();
       if (scroll.value)
