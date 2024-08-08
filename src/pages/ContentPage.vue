@@ -34,6 +34,12 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
             q-item-section
               q-item-label style scoped
               q-item-label(caption) the.scoped
+          q-item(tag="label", v-ripple)
+            q-item-section(avatar)
+              q-checkbox(v-model="the.along")
+            q-item-section
+              q-item-label along
+              q-item-label(caption) the.along
           q-select(
             hide-dropdown-icon,
             label="class",
