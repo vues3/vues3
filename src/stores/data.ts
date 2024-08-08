@@ -100,10 +100,7 @@ watch(
   data,
   (obj) => {
     if (obj) {
-      if (
-        Object.hasOwn(obj, "content") &&
-        !(obj["content" as keyof TData] as TView[]).length
-      )
+      if (Object.hasOwn(obj, "content") && !obj.content.length)
         Reflect.defineProperty(obj, "content", { value });
       validateData(obj);
     }
