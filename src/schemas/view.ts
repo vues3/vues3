@@ -7,6 +7,7 @@ const id = "uuid";
 const dynamicDefaults = { id };
 const children = { default: [], items: { $ref: "#" }, type: "array" } as const;
 const properties = {
+  along: { default: true, type: "boolean" },
   alt: {
     default: [],
     items: { type: "string" },
