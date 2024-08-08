@@ -5,14 +5,14 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       q-input(
         :class="{ 'bg-negative': error }",
         :key="i",
-        :ref="(el: QInput) => { updateFieldRef(el, i - 1); }",
+        :ref="(el) => { updateFieldRef(el, i - 1); }",
         @blur="fields[selected].focus()",
         @click="selected = i - 1",
         @keydown.tab.prevent,
         @keyup.delete="focus(i - 2)",
         @keyup.left="focus(i - 2)",
         @keyup.right="focus(i)",
-        @update:model-value="(ev: number) => { if (ev) focus(i); }",
+        @update:model-value="(ev) => { if (ev) focus(i); }",
         autofocus,
         input-class="text-center",
         mask="#",
@@ -27,7 +27,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 
 <script setup lang="ts">
 import type { QInput } from "quasar";
-import type { ComputedRef, Ref } from "vue";
+import type { ComponentPublicInstance, ComputedRef, Ref } from "vue";
 
 import CryptoJS from "crypto-js";
 import { useDialogPluginComponent } from "quasar";
@@ -58,8 +58,11 @@ watch(
   },
   { deep },
 );
-const updateFieldRef = (element: QInput, index: number) => {
-  fields.value[index] = element;
+const updateFieldRef = (
+  element: ComponentPublicInstance | Element | null,
+  index: number,
+) => {
+  fields.value[index] = element as QInput;
 };
 const focus = (index: number) => {
   if (index >= 0 && index < length.value) selected.value = index;
