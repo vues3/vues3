@@ -9,23 +9,13 @@ Head
   meta(:content="a.alt[0]", property="og:image:alt", v-if="a?.alt[0]")
   link(:href="favicon", :key, rel="icon", type="image/svg+xml")
   link(:href="canonical", rel="canonical", v-if="canonical")
-  meta(
-    :content="data.settings?.yandex",
-    name="yandex-verification",
-    v-if="data?.settings?.yandex"
-  )
-  meta(
-    :content="data.settings?.google",
-    name="google-site-verification",
-    v-if="data?.settings?.google"
-  )
 router-view(v-slot="{ Component }")
   component(:is="Component", :the)
 </template>
 <script setup lang="ts">
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { Head } from "@unhead/vue/components";
-import { data, views } from "app/src/stores/data";
+import { views } from "app/src/stores/data";
 import { immediate } from "app/src/stores/defaults";
 import uuid from "uuid-random";
 import { computed, ref, watch } from "vue";
