@@ -39,9 +39,6 @@ export type TView = {
   view: TView;
   views: TView[];
 } & FromSchema<typeof plainView>;
-export interface TData {
-  content: TView[];
-}
 dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uuid();
 const code = { esm };
 export type TCredentials = FromSchema<typeof Credentials>;
