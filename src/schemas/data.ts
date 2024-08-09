@@ -1,18 +1,10 @@
 import type { JSONSchema } from "json-schema-to-ts";
 
 const $id = "urn:jsonschema:data";
-const additionalProperties = false;
-const properties = {
-  content: {
-    default: [{}],
-    items: { $ref: "urn:jsonschema:view" },
-    type: "array",
-  },
-} as const;
-const type = "object";
+const items = { $ref: "urn:jsonschema:view" };
+const type = "array";
 export default {
   $id,
-  additionalProperties,
-  properties,
+  items,
   type,
 } as const satisfies JSONSchema;
