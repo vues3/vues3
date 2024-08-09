@@ -9,7 +9,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
     )
       v-interactive-tree(
         :list="views",
-        :tree="data.content",
+        :tree="data",
         v-model:expanded="config.expanded",
         v-model:selected="config.selected"
       )
