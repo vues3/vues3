@@ -1,4 +1,4 @@
-import type { TComponent, TData, TView } from "stores/types";
+import type { TComponent, TView } from "stores/types";
 
 import mimes from "assets/mimes.json";
 import mime from "mime";
@@ -161,8 +161,8 @@ watch(bucket, async (value) => {
   if (value) {
     (async () => {
       data.value = JSON.parse(
-        (await (await getObject("data.json", cache)).text()) || "{}",
-      ) as TData;
+        (await (await getObject("data.json", cache)).text()) || "[{}]",
+      ) as TView[];
     })().catch(() => {});
     const [localManifest, serverManifest] = (
       (await Promise.all([
