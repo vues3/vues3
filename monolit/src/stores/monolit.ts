@@ -77,7 +77,7 @@ export const getAsyncComponent = ({ path, scoped, setup, sfc }: TView) => {
   };
   return defineAsyncComponent((async () => {
     return loadModule(
-      `${data.value?.content[0].name ?? ""}${path && "/"}${path}.vue`,
+      `${data.value?.[0].name ?? ""}${path && "/"}${path}.vue`,
       {
         addStyle,
         getFile,
