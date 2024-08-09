@@ -31,9 +31,9 @@ const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
   useDialogPluginComponent();
 const selected = ref();
 const the = computed(() => views.value.find(({ id }) => id === selected.value));
-const nodes = computed(() => data.value?.content as QTreeNode[]);
+const nodes = computed(() => data.value as QTreeNode[]);
 onMounted(() => {
-  const [{ id }] = data.value?.content ?? [];
+  const [{ id }] = data.value ?? [];
   selected.value = id;
 });
 </script>
