@@ -161,7 +161,7 @@ watch(bucket, async (value) => {
   if (value) {
     (async () => {
       data.value = JSON.parse(
-        (await (await getObject("data.json", cache)).text()) || "[{}]",
+        (await (await getObject("index.json", cache)).text()) || "[{}]",
       ) as TView[];
     })().catch(() => {});
     (async () => {
@@ -220,7 +220,7 @@ watch(
   data,
   debounce((value) => {
     if (value)
-      putObject("data.json", "application/json", JSON.stringify(value)).catch(
+      putObject("index.json", "application/json", JSON.stringify(value)).catch(
         () => {},
       );
   }, second),
