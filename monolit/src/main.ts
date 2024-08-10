@@ -26,7 +26,7 @@ window.app = createApp(vueApp);
 window.app.use(router);
 window.app.use(createHead());
 window.app.mount("#app");
-const response: Response = await fetch("/data.json");
+const response: Response = await fetch("/index.json");
 data.value = response.ok
   ? ((await response.json()) as TView[])
   : ([{}] as TView[]);
