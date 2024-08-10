@@ -164,6 +164,13 @@ watch(bucket, async (value) => {
         (await (await getObject("data.json", cache)).text()) || "[{}]",
       ) as TView[];
     })().catch(() => {});
+    (async () => {
+      try {
+        await headObject("index.css", cache);
+      } catch (e) {
+        putObject("index.css", "text/css", "").catch(() => {});
+      }
+    })().catch(() => {});
     const [localManifest, serverManifest] = (
       (await Promise.all([
         (await fetch("monolit/.vite/manifest.json")).json(),
