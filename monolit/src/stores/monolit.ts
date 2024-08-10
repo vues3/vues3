@@ -1,6 +1,6 @@
 import type { RuntimeOptions } from "@unocss/runtime";
 import type { TComponent, TView } from "app/src/stores/types";
-import type { AsyncComponentLoader } from "vue";
+import type { App, AsyncComponentLoader } from "vue";
 import type {
   Router,
   RouteRecordRaw,
@@ -25,6 +25,11 @@ import defaults from "app/uno.config";
 import * as vue from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { loadModule } from "vue3-sfc-loader";
+
+declare const window: {
+  app: App;
+} & typeof globalThis &
+  Window;
 
 const { computed, defineAsyncComponent, markRaw, ref, watch } = vue;
 const moduleCache = { vue };
@@ -148,12 +153,26 @@ export const promises = computed(
 );
 export const all = () =>
   Promise.all(Object.values(promises.value).map(({ promise }) => promise));
+let loader = true;
+const remove = (selector: string) => {
+  const node = document.querySelector(selector);
+  node?.parentNode?.removeChild(node);
+};
 const ready: RuntimeOptions["ready"] = (runtime) => {
   onScroll = async ({ name }) => {
     const el = `#${String(name)}`;
-    if (that.value?.along) {
+    if (name) {
       await all();
       await runtime.extractAll();
+      if (loader) {
+        remove("link[href='/index.css']");
+        remove("body>div.loader");
+        // eslint-disable-next-line no-underscore-dangle
+        (window.app._container as HTMLElement).style.display = "initial";
+        loader = false;
+      }
+    }
+    if (that.value?.along) {
       if (scroll.value)
         return new Promise((resolve) => {
           setTimeout(() => {
