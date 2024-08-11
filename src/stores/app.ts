@@ -15,7 +15,7 @@ import {
 import { bucket, getObject, headObject, putFile, putObject } from "stores/s3";
 import { validateComponent } from "stores/types";
 import { toXML } from "to-xml";
-import { computed, ref, version, watch } from "vue";
+import { ref, version, watch } from "vue";
 
 const parser = new DOMParser();
 const sfc = {
@@ -195,12 +195,7 @@ watch(bucket, async (value) => {
     } catch (e) {
       localManifest.add(`assets/vue.esm-browser.prod-${version}.js`);
     }
-    [
-      ...localManifest
-        .add("index.html")
-        .add(".vite/manifest.json")
-        .add("robots.txt"),
-    ]
+    [...localManifest.add(".vite/manifest.json").add("robots.txt")]
       .filter((x) => !serverManifest.has(x))
       .forEach((element) => {
         (async () => {
@@ -227,24 +222,6 @@ watch(
   { deep },
 );
 export const rightDrawer = ref(false);
-const sitemap = computed(() => ({
-  "?": 'xml version="1.0" encoding="UTF-8"',
-  urlset: {
-    "@xmlns": "https://www.sitemaps.org/schemas/sitemap/0.9",
-    url: views.value.map(({ changefreq, lastmod, priority, to }) => ({
-      changefreq,
-      lastmod,
-      loc: `https://${bucket.value}${to}`,
-      priority,
-    })),
-  },
-}));
-watch(
-  sitemap,
-  debounce((value) => {
-    putObject("sitemap.xml", "application/xml", toXML(value)).catch(() => {});
-  }, second),
-);
 export const putImage = async (file: File) => {
   const { type } = file;
   const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
@@ -277,4 +254,33 @@ watch(
     });
   },
   { flush },
+);
+const index = await (await fetch("monolit/index.html")).blob();
+watch(
+  views,
+  debounce((view: TView[]) => {
+    view.forEach(({ loc, path }) => {
+      if (loc)
+        putObject(`${loc}/index.html`, index.type, index).catch(() => {});
+      putObject(
+        path ? `${path}/index.html` : "index.html",
+        index.type,
+        index,
+      ).catch(() => {});
+    });
+    const url = view.map(({ changefreq, lastmod, priority, to }) => {
+      const loc = `https://${bucket.value}${to}`;
+      return { changefreq, lastmod, loc, priority };
+    });
+    const urlset = {
+      "@xmlns": "https://www.sitemaps.org/schemas/sitemap/0.9",
+      url,
+    };
+    putObject(
+      "sitemap.xml",
+      "application/xml",
+      toXML({ "?": 'xml version="1.0" encoding="UTF-8"', urlset }),
+    ).catch(() => {});
+  }, second),
+  { deep },
 );
