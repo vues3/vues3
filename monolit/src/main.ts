@@ -43,5 +43,6 @@ views.value.forEach(({ along, id: name, loc, path: relative }) => {
 });
 const path = "/:pathMatch(.*)*";
 const component = () => import("@/views/NotFoundView.vue");
-router.addRoute({ component, path });
+const name = "404";
+router.addRoute({ component, name, path });
 router.replace(router.currentRoute.value.fullPath).catch(() => {});
