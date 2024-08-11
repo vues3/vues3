@@ -163,8 +163,8 @@ const ready: RuntimeOptions["ready"] = (runtime) => {
     const el = `#${String(name)}`;
     if (name) {
       await all();
-      await runtime.extractAll();
       if (loader) {
+        await runtime.extractAll();
         remove("link[href='/index.css']");
         remove("body>div.loader");
         // eslint-disable-next-line no-underscore-dangle
