@@ -1,13 +1,13 @@
 <template lang="pug">
 div(:class="the?.class", :id, v-if="the?.enabled")
-  component(:is="is", :the)
+  component(:is="is", :the, @vue:mounted="resolve(the)")
 </template>
 <script setup lang="ts">
 import type { TView } from "src/stores/types";
 
 import { computed } from "vue";
 
-import { getAsyncComponent, that } from "../stores/monolit";
+import { getAsyncComponent, resolve, that } from "../stores/monolit";
 
 const props = defineProps<{ the?: TView }>();
 const the = computed(() => props.the ?? that.value);
