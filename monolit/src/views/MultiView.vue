@@ -26,7 +26,7 @@ import { useRouter } from "vue-router";
 import {
   all,
   getAsyncComponent,
-  promises,
+  resolve,
   scroll,
   siblings,
   that,
@@ -43,9 +43,6 @@ const templates = computed(
 );
 const template = ({ id }: TView) =>
   templates.value[id as keyof object] as object;
-const resolve = ({ id }: TView) => {
-  promises.value[id as keyof object].resolve(undefined);
-};
 const intersecting = computed(
   () => new Map(views.value.map(({ id }) => [id, false])),
 );
