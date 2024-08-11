@@ -22,7 +22,7 @@ const sfc = {
   async get(this: TView) {
     if (!this.buffer && this.id) {
       const value = JSON.parse(
-        (await (await getObject(`views/${this.id}.json`, cache)).text()) ||
+        (await (await getObject(`pages/${this.id}.json`, cache)).text()) ||
           "{}",
       ) as TComponent;
       validateComponent(value);
@@ -32,7 +32,7 @@ const sfc = {
         debounce((component) => {
           if (this.id)
             putObject(
-              `views/${this.id}.json`,
+              `pages/${this.id}.json`,
               "application/json",
               JSON.stringify(component),
             ).catch(() => {});
