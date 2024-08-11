@@ -97,7 +97,7 @@ export const getAsyncComponent = ({ path, scoped, setup, sfc }: TView) => {
 const sfc = {
   async get(this: TView) {
     if (!this.buffer) {
-      const response = await fetch(`/views/${this.id ?? ""}.json`, {
+      const response = await fetch(`/pages/${this.id ?? ""}.json`, {
         cache,
       });
       const value = markRaw(
