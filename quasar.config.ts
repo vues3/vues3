@@ -35,7 +35,9 @@ const vitePlugins = [
   ["@intlify/unplugin-vue-i18n/vite", { include }],
   ["vite-plugin-checker", { eslint, vueTsc }, { server }],
 ];
-const build: object = { extendViteConf, vitePlugins, vueRouterMode };
+const browser = ["esnext"];
+const target = { browser };
+const build: object = { extendViteConf, target, vitePlugins, vueRouterMode };
 const open = false;
 const devServer = { open };
 const lang: keyof QuasarLanguageCodesHolder = "ru";
