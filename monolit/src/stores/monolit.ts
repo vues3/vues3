@@ -143,10 +143,10 @@ const promiseWithResolvers = () => {
   });
   return { promise, reject, resolve };
 };
-export const promises = computed(
+const promises = computed(
   () =>
     Object.fromEntries(
-      siblings.value
+      (!that.value || that.value.parent?.along ? siblings.value : [that.value])
         .filter(({ enabled }) => enabled)
         .map(({ id }) => [id, promiseWithResolvers()]),
     ) as Record<string, PromiseWithResolvers<undefined>>,
@@ -172,7 +172,7 @@ const ready: RuntimeOptions["ready"] = (runtime) => {
         loader = false;
       }
     }
-    if (that.value?.along) {
+    if (that.value?.parent?.along) {
       if (scroll.value)
         return new Promise((resolve) => {
           setTimeout(() => {
@@ -187,6 +187,12 @@ const ready: RuntimeOptions["ready"] = (runtime) => {
     }
     return false;
   };
+};
+export const resolve = ({ id }: TView) => {
+  const promise = promises.value[id as keyof object] as
+    | PromiseWithResolvers<undefined>
+    | undefined;
+  promise?.resolve(undefined);
 };
 watch(
   router.currentRoute,
