@@ -154,10 +154,6 @@ const promises = computed(
 export const all = () =>
   Promise.all(Object.values(promises.value).map(({ promise }) => promise));
 let loader = true;
-const remove = (selector: string) => {
-  const node = document.querySelector(selector);
-  node?.parentNode?.removeChild(node);
-};
 const ready: RuntimeOptions["ready"] = (runtime) => {
   onScroll = async ({ name }) => {
     const el = `#${String(name)}`;
@@ -165,10 +161,7 @@ const ready: RuntimeOptions["ready"] = (runtime) => {
       await all();
       if (loader) {
         await runtime.extractAll();
-        remove("link[href='/index.css']");
-        remove("body>div.loader");
-        // eslint-disable-next-line no-underscore-dangle
-        (window.app._container as HTMLElement).style.display = "initial";
+        document.querySelector("body>.loader")?.classList.remove("loader");
         loader = false;
       }
     }
