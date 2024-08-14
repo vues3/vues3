@@ -27,16 +27,17 @@ import type {
 } from "quasar";
 import type { Ref } from "vue";
 
+import initUnocssRuntime from "@unocss/runtime";
 import { useFileDialog } from "@vueuse/core";
-import { fonts } from "app/uno.config";
+import defaults, { fonts } from "app/uno.config";
 import mimes from "assets/mimes.json";
 import VLinkDialog from "components/VLinkDialog.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { urls } from "stores/app";
-import { accept } from "stores/defaults";
+import { accept, autoPrefix, bypassDefined } from "stores/defaults";
 import { putFile } from "stores/s3";
-import { nextTick, ref, watch } from "vue";
+import { nextTick, onMounted, ref, watch } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -102,7 +103,7 @@ const definitions = {
     ].map(([key, value]) => [
       key,
       {
-        htmlTip: `<span class="prose"><${key} class="q-ma-none">${$q.lang.editor[value as keyof StringDictionary<QuasarLanguageEditorLabel>]}</${key}></span>`,
+        htmlTip: `<span class="prose"><${key} class="!my-0">${$q.lang.editor[value as keyof StringDictionary<QuasarLanguageEditorLabel>]}</${key}></span>`,
       },
     ]),
   ),
@@ -155,4 +156,8 @@ watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });
 const htm = ref(await props.modelValue);
+const rootElement = editor.value?.getContentEl;
+onMounted(() => {
+  initUnocssRuntime({ autoPrefix, bypassDefined, defaults, rootElement });
+});
 </script>
