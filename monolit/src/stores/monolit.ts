@@ -1,4 +1,4 @@
-import type { RuntimeOptions } from "@unocss/runtime";
+import type { RuntimeContext, RuntimeOptions } from "@unocss/runtime";
 import type { TComponent, TView } from "app/src/stores/types";
 import type { App, AsyncComponentLoader } from "vue";
 import type {
@@ -13,11 +13,11 @@ import initUnocssRuntime from "@unocss/runtime";
 import { useStyleTag } from "@vueuse/core";
 import { data, views } from "app/src/stores/data";
 import {
+  autoPrefix,
   behavior,
+  bypassDefined,
   cache,
   left,
-  once,
-  second,
   top,
 } from "app/src/stores/defaults";
 import { validateComponent } from "app/src/stores/types";
@@ -31,7 +31,7 @@ declare const window: {
 } & typeof globalThis &
   Window;
 
-const { computed, defineAsyncComponent, markRaw, ref, watch } = vue;
+const { computed, defineAsyncComponent, markRaw, ref } = vue;
 const moduleCache = { vue };
 const getResource: Options["getResource"] = (pathCx, options) => {
   const { getPathname, pathResolve } = options;
@@ -133,7 +133,10 @@ export const fix = (siblings: TView[]) => {
 export const that = computed(() =>
   router.currentRoute.value.path === "/" ? a.value?.children?.[0] : a.value,
 );
-export const siblings = computed(() => that.value?.siblings ?? []);
+const siblings = computed(() => that.value?.siblings ?? []);
+export const pages = computed(() =>
+  siblings.value.filter(({ enabled }) => enabled),
+);
 const promiseWithResolvers = () => {
   let resolve;
   let reject;
@@ -143,43 +146,58 @@ const promiseWithResolvers = () => {
   });
   return { promise, reject, resolve };
 };
+const along = computed(() => !that.value || that.value.parent?.along);
 const promises = computed(
   () =>
     Object.fromEntries(
-      (!that.value || that.value.parent?.along ? siblings.value : [that.value])
-        .filter(({ enabled }) => enabled)
-        .map(({ id }) => [id, promiseWithResolvers()]),
+      (along.value ? pages.value : ([that.value] as TView[])).map(({ id }) => [
+        id,
+        promiseWithResolvers(),
+      ]),
     ) as Record<string, PromiseWithResolvers<undefined>>,
 );
-export const all = () =>
-  Promise.all(Object.values(promises.value).map(({ promise }) => promise));
-let loader = true;
+let extractAll: RuntimeContext["extractAll"] | undefined;
 const ready: RuntimeOptions["ready"] = (runtime) => {
-  onScroll = async ({ name }) => {
-    const el = `#${String(name)}`;
+  extractAll = runtime.extractAll;
+};
+export const init = ref(true);
+const all = async () => {
+  await Promise.all(
+    Object.values(promises.value).map(({ promise }) => promise),
+  );
+  if (init.value)
+    initUnocssRuntime({ autoPrefix, bypassDefined, defaults, ready });
+  if (extractAll) await extractAll();
+  if (init.value) {
+    const node = document.querySelector("body>#container");
+    node?.parentNode?.removeChild(node);
+    // eslint-disable-next-line no-underscore-dangle
+    (window.app._container as HTMLElement).classList.remove("hidden");
+    init.value = false;
+  }
+};
+onScroll = async ({ name }, from, savedPosition) => {
+  return new Promise((resolve) => {
     if (name) {
-      await all();
-      if (loader) {
-        await runtime.extractAll();
-        document.querySelector("body>.loader")?.classList.remove("loader");
-        loader = false;
-      }
-    }
-    if (that.value?.parent?.along) {
-      if (scroll.value)
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(
-              name && that.value?.index
-                ? { behavior, el }
-                : { behavior, left, top },
-            );
-          }, 0.1 * second);
-        });
-      scroll.value = true;
-    }
-    return false;
-  };
+      all().then(
+        () => {
+          const el = `#${String(name)}`;
+          resolve(
+            that.value?.parent?.along &&
+              scroll.value && {
+                behavior,
+                ...(savedPosition ??
+                  (that.value.index ? { el } : { left, top })),
+              },
+          );
+          scroll.value = true;
+        },
+        () => {
+          resolve(false);
+        },
+      );
+    } else resolve(false);
+  });
 };
 export const resolve = ({ id }: TView) => {
   const promise = promises.value[id as keyof object] as
@@ -187,10 +205,3 @@ export const resolve = ({ id }: TView) => {
     | undefined;
   promise?.resolve(undefined);
 };
-watch(
-  router.currentRoute,
-  () => {
-    initUnocssRuntime({ defaults, ready });
-  },
-  { once },
-);
