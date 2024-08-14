@@ -39,6 +39,9 @@ import VLoaderDialog from "components/VLoaderDialog.vue";
 import { useQuasar } from "quasar";
 import { rightDrawer } from "stores/app";
 import { bucket } from "stores/s3";
+// eslint-disable-next-line import/no-unresolved
+import "virtual:uno.css";
+import "@unocss/reset/tailwind-compat.css";
 
 const $q = useQuasar();
 const component = VLoaderDialog;
