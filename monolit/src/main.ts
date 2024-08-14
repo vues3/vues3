@@ -4,6 +4,7 @@ import type { App } from "vue";
 import { createHead } from "@unhead/vue";
 import "@unocss/reset/tailwind-compat.css";
 import { data, views } from "app/src/stores/data";
+import "virtual:uno.css";
 import { createApp } from "vue";
 
 import vueApp from "./App.vue";
