@@ -7,11 +7,12 @@ import type {
   QuasarPlugins,
 } from "quasar";
 
+import extractorPug from "@unocss/extractor-pug";
 import { fileURLToPath } from "node:url";
 import { configure } from "quasar/wrappers";
 import { mergeConfig } from "vite";
 
-const boot: string[] = ["uno", "route", "i18n"];
+const boot: string[] = ["route", "i18n"];
 const css: string[] = ["app.sass"];
 const extras: (QuasarFonts | QuasarIconSets)[] = [
   "mdi-v7",
@@ -31,9 +32,12 @@ const server = false;
 const lintCommand = 'eslint "./**/*.{js,ts,mjs,cjs,vue}"';
 const eslint = { lintCommand };
 const include = [fileURLToPath(new URL("./src/i18n", import.meta.url))];
+const extractors = [extractorPug()];
+const configFile = "./uno.config.js";
 const vitePlugins = [
   ["@intlify/unplugin-vue-i18n/vite", { include }],
   ["vite-plugin-checker", { eslint, vueTsc }, { server }],
+  ["@unocss/vite", { configFile, extractors }],
 ];
 const browser = ["esnext"];
 const target = { browser };
