@@ -41,6 +41,5 @@ const build: BuildOptions = { manifest, outDir, rollupOptions, target };
 const define: object = {
   __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
   __VUE_PROD_DEVTOOLS__: true,
-  "import.meta.env.VUE_VERSION": JSON.stringify(version),
 };
 export default defineConfig({ build, define, plugins, resolve });
