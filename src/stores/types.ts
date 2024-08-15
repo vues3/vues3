@@ -6,6 +6,7 @@ import Component from "app/src/schemas/component";
 import Config from "app/src/schemas/config";
 import Credentials from "app/src/schemas/credentials";
 import Data from "app/src/schemas/data";
+import Importmap from "app/src/schemas/importmap";
 import View, { plainView } from "app/src/schemas/view";
 import {
   coerceTypes,
@@ -43,7 +44,8 @@ dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uuid();
 const code = { esm };
 export type TCredentials = FromSchema<typeof Credentials>;
 export type TConfig = FromSchema<typeof Config>;
-const schemas = [Config, Credentials, View, Data, Component];
+export type TImportmap = FromSchema<typeof Importmap>;
+const schemas = [Config, Credentials, View, Data, Component, Importmap];
 const keywords = [dynamicDefaults()];
 const ajv = new Ajv({
   code,
@@ -64,4 +66,7 @@ export const validateCredentials = ajv.getSchema(
 ) as ValidateFunction;
 export const validateData = ajv.getSchema(
   "urn:jsonschema:data",
+) as ValidateFunction;
+export const validateImportmap = ajv.getSchema(
+  "urn:jsonschema:importmap",
 ) as ValidateFunction;
