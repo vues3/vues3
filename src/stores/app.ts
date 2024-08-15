@@ -1,4 +1,5 @@
-import type { TComponent, TView } from "stores/types";
+import type { TComponent, TImportmap, TView } from "stores/types";
+import type { Ref } from "vue";
 
 import mimes from "assets/mimes.json";
 import mime from "mime";
@@ -13,7 +14,7 @@ import {
   writable,
 } from "stores/defaults";
 import { bucket, getObject, headObject, putFile, putObject } from "stores/s3";
-import { validateComponent } from "stores/types";
+import { validateComponent, validateImportmap } from "stores/types";
 import { toXML } from "to-xml";
 import { ref, version, watch } from "vue";
 
@@ -157,6 +158,8 @@ const html = {
     this.template = doc.body.innerHTML;
   },
 };
+const vue = `assets/vue.esm-browser.prod-${version}.js`;
+export const importmap: Ref<TImportmap | undefined> = ref();
 watch(bucket, async (value) => {
   if (value) {
     (async () => {
@@ -169,6 +172,20 @@ watch(bucket, async (value) => {
         await headObject("index.css", cache);
       } catch (e) {
         putObject("index.css", "text/css", "").catch(() => {});
+      }
+    })().catch(() => {});
+    (async () => {
+      importmap.value = JSON.parse(
+        (await (await getObject("index.importmap", cache)).text()) || "{}",
+      ) as TImportmap;
+      validateImportmap(importmap.value);
+      if (importmap.value.imports.vue !== `/${vue}`) {
+        importmap.value.imports.vue = `/${vue}`;
+        putObject(
+          "index.importmap",
+          "application/importmap+json",
+          JSON.stringify(importmap.value),
+        ).catch(() => {});
       }
     })().catch(() => {});
     const [localManifest, serverManifest] = (
@@ -191,9 +208,9 @@ watch(bucket, async (value) => {
         ),
     );
     try {
-      await headObject(`assets/vue.esm-browser.prod-${version}.js`, cache);
+      await headObject(vue, cache);
     } catch (e) {
-      localManifest.add(`assets/vue.esm-browser.prod-${version}.js`);
+      localManifest.add(vue);
     }
     [...localManifest.add(".vite/manifest.json").add("robots.txt")]
       .filter((x) => !serverManifest.has(x))
@@ -255,19 +272,9 @@ watch(
   },
   { flush },
 );
-const index = await (await fetch("monolit/index.html")).blob();
 watch(
   views,
   debounce((view: TView[]) => {
-    view.forEach(({ loc, path }) => {
-      if (loc)
-        putObject(`${loc}/index.html`, index.type, index).catch(() => {});
-      putObject(
-        path ? `${path}/index.html` : "index.html",
-        index.type,
-        index,
-      ).catch(() => {});
-    });
     const url = view.map(({ changefreq, lastmod, priority, to }) => {
       const loc = `https://${bucket.value}${to}`;
       return { changefreq, lastmod, loc, priority };
@@ -281,6 +288,25 @@ watch(
       "application/xml",
       toXML({ "?": 'xml version="1.0" encoding="UTF-8"', urlset }),
     ).catch(() => {});
+  }, second),
+  { deep },
+);
+const index = await (await fetch("monolit/index.html")).text();
+watch(
+  [views, importmap],
+  debounce((arr) => {
+    const [view, imap] = arr as [TView[], TImportmap];
+    const type = "text/html";
+    const body = index.replace(
+      '<script type="importmap"></script>',
+      `<script type="importmap">${JSON.stringify(imap)}</script>`,
+    );
+    view.forEach(({ loc, path }) => {
+      if (loc) putObject(`${loc}/index.html`, type, body).catch(() => {});
+      putObject(path ? `${path}/index.html` : "index.html", type, body).catch(
+        () => {},
+      );
+    });
   }, second),
   { deep },
 );
