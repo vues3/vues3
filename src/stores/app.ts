@@ -179,14 +179,6 @@ watch(bucket, async (value) => {
         (await (await getObject("index.importmap", cache)).text()) || "{}",
       ) as TImportmap;
       validateImportmap(importmap.value);
-      if (importmap.value.imports.vue !== `/${vue}`) {
-        importmap.value.imports.vue = `/${vue}`;
-        putObject(
-          "index.importmap",
-          "application/importmap+json",
-          JSON.stringify(importmap.value),
-        ).catch(() => {});
-      }
     })().catch(() => {});
     const [localManifest, serverManifest] = (
       (await Promise.all([
@@ -254,6 +246,24 @@ export const putImage = async (file: File) => {
   }
   return { filePath, message };
 };
+watch(
+  importmap,
+  debounce((value, oldValue) => {
+    const { imports } = value as TImportmap;
+    let save = Boolean(oldValue);
+    if (imports.vue !== `/${vue}`) {
+      imports.vue = `/${vue}`;
+      save = true;
+    }
+    if (save)
+      putObject(
+        "index.importmap",
+        "application/importmap+json",
+        JSON.stringify({ imports }),
+      ).catch(() => {});
+  }),
+  { deep },
+);
 const value = false;
 const contenteditable = { value, writable };
 watch(
