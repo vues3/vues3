@@ -3,7 +3,11 @@ import type { JSONSchema } from "json-schema-to-ts";
 const $id = "urn:jsonschema:importmap";
 const additionalProperties = false;
 const properties = {
-  imports: { default: {}, type: "object" },
+  imports: {
+    additionalProperties: { type: "string" },
+    default: {},
+    type: "object",
+  },
 } as const;
 const type = "object";
 
