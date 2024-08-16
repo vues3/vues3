@@ -34,11 +34,15 @@ declare const window: {
 const { computed, defineAsyncComponent, markRaw, ref } = vue;
 const moduleCache = { vue };
 const getResource: Options["getResource"] = (pathCx, options) => {
+  const { refPath } = pathCx;
   const { getPathname, pathResolve } = options;
   const path = pathResolve(pathCx, options);
   const id = path.toString();
+  const ext = getPathname(id).split(".").pop() ?? "";
+  const type = ext && `.${ext}`;
   const getContent = async () => {
-    if (URL.canParse(id)) {
+    if (URL.canParse(id) && type === ".css") return { type } as File;
+    if (refPath) {
       const getContentData: File["getContentData"] = () =>
         import(id) as Promise<ContentData>;
       return { getContentData } as File;
@@ -46,29 +50,35 @@ const getResource: Options["getResource"] = (pathCx, options) => {
     const res = await options.getFile(path);
     if (typeof res === "string" || res instanceof ArrayBuffer) {
       const getContentData = () => Promise.resolve(res);
-      const ext = getPathname(id).split(".").pop() ?? "";
-      const type = ext && `.${ext}`;
       return { getContentData, type };
     }
     return res;
   };
   return { getContent, id, path };
 };
-const handleModule = (
+const handleModule = async (
   type: string,
   getContentData: File["getContentData"],
   path: AbstractPath,
+  options: Options,
 ) => {
-  if (URL.canParse(path.toString())) return getContentData(false);
-  return undefined;
+  switch (type) {
+    case ".css":
+      options.addStyle(await (await fetch(path as string)).text(), undefined);
+      return null;
+    case undefined:
+      return getContentData(false);
+    default:
+      return undefined;
+  }
 };
 const log = (type: keyof Console, ...args: string[]) => {
   (window.console[type] as (...optionalParams: string[]) => void)(
     ...args.map((value) => decodeURIComponent(value)),
   );
 };
-const addStyle = (styles: string) => {
-  useStyleTag(styles);
+const addStyle = (styles: string, id: string | undefined) => {
+  useStyleTag(styles, { id });
 };
 export const getAsyncComponent = ({ path, scoped, setup, sfc }: TView) => {
   const getFile = async () => {
