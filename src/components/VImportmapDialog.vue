@@ -10,15 +10,22 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         dense,
         flat,
         hide-bottom,
-        row-key="name",
+        row-key="id",
         selection="multiple",
+        separator="none",
         v-model:selected="selected",
         virtual-scroll
       )
+        template(#body-selection="props")
+          q-checkbox(
+            :disable="props.row.name === 'vue'",
+            dense,
+            v-model="props.selected"
+          )
         template(#body-cell="props")
           q-td(:auto-width="props.col.name === 'name'", :props)
-            q-input(
-              borderless,
+            q-input.min-w-20(
+              :disable="props.row.name === 'vue'",
               dense,
               v-model.trim="props.row[props.col.name]"
             )
@@ -31,60 +38,47 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 </template>
 <script setup lang="ts">
 import type { QTableProps } from "quasar";
+import type { Ref } from "vue";
 
+import json from "assets/importmap.json";
 import { useDialogPluginComponent } from "quasar";
-import { computed, ref } from "vue";
+import { importmap } from "stores/app";
+import { deep } from "stores/defaults";
+import uuid from "uuid-random";
+import { onMounted, ref, watch } from "vue";
 
 defineEmits([...useDialogPluginComponent.emits]);
 const { dialogRef, onDialogHide } = useDialogPluginComponent();
-
-const selected = ref([]);
-const columns = [
-  {
-    align: "left",
-    field: "name",
-    label: "Name",
-    name: "name",
-    sortable: false,
+const selected: Ref<Record<string, string>[]> = ref([]);
+const columns = json as QTableProps["columns"];
+const rows: Ref<Record<string, string>[]> = ref([]);
+onMounted(() => {
+  const { imports = {} } = importmap.value ?? {};
+  rows.value = Object.entries(imports).map(([name, path]) => {
+    const id = uuid();
+    return { id, name, path };
+  });
+});
+watch(
+  rows,
+  (value) => {
+    if (importmap.value)
+      importmap.value.imports = Object.fromEntries(
+        value
+          .filter(({ name, path }) => path && name)
+          .map(({ name, path }) => [name, path]),
+      );
   },
-  {
-    align: "left",
-    field: "path",
-    label: "Path",
-    name: "path",
-    sortable: false,
-  },
-] as QTableProps["columns"];
-
-const rows = ref([
-  {
-    name: "vue1",
-    path: "https://1unpkg.com/embla-carousel-vue/esm/embla-carousel-vue.esm.js",
-  },
-  {
-    name: "vue2",
-    path: "https://2unpkg.com/embla-carousel-vue/esm/embla-carousel-vue.esm.js",
-  },
-  {
-    name: "vue1",
-    path: "https://3unpkg.com/embla-carousel-vue/esm/embla-carousel-vue.esm.js",
-  },
-  {
-    name: "vue2",
-    path: "https://4unpkg.com/embla-carousel-vue/esm/embla-carousel-vue.esm.js",
-  },
-  {
-    name: "vue1",
-    path: "https://5unpkg.com/embla-carousel-vue/esm/embla-carousel-vue.esm.js",
-  },
-]);
-const addRow = () => {
-  rows.value.push({ name: "", path: "" });
-};
-const names = computed(() =>
-  selected.value.map(({ name }: { name: string }) => name),
+  { deep },
 );
+const addRow = () => {
+  const id = uuid();
+  const name = "";
+  const path = "";
+  rows.value.push({ id, name, path });
+};
 const removeRow = () => {
-  rows.value = rows.value.filter(({ name }) => !names.value.includes(name));
+  const set = new Set(selected.value);
+  rows.value = rows.value.filter((x) => !set.has(x));
 };
 </script>
