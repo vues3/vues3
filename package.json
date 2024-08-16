@@ -62,7 +62,7 @@
     "@typescript-eslint/parser": "^7.18.0",
     "@vue/language-plugin-pug": "^2.0.29",
     "autoprefixer": "^10.4.20",
-    "electron": "^31.4.0",
+    "electron": "31.3.1",
     "electron-builder": "^24.13.3",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
