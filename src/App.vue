@@ -14,7 +14,7 @@ q-layout(view="hHh Lpr lff")
       )
         q-list(padding)
           q-item(
-            @click="() => { click('VImportmapDialog'); }",
+            @click="() => { click(VImportmapDialog); }",
             clickable,
             v-close-popup
           )
@@ -23,7 +23,7 @@ q-layout(view="hHh Lpr lff")
             q-item-section
               q-item-label Import Map
           q-item(
-            @click="() => { click('VStyleDialog'); }",
+            @click="() => { click(VStyleDialog); }",
             clickable,
             v-close-popup
           )
@@ -48,18 +48,19 @@ q-layout(view="hHh Lpr lff")
 </template>
 
 <script setup lang="ts">
+import type { Component } from "vue";
+
 import "@unocss/reset/tailwind-compat.css";
 import { useQuasar } from "quasar";
+import VImportmapDialog from "src/components/VImportmapDialog.vue";
+import VStyleDialog from "src/components/VStyleDialog.vue";
 import { rightDrawer } from "stores/app";
 import { bucket } from "stores/s3";
 // eslint-disable-next-line import/no-unresolved
 import "virtual:uno.css";
 
 const $q = useQuasar();
-const click = async (name: string) => {
-  const { default: component } = (await import(
-    `src/components/${name}.vue`
-  )) as typeof import("*.vue");
+const click = (component: Component) => {
   $q.dialog({ component });
 };
 </script>
