@@ -16,6 +16,7 @@ jobs:
           - ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: npm i
       - if: matrix.os == 'ubuntu-latest'
         run: sudo snap install snapcraft --classic
       - run: npm run build:electron
