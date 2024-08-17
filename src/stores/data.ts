@@ -33,17 +33,13 @@ const path = {
   get(this: TView) {
     return this.branch
       .slice(1)
-      .map(
-        ({ id, name }) =>
-          encodeURIComponent(name?.replaceAll(" ", "_") ?? "") || id,
-      )
+      .map(({ name }) => name?.replaceAll(" ", "_") ?? "_")
       .join("/");
   },
 };
 const to = {
   get(this: TView) {
-    const ret =
-      (this.loc && encodeURI(this.loc.replaceAll(" ", "_") || "")) ?? this.path;
+    const ret = this.loc?.replaceAll(" ", "_") ?? this.path;
     return ret && `/${ret}`;
   },
 };
