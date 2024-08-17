@@ -20,7 +20,7 @@ jobs:
       - run: bun i
       - if: matrix.os == 'ubuntu-latest'
         run: sudo snap install snapcraft --classic
-      - rm -rf node_modules
+      - run: rm -rf node_modules
       - run: bun run build:electron
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
