@@ -286,7 +286,7 @@ watch(
   views,
   debounce((view: TView[]) => {
     const url = view.map(({ changefreq, lastmod, priority, to }) => {
-      const loc = `https://${bucket.value}${to}`;
+      const loc = `https://${bucket.value}${encodeURI(to)}`;
       return { changefreq, lastmod, loc, priority };
     });
     const urlset = {
