@@ -16,10 +16,12 @@ jobs:
           - ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: npm i
+      - uses: oven-sh/setup-bun@v1
+      - run: bun i
       - if: matrix.os == 'ubuntu-latest'
         run: sudo snap install snapcraft --classic
-      - run: npm run build:electron
+      - rm -rf node_modules
+      - run: bun run build:electron
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
