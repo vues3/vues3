@@ -33,7 +33,7 @@ data.value = response.ok
   : ([{}] as TView[]);
 fix(data.value);
 views.value.forEach(({ along, id: name, loc, path: relative }) => {
-  const alias = `/${encodeURI(loc?.replaceAll(" ", "_") ?? "")}`;
+  const alias = `/${loc?.replaceAll(" ", "_") ?? ""}`;
   const children = ((path, component) => [{ component, name, path }])(
     "",
     along ? () => import("@/views/MultiView.vue") : singleView,
@@ -42,6 +42,9 @@ views.value.forEach(({ along, id: name, loc, path: relative }) => {
     router.addRoute({ path, ...(loc && { alias }), children, component });
   })(`/${relative}`, singleView);
 });
+router.beforeEach(({ path }) =>
+  path !== decodeURI(path) ? decodeURI(path) : undefined,
+);
 const path = "/:pathMatch(.*)*";
 const component = () => import("@/views/NotFoundView.vue");
 const name = "404";
