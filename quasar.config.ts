@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 import { configure } from "quasar/wrappers";
 import { mergeConfig } from "vite";
 
-const boot: string[] = ["route", "i18n"];
+const boot: string[] = ["route", "i18n", "monaco"];
 const css: string[] = ["app.sass"];
 const extras: (QuasarFonts | QuasarIconSets)[] = [
   "mdi-v7",
