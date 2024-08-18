@@ -19,8 +19,8 @@ import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import {
+  enabled,
   getAsyncComponent,
-  init,
   pages,
   resolve,
   scroll,
@@ -41,7 +41,7 @@ const intersecting = computed(
   () => new Map(pages.value.map(({ id }) => [id, false])),
 );
 const onStop = () => {
-  if (!init.value) {
+  if (enabled.value) {
     const name = [...intersecting.value.entries()].find(
       ([, value]) => value,
     )?.[0];
