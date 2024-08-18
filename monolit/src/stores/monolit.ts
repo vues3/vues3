@@ -41,8 +41,11 @@ const getResource: Options["getResource"] = (pathCx, options) => {
   const ext = getPathname(id).split(".").pop() ?? "";
   const type = ext && `.${ext}`;
   const getContent = async () => {
-    if (URL.canParse(id) && type === ".css") return { type } as File;
-    if (refPath) {
+    if (
+      refPath &&
+      !(id.startsWith("./") || (id.startsWith("/") && !id.startsWith("//")))
+    ) {
+      if (type === ".css") return { type } as File;
       const getContentData: File["getContentData"] = () =>
         import(id) as Promise<ContentData>;
       return { getContentData } as File;
@@ -170,8 +173,10 @@ let extractAll: RuntimeContext["extractAll"] | undefined;
 const ready: RuntimeOptions["ready"] = (runtime) => {
   extractAll = runtime.extractAll;
 };
-export const init = ref(true);
+const init = ref(true);
+export const enabled = ref(false);
 const all = async () => {
+  enabled.value = false;
   await Promise.all(
     Object.values(promises.value).map(({ promise }) => promise),
   );
@@ -185,6 +190,7 @@ const all = async () => {
     (window.app._container as HTMLElement).classList.remove("hidden");
     init.value = false;
   }
+  enabled.value = true;
 };
 onScroll = async ({ name }, from, savedPosition) => {
   return new Promise((resolve) => {
