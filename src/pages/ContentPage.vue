@@ -197,25 +197,25 @@ q-page.column.full-height(v-if="the")
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
-    q-tab-panel.column(name="template")
+    q-tab-panel(name="template")
       Suspense
-        v-source-code.col(:key="the.id", v-model="the.template")
+        v-source-code(:key="the.id", language="html", v-model="the.template")
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
-    q-tab-panel.column(name="script")
+    q-tab-panel(name="script")
       Suspense
-        v-source-code.col(
+        v-source-code(
           :key="the.id",
-          lang="javascript",
+          language="javascript",
           v-model="the.script"
         )
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
-    q-tab-panel.column(name="style")
+    q-tab-panel(name="style")
       Suspense
-        v-source-code.col(:key="the.id", lang="css", v-model="the.style")
+        v-source-code(:key="the.id", language="css", v-model="the.style")
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
