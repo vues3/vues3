@@ -1,50 +1,58 @@
 <template lang="pug">
-v-ace-editor(
-  :lang,
-  :options,
-  :value,
-  @init="(editor) => { editor.focus(); }",
-  @update:value="$emit('update:modelValue', $event)",
-  v-if="value !== null"
-)
+.size-full(ref="monaco")
 </template>
 <script setup lang="ts">
-// eslint-disable-next-line perfectionist/sort-imports
-import { VAceEditor } from "vue3-ace-editor";
+import type { Ref } from "vue";
 
-// eslint-disable-next-line perfectionist/sort-imports
-import "ace-builds/esm-resolver";
-import { css, html, js } from "js-beautify";
-import { ref } from "vue";
+import { editor } from "monaco-editor";
+import {
+  ambiguousCharacters,
+  autoIndent,
+  automaticLayout,
+  formatOnPaste,
+  formatOnType,
+  scrollBeyondLastLine,
+} from "stores/defaults";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
-const props = withDefaults(
+const { language, modelValue } = withDefaults(
   defineProps<{
-    lang?: string;
+    language?: string;
     modelValue?: Promise<string> | string;
-    options?: object;
   }>(),
   {
-    lang: "html",
+    language: "html",
     modelValue: "",
-    options: (): object => ({}),
   },
 );
-defineEmits(["update:modelValue"]);
-const beautify = (value?: string) => {
-  let code = "";
-  if (value)
-    switch (props.lang) {
-      case "javascript":
-        code = js(value);
-        break;
-      case "css":
-        code = css(value);
-        break;
-      default:
-        code = html(value);
-        break;
-    }
-  return code;
-};
-const value = ref(beautify(await props.modelValue));
+const emit = defineEmits(["update:modelValue"]);
+const value = await modelValue;
+const monaco: Ref<HTMLElement | undefined> = ref();
+let standaloneCodeEditor: editor.IStandaloneCodeEditor | undefined;
+const unicodeHighlight = { ambiguousCharacters };
+onMounted(() => {
+  if (monaco.value) {
+    standaloneCodeEditor = editor.create(monaco.value, {
+      autoIndent,
+      automaticLayout,
+      formatOnPaste,
+      formatOnType,
+      language,
+      scrollBeyondLastLine,
+      unicodeHighlight,
+      value,
+    });
+    standaloneCodeEditor.onDidChangeModelContent(() => {
+      emit("update:modelValue", standaloneCodeEditor?.getValue());
+    });
+    standaloneCodeEditor.focus();
+    standaloneCodeEditor
+      .getAction("editor.action.formatDocument")
+      ?.run()
+      .catch(() => {});
+  }
+});
+onBeforeUnmount(() => {
+  standaloneCodeEditor?.dispose();
+});
 </script>
