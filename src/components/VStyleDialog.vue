@@ -4,7 +4,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
     q-card-section CSS
     q-card-section.h-96(horizontal)
       suspense
-        v-source-code.col.h-96(lang="css", v-model="style")
+        v-source-code(language="css", v-model="style")
     q-separator
     q-card-actions.text-primary(align="right")
       q-btn(@click="onDialogHide", flat, label="Close")
