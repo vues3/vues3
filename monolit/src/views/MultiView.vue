@@ -14,14 +14,14 @@ import type { TView } from "app/src/stores/types";
 import type { Ref } from "vue";
 
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
-import { behavior, deep } from "app/src/stores/defaults";
+import { behavior, deep, threshold } from "app/src/stores/defaults";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import {
-  enabled,
   getAsyncComponent,
   pages,
+  paused,
   resolve,
   scroll,
   that,
@@ -41,14 +41,12 @@ const intersecting = computed(
   () => new Map(pages.value.map(({ id }) => [id, false])),
 );
 const onStop = () => {
-  if (enabled.value) {
-    const name = [...intersecting.value.entries()].find(
-      ([, value]) => value,
-    )?.[0];
-    if (name && name !== that.value?.id) {
-      scroll.value = false;
-      router.push({ name }).catch(() => {});
-    }
+  const name = [...intersecting.value.entries()].find(
+    ([, value]) => value,
+  )?.[0];
+  if (!paused.value && name && name !== that.value?.id) {
+    scroll.value = false;
+    router.push({ name }).catch(() => {});
   }
 };
 useScroll(window, { behavior, onStop });
@@ -69,7 +67,7 @@ watch(
     });
     stops.length = 0;
     value.forEach((target) => {
-      const { stop } = useIntersectionObserver(target, callback);
+      const { stop } = useIntersectionObserver(target, callback, { threshold });
       stops.push(stop);
     });
   },
