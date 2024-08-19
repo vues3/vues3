@@ -9,19 +9,10 @@ import type {
 } from "vue-router";
 import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 
-import initUnocssRuntime from "@unocss/runtime";
 import { useStyleTag } from "@vueuse/core";
 import { data, views } from "app/src/stores/data";
-import {
-  autoPrefix,
-  behavior,
-  bypassDefined,
-  cache,
-  left,
-  top,
-} from "app/src/stores/defaults";
+import { behavior, cache, left, top } from "app/src/stores/defaults";
 import { validateComponent } from "app/src/stores/types";
-import defaults from "app/uno.config";
 import * as vue from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { loadModule } from "vue3-sfc-loader";
@@ -170,10 +161,9 @@ const promises = computed(
     ) as Record<string, PromiseWithResolvers<undefined>>,
 );
 let extractAll: RuntimeContext["extractAll"] | undefined;
-const ready: RuntimeOptions["ready"] = (runtime) => {
+export const ready: RuntimeOptions["ready"] = (runtime) => {
   extractAll = runtime.extractAll;
 };
-initUnocssRuntime({ autoPrefix, bypassDefined, defaults, ready });
 export const paused = ref(true);
 const all = async () => {
   paused.value = true;
