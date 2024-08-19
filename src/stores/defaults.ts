@@ -31,3 +31,4 @@ export const formatOnType = true;
 export const scrollBeyondLastLine = false;
 export const autoIndent = "full";
 export const ambiguousCharacters = false;
+export const threshold = 0.1;
