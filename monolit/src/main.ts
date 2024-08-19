@@ -3,12 +3,15 @@ import type { App } from "vue";
 
 import { createHead } from "@unhead/vue";
 import "@unocss/reset/tailwind-compat.css";
+import initUnocssRuntime from "@unocss/runtime";
 import { data, views } from "app/src/stores/data";
+import { autoPrefix, bypassDefined } from "app/src/stores/defaults";
+import defaults from "app/uno.config";
 import "virtual:uno.css";
 import { createApp } from "vue";
 
 import vueApp from "./App.vue";
-import { fix, router } from "./stores/monolit";
+import { fix, ready, router } from "./stores/monolit";
 import "./style.sass";
 import singleView from "./views/SingleView.vue";
 
@@ -24,6 +27,9 @@ window.console.info(
   "https://vues3.com",
 );
 window.app = createApp(vueApp);
+// eslint-disable-next-line no-underscore-dangle
+const rootElement = () => window.app._container as Element;
+initUnocssRuntime({ autoPrefix, bypassDefined, defaults, ready, rootElement });
 window.app.use(router);
 window.app.use(createHead());
 window.app.mount("#app");
