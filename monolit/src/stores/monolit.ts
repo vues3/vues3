@@ -173,24 +173,21 @@ let extractAll: RuntimeContext["extractAll"] | undefined;
 const ready: RuntimeOptions["ready"] = (runtime) => {
   extractAll = runtime.extractAll;
 };
-const init = ref(true);
-export const enabled = ref(false);
+initUnocssRuntime({ autoPrefix, bypassDefined, defaults, ready });
+export const paused = ref(true);
 const all = async () => {
-  enabled.value = false;
+  paused.value = true;
   await Promise.all(
     Object.values(promises.value).map(({ promise }) => promise),
   );
-  if (init.value)
-    initUnocssRuntime({ autoPrefix, bypassDefined, defaults, ready });
   if (extractAll) await extractAll();
-  if (init.value) {
-    const node = document.querySelector("body>#container");
-    node?.parentNode?.removeChild(node);
+  const node = document.querySelector("body>#container");
+  if (node) {
+    node.parentNode?.removeChild(node);
     // eslint-disable-next-line no-underscore-dangle
     (window.app._container as HTMLElement).classList.remove("hidden");
-    init.value = false;
   }
-  enabled.value = true;
+  paused.value = false;
 };
 onScroll = async ({ name }, from, savedPosition) => {
   return new Promise((resolve) => {
