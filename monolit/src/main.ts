@@ -39,7 +39,9 @@ data.value = response.ok
   : ([{}] as TView[]);
 fix(data.value);
 views.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
-  const alias = `/${loc?.replaceAll(" ", "_") ?? ""}`;
+  const alias = (loc?.replaceAll(" ", "_") ?? "")
+    .replace(/^\/?/, "/")
+    .replace(/\/?$/, "/");
   const children = ((path, component) => [{ component, name, path }])(
     "",
     (parent?.along ?? along)
@@ -48,7 +50,7 @@ views.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
   );
   ((path, component) => {
     router.addRoute({ path, ...(loc && { alias }), children, component });
-  })(`/${relative}`, singleView);
+  })(relative.replace(/^\/?/, "/").replace(/\/?$/, "/"), singleView);
 });
 router.beforeEach(({ path }) =>
   path !== decodeURI(path) ? decodeURI(path) : undefined,
