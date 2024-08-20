@@ -16,7 +16,7 @@ import {
 import { bucket, getObject, headObject, putFile, putObject } from "stores/s3";
 import { validateComponent, validateImportmap } from "stores/types";
 import { toXML } from "to-xml";
-import { ref, version, watch } from "vue";
+import { computed, ref, version, watch } from "vue";
 
 const parser = new DOMParser();
 const sfc = {
@@ -286,11 +286,20 @@ watch(
   },
   { flush },
 );
+const domain = computed(() => {
+  const lastIndexOfHyphen = bucket.value.lastIndexOf("-");
+  if (lastIndexOfHyphen > bucket.value.lastIndexOf(".")) {
+    const chars = [...bucket.value];
+    chars[lastIndexOfHyphen] = ".";
+    return chars.join("");
+  }
+  return bucket.value;
+});
 watch(
   views,
   debounce((view: TView[]) => {
     const url = view.map(({ changefreq, lastmod, priority, to }) => {
-      const loc = `https://${bucket.value}${encodeURI(to)}`;
+      const loc = `https://${domain.value}${to === "/" ? "" : encodeURI(to)}`;
       return { changefreq, lastmod, loc, priority };
     });
     const urlset = {
