@@ -5,14 +5,12 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       q-input(
         :rules="[(v: string) => !!v || 'Item is required']",
         clearable,
-        label="domain",
-        placeholder="example.com",
+        label="bucket",
         ref="bucket",
-        type="url",
         v-model.trim="Bucket"
       )
         template(#prepend)
-          q-icon(name="language")
+          q-icon(name="delete")
       q-input(clearable, label="access key id", v-model.trim="accessKeyId")
         template(#prepend)
           q-icon(name="key")
