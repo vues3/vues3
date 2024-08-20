@@ -68,15 +68,17 @@ const script = {
   },
 };
 export const urls = new Map<string, string>();
+const routerLink = "router-link";
 const html = {
   async get(this: TView) {
     const doc = parser.parseFromString(
       `<head><base href="//"></head><body>${await this.template}</body>`,
       "text/html",
     );
-    doc.querySelectorAll("router-link").forEach((link) => {
+    doc.querySelectorAll(routerLink).forEach((link) => {
       const a = document.createElement("a");
       a.innerHTML = link.innerHTML;
+      a.setAttribute(`data-${routerLink}`, "true");
       [...link.attributes].forEach((attr) => {
         a.setAttribute(
           attr.nodeName === "to" ? "href" : attr.nodeName,
@@ -135,10 +137,12 @@ const html = {
         window.location.origin,
       );
       if (
-        window.location.origin === url.origin &&
-        url.href === `${url.origin}${url.pathname}`
+        Boolean(a.dataset[routerLink]) ||
+        (window.location.origin === url.origin &&
+          url.href === `${url.origin}${url.pathname}`)
       ) {
-        const link = document.createElement("router-link");
+        a.removeAttribute(`data-${routerLink}`);
+        const link = document.createElement(routerLink);
         link.innerHTML = a.innerHTML;
         [...a.attributes].forEach((attr) => {
           link.setAttribute(
