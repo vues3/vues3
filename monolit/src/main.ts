@@ -38,11 +38,13 @@ data.value = response.ok
   ? ((await response.json()) as TView[])
   : ([{}] as TView[]);
 fix(data.value);
-views.value.forEach(({ along, id: name, loc, path: relative }) => {
+views.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
   const alias = `/${loc?.replaceAll(" ", "_") ?? ""}`;
   const children = ((path, component) => [{ component, name, path }])(
     "",
-    along ? () => import("@/views/MultiView.vue") : singleView,
+    (parent?.along ?? along)
+      ? () => import("@/views/MultiView.vue")
+      : singleView,
   );
   ((path, component) => {
     router.addRoute({ path, ...(loc && { alias }), children, component });
