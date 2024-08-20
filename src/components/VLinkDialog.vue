@@ -16,7 +16,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
     q-separator
     q-card-actions.text-primary(align="right")
       q-btn(@click="onDialogCancel", flat, label="Отмена")
-      q-btn(@click="onDialogOK(the?.path)", flat, label="Ok")
+      q-btn(@click="onDialogOK(the?.to)", flat, label="Ok")
 </template>
 <script setup lang="ts">
 import type { QTreeNode } from "quasar";
