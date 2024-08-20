@@ -86,7 +86,7 @@ const definitions = {
         () => {
           const component = VLinkDialog;
           $q.dialog({ component }).onOk((value: string) => {
-            editor.value?.runCmd("createLink", `/${value}`);
+            editor.value?.runCmd("createLink", value);
           });
         },
       ],
