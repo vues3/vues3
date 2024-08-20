@@ -39,8 +39,9 @@ const path = {
 };
 const to = {
   get(this: TView) {
-    const ret = this.loc?.replaceAll(" ", "_") ?? this.path;
-    return ret && `/${ret}`;
+    return (this.loc?.replaceAll(" ", "_") ?? this.path)
+      .replace(/^\/?/, "/")
+      .replace(/\/?$/, "/");
   },
 };
 const i = {
