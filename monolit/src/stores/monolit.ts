@@ -104,10 +104,13 @@ const sfc = {
       const response = await fetch(`/pages/${this.id ?? ""}.json`, {
         cache,
       });
-      const value = markRaw(
+      let value = markRaw(
         JSON.parse(response.ok ? await response.text() : "{}"),
       ) as TComponent;
-      validateComponent(value);
+      if (!validateComponent(value)) {
+        value = markRaw({}) as TComponent;
+        validateComponent(value);
+      }
       Reflect.defineProperty(this, "buffer", { value });
     }
     return this.buffer;
@@ -171,12 +174,6 @@ const all = async () => {
     Object.values(promises.value).map(({ promise }) => promise),
   );
   if (extractAll) await extractAll();
-  const node = document.querySelector("body>#container");
-  if (node) {
-    node.parentNode?.removeChild(node);
-    // eslint-disable-next-line no-underscore-dangle
-    (window.app._container as HTMLElement).classList.remove("hidden");
-  }
   paused.value = false;
 };
 onScroll = async ({ name }, from, savedPosition) => {

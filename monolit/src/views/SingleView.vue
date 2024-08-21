@@ -1,5 +1,5 @@
 <template lang="pug">
-div(:class="the?.class", :id, v-if="the?.enabled")
+div(:class="the?.class", :id, un-cloak, v-if="the?.enabled")
   component(:is="is", :the, @vue:mounted="resolve(the)")
 </template>
 <script setup lang="ts">

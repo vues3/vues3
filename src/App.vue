@@ -22,15 +22,6 @@ q-layout(view="hHh Lpr lff")
               q-avatar(color="primary", icon="map", text-color="white")
             q-item-section
               q-item-label Import Map
-          q-item(
-            @click="() => { click(VStyleDialog); }",
-            clickable,
-            v-close-popup
-          )
-            q-item-section(avatar)
-              q-avatar(color="primary", icon="style", text-color="white")
-            q-item-section
-              q-item-label CSS
           q-item(clickable, to="/", v-close-popup)
             q-item-section(avatar)
               q-avatar(color="primary", icon="logout", text-color="white")
@@ -53,7 +44,6 @@ import type { Component } from "vue";
 import "@unocss/reset/tailwind-compat.css";
 import { useQuasar } from "quasar";
 import VImportmapDialog from "src/components/VImportmapDialog.vue";
-import VStyleDialog from "src/components/VStyleDialog.vue";
 import { rightDrawer } from "stores/app";
 import { bucket } from "stores/s3";
 // eslint-disable-next-line import/no-unresolved

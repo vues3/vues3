@@ -172,13 +172,6 @@ watch(bucket, async (value) => {
       ) as TView[];
     })().catch(() => {});
     (async () => {
-      try {
-        await headObject("index.css", cache);
-      } catch (e) {
-        putObject("index.css", "text/css", "").catch(() => {});
-      }
-    })().catch(() => {});
-    (async () => {
       importmap.value = JSON.parse(
         (await (await getObject("index.importmap", cache)).text()) || "{}",
       ) as TImportmap;
