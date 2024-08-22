@@ -105,13 +105,10 @@ const sfc = {
       const response = await fetch(`/pages/${this.id ?? ""}.json`, {
         cache,
       });
-      let value = markRaw(
+      const value = markRaw(
         JSON.parse(response.ok ? await response.text() : "{}"),
       ) as TComponent;
-      if (!validateComponent(value)) {
-        value = markRaw({}) as TComponent;
-        validateComponent(value);
-      }
+      validateComponent(value);
       Reflect.defineProperty(this, "buffer", { value });
     }
     return this.buffer;
