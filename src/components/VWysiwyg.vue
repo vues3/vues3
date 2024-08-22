@@ -35,7 +35,7 @@ import VLinkDialog from "components/VLinkDialog.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { urls } from "stores/app";
-import { accept, autoPrefix, bypassDefined } from "stores/defaults";
+import { accept, bypassDefined } from "stores/defaults";
 import { putFile } from "stores/s3";
 import { nextTick, onMounted, ref, watch } from "vue";
 
@@ -158,6 +158,6 @@ watch(files, (newFiles) => {
 const htm = ref(await props.modelValue);
 const rootElement = editor.value?.getContentEl;
 onMounted(() => {
-  initUnocssRuntime({ autoPrefix, bypassDefined, defaults, rootElement });
+  initUnocssRuntime({ bypassDefined, defaults, rootElement });
 });
 </script>
