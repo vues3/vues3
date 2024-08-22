@@ -5,15 +5,15 @@ import { createHead } from "@unhead/vue";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
 import { data, views } from "app/src/stores/data";
-import { autoPrefix, bypassDefined } from "app/src/stores/defaults";
 import defaults from "app/uno.config";
-import "virtual:uno.css";
 import { createApp } from "vue";
 
 import vueApp from "./App.vue";
 import { fix, ready, router } from "./stores/monolit";
 import "./style.sass";
-import singleView from "./views/SingleView.vue";
+
+const rootElement = () => document.getElementById("app") as Element;
+initUnocssRuntime({ defaults, ready, rootElement });
 
 declare const window: {
   app: App;
@@ -27,9 +27,6 @@ window.console.info(
   "https://vues3.com",
 );
 window.app = createApp(vueApp);
-// eslint-disable-next-line no-underscore-dangle
-const rootElement = () => window.app._container as Element;
-initUnocssRuntime({ autoPrefix, bypassDefined, defaults, ready, rootElement });
 window.app.use(router);
 window.app.use(createHead());
 window.app.mount("#app");
@@ -46,11 +43,14 @@ views.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
     "",
     (parent?.along ?? along)
       ? () => import("@/views/MultiView.vue")
-      : singleView,
+      : () => import("@/views/SingleView.vue"),
   );
   ((path, component) => {
     router.addRoute({ path, ...(loc && { alias }), children, component });
-  })(relative.replace(/^\/?/, "/").replace(/\/?$/, "/"), singleView);
+  })(
+    relative.replace(/^\/?/, "/").replace(/\/?$/, "/"),
+    () => import("@/views/SingleView.vue"),
+  );
 });
 router.beforeEach(({ path }) =>
   path !== decodeURI(path) ? decodeURI(path) : undefined,
