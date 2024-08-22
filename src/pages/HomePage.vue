@@ -6,7 +6,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-item-section(avatar)
           q-icon(name="storage")
         q-item-section
-          .text-overline учетные записи
+          .text-overline {{ t("accounts") }}
     q-separator
     q-list(padding)
       q-item(
@@ -82,7 +82,10 @@ import { mergeDefaults } from "stores/defaults";
 import { bucket, headBucket } from "stores/s3";
 import { validateCredentials } from "stores/types";
 import { triggerRef } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
+
+const { t } = useI18n();
 // eslint-disable-next-line no-undef
 const APP_VERSION = __APP_VERSION__;
 const router = useRouter();
