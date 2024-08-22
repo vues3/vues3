@@ -1,18 +1,13 @@
 import type { QuasarElectronConfiguration } from "@quasar/app-vite/types/configuration/electron-conf";
 import type { SnapOptions } from "app-builder-lib";
-import type {
-  QuasarFonts,
-  QuasarIconSets,
-  QuasarLanguageCodesHolder,
-  QuasarPlugins,
-} from "quasar";
+import type { QuasarFonts, QuasarIconSets, QuasarPlugins } from "quasar";
 
 import extractorPug from "@unocss/extractor-pug";
 import { fileURLToPath } from "node:url";
 import { configure } from "quasar/wrappers";
 import { mergeConfig } from "vite";
 
-const boot: string[] = ["route", "i18n", "monaco"];
+const boot: string[] = ["route", "quasar-lang-pack", "i18n", "monaco"];
 const css: string[] = ["app.sass"];
 const extras: (QuasarFonts | QuasarIconSets)[] = [
   "mdi-v7",
@@ -44,9 +39,8 @@ const target = { browser };
 const build: object = { extendViteConf, target, vitePlugins, vueRouterMode };
 const open = false;
 const devServer = { open };
-const lang: keyof QuasarLanguageCodesHolder = "ru";
 const plugins: (keyof QuasarPlugins)[] = ["Dialog", "Notify"];
-const framework = { lang, plugins };
+const framework = { plugins };
 const inspectPort = 5858;
 const bundler = "builder";
 const appId = "com.electron.vues3";
