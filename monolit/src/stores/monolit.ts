@@ -1,4 +1,4 @@
-import type { RuntimeContext, RuntimeOptions } from "@unocss/runtime";
+import type { RuntimeOptions } from "@unocss/runtime";
 import type { TComponent, TView } from "app/src/stores/types";
 import type { App, AsyncComponentLoader } from "vue";
 import type {
@@ -10,7 +10,7 @@ import type {
 import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 
 import { useStyleTag } from "@vueuse/core";
-import { data, views } from "app/src/stores/data";
+import { views } from "app/src/stores/data";
 import { behavior, cache, left, top } from "app/src/stores/defaults";
 import { validateComponent } from "app/src/stores/types";
 import * as vue from "vue";
@@ -34,7 +34,11 @@ const getResource: Options["getResource"] = (pathCx, options) => {
   const getContent = async () => {
     if (
       refPath &&
-      !(id.startsWith("./") || (id.startsWith("/") && !id.startsWith("//")))
+      !(
+        id.startsWith("./") ||
+        id.startsWith("../") ||
+        (id.startsWith("/") && !id.startsWith("//"))
+      )
     ) {
       if (type === ".css") return { type } as File;
       const getContentData: File["getContentData"] = () =>
@@ -85,17 +89,14 @@ export const getAsyncComponent = ({ path, scoped, setup, sfc }: TView) => {
     return `${cntScript}${cntTemplate}${cntStyle}`;
   };
   return defineAsyncComponent((async () => {
-    return loadModule(
-      `${data.value?.[0].name ?? ""}${path && "/"}${path}.vue`,
-      {
-        addStyle,
-        getFile,
-        getResource,
-        handleModule,
-        log,
-        moduleCache,
-      } as unknown as Options,
-    );
+    return loadModule(`${views.value[0].name ?? ""}${path && "/"}${path}.vue`, {
+      addStyle,
+      getFile,
+      getResource,
+      handleModule,
+      log,
+      moduleCache,
+    } as unknown as Options);
   }) as AsyncComponentLoader<Promise<object>>);
 };
 const sfc = {
@@ -163,45 +164,51 @@ const promises = computed(
       ]),
     ) as Record<string, PromiseWithResolvers<undefined>>,
 );
-let extractAll: RuntimeContext["extractAll"] | undefined;
-export const ready: RuntimeOptions["ready"] = (runtime) => {
-  extractAll = runtime.extractAll;
-};
 export const paused = ref(true);
-const all = async () => {
-  paused.value = true;
-  await Promise.all(
-    Object.values(promises.value).map(({ promise }) => promise),
-  );
-  if (extractAll) await extractAll();
-  paused.value = false;
+export const ready: RuntimeOptions["ready"] = ({
+  extractAll,
+  toggleObserver,
+}) => {
+  const all = async () => {
+    paused.value = true;
+    toggleObserver(false);
+    await Promise.all(
+      Object.values(promises.value).map(({ promise }) => promise),
+    );
+    await extractAll();
+    toggleObserver(true);
+    paused.value = false;
+  };
+  onScroll = async ({ name }, from, savedPosition) => {
+    return new Promise((resolve) => {
+      if (name) {
+        all().then(
+          () => {
+            const el = `#${String(name)}`;
+            resolve(
+              that.value?.parent?.along &&
+                scroll.value && {
+                  behavior,
+                  ...(savedPosition ??
+                    (that.value.index ? { el } : { left, top })),
+                },
+            );
+            scroll.value = true;
+          },
+          () => {
+            resolve(false);
+          },
+        );
+      } else resolve(false);
+    });
+  };
+  toggleObserver(true);
+  return false;
 };
-onScroll = async ({ name }, from, savedPosition) => {
-  return new Promise((resolve) => {
-    if (name) {
-      all().then(
-        () => {
-          const el = `#${String(name)}`;
-          resolve(
-            that.value?.parent?.along &&
-              scroll.value && {
-                behavior,
-                ...(savedPosition ??
-                  (that.value.index ? { el } : { left, top })),
-              },
-          );
-          scroll.value = true;
-        },
-        () => {
-          resolve(false);
-        },
-      );
-    } else resolve(false);
-  });
-};
-export const resolve = ({ id }: TView) => {
-  const promise = promises.value[id as keyof object] as
-    | PromiseWithResolvers<undefined>
-    | undefined;
-  promise?.resolve(undefined);
+export const resolve = ({ id }: TView | undefined = {} as TView) => {
+  (
+    promises.value[id as keyof object] as
+      | PromiseWithResolvers<undefined>
+      | undefined
+  )?.resolve(undefined);
 };
