@@ -8,7 +8,7 @@ div(
   un-cloak,
   v-for="the in pages"
 )
-  component(:is="template(the)", :the, @vue:mounted="resolve(the)")
+  component(:is="template(the)", :the, @vue:mounted="() => { resolve(the); }")
 </template>
 <script setup lang="ts">
 import type { TView } from "app/src/stores/types";
