@@ -1,6 +1,6 @@
 <template lang="pug">
 div(:class="the?.class", :id, un-cloak, v-if="the?.enabled")
-  component(:is="is", :the, @vue:mounted="resolve(the)")
+  component(:is="is", :the, @vue:mounted="() => { resolve(the); }")
 </template>
 <script setup lang="ts">
 import type { TView } from "src/stores/types";
