@@ -313,10 +313,19 @@ watch(
   debounce((arr) => {
     const [view, imap] = arr as [TView[], TImportmap];
     const type = "text/html";
-    const body = index.replace(
-      '<script type="importmap"></script>',
-      `<script type="importmap">${JSON.stringify(imap)}</script>`,
-    );
+    const body = index
+      .replace(
+        '<script type="importmap"></script>',
+        `<script type="importmap">${JSON.stringify(imap)}</script>`,
+      )
+      .replace(
+        "</head>",
+        `${Object.values(imap.imports)
+          .map(
+            (href) => `<link rel="modulepreload" crossorigin href="${href}">`,
+          )
+          .join("")}</head>`,
+      );
     view.forEach(({ loc, path }) => {
       if (loc) putObject(`${loc}/index.html`, type, body).catch(() => {});
       putObject(path ? `${path}/index.html` : "index.html", type, body).catch(
