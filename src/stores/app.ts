@@ -132,25 +132,29 @@ const html = {
       "text/html",
     );
     doc.querySelectorAll("a").forEach((a) => {
-      const url = new URL(
-        a.attributes.getNamedItem("href")?.value ?? "",
-        window.location.origin,
-      );
-      if (
-        Boolean(a.dataset[routerLink]) ||
-        (window.location.origin === url.origin &&
-          url.href === `${url.origin}${url.pathname}`)
-      ) {
-        a.removeAttribute(`data-${routerLink}`);
-        const link = document.createElement(routerLink);
-        link.innerHTML = a.innerHTML;
-        [...a.attributes].forEach((attr) => {
-          link.setAttribute(
-            attr.nodeName === "href" ? "to" : attr.nodeName,
-            attr.nodeValue ?? "",
-          );
-        });
-        a.replaceWith(link);
+      try {
+        const url = new URL(
+          a.attributes.getNamedItem("href")?.value ?? "",
+          window.location.origin,
+        );
+        if (
+          Boolean(a.dataset[routerLink]) ||
+          (window.location.origin === url.origin &&
+            url.href === `${url.origin}${url.pathname}`)
+        ) {
+          a.removeAttribute(`data-${routerLink}`);
+          const link = document.createElement(routerLink);
+          link.innerHTML = a.innerHTML;
+          [...a.attributes].forEach((attr) => {
+            link.setAttribute(
+              attr.nodeName === "href" ? "to" : attr.nodeName,
+              attr.nodeValue ?? "",
+            );
+          });
+          a.replaceWith(link);
+        }
+      } catch (e) {
+        //
       }
     });
     [...doc.images].forEach((image) => {
