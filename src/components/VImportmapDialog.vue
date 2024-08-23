@@ -34,7 +34,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       q-btn-group(outline)
         q-btn(@click="addRow", icon="add", outline)
         q-btn(@click="removeRow", icon="remove", outline)
-      q-btn(@click="onDialogHide", flat, label="Close")
+      q-btn(:label="t('close')", @click="onDialogHide", flat)
 </template>
 <script setup lang="ts">
 import type { QTableProps } from "quasar";
@@ -46,8 +46,10 @@ import { importmap } from "stores/app";
 import { deep } from "stores/defaults";
 import uuid from "uuid-random";
 import { onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 
 defineEmits([...useDialogPluginComponent.emits]);
+const { t } = useI18n();
 const { dialogRef, onDialogHide } = useDialogPluginComponent();
 const selected: Ref<Record<string, string>[]> = ref([]);
 const columns = json as QTableProps["columns"];
