@@ -5,6 +5,7 @@ div
     :dense="$q.screen.lt.md",
     :fonts,
     :model-value="htm",
+    :placeholder="t('addcontent')",
     :toolbar,
     @drop="capture",
     @paste="capture",
@@ -13,7 +14,6 @@ div
     content-class="col prose max-w-none",
     flat,
     paragraph-tag="div",
-    placeholder="Добавьте контент на вашу страницу...",
     ref="editor"
   )
 </template>
@@ -38,6 +38,7 @@ import { urls } from "stores/app";
 import { accept, bypassDefined } from "stores/defaults";
 import { putFile } from "stores/s3";
 import { nextTick, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 
 const props = withDefaults(
   defineProps<{
@@ -49,9 +50,9 @@ const props = withDefaults(
 );
 defineEmits(["update:modelValue"]);
 const $q = useQuasar();
+const { t } = useI18n();
 const editor: Ref<QEditor | undefined> = ref();
-const message =
-  "Тип графического файла не подходит для использования в сети интернет";
+const message = t("nowebimage");
 const insertImage = (file: File) => {
   const { type } = file;
   if (mimes.includes(type)) {
@@ -79,10 +80,10 @@ const { files, open } = useFileDialog({ accept });
 const definitions = {
   ...(Object.fromEntries(
     [
-      ["upload", "Загрузка картинки", open],
+      ["upload", t("imageupload"), open],
       [
         "share",
-        "Вставка внутренней ссылки",
+        t("insertroute"),
         () => {
           const component = VLinkDialog;
           $q.dialog({ component }).onOk((value: string) => {
