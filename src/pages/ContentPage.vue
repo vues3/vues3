@@ -2,10 +2,10 @@
 q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
   q-list(v-if="data && the")
     q-expansion-item(
+      :label="t('tree')",
       default-opened,
       header-class="text-primary",
-      icon="account_tree",
-      label="Дерево рубрик"
+      icon="account_tree"
     )
       v-interactive-tree(
         :list="views",
@@ -17,9 +17,9 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
     q-card(flat)
       q-item.text-teal
         q-item-section(avatar)
-          q-icon(name="travel_explore")
+          q-icon(name="description")
         q-item-section
-          q-item-label Настройки слоя
+          q-item-label {{ t("page") }}
       q-card-section
         q-list
           q-item(tag="label", v-ripple)
@@ -56,31 +56,31 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-item-section(avatar)
           q-icon(name="travel_explore")
         q-item-section
-          q-item-label Настройки SEO
+          q-item-label {{ t("seo") }}
       q-card-section
         q-select(
+          :label="t('thetype')",
           :options="types",
           clearable,
           hint="the.type",
-          label="Тип содержимого страницы",
           v-model="the.type"
         )
         q-input(
+          :label="t('theheader')",
           hint="the.header",
-          label="Заголовок страницы",
           v-model.trim="the.header"
         )
         q-input(
+          :label="t('thedescription')",
           autogrow,
           hint="the.description",
-          label="Описание страницы",
           type="textarea",
           v-model.trim="the.description"
         )
         q-select(
+          :label="t('thekeywords')",
           hide-dropdown-icon,
           hint="the.keywords",
-          label="Ключевые слова",
           multiple,
           new-value-mode="add",
           stack-label,
@@ -90,23 +90,23 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         )
         q-input(
           :error="!!the.loc && !!views.find((element) => element.id !== the?.id && (element.path === the?.loc || element.loc === the?.loc))",
-          error-message="Такой путь уже используется",
+          :error-message="t('pathinuse')",
+          :label="t('theloc')",
           hint="the.loc",
-          label="Постоянная ссылка",
           prefix="/",
           type="url",
           v-model.trim="loc"
         )
         q-select(
+          :label="t('thechangefreq')",
           :options="changefreq",
           clearable,
           hint="the.changefreq",
-          label="Частота обновления",
           v-model="the.changefreq"
         )
         q-input(
+          :label="t('thepriority')",
           hint="the.priority",
-          label="Приоритет",
           max="1",
           min="0",
           step="0.1",
@@ -114,25 +114,25 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           v-model.number="the.priority"
         )
         q-input(
+          :label="t('thelastmod')",
           clearable,
           hint="the.lastmod",
-          label="Дата последнего изменения",
           type="datetime-local",
           v-model="the.lastmod"
         )
         q-input(
+          :label="t('theicon')",
           clearable,
           hint="the.icon",
-          label="Иконка",
           v-model.trim="the.icon"
         )
           template(#prepend)
-            Icon.q-icon.cursor-pointer(:icon="the.icon ?? 'mdi:tray-arrow-up'")
+            Icon.q-icon.cursor-pointer(:icon="the.icon || 'mdi:tray-arrow-up'")
             q-popup-proxy.column.items-center.justify-center
               q-input.q-ma-md(
+                :label="t('search')",
                 clearable,
                 dense,
-                label="Поиск...",
                 v-model="filter"
               )
               q-icon-picker(
@@ -144,9 +144,9 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
                 v-model:model-pagination="pagination"
               )
         q-input(
+          :label="t('thealt')",
           autogrow,
           hint="the.alt",
-          label="Описание картинки",
           type="textarea",
           v-model.trim="alt"
         )
@@ -168,14 +168,10 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           .absolute-bottom.text-center the.image
           template(#error)
             .absolute-full.flex-center.flex
-              q-btn(
-                @click="click",
-                color="primary",
-                label="Загрузить картинку"
-              )
+              q-btn(:label="t('imageupload')", @click="click", color="primary")
         q-img.q-mt-md.rounded-borders(:ratio="16 / 9", v-if="!the.image[0]")
           .absolute-full.flex-center.flex
-            q-btn(@click="click", color="primary", label="Загрузить картинку")
+            q-btn(:label="t('imageupload')", @click="click", color="primary")
 q-page.column.full-height(v-if="the")
   q-tabs.text-grey(
     active-color="primary",
@@ -253,6 +249,7 @@ import {
 import { bucket, getObject, putFile } from "stores/s3";
 import { validateConfig } from "stores/types";
 import { computed, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 
 const config = useStorage(
   `.${bucket.value}`,
@@ -265,6 +262,7 @@ const config = useStorage(
   { mergeDefaults },
 );
 const $q = useQuasar();
+const { t } = useI18n();
 const filter = ref("");
 const pagination = ref({ itemsPerPage, page });
 const { icons } = mdi as Record<string, object[]>;
@@ -318,8 +316,7 @@ watch(
   },
   { immediate },
 );
-const message =
-  "Тип графического файла не подходит для использования в сети интернет";
+const message = t("nowebimage");
 watch(files, (value) => {
   if (value && the.value) {
     const [file] = value;
