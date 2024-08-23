@@ -33,6 +33,6 @@ export default {
   theloc: "Permanent Link",
   thepriority: "Priority",
   thetype: "The type of media of your content",
-  tree: "Content tree",
+  tree: "Content Tree",
   version: "ver",
 };
