@@ -3,7 +3,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
   q-card.q-dialog-plugin
     q-card-section
       q-input(
-        :rules="[(v: string) => !!v || 'Item is required']",
+        :rules="[(v: string) => !!v || t('required')]",
         clearable,
         label="bucket",
         ref="bucket",
@@ -76,6 +76,7 @@ import { useDialogPluginComponent, useQuasar } from "quasar";
 import { enumerable, mergeDefaults, writable } from "stores/defaults";
 import { validateCredentials } from "stores/types";
 import { ref, triggerRef } from "vue";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
   pin?: string;
@@ -83,6 +84,7 @@ const props = defineProps<{
 }>();
 defineEmits([...useDialogPluginComponent.emits]);
 const $q = useQuasar();
+const { t } = useI18n();
 const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
   useDialogPluginComponent();
 const creds = useStorage(
@@ -123,8 +125,8 @@ const click = (value: Record<string, null | string>) => {
   if (Bucket.value)
     if (props.value !== Bucket.value && Reflect.has(creds.value, Bucket.value))
       $q.dialog({
-        message: "Такая учетная запись уже существует",
-        title: "Предупреждение",
+        message: t("existsaccount"),
+        title: t("confirm"),
       });
     else {
       if (props.value && props.value !== Bucket.value)
