@@ -27,7 +27,7 @@ q-btn-group.q-mx-xs(flat, spread)
         q-input.full-width.min-w-96(
           :bg-color="prop.node.id === selected ? 'primary' : undefined",
           :error="!prop.node[node] || !!list.find((element) => element.id !== prop.node.id && (('path' in element && element.path === prop.node.path) || ('loc' in element && element.loc === prop.node.path)))",
-          :error-message="prop.node[node] ? 'Такое имя уже используется' : 'Пустое имя'",
+          :error-message="prop.node[node] ? t('nameinuse') : t('emptyname')",
           :readonly="!prop.node.contenteditable",
           :type,
           @click.stop="updateSelected(prop.node.id)",
@@ -46,6 +46,7 @@ import type { Ref } from "vue";
 import { uid, useQuasar } from "quasar";
 import { cancel, immediate, persistent } from "stores/defaults";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 
 interface IEmits {
   (e: "update:expanded", value: readonly string[]): void;
@@ -67,6 +68,7 @@ const props = withDefaults(
     type: "text",
   },
 );
+const { t } = useI18n();
 const node = props.type === "text" ? "name" : props.type;
 const nodes = computed(() => (props.tree ?? props.list) as QTreeNode[]);
 const the = computed(() =>
@@ -83,8 +85,8 @@ const updateSelected = (value: string | undefined) => {
 };
 const $q = useQuasar();
 const qtree: Ref<QTree | undefined> = ref();
-const title = "Подтверждение";
-const message = "Вы действительно хотите удалить?";
+const title = t("confirm");
+const message = t("reallydelete");
 const deleteView = () => {
   if (the.value) {
     const { index, next, parent, prev, siblings } = the.value;
