@@ -51,22 +51,29 @@ q-page.column
           .text-h5 Vue.S3
         q-card-section
           q-timeline(color="black", layout="comfortable", side="left")
-            q-timeline-entry(icon="home", title="Homepage")
+            q-timeline-entry(:title="t('homepage')", icon="home")
               template(#subtitle)
                 a.text-no-wrap.text-white(
-                  href="https://vues3.com",
+                  :href="`https://${t('homedomain')}`",
                   rel="noopener noreferrer",
                   target="_blank"
-                ) vues3.com
-            q-timeline-entry(icon="share", title="Repository")
+                ) {{ t('homedomain') }}
+            q-timeline-entry(:title="t('repository')", icon="share")
               template(#subtitle)
                 a.text-no-wrap.text-white(
                   href="https://github.com/vues3",
                   rel="noopener noreferrer",
                   target="_blank"
                 ) github.com/vues3
+            q-timeline-entry(:title="t('socialnetwork')", icon="group")
+              template(#subtitle)
+                a.text-no-wrap.text-white(
+                  :href="`https://${t('socialnetworkurl')}`",
+                  rel="noopener noreferrer",
+                  target="_blank"
+                ) {{ t('socialnetworkurl') }}
         q-card-section
-          .text-overline ver.: {{ APP_VERSION }}
+          .text-overline {{ t("version") }}.: {{ APP_VERSION }}
 </template>
 <script setup lang="ts">
 import type { TCredentials } from "stores/types";
@@ -111,7 +118,7 @@ const getPin = async (name: string): Promise<string | undefined> =>
           resolve(payload);
         })
         .onCancel(() => {
-          reject(new Error("Код не введен"));
+          reject(new Error(t("nopin")));
         });
     } else resolve(undefined);
   });
@@ -150,8 +157,8 @@ const edit = async (name: number | string) => {
 const remove = (name: number | string) => {
   $q.dialog({
     cancel: true,
-    message: "Вы действительно хотите удалить учетную запись из списка?",
-    title: "Подтверждение",
+    message: t("delaccount"),
+    title: t("confirm"),
   }).onOk(() => {
     Reflect.deleteProperty(creds.value, name.toString());
     triggerRef(creds);
