@@ -23,9 +23,9 @@ git clone https://github.com/vues3/vues3.git
 
 bun install
 
-# if you want spa application
+# if you want a spa application
 bun run build
-# if you want native application
+# if you want a native application
 bun run build:electron
 ```
 
