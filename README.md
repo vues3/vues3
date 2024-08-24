@@ -33,6 +33,11 @@ The result will be built in the dist subfolder.
 
 You can always download the [last precompiled version](https://github.com/vues3/vues3/releases/latest).
 
+## Social Networks
+
+[Facebook](https://facebook.com/vues3)
+[VKontakte](https://vk.com/vues3)
+
 ## Screenshots
 
 ![screenshot](https://vues3.ru/images/screenshots/screenshot_1.png)
