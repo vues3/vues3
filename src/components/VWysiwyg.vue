@@ -5,7 +5,7 @@ div
     :dense="$q.screen.lt.md",
     :fonts,
     :model-value="htm",
-    :placeholder="t('addcontent')",
+    :placeholder="t('Add some content to your page...')",
     :toolbar,
     @drop="capture",
     @paste="capture",
@@ -52,7 +52,7 @@ defineEmits(["update:modelValue"]);
 const $q = useQuasar();
 const { t } = useI18n();
 const editor: Ref<QEditor | undefined> = ref();
-const message = t("nowebimage");
+const message = t("The graphic file type is not suitable for use on the web");
 const insertImage = (file: File) => {
   const { type } = file;
   if (mimes.includes(type)) {
@@ -80,10 +80,10 @@ const { files, open } = useFileDialog({ accept });
 const definitions = {
   ...(Object.fromEntries(
     [
-      ["upload", t("imageupload"), open],
+      ["upload", t("Upload Image"), open],
       [
         "share",
-        t("insertroute"),
+        t("Insert Route"),
         () => {
           const component = VLinkDialog;
           $q.dialog({ component }).onOk((value: string) => {
