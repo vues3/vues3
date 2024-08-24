@@ -2,7 +2,7 @@
 q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
   q-list(v-if="data && the")
     q-expansion-item(
-      :label="t('tree')",
+      :label="t('Content Tree')",
       default-opened,
       header-class="text-primary",
       icon="account_tree"
@@ -19,7 +19,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-item-section(avatar)
           q-icon(name="description")
         q-item-section
-          q-item-label {{ t("page") }}
+          q-item-label {{ t("Page Settings") }}
       q-card-section
         q-list
           q-item(tag="label", v-ripple)
@@ -56,29 +56,29 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-item-section(avatar)
           q-icon(name="travel_explore")
         q-item-section
-          q-item-label {{ t("seo") }}
+          q-item-label {{ t("SEO Settings") }}
       q-card-section
         q-select(
-          :label="t('thetype')",
+          :label="t('The type of media of your content')",
           :options="types",
           clearable,
           hint="the.type",
           v-model="the.type"
         )
         q-input(
-          :label="t('theheader')",
+          :label="t('Page Header')",
           hint="the.header",
           v-model.trim="the.header"
         )
         q-input(
-          :label="t('thedescription')",
+          :label="t('Page Description')",
           autogrow,
           hint="the.description",
           type="textarea",
           v-model.trim="the.description"
         )
         q-select(
-          :label="t('thekeywords')",
+          :label="t('Keywords')",
           hide-dropdown-icon,
           hint="the.keywords",
           multiple,
@@ -90,22 +90,22 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         )
         q-input(
           :error="!!the.loc && !!views.find((element) => element.id !== the?.id && (element.path === the?.loc || element.loc === the?.loc))",
-          :error-message="t('pathinuse')",
-          :label="t('theloc')",
+          :error-message="t('That path is already in use')",
+          :label="t('Permanent Link')",
           hint="the.loc",
           prefix="/",
           type="url",
           v-model.trim="loc"
         )
         q-select(
-          :label="t('thechangefreq')",
+          :label="t('Change Frequency')",
           :options="changefreq",
           clearable,
           hint="the.changefreq",
           v-model="the.changefreq"
         )
         q-input(
-          :label="t('thepriority')",
+          :label="t('Priority')",
           hint="the.priority",
           max="1",
           min="0",
@@ -114,14 +114,14 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           v-model.number="the.priority"
         )
         q-input(
-          :label="t('thelastmod')",
+          :label="t('Last Modification')",
           clearable,
           hint="the.lastmod",
           type="datetime-local",
           v-model="the.lastmod"
         )
         q-input(
-          :label="t('theicon')",
+          :label="t('Icon')",
           clearable,
           hint="the.icon",
           v-model.trim="the.icon"
@@ -130,7 +130,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
             Icon.q-icon.cursor-pointer(:icon="the.icon || 'mdi:tray-arrow-up'")
             q-popup-proxy.column.items-center.justify-center
               q-input.q-ma-md(
-                :label="t('search')",
+                :label="t('Search...')",
                 clearable,
                 dense,
                 v-model="filter"
@@ -144,7 +144,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
                 v-model:model-pagination="pagination"
               )
         q-input(
-          :label="t('thealt')",
+          :label="t('Alternate Text')",
           autogrow,
           hint="the.alt",
           type="textarea",
@@ -168,10 +168,14 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           .absolute-bottom.text-center the.image
           template(#error)
             .absolute-full.flex-center.flex
-              q-btn(:label="t('imageupload')", @click="click", color="primary")
+              q-btn(
+                :label="t('Upload Image')",
+                @click="click",
+                color="primary"
+              )
         q-img.q-mt-md.rounded-borders(:ratio="16 / 9", v-if="!the.image[0]")
           .absolute-full.flex-center.flex
-            q-btn(:label="t('imageupload')", @click="click", color="primary")
+            q-btn(:label="t('Upload Image')", @click="click", color="primary")
 q-page.column.full-height(v-if="the")
   q-tabs.text-grey(
     active-color="primary",
@@ -316,7 +320,7 @@ watch(
   },
   { immediate },
 );
-const message = t("nowebimage");
+const message = t("The graphic file type is not suitable for use on the web");
 watch(files, (value) => {
   if (value && the.value) {
     const [file] = value;
