@@ -1,3 +1,5 @@
+![banner](https://vues3.ru/images/a20a7511-f08a-419c-b62c-6757ce65e6df.png)
+
 # VueS3
 
 VueS3 is a program for creating websites from dynamically loaded vue.js templates at runtime and storing them in the S3 cloud storage.
@@ -35,15 +37,20 @@ You can always download the [last precompiled version](https://github.com/vues3/
 
 ## Social Networks
 
-[Facebook](https://facebook.com/vues3)
-[VKontakte](https://vk.com/vues3)
+[facebook.com/vues3](https://facebook.com/vues3)
+
+[vk.com/vues3](https://vk.com/vues3)
 
 ## Screenshots
 
 ![screenshot](https://vues3.ru/images/screenshots/screenshot_1.png)
+
 ![screenshot](https://vues3.ru/images/screenshots/screenshot_2.png)
+
 ![screenshot](https://vues3.ru/images/screenshots/screenshot_3.png)
+
 ![screenshot](https://vues3.ru/images/screenshots/screenshot_4.png)
+
 ![screenshot](https://vues3.ru/images/screenshots/screenshot_5.png)
 
 ## Acknowledgements
