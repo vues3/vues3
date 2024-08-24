@@ -24,7 +24,8 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
             padding="sm"
           )
         q-item-section
-          q-item-label {{ name }}
+          q-item-label(overline) {{ name }}
+          q-item-label(caption, v-if="name !== domain(String(name))") {{ domain(String(name)) }}
         q-item-section(side)
           .q-gutter-xs
             q-btn.gt-xs(
@@ -84,7 +85,7 @@ import VOtpDialog from "components/VOtpDialog.vue";
 import CryptoJS from "crypto-js";
 import contentPage from "pages/ContentPage.vue";
 import { useQuasar } from "quasar";
-import { rightDrawer } from "stores/app";
+import { domain, rightDrawer } from "stores/app";
 import { mergeDefaults } from "stores/defaults";
 import { bucket, headBucket } from "stores/s3";
 import { validateCredentials } from "stores/types";
