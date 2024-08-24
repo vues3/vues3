@@ -15,7 +15,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
           div {{ prop.node.name }}
     q-separator
     q-card-actions.text-primary(align="right")
-      q-btn(:label="t('cancel')", @click="onDialogCancel", flat)
+      q-btn(:label="t('Cancel')", @click="onDialogCancel", flat)
       q-btn(@click="onDialogOK(the?.to)", flat, label="Ok")
 </template>
 <script setup lang="ts">
