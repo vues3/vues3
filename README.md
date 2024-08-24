@@ -17,7 +17,7 @@ You can starting to use VueS3 at [run.vues3.ru](https://run.vues3.ru).
 Use the package manager [bun](https://bun.sh) to install VueS3.
 
 ```bash
-https://github.com/vues3/vues3.git
+git clone https://github.com/vues3/vues3.git
 
 bun install
 
