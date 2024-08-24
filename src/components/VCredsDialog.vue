@@ -3,7 +3,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
   q-card.q-dialog-plugin
     q-card-section
       q-input(
-        :rules="[(v: string) => !!v || t('required')]",
+        :rules="[(v: string) => !!v || t('Item is required')]",
         clearable,
         label="bucket",
         ref="bucket",
@@ -125,8 +125,8 @@ const click = (value: Record<string, null | string>) => {
   if (Bucket.value)
     if (props.value !== Bucket.value && Reflect.has(creds.value, Bucket.value))
       $q.dialog({
-        message: t("existsaccount"),
-        title: t("confirm"),
+        message: t("That account already exists"),
+        title: t("Confirmation"),
       });
     else {
       if (props.value && props.value !== Bucket.value)
