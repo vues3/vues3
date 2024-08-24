@@ -34,7 +34,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       q-btn-group(outline)
         q-btn(@click="addRow", icon="add", outline)
         q-btn(@click="removeRow", icon="remove", outline)
-      q-btn(:label="t('close')", @click="onDialogHide", flat)
+      q-btn(:label="t('Close')", @click="onDialogHide", flat)
 </template>
 <script setup lang="ts">
 import type { QTableProps } from "quasar";
