@@ -3,6 +3,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
   q-card.q-dialog-plugin
     q-card-section
       q-input(
+        :hint="domain(Bucket ?? '') === Bucket ? undefined : domain(Bucket ?? '')",
         :rules="[(v: string) => !!v || t('Item is required')]",
         clearable,
         label="bucket",
@@ -73,6 +74,7 @@ import endpoints from "assets/endpoints.json";
 import regions from "assets/regions.json";
 import CryptoJS from "crypto-js";
 import { useDialogPluginComponent, useQuasar } from "quasar";
+import { domain } from "stores/app";
 import { enumerable, mergeDefaults, writable } from "stores/defaults";
 import { validateCredentials } from "stores/types";
 import { ref, triggerRef } from "vue";
