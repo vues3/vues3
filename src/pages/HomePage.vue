@@ -6,7 +6,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-item-section(avatar)
           q-icon(name="storage")
         q-item-section
-          .text-overline {{ t("accounts") }}
+          .text-overline {{ t("S3 Accounts") }}
     q-separator
     q-list(padding)
       q-item(
@@ -51,29 +51,29 @@ q-page.column
           .text-h5 Vue.S3
         q-card-section
           q-timeline(color="black", layout="comfortable", side="left")
-            q-timeline-entry(:title="t('homepage')", icon="home")
+            q-timeline-entry(:title="t('Homepage')", icon="home")
               template(#subtitle)
                 a.text-no-wrap.text-white(
-                  :href="`https://${t('homedomain')}`",
+                  :href="`https://${t('vues3.com')}`",
                   rel="noopener noreferrer",
                   target="_blank"
-                ) {{ t('homedomain') }}
-            q-timeline-entry(:title="t('repository')", icon="share")
+                ) {{ t('vues3.com') }}
+            q-timeline-entry(:title="t('Repository')", icon="share")
               template(#subtitle)
                 a.text-no-wrap.text-white(
                   href="https://github.com/vues3",
                   rel="noopener noreferrer",
                   target="_blank"
                 ) github.com/vues3
-            q-timeline-entry(:title="t('socialnetwork')", icon="group")
+            q-timeline-entry(:title="t('Facebook')", icon="group")
               template(#subtitle)
                 a.text-no-wrap.text-white(
-                  :href="`https://${t('socialnetworkurl')}`",
+                  :href="`https://${t('facebook.com/vues3')}`",
                   rel="noopener noreferrer",
                   target="_blank"
-                ) {{ t('socialnetworkurl') }}
+                ) {{ t('facebook.com/vues3') }}
         q-card-section
-          .text-overline {{ t("version") }}.: {{ APP_VERSION }}
+          .text-overline {{ t("ver") }}.: {{ APP_VERSION }}
 </template>
 <script setup lang="ts">
 import type { TCredentials } from "stores/types";
@@ -118,7 +118,7 @@ const getPin = async (name: string): Promise<string | undefined> =>
           resolve(payload);
         })
         .onCancel(() => {
-          reject(new Error(t("nopin")));
+          reject(new Error(t("Pin is not entered")));
         });
     } else resolve(undefined);
   });
@@ -157,8 +157,8 @@ const edit = async (name: number | string) => {
 const remove = (name: number | string) => {
   $q.dialog({
     cancel: true,
-    message: t("delaccount"),
-    title: t("confirm"),
+    message: t("Do you really want to remove an account from the list?"),
+    title: t("Confirmation"),
   }).onOk(() => {
     Reflect.deleteProperty(creds.value, name.toString());
     triggerRef(creds);
