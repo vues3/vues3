@@ -22,7 +22,7 @@ declare const window: {
 
 window.console.info(
   "👨‍🚀",
-  "The Vue.S3",
+  "The VueS3",
   `ver:${__APP_VERSION__}`,
   "https://vues3.com",
 );
