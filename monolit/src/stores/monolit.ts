@@ -193,10 +193,10 @@ export const ready: RuntimeOptions["ready"] = ({
             scroll.value = true;
           },
           () => {
-            resolve(false);
+            resolve({ behavior, left, top });
           },
         );
-      } else resolve(false);
+      } else resolve({ behavior, left, top });
     });
   };
   toggleObserver(true);
