@@ -2,9 +2,9 @@
 
 # VueS3
 
-VueS3 is a program for creating websites from dynamically loaded vue.js templates at runtime and storing them in the S3 cloud storage.
+VueS3 is a convenient and flexible tool for creating a cloud-based website.
 
-VueS3 opens up the ability to build sites in Vue.js, bypassing the build and deploy process. Creating a cloud site using SFC no longer requires customizing the developer's environment. VueS3 extends the power of programming and creativity by removing the routine of customizations and configurations.
+VueS3 is designed to work in clouds: Amazon Web Services, Google Cloud, Cloudflare, Oracle Cloud, Yandex Cloud, VK Cloud...
 
 ## Documentation
 
