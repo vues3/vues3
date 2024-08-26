@@ -183,20 +183,21 @@ export const ready: RuntimeOptions["ready"] = ({
           () => {
             const el = `#${String(name)}`;
             resolve(
-              that.value?.parent?.along &&
-                scroll.value && {
-                  behavior,
-                  ...(savedPosition ??
-                    (that.value.index ? { el } : { left, top })),
-                },
+              scroll.value && {
+                behavior,
+                ...(savedPosition ??
+                  (that.value?.parent?.along && that.value.index
+                    ? { el }
+                    : { left, top })),
+              },
             );
             scroll.value = true;
           },
           () => {
-            resolve({ behavior, left, top });
+            resolve(false);
           },
         );
-      } else resolve({ behavior, left, top });
+      } else resolve(false);
     });
   };
   toggleObserver(true);
