@@ -1,5 +1,5 @@
 import type { RuntimeOptions } from "@unocss/runtime";
-import type { TComponent, TView } from "app/src/stores/types";
+import type { TComponent, TPage } from "app/src/stores/types";
 import type { App, AsyncComponentLoader } from "vue";
 import type {
   Router,
@@ -10,7 +10,7 @@ import type {
 import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 
 import { useStyleTag } from "@vueuse/core";
-import { views } from "app/src/stores/data";
+import { pages } from "app/src/stores/data";
 import { behavior, cache, left, top } from "app/src/stores/defaults";
 import { validateComponent } from "app/src/stores/types";
 import * as vue from "vue";
@@ -78,7 +78,7 @@ const log = (type: keyof Console, ...args: string[]) => {
 const addStyle = (styles: string, id: string | undefined) => {
   useStyleTag(styles, { id });
 };
-export const getAsyncComponent = ({ path, scoped, setup, sfc }: TView) => {
+export const getAsyncComponent = ({ path, scoped, setup, sfc }: TPage) => {
   const getFile = async () => {
     const { script, style, template } = await sfc;
     const cntScript =
@@ -89,7 +89,7 @@ export const getAsyncComponent = ({ path, scoped, setup, sfc }: TView) => {
     return `${cntScript}${cntTemplate}${cntStyle}`;
   };
   return defineAsyncComponent((async () => {
-    return loadModule(`${views.value[0].name ?? ""}${path && "/"}${path}.vue`, {
+    return loadModule(`${pages.value[0].name ?? ""}${path && "/"}${path}.vue`, {
       addStyle,
       getFile,
       getResource,
@@ -100,7 +100,7 @@ export const getAsyncComponent = ({ path, scoped, setup, sfc }: TView) => {
   }) as AsyncComponentLoader<Promise<object>>);
 };
 const sfc = {
-  async get(this: TView) {
+  async get(this: TPage) {
     if (!this.buffer) {
       const response = await fetch(`/pages/${this.id ?? ""}.json`, {
         cache,
@@ -122,16 +122,16 @@ const scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) =>
   onScroll && onScroll(to, from, savedPosition);
 export const router: Router = createRouter({ history, routes, scrollBehavior });
 export const a = computed(() =>
-  views.value.find(({ id }) => id === router.currentRoute.value.name),
+  pages.value.find(({ id }) => id === router.currentRoute.value.name),
 );
-const view = {
+const current = {
   get() {
     return a.value;
   },
 };
-export const fix = (siblings: TView[]) => {
+export const fix = (siblings: TPage[]) => {
   siblings.forEach((value) => {
-    Object.defineProperties(value, { sfc, view });
+    Object.defineProperties(value, { current, sfc });
     if (value.children) fix(value.children);
   });
 };
@@ -139,7 +139,7 @@ export const that = computed(() =>
   router.currentRoute.value.path === "/" ? a.value?.children?.[0] : a.value,
 );
 const siblings = computed(() => that.value?.siblings ?? []);
-export const pages = computed(() =>
+export const $siblings = computed(() =>
   siblings.value.filter(({ enabled }) => enabled),
 );
 const promiseWithResolvers = () => {
@@ -155,10 +155,9 @@ const along = computed(() => !that.value || that.value.parent?.along);
 const promises = computed(
   () =>
     Object.fromEntries(
-      (along.value ? pages.value : ([that.value] as TView[])).map(({ id }) => [
-        id,
-        promiseWithResolvers(),
-      ]),
+      (along.value ? $siblings.value : ([that.value] as TPage[])).map(
+        ({ id }) => [id, promiseWithResolvers()],
+      ),
     ) as Record<string, PromiseWithResolvers<undefined>>,
 );
 export const paused = ref(true);
@@ -203,7 +202,7 @@ export const ready: RuntimeOptions["ready"] = ({
   toggleObserver(true);
   return false;
 };
-export const resolve = ({ id }: TView | undefined = {} as TView) => {
+export const resolve = ({ id }: TPage | undefined = {} as TPage) => {
   (
     promises.value[id as keyof object] as
       | PromiseWithResolvers<undefined>
