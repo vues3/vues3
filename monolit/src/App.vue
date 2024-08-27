@@ -15,15 +15,15 @@ router-view(v-slot="{ Component }")
 <script setup lang="ts">
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { Head } from "@unhead/vue/components";
-import { views } from "app/src/stores/data";
+import { pages } from "app/src/stores/data";
 import { immediate } from "app/src/stores/defaults";
 import uuid from "uuid-random";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const the = computed(() => views.value[0]);
-const a = computed(() => views.value.find(({ id }) => id === route.name));
+const the = computed(() => pages.value[0]);
+const a = computed(() => pages.value.find(({ id }) => id === route.name));
 const canonical = computed(
   () =>
     typeof a.value?.to === "string" && `${window.location.origin}${a.value.to}`,
