@@ -1,11 +1,11 @@
 <template lang="pug">
 q-btn-group.q-mx-xs(flat, spread)
-  q-btn(@click="newView", icon="note")
-  q-btn(@click="deleteView", icon="delete")
-  q-btn(@click="leftView", icon="chevron_left", v-if="tree")
-  q-btn(@click="rightView", icon="chevron_right", v-if="tree")
-  q-btn(@click="downView", icon="expand_more")
-  q-btn(@click="upView", icon="expand_less")
+  q-btn(@click="newPage", icon="note")
+  q-btn(@click="deletePage", icon="delete")
+  q-btn(@click="leftPage", icon="chevron_left", v-if="tree")
+  q-btn(@click="rightPage", icon="chevron_right", v-if="tree")
+  q-btn(@click="downPage", icon="expand_more")
+  q-btn(@click="upPage", icon="expand_less")
 .scroll.col
   q-tree.q-ma-xs(
     :expanded,
@@ -40,7 +40,7 @@ q-btn-group.q-mx-xs(flat, spread)
 </template>
 <script setup lang="ts">
 import type { QInputProps, QTree, QTreeNode } from "quasar";
-import type { TView } from "stores/types";
+import type { TPage } from "stores/types";
 import type { Ref } from "vue";
 
 import { uid, useQuasar } from "quasar";
@@ -55,14 +55,14 @@ interface IEmits {
 const props = withDefaults(
   defineProps<{
     expanded?: string[];
-    list: TView[];
+    list: TPage[];
     selected?: string;
-    tree?: TView[];
+    tree?: TPage[];
     type?: QInputProps["type"];
   }>(),
   {
     expanded: (): string[] => [],
-    list: (): TView[] => [],
+    list: (): TPage[] => [],
     selected: "",
     tree: undefined,
     type: "text",
@@ -87,7 +87,7 @@ const $q = useQuasar();
 const qtree: Ref<QTree | undefined> = ref();
 const title = t("Confirmation");
 const message = t("Do you really want to delete?");
-const deleteView = () => {
+const deletePage = () => {
   if (the.value) {
     const { index, next, parent, prev, siblings } = the.value;
     $q.dialog({ cancel, message, persistent, title }).onOk(() => {
@@ -113,7 +113,7 @@ const deleteView = () => {
     });
   }
 };
-const upView = () => {
+const upPage = () => {
   if (the.value) {
     const { index, siblings } = the.value;
     if (index)
@@ -123,7 +123,7 @@ const upView = () => {
       ];
   }
 };
-const downView = () => {
+const downPage = () => {
   if (the.value) {
     const { index, siblings } = the.value;
     if (index < siblings.length - 1)
@@ -133,7 +133,7 @@ const downView = () => {
       ];
   }
 };
-const rightView = () => {
+const rightPage = () => {
   if (the.value) {
     const { index, prev, siblings } = the.value;
     if (prev) {
@@ -143,7 +143,7 @@ const rightView = () => {
     }
   }
 };
-const leftView = () => {
+const leftPage = () => {
   if (the.value) {
     const { index, parent } = the.value;
     if (parent) {
@@ -166,20 +166,20 @@ const leftView = () => {
   }
 };
 const value = false;
-const newView = () => {
+const newPage = () => {
   if (the.value) {
     const { children, index, parent, siblings } = the.value;
     const id = uid();
     switch (true) {
       case !!parent:
-        siblings.splice(index + 1, 0, { id } as TView);
+        siblings.splice(index + 1, 0, { id } as TPage);
         break;
       case !!children:
-        children.unshift({ id } as TView);
+        children.unshift({ id } as TPage);
         qtree.value?.setExpanded(the.value.id, true);
         break;
       default:
-        siblings.splice(index + 1, 0, { id } as TView);
+        siblings.splice(index + 1, 0, { id } as TPage);
         break;
     }
     updateSelected(id);
