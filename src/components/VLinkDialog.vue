@@ -23,7 +23,7 @@ import type { QTreeNode } from "quasar";
 
 import { Icon } from "@iconify/vue";
 import { useDialogPluginComponent } from "quasar";
-import { data, views } from "stores/data";
+import { data, pages } from "stores/data";
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -32,7 +32,7 @@ const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
   useDialogPluginComponent();
 const selected = ref();
 const { t } = useI18n();
-const the = computed(() => views.value.find(({ id }) => id === selected.value));
+const the = computed(() => pages.value.find(({ id }) => id === selected.value));
 const nodes = computed(() => data.value as QTreeNode[]);
 onMounted(() => {
   const [{ id }] = data.value ?? [];
