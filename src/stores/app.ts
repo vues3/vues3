@@ -1,10 +1,10 @@
-import type { TComponent, TImportmap, TView } from "stores/types";
+import type { TComponent, TImportmap, TPage } from "stores/types";
 import type { Ref } from "vue";
 
 import mimes from "assets/mimes.json";
 import mime from "mime";
 import { debounce, uid } from "quasar";
-import { data, views } from "stores/data";
+import { data, pages } from "stores/data";
 import {
   cache,
   configurable,
@@ -20,7 +20,7 @@ import { ref, version, watch } from "vue";
 
 const parser = new DOMParser();
 const sfc = {
-  async get(this: TView) {
+  async get(this: TPage) {
     if (!this.buffer && this.id) {
       const value = JSON.parse(
         (await (await getObject(`pages/${this.id}.json`, cache)).text()) ||
@@ -44,33 +44,33 @@ const sfc = {
   },
 };
 const template = {
-  async get(this: TView) {
+  async get(this: TPage) {
     return (await this.sfc).template;
   },
-  set(this: TView, value: string) {
+  set(this: TPage, value: string) {
     if (this.buffer) this.buffer.template = value;
   },
 };
 const style = {
-  async get(this: TView) {
+  async get(this: TPage) {
     return (await this.sfc).style;
   },
-  set(this: TView, value: string) {
+  set(this: TPage, value: string) {
     if (this.buffer) this.buffer.style = value;
   },
 };
 const script = {
-  async get(this: TView) {
+  async get(this: TPage) {
     return (await this.sfc).script;
   },
-  set(this: TView, value: string) {
+  set(this: TPage, value: string) {
     if (this.buffer) this.buffer.script = value;
   },
 };
 export const urls = new Map<string, string>();
 const routerLink = "router-link";
 const html = {
-  async get(this: TView) {
+  async get(this: TPage) {
     const doc = parser.parseFromString(
       `<head><base href="//"></head><body>${await this.template}</body>`,
       "text/html",
@@ -126,7 +126,7 @@ const html = {
     });
     return doc.body.innerHTML;
   },
-  set(this: TView, value: string) {
+  set(this: TPage, value: string) {
     const doc = parser.parseFromString(
       `<head><base href="//"></head><body>${value}</body>`,
       "text/html",
@@ -173,7 +173,7 @@ watch(bucket, async (value) => {
     (async () => {
       data.value = JSON.parse(
         (await (await getObject("index.json", cache)).text()) || "[{}]",
-      ) as TView[];
+      ) as TPage[];
     })().catch(() => {});
     (async () => {
       importmap.value = JSON.parse(
@@ -277,7 +277,7 @@ export const domain = (value: string) => {
 const value = false;
 const contenteditable = { value, writable };
 watch(
-  views,
+  pages,
   (objects) => {
     objects.forEach((object) => {
       Object.defineProperties(object, {
@@ -293,9 +293,9 @@ watch(
   { flush },
 );
 watch(
-  views,
-  debounce((view: TView[]) => {
-    const url = view.map(({ changefreq, lastmod, priority, to }) => {
+  pages,
+  debounce((page: TPage[]) => {
+    const url = page.map(({ changefreq, lastmod, priority, to }) => {
       const loc = `https://${domain(bucket.value)}${to === "/" ? "" : encodeURI(to)}`;
       return { changefreq, lastmod, loc, priority };
     });
@@ -313,9 +313,9 @@ watch(
 );
 const index = await (await fetch("monolit/index.html")).text();
 watch(
-  [views, importmap],
+  [pages, importmap],
   debounce((arr) => {
-    const [view, imap] = arr as [TView[], TImportmap];
+    const [page, imap] = arr as [TPage[], TImportmap];
     const type = "text/html";
     const body = index
       .replace(
@@ -330,7 +330,7 @@ watch(
           )
           .join("")}</head>`,
       );
-    view.forEach(({ loc, path }) => {
+    page.forEach(({ loc, path }) => {
       if (loc) putObject(`${loc}/index.html`, type, body).catch(() => {});
       putObject(path ? `${path}/index.html` : "index.html", type, body).catch(
         () => {},
