@@ -8,7 +8,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
       icon="account_tree"
     )
       v-interactive-tree(
-        :list="views",
+        :list="pages",
         :tree="data",
         v-model:expanded="config.expanded",
         v-model:selected="config.selected"
@@ -89,7 +89,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           v-model.trim="the.keywords"
         )
         q-input(
-          :error="!!the.loc && !!views.find((element) => element.id !== the?.id && (element.path === the?.loc || element.loc === the?.loc))",
+          :error="!!the.loc && !!pages.find((element) => element.id !== the?.id && (element.path === the?.loc || element.loc === the?.loc))",
           :error-message="t('That path is already in use')",
           :label="t('Permanent Link')",
           hint="the.loc",
@@ -224,7 +224,7 @@ q-page.column.full-height.bg-light(v-else)
     q-spinner-hourglass
 </template>
 <script setup lang="ts">
-import type { TConfig, TView } from "stores/types";
+import type { TConfig, TPage } from "stores/types";
 import type { ComputedRef, Ref } from "vue";
 
 import { Icon } from "@iconify/vue";
@@ -239,7 +239,7 @@ import VWysiwyg from "components/VWysiwyg.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { rightDrawer, urls } from "stores/app";
-import { data, views } from "stores/data";
+import { data, pages } from "stores/data";
 import {
   accept,
   capture,
@@ -270,10 +270,10 @@ const { t } = useI18n();
 const filter = ref("");
 const pagination = ref({ itemsPerPage, page });
 const { icons } = mdi as Record<string, object[]>;
-const the: ComputedRef<TView | undefined> = computed(
+const the: ComputedRef<TPage | undefined> = computed(
   () =>
-    views.value.find(({ id }) => id === config.value.selected) ??
-    views.value[0],
+    pages.value.find(({ id }) => id === config.value.selected) ??
+    pages.value[0],
 );
 const alt = computed({
   get() {
