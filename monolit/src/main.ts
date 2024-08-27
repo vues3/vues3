@@ -1,10 +1,10 @@
-import type { TView } from "app/src/stores/types";
+import type { TPage } from "app/src/stores/types";
 import type { App } from "vue";
 
 import { createHead } from "@unhead/vue";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
-import { data, views } from "app/src/stores/data";
+import { data, pages } from "app/src/stores/data";
 import defaults from "app/uno.config";
 import { createApp } from "vue";
 
@@ -32,10 +32,10 @@ window.app.use(createHead());
 window.app.mount("#app");
 const response: Response = await fetch("/index.json");
 data.value = response.ok
-  ? ((await response.json()) as TView[])
-  : ([{}] as TView[]);
+  ? ((await response.json()) as TPage[])
+  : ([{}] as TPage[]);
 fix(data.value);
-views.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
+pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
   const alias = (loc?.replaceAll(" ", "_") ?? "")
     .replace(/^\/?/, "/")
     .replace(/\/?$/, "/");
