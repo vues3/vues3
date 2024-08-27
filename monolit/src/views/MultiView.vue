@@ -6,12 +6,12 @@ div(
   :role="the.id === that?.id ? 'main' : undefined",
   ref="refs",
   un-cloak,
-  v-for="the in pages"
+  v-for="the in $siblings"
 )
   component(:is="template(the)", :the, @vue:mounted="() => { resolve(the); }")
 </template>
 <script setup lang="ts">
-import type { TView } from "app/src/stores/types";
+import type { TPage } from "app/src/stores/types";
 import type { Ref } from "vue";
 
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
@@ -20,8 +20,8 @@ import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import {
+  $siblings,
   getAsyncComponent,
-  pages,
   paused,
   resolve,
   scroll,
@@ -33,13 +33,13 @@ const router = useRouter();
 const templates = computed(
   () =>
     Object.fromEntries(
-      pages.value.map((value) => [value.id, getAsyncComponent(value)]),
+      $siblings.value.map((value) => [value.id, getAsyncComponent(value)]),
     ) as object,
 );
-const template = ({ id }: TView) =>
+const template = ({ id }: TPage) =>
   templates.value[id as keyof object] as object;
 const intersecting = computed(
-  () => new Map(pages.value.map(({ id }) => [id, false])),
+  () => new Map($siblings.value.map(({ id }) => [id, false])),
 );
 const onStop = () => {
   const name = [...intersecting.value.entries()].find(
