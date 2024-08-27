@@ -7,7 +7,7 @@ import Config from "app/src/schemas/config";
 import Credentials from "app/src/schemas/credentials";
 import Data from "app/src/schemas/data";
 import Importmap from "app/src/schemas/importmap";
-import View, { plainView } from "app/src/schemas/view";
+import Page, { plainPage } from "app/src/schemas/page";
 import {
   coerceTypes,
   esm,
@@ -18,34 +18,39 @@ import { FromSchema } from "json-schema-to-ts";
 import uuid from "uuid-random";
 
 export type TComponent = FromSchema<typeof Component>;
-export type TView = {
-  branch: TView[];
+export type TPage = {
+  $children?: TPage[];
+  $index: number;
+  $next?: TPage;
+  $prev?: TPage;
+  $siblings: TPage[];
+  branch: TPage[];
   buffer?: TComponent;
-  children?: TView[];
+  children?: TPage[];
   contenteditable: boolean;
+  current: TPage;
   html: Promise<string> | string;
   i: string;
   index: number;
-  next?: TView;
-  parent?: TView;
+  next?: TPage;
+  pages: TPage[];
+  parent?: TPage;
   path: string;
-  prev?: TView;
+  prev?: TPage;
   script: Promise<string> | string;
   sfc: Promise<TComponent>;
-  siblings: TView[];
+  siblings: TPage[];
   style: Promise<string> | string;
   template: Promise<string> | string;
   title: string;
   to: string;
-  view: TView;
-  views: TView[];
-} & FromSchema<typeof plainView>;
+} & FromSchema<typeof plainPage>;
 dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uuid();
 const code = { esm };
 export type TCredentials = FromSchema<typeof Credentials>;
 export type TConfig = FromSchema<typeof Config>;
 export type TImportmap = FromSchema<typeof Importmap>;
-const schemas = [Config, Credentials, View, Data, Component, Importmap];
+const schemas = [Config, Credentials, Page, Data, Component, Importmap];
 const keywords = [dynamicDefaults()];
 const ajv = new Ajv({
   code,
@@ -55,6 +60,9 @@ const ajv = new Ajv({
   schemas,
   useDefaults,
 });
+export const validatePage = ajv.getSchema(
+  "urn:jsonschema:page",
+) as ValidateFunction;
 export const validateConfig = ajv.getSchema(
   "urn:jsonschema:config",
 ) as ValidateFunction;
