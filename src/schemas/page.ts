@@ -44,6 +44,14 @@ const properties = {
     items: { type: "string" },
     type: "array",
   },
+  images: {
+    default: [],
+    items: {
+      properties: { alt: { type: "string" }, url: { type: "string" } },
+      type: "object",
+    },
+    type: "array",
+  },
   keywords: {
     default: [],
     items: { type: "string" },
