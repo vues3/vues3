@@ -79,6 +79,12 @@ const title = {
     return this.header ?? this.name;
   },
 };
+export const data: Ref<TPage[] | undefined> = ref();
+const root = {
+  get() {
+    return data.value?.[0];
+  },
+};
 const fixDeep = (
   siblings: { configurable?: boolean; value: TPage[] },
   parent: { configurable?: boolean; value?: TPage } = { value: undefined },
@@ -97,6 +103,7 @@ const fixDeep = (
       parent,
       path,
       prev,
+      root,
       siblings,
       title,
       to,
@@ -107,7 +114,6 @@ const fixDeep = (
     );
   });
 };
-export const data: Ref<TPage[] | undefined> = ref();
 const get = () => getPages(data.value ?? []);
 export const pages = computed(() =>
   get().map((value: TPage) => {
