@@ -39,12 +39,12 @@ const $index = {
 };
 const $prev = {
   get(this: TPage) {
-    return this.$siblings[this.index - 1];
+    return this.$siblings[this.$index - 1];
   },
 };
 const $next = {
   get(this: TPage) {
-    return this.$siblings[this.index + 1];
+    return this.$siblings[this.$index + 1];
   },
 };
 const branch = {
