@@ -37,6 +37,7 @@ export type TPage = {
   parent?: TPage;
   path: string;
   prev?: TPage;
+  root?: TPage;
   script: Promise<string> | string;
   sfc: Promise<TComponent>;
   siblings: TPage[];
