@@ -57,7 +57,7 @@
     "@quasar/quasar-app-extension-qiconpicker": "^2.0.7",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
-    "@vue/language-plugin-pug": "^2.0.29",
+    "@vue/language-plugin-pug": "^2.1.2",
     "autoprefixer": "^10.4.20",
     "electron": "^32.0.1",
     "electron-builder": "^24.13.3",
@@ -78,6 +78,6 @@
     "vite-plugin-checker": "^0.7.2",
     "pug": "^3.0.3",
     "typescript": "^5.5.4",
-    "vue-tsc": "^2.0.29"
+    "vue-tsc": "^2.1.2"
   }
 }
