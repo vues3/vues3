@@ -73,7 +73,7 @@ const properties = {
       "music.song",
       "music.album",
       "music.playlist",
-      "music.radio_station",
+      "music.radio_status",
       "video.movie",
       "video.episode",
       "video.tv_show",
