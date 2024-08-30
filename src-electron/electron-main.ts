@@ -17,16 +17,8 @@ const preload = path.resolve(
   ),
 );
 const webPreferences = { devTools, preload };
-// const width = 1600;
-// const height = 900;
 const createWindow = async () => {
-  mainWindow = new BrowserWindow({
-    // height,
-    icon,
-    show,
-    webPreferences,
-    // width
-  });
+  mainWindow = new BrowserWindow({ icon, show, webPreferences });
   if (process.env.DEV)
     await mainWindow.loadURL(process.env.APP_URL).catch(() => {});
   else await mainWindow.loadFile("index.html").catch(() => {});
