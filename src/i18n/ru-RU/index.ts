@@ -4,7 +4,7 @@ export default Object.fromEntries([
   ["Cancel", "Отмена"],
   ["Change Frequency", "Частота обновления"],
   ["Close", "Закрыть"],
-  ["Confirmation", "Подтверждение"],
+  ["Confirm", "Подтверждение"],
   ["Content Tree", "Дерево рубрик"],
   ["Do you really want to delete?", "Вы действительно хотите удалить?"],
   [
