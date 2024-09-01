@@ -1,6 +1,7 @@
-import type { TComponent, TImportmap, TPage } from "stores/types";
-import type { Ref } from "vue";
+import type { TComponent, TConfig, TImportmap, TPage } from "stores/types";
+import type { ComputedRef, Ref } from "vue";
 
+import { useStorage } from "@vueuse/core";
 import mimes from "assets/mimes.json";
 import mime from "mime";
 import { debounce, uid } from "quasar";
@@ -10,15 +11,41 @@ import {
   configurable,
   deep,
   flush,
+  mergeDefaults,
   second,
   writable,
 } from "stores/defaults";
 import { bucket, getObject, headObject, putFile, putObject } from "stores/s3";
-import { validateComponent, validateImportmap } from "stores/types";
+import {
+  validateComponent,
+  validateConfig,
+  validateImportmap,
+} from "stores/types";
 import { toXML } from "to-xml";
-import { ref, version, watch } from "vue";
+import { computed, reactive, ref, version, watch } from "vue";
 
+/**
+ * Provides the ability to parse XML or HTML source code from a string into a
+ * DOM Document.
+ */
 const parser = new DOMParser();
+/** The app config */
+export const config = useStorage(
+  `.${bucket.value}`,
+  () => {
+    /** The init empty value for the config */
+    const value = {} as TConfig;
+    validateConfig(value);
+    return value;
+  },
+  localStorage,
+  { mergeDefaults },
+);
+export const the: ComputedRef<TPage | undefined> = computed(
+  () =>
+    pages.value.find(({ id }) => id === config.value.selected) ??
+    pages.value[0],
+);
 const sfc = {
   async get(this: TPage) {
     if (!this.buffer && this.id) {
@@ -67,7 +94,7 @@ const script = {
     if (this.buffer) this.buffer.script = value;
   },
 };
-export const urls = new Map<string, string>();
+export const urls = reactive(new Map<string, string>());
 const routerLink = "router-link";
 const html = {
   async get(this: TPage) {
@@ -97,7 +124,7 @@ const html = {
                 src,
                 new URL(`${window.location.origin}${this.to}`),
               );
-              const url = src && pathname.replace(/^\//, "");
+              const url = src && pathname.replace(/^\/+/, "");
               const { origin } = new URL(url, window.location.origin);
               return bucket.value &&
                 url &&
@@ -115,7 +142,7 @@ const html = {
         src,
         new URL(`${window.location.origin}${this.to}`),
       );
-      const url = src && pathname.replace(/^\//, "");
+      const url = src && pathname.replace(/^\/+/, "");
       if (image)
         if (image.size) urls.set(url, URL.createObjectURL(image));
         else urls.set(url, "");
@@ -316,7 +343,6 @@ watch(
   [pages, importmap],
   debounce((arr) => {
     const [page, imap] = arr as [TPage[], TImportmap];
-    const type = "text/html";
     const body = index
       .replace(
         '<script type="importmap"></script>',
@@ -330,12 +356,44 @@ watch(
           )
           .join("")}</head>`,
       );
-    page.forEach(({ loc, path }) => {
-      if (loc) putObject(`${loc}/index.html`, type, body).catch(() => {});
-      putObject(path ? `${path}/index.html` : "index.html", type, body).catch(
-        () => {},
-      );
-    });
+    page.forEach(
+      ({ description, images, keywords, loc, path, title, to, type }) => {
+        const canonical = `https://${domain(bucket.value)}${to === "/" ? "" : to}`;
+        const htm = body.replace(
+          "</head>",
+          `<title>${title}</title><link rel="canonical" href="${canonical}">${[
+            ["description", description],
+            ["keywords", keywords.join()],
+          ]
+            .map(([name, content]) =>
+              content
+                ? `<meta name="${name as string}" content="${content}">`
+                : "",
+            )
+            .join("")}${[
+            ["url", canonical],
+            ["description", description],
+            ["title", title],
+            ["type", type],
+          ]
+            .map(([property, content]) =>
+              content
+                ? `<meta property="og:${property as string}" content="${content}">`
+                : "",
+            )
+            .join(
+              "",
+            )}${images.map(({ alt, url }) => `<meta property="og:image" content="https://${domain(bucket.value)}${url ?? ""}"><meta property="og:image:alt" content="${alt ?? ""}">`).join("")}</head>`,
+        );
+        if (loc)
+          putObject(`${loc}/index.html`, "text/html", htm).catch(() => {});
+        putObject(
+          path ? `${path}/index.html` : "index.html",
+          "text/html",
+          htm,
+        ).catch(() => {});
+      },
+    );
   }, second),
   { deep },
 );
