@@ -5,7 +5,7 @@ export default Object.fromEntries(
     "Cancel",
     "Change Frequency",
     "Close",
-    "Confirmation",
+    "Confirm",
     "Content Tree",
     "Do you really want to delete?",
     "Do you really want to remove an account from the list?",
