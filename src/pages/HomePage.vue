@@ -54,13 +54,11 @@ q-page.column
           q-timeline(color="black", layout="comfortable", side="left")
             q-timeline-entry(:title="t('Homepage')", icon="home")
               template(#subtitle)
-                // eslint-disable sonarjs/no-vue-bypass-sanitization
                 a.text-no-wrap.text-white(
                   :href="`https://${t('vues3.com')}`",
                   rel="noopener noreferrer",
                   target="_blank"
                 ) {{ t('vues3.com') }}
-                // eslint-enable sonarjs/no-vue-bypass-sanitization
             q-timeline-entry(:title="t('Repository')", icon="share")
               template(#subtitle)
                 a.text-no-wrap.text-white(
@@ -70,13 +68,11 @@ q-page.column
                 ) github.com/vues3
             q-timeline-entry(:title="t('Facebook')", icon="group")
               template(#subtitle)
-                // eslint-disable sonarjs/no-vue-bypass-sanitization
                 a.text-no-wrap.text-white(
                   :href="`https://${t('facebook.com/vues3')}`",
                   rel="noopener noreferrer",
                   target="_blank"
                 ) {{ t('facebook.com/vues3') }}
-                // eslint-enable sonarjs/no-vue-bypass-sanitization
         q-card-section
           .text-overline {{ t("ver") }}.: {{ APP_VERSION }}
 </template>
@@ -163,7 +159,7 @@ const remove = (name: number | string) => {
   $q.dialog({
     cancel: true,
     message: t("Do you really want to remove an account from the list?"),
-    title: t("Confirmation"),
+    title: t("Confirm"),
   }).onOk(() => {
     Reflect.deleteProperty(creds.value, name.toString());
     triggerRef(creds);
