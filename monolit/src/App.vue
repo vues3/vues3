@@ -3,6 +3,8 @@ router-view(v-slot="{ Component }")
   component(:is="Component", :the)
 </template>
 <script setup lang="ts">
+import type { MetaFlat } from "zhead";
+
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { useHead, useSeoMeta } from "@unhead/vue";
 import { pages } from "app/src/stores/data";
@@ -14,17 +16,16 @@ const route = useRoute();
 const the = computed(() => pages.value[0]);
 const a = computed(() => pages.value.find(({ id }) => id === route.name));
 const canonical = computed(() =>
-  typeof a.value?.to === "string"
-    ? `${window.location.origin}${a.value.to}`
-    : undefined,
+  a.value?.to === undefined
+    ? undefined
+    : `${window.location.origin}${a.value.to === "/" ? "" : a.value.to}`,
 );
+
 const ogImage = () =>
-  [
-    a.value?.alt[0] ?? "",
-    typeof a.value?.image[0] === "string"
-      ? `${window.location.origin}/${a.value.image[0]}`
-      : "",
-  ].map(([alt, url]) => ({ alt, url }));
+  a.value?.images.map(({ alt, url }) => ({
+    alt,
+    url: url ? `${window.location.origin}${url}` : "",
+  }));
 const favicon = ref("");
 const link = [
   [favicon, "icon"],
@@ -35,10 +36,12 @@ const title = () => a.value?.title ?? "";
 const ogTitle = () => a.value?.title ?? "";
 const description = () => a.value?.description ?? "";
 const ogDescription = () => a.value?.description ?? "";
-const ogType = () => a.value?.type;
+const ogType = () => a.value?.type as MetaFlat["ogType"];
 const ogUrl = canonical;
+const keywords = () => a.value?.keywords.join();
 useSeoMeta({
   description,
+  keywords,
   ogDescription,
   ogImage,
   ogTitle,
@@ -53,7 +56,7 @@ watch(
     let icon = null;
     try {
       icon = iconExists(name) ? getIcon(name) : await loadIcon(name);
-    } /* eslint-disable-line sonarjs/no-ignored-exceptions */ catch (error) {
+    } catch (error) {
       icon = getIcon("mdi:web");
     } finally {
       if (icon) {
