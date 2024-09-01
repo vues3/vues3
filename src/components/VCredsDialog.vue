@@ -128,7 +128,7 @@ const click = (value: Record<string, null | string>) => {
     if (props.value !== Bucket.value && Reflect.has(creds.value, Bucket.value))
       $q.dialog({
         message: t("That account already exists"),
-        title: t("Confirmation"),
+        title: t("Confirm"),
       });
     else {
       if (props.value && props.value !== Bucket.value)
