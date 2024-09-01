@@ -85,7 +85,7 @@ const updateSelected = (value: string | undefined) => {
 };
 const $q = useQuasar();
 const qtree: Ref<QTree | undefined> = ref();
-const title = t("Confirmation");
+const title = t("Confirm");
 const message = t("Do you really want to delete?");
 const deletePage = () => {
   if (the.value) {
