@@ -88,7 +88,9 @@ export const getObject = async (Key: string, ResponseCacheControl?: string) => {
       );
       const headers = new Headers({ "content-type": ContentType ?? "" });
       return new Response(Body as BodyInit, { headers });
-    } /* eslint-disable-line no-empty, sonarjs/no-ignored-exceptions */ catch (error) {}
+    } catch (e) {
+      //
+    }
   return new Response();
 };
 watch(bucket, (value) => {
