@@ -143,39 +143,6 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
                 v-model="icon",
                 v-model:model-pagination="pagination"
               )
-        q-input(
-          :label="t('Alternate Text')",
-          autogrow,
-          hint="the.alt",
-          type="textarea",
-          v-model.trim="alt"
-        )
-        q-img.q-mt-md.rounded-borders(
-          :ratio="16 / 9",
-          :src,
-          v-if="the.image[0]"
-        )
-          q-btn.all-pointer-events.absolute(
-            @click="the.image.splice(0, 1)",
-            color="white",
-            dense,
-            icon="close",
-            round,
-            size="xs",
-            style="top: 8px; right: 8px",
-            text-color="black"
-          )
-          .absolute-bottom.text-center the.image
-          template(#error)
-            .absolute-full.flex-center.flex
-              q-btn(
-                :label="t('Upload Image')",
-                @click="click",
-                color="primary"
-              )
-        q-img.q-mt-md.rounded-borders(:ratio="16 / 9", v-if="!the.image[0]")
-          .absolute-full.flex-center.flex
-            q-btn(:label="t('Upload Image')", @click="click", color="primary")
 q-page.column.full-height(v-if="the")
   q-tabs.text-grey(
     active-color="primary",
@@ -189,6 +156,7 @@ q-page.column.full-height(v-if="the")
     q-tab(label="template", name="template")
     q-tab(:label="`script${the.setup ? ' setup' : ''}`", name="script")
     q-tab(:label="`style${the.scoped ? ' scoped' : ''}`", name="style")
+    q-tab(label="images", name="images")
   q-separator
   q-tab-panels.full-width.col(v-model="config.tab")
     q-tab-panel.column(name="wysiwyg")
@@ -219,72 +187,31 @@ q-page.column.full-height(v-if="the")
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
+    q-tab-panel(name="images")
+      v-images
 q-page.column.full-height.bg-light(v-else)
   q-inner-loading(showing)
     q-spinner-hourglass
 </template>
 <script setup lang="ts">
-import type { TConfig, TPage } from "stores/types";
-import type { ComputedRef, Ref } from "vue";
-
 import { Icon } from "@iconify/vue";
 import mdi from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
-import { useFileDialog, useStorage } from "@vueuse/core";
 import changefreq from "assets/changefreq.json";
-import mimes from "assets/mimes.json";
 import types from "assets/types.json";
+import VImages from "components/VImages.vue";
 import VInteractiveTree from "components/VInteractiveTree.vue";
 import VSourceCode from "components/VSourceCode.vue";
 import VWysiwyg from "components/VWysiwyg.vue";
-import mime from "mime";
-import { uid, useQuasar } from "quasar";
-import { rightDrawer, urls } from "stores/app";
+import { config, rightDrawer, the } from "stores/app";
 import { data, pages } from "stores/data";
-import {
-  accept,
-  capture,
-  immediate,
-  itemsPerPage,
-  mergeDefaults,
-  multiple,
-  page,
-  reset,
-} from "stores/defaults";
-import { bucket, getObject, putFile } from "stores/s3";
-import { validateConfig } from "stores/types";
-import { computed, ref, watch } from "vue";
+import { itemsPerPage, page } from "stores/defaults";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-const config = useStorage(
-  `.${bucket.value}`,
-  () => {
-    const value = {} as TConfig;
-    validateConfig(value);
-    return value;
-  },
-  localStorage,
-  { mergeDefaults },
-);
-const $q = useQuasar();
 const { t } = useI18n();
 const filter = ref("");
 const pagination = ref({ itemsPerPage, page });
 const { icons } = mdi as Record<string, object[]>;
-const the: ComputedRef<TPage | undefined> = computed(
-  () =>
-    pages.value.find(({ id }) => id === config.value.selected) ??
-    pages.value[0],
-);
-const alt = computed({
-  get() {
-    return the.value?.alt[0];
-  },
-  set(value) {
-    if (the.value)
-      if (value) the.value.alt[0] = value;
-      else the.value.alt.splice(0, 1);
-  },
-});
 const icon = computed({
   get() {
     return the.value?.icon?.replace(/^mdi:/, "mdi-");
@@ -298,40 +225,8 @@ const loc = computed({
     return the.value?.loc ?? null;
   },
   set(value) {
-    if (the.value) the.value.loc = value?.replace(/^\/+|\/+$/g, "") ?? null;
+    if (the.value)
+      the.value.loc = value?.replace(/((?=(\/+))\2)$|(^\/+)/g, "") ?? null;
   },
-});
-const { files, open } = useFileDialog({ accept, capture, multiple, reset });
-const click = () => {
-  open();
-};
-const src: Ref<string | undefined> = ref();
-watch(
-  the,
-  async (value) => {
-    if (value?.image[0]) {
-      if (!urls.has(value.image[0]))
-        urls.set(
-          value.image[0],
-          URL.createObjectURL(await (await getObject(value.image[0])).blob()),
-        );
-      src.value = urls.get(value.image[0]);
-    } else src.value = undefined;
-  },
-  { immediate },
-);
-const message = t("The graphic file type is not suitable for use on the web");
-watch(files, (value) => {
-  if (value && the.value) {
-    const [file] = value;
-    const { type } = file;
-    if (mimes.includes(type)) {
-      const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
-      putFile(filePath, type, file).catch(() => {});
-      urls.set(filePath, URL.createObjectURL(file));
-      the.value.image[0] = filePath;
-      src.value = urls.get(filePath);
-    } else $q.notify({ message });
-  }
 });
 </script>
