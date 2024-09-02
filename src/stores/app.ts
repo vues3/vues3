@@ -227,12 +227,13 @@ watch(bucket, async (value) => {
           ].filter(Boolean) as string[],
         ),
     );
-    try {
-      await headObject(vue, cache);
-    } catch (e) {
-      localManifest.add(vue);
-    }
-    [...localManifest.add(".vite/manifest.json").add("robots.txt")]
+    const files = [vue, "robots.txt"];
+    (
+      await Promise.allSettled(files.map((file) => headObject(file, cache)))
+    ).forEach(({ status }, index) => {
+      if (status === "rejected") localManifest.add(files[index]);
+    });
+    [...localManifest.add(".vite/manifest.json")]
       .filter((x) => !serverManifest.has(x))
       .forEach((element) => {
         (async () => {
