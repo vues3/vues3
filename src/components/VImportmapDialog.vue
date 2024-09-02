@@ -2,7 +2,8 @@
 q-dialog(@hide="onDialogHide", ref="dialogRef")
   q-card.q-dialog-plugin
     q-card-section Import Map
-    q-card-section.h-96(horizontal)
+    q-separator
+    q-card-section.mt-4.h-96(horizontal)
       q-table.w-full(
         :columns,
         :rows,
