@@ -36,5 +36,7 @@ export default Object.fromEntries(
     "Upload Image",
     "ver",
     "vues3.com",
+    "Favicon uploaded successfully",
+    "Favicon upload failed",
   ].map((key) => [key, key]),
 );
