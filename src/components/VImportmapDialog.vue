@@ -18,14 +18,14 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       )
         template(#body-selection="props")
           q-checkbox(
-            :disable="props.row.name === 'vue'",
+            :disable="!props.rowIndex && props.row.name === 'vue'",
             dense,
             v-model="props.selected"
           )
         template(#body-cell="props")
           q-td(:auto-width="props.col.name === 'name'", :props)
             q-input.min-w-20(
-              :disable="props.row.name === 'vue'",
+              :disable="!props.rowIndex && props.row.name === 'vue'",
               dense,
               v-model.trim="props.row[props.col.name]"
             )
@@ -60,6 +60,12 @@ onMounted(() => {
     const id = uuid();
     return { id, name, path };
   });
+  rows.value.push(
+    ...rows.value.splice(
+      0,
+      rows.value.findIndex(({ name }) => name === "vue"),
+    ),
+  );
 });
 watch(
   rows,
