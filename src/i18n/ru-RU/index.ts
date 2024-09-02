@@ -41,4 +41,6 @@ export default Object.fromEntries([
   ["Upload Image", "Загрузить картинку"],
   ["ver", "вер"],
   ["vues3.com", "vues3.ru"],
+  ["Favicon uploaded successfully", "Фавиконка успешно загружена"],
+  ["Favicon upload failed", "Сбой загрузки фавиконки"],
 ]);
