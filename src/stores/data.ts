@@ -1,6 +1,7 @@
 import type { TPage } from "app/src/stores/types";
 import type { Ref } from "vue";
 
+import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { configurable, deep, flush } from "app/src/stores/defaults";
 import { validateData } from "app/src/stores/types";
 import { computed, ref, watch } from "vue";
@@ -121,6 +122,19 @@ export const pages = computed(() =>
     return value;
   }),
 );
+export const fetchIcon = async (name = "mdi:web") => {
+  let icon;
+  try {
+    icon = iconExists(name) ? getIcon(name) : await loadIcon(name);
+  } catch (error) {
+    icon = getIcon("mdi:web");
+  }
+  if (icon) {
+    const { body, height, left, top, width } = icon;
+    return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
+  }
+  return icon;
+};
 watch(
   data,
   (value) => {
