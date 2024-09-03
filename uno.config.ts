@@ -22,14 +22,14 @@ import transitionalSerifs from "./src/assets/fonts/TransitionalSerifs.json";
 
 export const fonts: Record<string, string> = Object.fromEntries(
   [
-    "Arial",
-    "Arial Black",
-    "Comic Sans MS",
-    "Courier New",
-    "Impact",
-    "Lucida Grande",
-    "Times New Roman",
-    "Verdana",
+    // "Arial",
+    // "Arial Black",
+    // "Comic Sans MS",
+    // "Courier New",
+    // "Impact",
+    // "Lucida Grande",
+    // "Times New Roman",
+    // "Verdana",
     ...dynamicSerifs,
     ...geometricGrotesques,
     ...humanisticGrotesques,
