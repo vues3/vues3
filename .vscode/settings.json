@@ -21,7 +21,8 @@
     "unhead",
     "unocss",
     "urlset",
-    "vueuse"
+    "vueuse",
+    "zhead"
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
   "svg.preview.background": "transparent"
