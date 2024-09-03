@@ -18,6 +18,7 @@ div
   )
 </template>
 <script setup lang="ts">
+import type { Preset } from "@unocss/core";
 import type {
   QEditor,
   QEditorCommand,
@@ -27,9 +28,10 @@ import type {
 } from "quasar";
 import type { Ref } from "vue";
 
+import presetWebFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
 import { useFileDialog } from "@vueuse/core";
-import defaults, { fonts } from "app/uno.config";
+import defaults, { customFetch, fonts } from "app/uno.config";
 import mimes from "assets/mimes.json";
 import VLinkDialog from "components/VLinkDialog.vue";
 import mime from "mime";
@@ -159,6 +161,7 @@ watch(files, (newFiles) => {
 const htm = ref(await props.modelValue);
 const rootElement = editor.value?.getContentEl;
 onMounted(() => {
+  defaults.presets.push(presetWebFonts({ customFetch, fonts }) as Preset);
   initUnocssRuntime({ bypassDefined, defaults, rootElement });
 });
 </script>
