@@ -33,9 +33,9 @@ const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
 const selected = ref();
 const { t } = useI18n();
 const the = computed(() => pages.value.find(({ id }) => id === selected.value));
-const nodes = computed(() => data.value as QTreeNode[]);
+const nodes = computed(() => data as QTreeNode[]);
 onMounted(() => {
-  const [{ id }] = data.value ?? [];
+  const [{ id }] = data;
   selected.value = id;
 });
 </script>
