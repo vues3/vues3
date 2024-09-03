@@ -198,9 +198,13 @@ export const importmap: Ref<TImportmap | undefined> = ref();
 watch(bucket, async (value) => {
   if (value) {
     (async () => {
-      data.value = JSON.parse(
-        (await (await getObject("index.json", cache)).text()) || "[{}]",
-      ) as TPage[];
+      data.push(
+        (
+          JSON.parse(
+            (await (await getObject("index.json", cache)).text()) || "[{}]",
+          ) as TPage[]
+        )[0],
+      );
     })().catch(() => {});
     (async () => {
       importmap.value = JSON.parse(
@@ -242,7 +246,7 @@ watch(bucket, async (value) => {
         })().catch(() => {});
       });
   } else {
-    data.value = undefined;
+    data.length = 0;
     urls.forEach((url, key) => {
       URL.revokeObjectURL(url);
       urls.delete(key);
@@ -302,6 +306,15 @@ export const domain = (value: string) => {
   }
   return value;
 };
+export const Fonts = reactive([]);
+export const fonts = computed(() =>
+  Object.fromEntries(
+    Fonts.map((value: string) => [
+      value.toLowerCase().replaceAll(" ", "_"),
+      value,
+    ]),
+  ),
+);
 const value = false;
 const contenteditable = { value, writable };
 watch(
