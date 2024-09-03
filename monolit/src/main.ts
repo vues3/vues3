@@ -7,22 +7,34 @@ import presetWebFonts from "@unocss/preset-web-fonts";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
 import { data, pages } from "app/src/stores/data";
-import defaults, { customFetch, fonts } from "app/uno.config";
+import defaults, { customFetch } from "app/uno.config";
 import { createApp } from "vue";
 
 import vueApp from "./App.vue";
 import { fix, ready, router } from "./stores/monolit";
 import "./style.sass";
 
-const rootElement = () => document.getElementById("app") as Element;
-defaults.presets.push(presetWebFonts({ customFetch, fonts }) as Preset);
-initUnocssRuntime({ defaults, ready, rootElement });
-
+(async () => {
+  const response = await fetch("/fonts.json");
+  const fonts = Object.fromEntries(
+    (response.ok ? ((await response.json()) as string[]) : []).map((value) => [
+      value.toLowerCase().replaceAll(" ", "_"),
+      value,
+    ]),
+  );
+  defaults.presets.push(
+    presetWebFonts({
+      customFetch,
+      fonts,
+    }) as Preset,
+  );
+  const rootElement = () => document.getElementById("app") as Element;
+  initUnocssRuntime({ defaults, ready, rootElement });
+})().catch(() => {});
 declare const window: {
   app: App;
 } & typeof globalThis &
   Window;
-
 window.console.info(
   "👨‍🚀",
   "The VueS3",
@@ -33,11 +45,11 @@ window.app = createApp(vueApp);
 window.app.use(router);
 window.app.use(createHead());
 window.app.mount("#app");
-const response: Response = await fetch("/index.json");
-data.value = response.ok
-  ? ((await response.json()) as TPage[])
-  : ([{}] as TPage[]);
-fix(data.value);
+const response = await fetch("/index.json");
+data.push(
+  response.ok ? ((await response.json()) as TPage[])[0] : ({} as TPage),
+);
+fix(data);
 pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
   const alias = (loc?.replaceAll(" ", "_") ?? "")
     .replace(/^\/?/, "/")
