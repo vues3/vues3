@@ -1,10 +1,10 @@
 import type { TPage } from "app/src/stores/types";
-import type { Ref } from "vue";
+import type { Reactive } from "vue";
 
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { configurable, deep, flush } from "app/src/stores/defaults";
 import { validateData } from "app/src/stores/types";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, watch } from "vue";
 
 const getPages = (pages: TPage[]): TPage[] =>
   pages.flatMap((element) => [element, ...getPages(element.children ?? [])]);
@@ -80,11 +80,10 @@ const title = {
     return this.header ?? this.name;
   },
 };
-export const data: Ref<TPage[] | undefined> = ref();
-export const fonts = reactive([]);
+export const data: Reactive<TPage[]> = reactive([]);
 const root = {
   get() {
-    return data.value?.[0];
+    return data[0];
   },
 };
 const fixDeep = (
@@ -116,7 +115,7 @@ const fixDeep = (
     );
   });
 };
-const get = () => getPages(data.value ?? []);
+const get = () => getPages(data);
 export const pages = computed(() =>
   get().map((value: TPage) => {
     Reflect.defineProperty(value, "pages", { get });
@@ -139,10 +138,8 @@ export const fetchIcon = async (name = "mdi:web") => {
 watch(
   data,
   (value) => {
-    if (value) {
-      validateData(value);
-      fixDeep({ value });
-    }
+    validateData(value);
+    fixDeep({ value });
   },
   { deep, flush },
 );
