@@ -5,7 +5,7 @@ import { useStorage } from "@vueuse/core";
 import mimes from "assets/mimes.json";
 import mime from "mime";
 import { debounce, uid } from "quasar";
-import { data, pages } from "stores/data";
+import { data, fetchIcon, pages } from "stores/data";
 import {
   cache,
   configurable,
@@ -358,41 +358,43 @@ watch(
           .join("")}</head>`,
       );
     page.forEach(
-      ({ description, images, keywords, loc, path, title, to, type }) => {
+      ({ description, icon, images, keywords, loc, path, title, to, type }) => {
         const canonical = `https://${domain(bucket.value)}${to === "/" ? "" : to}`;
-        const htm = body.replace(
-          "</head>",
-          `<title>${title}</title><link rel="canonical" href="${canonical}">${[
-            ["description", description],
-            ["keywords", keywords.join()],
-          ]
-            .map(([name, content]) =>
-              content
-                ? `<meta name="${name as string}" content="${content}">`
-                : "",
-            )
-            .join("")}${[
-            ["url", canonical],
-            ["description", description],
-            ["title", title],
-            ["type", type],
-          ]
-            .map(([property, content]) =>
-              content
-                ? `<meta property="og:${property as string}" content="${content}">`
-                : "",
-            )
-            .join(
-              "",
-            )}${images.map(({ alt, url }) => `<meta property="og:image" content="https://${domain(bucket.value)}${url ?? ""}"><meta property="og:image:alt" content="${alt ?? ""}">`).join("")}</head>`,
-        );
-        if (loc)
-          putObject(`${loc}/index.html`, "text/html", htm).catch(() => {});
-        putObject(
-          path ? `${path}/index.html` : "index.html",
-          "text/html",
-          htm,
-        ).catch(() => {});
+        (async () => {
+          const htm = body.replace(
+            "</head>",
+            `<title>${title}</title><link rel="canonical" href="${canonical}">${[
+              ["description", description],
+              ["keywords", keywords.join()],
+            ]
+              .map(([name, content]) =>
+                content
+                  ? `<meta name="${name as string}" content="${content}">`
+                  : "",
+              )
+              .join("")}${[
+              ["url", canonical],
+              ["description", description],
+              ["title", title],
+              ["type", type],
+            ]
+              .map(([property, content]) =>
+                content
+                  ? `<meta property="og:${property as string}" content="${content}">`
+                  : "",
+              )
+              .join(
+                "",
+              )}${images.map(({ alt, url }) => `<meta property="og:image" content="https://${domain(bucket.value)}${url ?? ""}"><meta property="og:image:alt" content="${alt ?? ""}">`).join("")}<link href='${(await fetchIcon(icon ?? undefined)) ?? ""}' rel="icon"></head>`,
+          );
+          if (loc)
+            putObject(`${loc}/index.html`, "text/html", htm).catch(() => {});
+          putObject(
+            path ? `${path}/index.html` : "index.html",
+            "text/html",
+            htm,
+          ).catch(() => {});
+        })().catch(() => {});
       },
     );
   }, second),
