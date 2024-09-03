@@ -4,7 +4,7 @@ import type { Ref } from "vue";
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { configurable, deep, flush } from "app/src/stores/defaults";
 import { validateData } from "app/src/stores/types";
-import { computed, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 
 const getPages = (pages: TPage[]): TPage[] =>
   pages.flatMap((element) => [element, ...getPages(element.children ?? [])]);
@@ -81,6 +81,7 @@ const title = {
   },
 };
 export const data: Ref<TPage[] | undefined> = ref();
+export const fonts = reactive([]);
 const root = {
   get() {
     return data.value?.[0];
