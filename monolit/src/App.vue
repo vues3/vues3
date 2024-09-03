@@ -5,9 +5,8 @@ router-view(v-slot="{ Component }")
 <script setup lang="ts">
 import type { MetaFlat } from "zhead";
 
-import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { useHead, useSeoMeta } from "@unhead/vue";
-import { pages } from "app/src/stores/data";
+import { fetchIcon, pages } from "app/src/stores/data";
 import { immediate } from "app/src/stores/defaults";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -20,13 +19,12 @@ const canonical = computed(() =>
     ? undefined
     : `${window.location.origin}${a.value.to === "/" ? "" : a.value.to}`,
 );
-
 const ogImage = () =>
   a.value?.images.map(({ alt, url }) => ({
     alt,
     url: url ? `${window.location.origin}${url}` : "",
   }));
-const favicon = ref("");
+const favicon = ref();
 const link = [
   [favicon, "icon"],
   [canonical, "canonical"],
@@ -52,18 +50,7 @@ useSeoMeta({
 watch(
   a,
   async (value) => {
-    const name = value?.icon ?? "mdi:web";
-    let icon = null;
-    try {
-      icon = iconExists(name) ? getIcon(name) : await loadIcon(name);
-    } catch (error) {
-      icon = getIcon("mdi:web");
-    } finally {
-      if (icon) {
-        const { body, height, left, top, width } = icon;
-        favicon.value = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
-      }
-    }
+    favicon.value = await fetchIcon(value?.icon ?? undefined);
   },
   { immediate },
 );
