@@ -1,11 +1,13 @@
+import type { Preset } from "@unocss/core";
 import type { TPage } from "app/src/stores/types";
 import type { App } from "vue";
 
 import { createHead } from "@unhead/vue";
+import presetWebFonts from "@unocss/preset-web-fonts";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
 import { data, pages } from "app/src/stores/data";
-import defaults from "app/uno.config";
+import defaults, { customFetch, fonts } from "app/uno.config";
 import { createApp } from "vue";
 
 import vueApp from "./App.vue";
@@ -13,6 +15,7 @@ import { fix, ready, router } from "./stores/monolit";
 import "./style.sass";
 
 const rootElement = () => document.getElementById("app") as Element;
+defaults.presets.push(presetWebFonts({ customFetch, fonts }) as Preset);
 initUnocssRuntime({ defaults, ready, rootElement });
 
 declare const window: {
