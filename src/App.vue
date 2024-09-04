@@ -40,6 +40,15 @@ q-layout(view="hHh Lpr lff")
               q-avatar(color="primary", icon="android", text-color="white")
             q-item-section
               q-item-label Robots.txt
+          q-item(
+            @click="() => { click(VFontsDialog); }",
+            clickable,
+            v-close-popup
+          )
+            q-item-section(avatar)
+              q-avatar(color="primary", icon="spellcheck", text-color="white")
+            q-item-section
+              q-item-label Fonts
           q-item(clickable, to="/", v-close-popup)
             q-item-section(avatar)
               q-avatar(color="primary", icon="logout", text-color="white")
@@ -62,6 +71,7 @@ import type { Component } from "vue";
 import "@unocss/reset/tailwind-compat.css";
 import { useQuasar } from "quasar";
 import VFaviconDialog from "src/components/VFaviconDialog.vue";
+import VFontsDialog from "src/components/VFontsDialog.vue";
 import VImportmapDialog from "src/components/VImportmapDialog.vue";
 import VRobotsDialog from "src/components/VRobotsDialog.vue";
 import { rightDrawer } from "stores/app";
