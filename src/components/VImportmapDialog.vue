@@ -55,7 +55,7 @@ const selected: Ref<Record<string, string>[]> = ref([]);
 const columns = json as QTableProps["columns"];
 const rows: Ref<Record<string, string>[]> = ref([]);
 onMounted(() => {
-  const { imports = {} } = importmap.value ?? {};
+  const { imports = {} } = importmap;
   rows.value = Object.entries(imports).map(([name, path]) => {
     const id = uid();
     return { id, name, path };
@@ -69,9 +69,9 @@ onMounted(() => {
 });
 watch(
   rows,
-  (value) => {
-    if (importmap.value)
-      importmap.value.imports = Object.fromEntries(
+  (value, oldValue) => {
+    if (oldValue)
+      importmap.imports = Object.fromEntries(
         value
           .filter(({ name, path }) => path && name)
           .map(({ name, path }) => [name, path]),
