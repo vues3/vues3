@@ -15,7 +15,7 @@ import {
 } from "stores/defaults";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
-const { language, modelValue } = withDefaults(
+const props = withDefaults(
   defineProps<{
     language?: string;
     modelValue?: Promise<string> | string;
@@ -26,10 +26,11 @@ const { language, modelValue } = withDefaults(
   },
 );
 const emit = defineEmits(["update:modelValue"]);
-const value = await modelValue;
+const value = await props.modelValue;
 const monaco: Ref<HTMLElement | undefined> = ref();
 let standaloneCodeEditor: editor.IStandaloneCodeEditor | undefined;
 const unicodeHighlight = { ambiguousCharacters };
+const { language } = props;
 onMounted(() => {
   if (monaco.value) {
     standaloneCodeEditor = editor.create(monaco.value, {
