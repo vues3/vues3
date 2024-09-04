@@ -106,7 +106,7 @@ const sfc = {
         cache,
       });
       const value = markRaw(
-        JSON.parse(response.ok ? await response.text() : "{}"),
+        response.ok ? await response.json() : {},
       ) as TComponent;
       validateComponent(value);
       Reflect.defineProperty(this, "buffer", { value });
