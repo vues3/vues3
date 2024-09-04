@@ -13,7 +13,7 @@
   "extends": [
     "airbnb-base",
     "airbnb-typescript/base",
-    "plugin:@typescript-eslint/strict-type-checked",
+    "plugin:@typescript-eslint/recommended-type-checked",
     "plugin:vue/vue3-strongly-recommended",
     "plugin:vue-pug/vue3-recommended",
     "plugin:perfectionist/recommended-natural-legacy",
