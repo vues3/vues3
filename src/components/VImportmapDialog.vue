@@ -42,10 +42,9 @@ import type { QTableProps } from "quasar";
 import type { Ref } from "vue";
 
 import json from "assets/importmap.json";
-import { useDialogPluginComponent } from "quasar";
+import { uid, useDialogPluginComponent } from "quasar";
 import { importmap } from "stores/app";
 import { deep } from "stores/defaults";
-import uuid from "uuid-random";
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -58,7 +57,7 @@ const rows: Ref<Record<string, string>[]> = ref([]);
 onMounted(() => {
   const { imports = {} } = importmap.value ?? {};
   rows.value = Object.entries(imports).map(([name, path]) => {
-    const id = uuid();
+    const id = uid();
     return { id, name, path };
   });
   rows.value.push(
@@ -81,7 +80,7 @@ watch(
   { deep },
 );
 const addRow = () => {
-  const id = uuid();
+  const id = uid();
   const name = "";
   const path = "";
   rows.value.push({ id, name, path });
