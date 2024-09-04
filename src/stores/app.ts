@@ -1,5 +1,5 @@
 import type { TComponent, TConfig, TImportmap, TPage } from "stores/types";
-import type { ComputedRef, Ref } from "vue";
+import type { ComputedRef } from "vue";
 
 import { useStorage } from "@vueuse/core";
 import mimes from "assets/mimes.json";
@@ -194,7 +194,8 @@ const html = {
   },
 };
 const vue = `assets/vue.esm-browser.prod-${version}.js`;
-export const importmap: Ref<TImportmap | undefined> = ref();
+export const importmap = reactive({} as TImportmap);
+export const fonts = reactive([]);
 watch(bucket, async (value) => {
   if (value) {
     (async () => {
@@ -207,10 +208,19 @@ watch(bucket, async (value) => {
       );
     })().catch(() => {});
     (async () => {
-      importmap.value = JSON.parse(
+      fonts.length = 0;
+      fonts.push(
+        ...(JSON.parse(
+          (await (await getObject("fonts.json", cache)).text()) || "[]",
+        ) as never[]),
+      );
+    })().catch(() => {});
+    (async () => {
+      const { imports } = JSON.parse(
         (await (await getObject("index.importmap", cache)).text()) || "{}",
       ) as TImportmap;
-      validateImportmap(importmap.value);
+      importmap.imports = imports;
+      validateImportmap(importmap);
     })().catch(() => {});
     const [localManifest, serverManifest] = (
       (await Promise.all([
@@ -280,6 +290,15 @@ export const putImage = async (file: File) => {
   return { filePath, message };
 };
 watch(
+  fonts,
+  debounce((value, oldValue) => {
+    if (oldValue)
+      putObject("fonts.json", "application/json", JSON.stringify(value)).catch(
+        () => {},
+      );
+  }),
+);
+watch(
   importmap,
   debounce((value, oldValue) => {
     const { imports } = value as TImportmap;
@@ -306,15 +325,6 @@ export const domain = (value: string) => {
   }
   return value;
 };
-export const Fonts = reactive([]);
-export const fonts = computed(() =>
-  Object.fromEntries(
-    Fonts.map((value: string) => [
-      value.toLowerCase().replaceAll(" ", "_"),
-      value,
-    ]),
-  ),
-);
 const value = false;
 const contenteditable = { value, writable };
 watch(
