@@ -10,7 +10,6 @@ import {
   cache,
   configurable,
   deep,
-  flush,
   mergeDefaults,
   second,
   writable,
@@ -327,22 +326,18 @@ export const domain = (value: string) => {
 };
 const value = false;
 const contenteditable = { value, writable };
-watch(
-  pages,
-  (objects) => {
-    objects.forEach((object) => {
-      Object.defineProperties(object, {
-        contenteditable,
-        html,
-        script,
-        sfc,
-        style,
-        template,
-      });
+watch(pages, (objects) => {
+  objects.forEach((object) => {
+    Object.defineProperties(object, {
+      contenteditable,
+      html,
+      script,
+      sfc,
+      style,
+      template,
     });
-  },
-  { flush },
-);
+  });
+});
 watch(
   pages,
   debounce((page: TPage[]) => {
