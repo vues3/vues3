@@ -2,7 +2,7 @@ import type { TPage } from "app/src/stores/types";
 import type { Reactive } from "vue";
 
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
-import { configurable, deep, flush } from "app/src/stores/defaults";
+import { configurable } from "app/src/stores/defaults";
 import { validateData } from "app/src/stores/types";
 import { computed, reactive, watch } from "vue";
 
@@ -139,11 +139,7 @@ export const getFonts = (fonts: string[]) =>
   Object.fromEntries(
     fonts.map((value) => [value.toLowerCase().replaceAll(" ", "_"), value]),
   );
-watch(
-  data,
-  (value) => {
-    validateData(value);
-    fixDeep({ value });
-  },
-  { deep, flush },
-);
+watch(data, (value) => {
+  validateData(value);
+  fixDeep({ value });
+});
