@@ -34,19 +34,19 @@ declare const window: {
 } & typeof globalThis &
   Window;
 window.console.info(
-  "👨‍🚀",
-  "The VueS3",
+  "⛵",
+  "VueS3",
   `ver:${__APP_VERSION__}`,
   "https://vues3.com",
+);
+const response = await fetch("/index.json");
+data.push(
+  response.ok ? ((await response.json()) as TPage[])[0] : ({} as TPage),
 );
 window.app = createApp(vueApp);
 window.app.use(router);
 window.app.use(createHead());
 window.app.mount("#app");
-const response = await fetch("/index.json");
-data.push(
-  response.ok ? ((await response.json()) as TPage[])[0] : ({} as TPage),
-);
 fix(data);
 pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
   const alias = (loc?.replaceAll(" ", "_") ?? "")
