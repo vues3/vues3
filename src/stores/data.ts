@@ -135,6 +135,10 @@ export const fetchIcon = async (name = "mdi:web") => {
   }
   return icon;
 };
+export const getFonts = (fonts: string[]) =>
+  Object.fromEntries(
+    fonts.map((value) => [value.toLowerCase().replaceAll(" ", "_"), value]),
+  );
 watch(
   data,
   (value) => {
