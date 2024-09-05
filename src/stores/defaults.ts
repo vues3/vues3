@@ -21,7 +21,6 @@ export const writable = true;
 export const behavior = "smooth";
 export const top = 0;
 export const left = 0;
-export const flush = "sync";
 export const bypassDefined = true;
 export const second = 1000;
 export const automaticLayout = true;
