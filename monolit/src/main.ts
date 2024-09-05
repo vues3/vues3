@@ -6,7 +6,7 @@ import { createHead } from "@unhead/vue";
 import presetWebFonts from "@unocss/preset-web-fonts";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
-import { data, pages } from "app/src/stores/data";
+import { data, getFonts, pages } from "app/src/stores/data";
 import { customFetch } from "app/src/stores/defaults";
 import defaults from "app/uno.config";
 import { createApp } from "vue";
@@ -17,11 +17,8 @@ import "./style.sass";
 
 (async () => {
   const response = await fetch("/fonts.json");
-  const fonts = Object.fromEntries(
-    (response.ok ? ((await response.json()) as string[]) : []).map((value) => [
-      value.toLowerCase().replaceAll(" ", "_"),
-      value,
-    ]),
+  const fonts = getFonts(
+    response.ok ? ((await response.json()) as string[]) : [],
   );
   defaults.presets.push(
     presetWebFonts({
