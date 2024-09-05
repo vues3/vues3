@@ -28,7 +28,7 @@ const lintCommand = 'eslint "./**/*.{js,ts,mjs,cjs,vue}"';
 const eslint = { lintCommand };
 const include = [fileURLToPath(new URL("./src/i18n", import.meta.url))];
 const extractors = [extractorPug()];
-const configFile = "./uno.config.js";
+const configFile = "./uno.config.ts";
 const vitePlugins = [
   ["@intlify/unplugin-vue-i18n/vite", { include }],
   ["vite-plugin-checker", { eslint, vueTsc }, { server }],
