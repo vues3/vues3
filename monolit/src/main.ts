@@ -7,7 +7,8 @@ import presetWebFonts from "@unocss/preset-web-fonts";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
 import { data, pages } from "app/src/stores/data";
-import defaults, { customFetch } from "app/uno.config";
+import { customFetch } from "app/src/stores/defaults";
+import defaults from "app/uno.config";
 import { createApp } from "vue";
 
 import vueApp from "./App.vue";
