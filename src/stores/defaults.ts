@@ -31,3 +31,4 @@ export const scrollBeyondLastLine = false;
 export const autoIndent = "full";
 export const ambiguousCharacters = false;
 export const threshold = 0.1;
+export const customFetch = async (url: string) => (await fetch(url)).text();
