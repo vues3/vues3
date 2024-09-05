@@ -5,7 +5,7 @@ div
     :dense="$q.screen.lt.md",
     :fonts,
     :model-value="htm",
-    :placeholder="t('Add some content to your page...')",
+    :placeholder,
     :toolbar,
     @drop="capture",
     @paste="capture",
@@ -18,7 +18,6 @@ div
   )
 </template>
 <script setup lang="ts">
-import type { Preset } from "@unocss/core";
 import type {
   QEditor,
   QEditorCommand,
@@ -31,15 +30,16 @@ import type { Ref } from "vue";
 import presetWebFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
 import { useFileDialog } from "@vueuse/core";
-import defaults, { customFetch, fonts } from "app/uno.config";
+import Defaults from "app/uno.config";
 import mimes from "assets/mimes.json";
 import VLinkDialog from "components/VLinkDialog.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
-import { urls } from "stores/app";
-import { accept, bypassDefined } from "stores/defaults";
+import { fonts as Fonts, urls } from "stores/app";
+import { getFonts } from "stores/data";
+import { accept, bypassDefined, customFetch, immediate } from "stores/defaults";
 import { putFile } from "stores/s3";
-import { nextTick, onMounted, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 const props = withDefaults(
@@ -54,6 +54,37 @@ defineEmits(["update:modelValue"]);
 const $q = useQuasar();
 const { t } = useI18n();
 const editor: Ref<QEditor | undefined> = ref();
+const placeholder = t("Add some content to your page...");
+const rootElement = editor.value?.getContentEl;
+watch(
+  () => getFonts(Fonts),
+  (fonts) => {
+    let { presets } = Defaults;
+    presets = [
+      ...presets,
+      presetWebFonts({
+        customFetch,
+        fonts,
+      }),
+    ];
+    const defaults = { presets };
+    initUnocssRuntime({ bypassDefined, defaults, rootElement });
+  },
+  { immediate },
+);
+const fonts = computed(() => ({
+  ...getFonts([
+    "Arial",
+    "Arial Black",
+    "Comic Sans",
+    "Courier New",
+    "Impact",
+    "Lucida Grande",
+    "Times New Roman",
+    "Verdana",
+  ]),
+  ...getFonts(Fonts),
+}));
 const message = t("The graphic file type is not suitable for use on the web");
 const insertImage = (file: File) => {
   const { type } = file;
@@ -112,7 +143,7 @@ const definitions = {
   ),
 };
 const list = "no-icons";
-const toolbar = [
+const toolbar = computed(() => [
   ["left", "center", "right", "justify"],
   ["bold", "italic", "strike", "underline", "subscript", "superscript"],
   ["hr", "link"],
@@ -135,7 +166,12 @@ const toolbar = [
         true,
         true,
       ],
-      ["defaultFont", ["default_font", ...Object.keys(fonts)], false, true],
+      [
+        "defaultFont",
+        ["default_font", ...Object.keys(fonts.value)],
+        false,
+        true,
+      ],
     ].map(([key, options, fixedLabel, fixedIcon]) => ({
       fixedIcon,
       fixedLabel,
@@ -154,14 +190,9 @@ const toolbar = [
   ["quote", "unordered", "ordered", "outdent", "indent"],
   ["undo", "redo"],
   ["upload", "dashboard", "share"],
-] as const;
+]);
 watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });
 const htm = ref(await props.modelValue);
-const rootElement = editor.value?.getContentEl;
-onMounted(() => {
-  defaults.presets.push(presetWebFonts({ customFetch, fonts }) as Preset);
-  initUnocssRuntime({ bypassDefined, defaults, rootElement });
-});
 </script>
