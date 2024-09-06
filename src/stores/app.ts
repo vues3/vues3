@@ -386,9 +386,7 @@ watch(
               ["keywords", keywords.join()],
             ]
               .map(([name, content]) =>
-                content
-                  ? `<meta name="${name as string}" content="${content}">`
-                  : "",
+                content ? `<meta name="${name!}" content="${content}">` : "",
               )
               .join("")}${[
               ["url", canonical],
@@ -398,7 +396,7 @@ watch(
             ]
               .map(([property, content]) =>
                 content
-                  ? `<meta property="og:${property as string}" content="${content}">`
+                  ? `<meta property="og:${property!}" content="${content}">`
                   : "",
               )
               .join(
