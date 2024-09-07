@@ -59,7 +59,7 @@ const path = {
   get(this: TPage) {
     return this.branch
       .slice(1)
-      .map(({ name }) => name?.replaceAll(" ", "_") ?? "_")
+      .map(({ name }) => name?.replaceAll(" ", "_") ?? "-")
       .join("/");
   },
 };
