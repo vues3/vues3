@@ -122,18 +122,16 @@ export const pages = computed(() =>
     return value;
   }),
 );
-export const fetchIcon = async (name = "mdi:web") => {
-  let icon;
-  try {
-    icon = iconExists(name) ? getIcon(name) : await loadIcon(name);
-  } catch (error) {
-    icon = getIcon("mdi:web");
+export const fetchIcon = async (name: null | string | undefined) => {
+  if (name) {
+    const icon = iconExists(name) ? getIcon(name) : await loadIcon(name);
+    if (icon) {
+      const { body, height, left, top, width } = icon;
+      return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
+    }
+    return icon;
   }
-  if (icon) {
-    const { body, height, left, top, width } = icon;
-    return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
-  }
-  return icon;
+  return null;
 };
 export const getFonts = (fonts: string[]) =>
   Object.fromEntries(
