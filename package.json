@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^4.0.0",
-    "@prettier/plugin-pug": "^3.0.0",
+    "@prettier/plugin-pug": "^3.1.0",
     "@quasar/app-vite": "^2.0.0-beta.21",
     "@quasar/extras": "^1.16.12",
     "@quasar/quasar-app-extension-qiconpicker": "^2.0.7",
@@ -66,7 +66,7 @@
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.3",
-    "eslint-plugin-perfectionist": "^3.4.0",
+    "eslint-plugin-perfectionist": "^3.5.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-tsdoc": "^0.3.0",
     "eslint-plugin-vue": "^9.28.0",
