@@ -1,3 +1,9 @@
+/**
+ * Основное место хранения общего программного кода для приложение vueS3
+ *
+ * @packageDocumentation
+ */
+
 import type { TComponent, TConfig, TImportmap, TPage } from "stores/types";
 import type { ComputedRef } from "vue";
 
@@ -23,16 +29,24 @@ import {
 import { toXML } from "to-xml";
 import { computed, reactive, ref, version, watch } from "vue";
 
-/**
- * Provides the ability to parse XML or HTML source code from a string into a
- * DOM Document.
- */
+/** Экземпляр парсера DOM для преобразования шаблона в WYSIWYG и обратно */
 const parser = new DOMParser();
-/** The app config */
+/**
+ * Хранилище настроек приложения. В нем сохраняется последний открытый документ,
+ * распахнутая ветка дерева и выбранная закладка.
+ */
 export const config = useStorage(
   `.${bucket.value}`,
+  /**
+   * Функция инициализации хранилища настроек приложения
+   *
+   * @returns Объект типа TConfig инициализированный значениями по умолчанию
+   */
   () => {
-    /** The init empty value for the config */
+    /**
+     * Пустой объект для валидатора, который проставляет в нем свойства со
+     * значениями по умолчанию в соответствии с TConfig
+     */
     const value = {} as TConfig;
     validateConfig(value);
     return value;
@@ -40,14 +54,36 @@ export const config = useStorage(
   localStorage,
   { mergeDefaults },
 );
+/** Выбранная пользователем страница в дереве */
 export const the: ComputedRef<TPage | undefined> = computed(
+  /**
+   * Функция поиска выбранной пользователем страницы в общем массиве страниц
+   *
+   * @returns Выбранная пользователем страница, если такая существует, либо
+   *   корневая страница, если такая существует
+   */
   () =>
     pages.value.find(({ id }) => id === config.value.selected) ??
     pages.value[0],
 );
+/**
+ * Динамическое вычисляемое свойство для страницы, в нем содержится компонент,
+ * полученный для страницы из хранилища S3.
+ */
 const sfc = {
+  /**
+   * Геттер свойства sfc, который при первом обращении создает свойство buffer и
+   * инициализирует его значением, загруженным из хранилища S3. Также он создает
+   * триггер, отслеживающий изменения свойства buffer. Если значение buffer
+   * изменяется, происходит запись в хранилище S3 по соответствующему
+   * идентификатору.
+   *
+   * @param this - Страница , которой назначено свойство sfc
+   * @returns Обещание на значение свойства buffer
+   */
   async get(this: TPage) {
     if (!this.buffer && this.id) {
+      /** Компонент, загружаемый из хранилища S3 */
       const value = JSON.parse(
         (await (await getObject(`pages/${this.id}.json`, cache)).text()) ||
           "{}",
@@ -56,14 +92,26 @@ const sfc = {
       Reflect.defineProperty(this, "buffer", { configurable, value });
       watch(
         this.buffer,
-        debounce((component) => {
-          if (this.id)
-            putObject(
-              `pages/${this.id}.json`,
-              "application/json",
-              JSON.stringify(component),
-            ).catch(() => {});
-        }, second),
+        debounce(
+          /**
+           * Функция записи компонента с соответствущим идентификатором в
+           * хранилище S3
+           *
+           * @param component - Компонент страницы для записи
+           */
+          (component) => {
+            if (this.id)
+              putObject(
+                `pages/${this.id}.json`,
+                "application/json",
+                JSON.stringify(component),
+              ).catch(
+                /** Фейковая функция обнаружения сбоев */
+                () => {},
+              );
+          },
+          second,
+        ),
       );
     }
     return this.buffer;
