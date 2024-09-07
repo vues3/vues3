@@ -43,6 +43,8 @@ const response = await fetch("/index.json");
 data.push(
   response.ok ? ((await response.json()) as TPage[])[0] : ({} as TPage),
 );
+const child = document.head.querySelector("link[type='icon']");
+if (child) document.head.removeChild(child);
 window.app = createApp(vueApp);
 window.app.use(router);
 window.app.use(createHead());
