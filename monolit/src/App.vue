@@ -24,11 +24,10 @@ const ogImage = () =>
     url: url ? `${window.location.origin}${url}` : "",
   }));
 const favicon = ref();
-const key = "icon";
 const link = [
-  [favicon, "icon", key],
+  [favicon, "icon", "icon"],
   [canonical, "canonical"],
-].map(([href, rel]) => ({ href, rel }));
+].map(([href, rel, key]) => ({ href, key, rel }));
 useHead({ link });
 const title = () => a.value?.title ?? "";
 const ogTitle = () => a.value?.title ?? "";
