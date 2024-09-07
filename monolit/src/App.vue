@@ -7,7 +7,6 @@ import type { MetaFlat } from "zhead";
 
 import { useHead, useSeoMeta } from "@unhead/vue";
 import { fetchIcon, pages } from "app/src/stores/data";
-import { immediate } from "app/src/stores/defaults";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
@@ -25,8 +24,9 @@ const ogImage = () =>
     url: url ? `${window.location.origin}${url}` : "",
   }));
 const favicon = ref();
+const key = "icon";
 const link = [
-  [favicon, "icon"],
+  [favicon, "icon", key],
   [canonical, "canonical"],
 ].map(([href, rel]) => ({ href, rel }));
 useHead({ link });
@@ -47,11 +47,7 @@ useSeoMeta({
   ogUrl,
   title,
 });
-watch(
-  a,
-  async (value) => {
-    favicon.value = await fetchIcon(value?.icon ?? undefined);
-  },
-  { immediate },
-);
+watch(a, async (value) => {
+  favicon.value = (await fetchIcon(value?.icon)) ?? "/favicon.ico";
+});
 </script>
