@@ -24,7 +24,9 @@
     "unocss",
     "urlset",
     "vueuse",
-    "zhead"
+    "zhead",
+    "валидатора",
+    "парсера"
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
   "svg.preview.background": "transparent"
