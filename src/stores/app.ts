@@ -449,7 +449,7 @@ watch(
               )
               .join(
                 "",
-              )}${images.map(({ alt, url }) => `<meta property="og:image" content="https://${domain(bucket.value)}${url ?? ""}"><meta property="og:image:alt" content="${alt ?? ""}">`).join("")}<link href='${(await fetchIcon(icon ?? undefined)) ?? ""}' rel="icon"></head>`,
+              )}${images.map(({ alt, url }) => `<meta property="og:image" content="https://${domain(bucket.value)}${url ?? ""}"><meta property="og:image:alt" content="${alt ?? ""}">`).join("")}<link href='${(await fetchIcon(icon)) ?? "/favicon.ico"}' rel="icon"></head>`,
           );
           if (loc)
             putObject(`${loc}/index.html`, "text/html", htm).catch(() => {});
