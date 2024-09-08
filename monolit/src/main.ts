@@ -35,7 +35,7 @@ declare const window: {
   Window;
 window.console.info(
   "⛵",
-  "VueS3",
+  "vueS3",
   `ver:${__APP_VERSION__}`,
   "https://vues3.com",
 );
