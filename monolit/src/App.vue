@@ -5,8 +5,9 @@ router-view(v-slot="{ Component }")
 <script setup lang="ts">
 import type { MetaFlat } from "zhead";
 
+import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { useHead, useSeoMeta } from "@unhead/vue";
-import { fetchIcon, pages } from "app/src/stores/data";
+import { pages } from "app/src/stores/data";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
@@ -47,6 +48,16 @@ useSeoMeta({
   title,
 });
 watch(a, async (value) => {
-  favicon.value = (await fetchIcon(value?.icon)) ?? "/favicon.ico";
+  let href = "/favicon.ico";
+  if (value?.icon) {
+    const icon = iconExists(value?.icon)
+      ? getIcon(value?.icon)
+      : await loadIcon(value?.icon);
+    if (icon) {
+      const { body, height, left, top, width } = icon;
+      href = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
+    }
+  }
+  favicon.value = href;
 });
 </script>
