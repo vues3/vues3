@@ -49,7 +49,7 @@ q-page.column
     q-img.col.rounded-borders(no-spinner, src="~/assets/bg.jpg")
       q-card.absolute-center
         q-card-section
-          .text-h5 VueS3
+          .text-h5 vueS3
         q-card-section
           q-timeline(color="black", layout="comfortable", side="left")
             q-timeline-entry(:title="t('Homepage')", icon="home")
