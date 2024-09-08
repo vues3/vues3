@@ -72,4 +72,5 @@ const path = "/:pathMatch(.*)*";
 const component = () => import("@/views/NotFoundView.vue");
 const name = "404";
 router.addRoute({ component, name, path });
+await router.isReady();
 router.replace(router.currentRoute.value.fullPath).catch(() => {});
