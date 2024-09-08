@@ -65,12 +65,14 @@ pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
     () => import("@/views/SingleView.vue"),
   );
 });
+{
+  const path = "/:pathMatch(.*)*";
+  const component = () => import("@/views/NotFoundView.vue");
+  const name = "404";
+  router.addRoute({ component, name, path });
+}
+await router.isReady();
 router.beforeEach(({ path }) =>
   path !== decodeURI(path) ? decodeURI(path) : undefined,
 );
-const path = "/:pathMatch(.*)*";
-const component = () => import("@/views/NotFoundView.vue");
-const name = "404";
-router.addRoute({ component, name, path });
-await router.isReady();
 router.replace(router.currentRoute.value.fullPath).catch(() => {});
