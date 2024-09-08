@@ -1,6 +1,7 @@
 import type { Preset } from "@unocss/core";
 import type { TPage } from "app/src/stores/types";
 import type { App } from "vue";
+import type { RouteRecordRaw } from "vue-router";
 
 import { createHead } from "@unhead/vue";
 import presetWebFonts from "@unocss/preset-web-fonts";
@@ -9,7 +10,7 @@ import initUnocssRuntime from "@unocss/runtime";
 import { data, getFonts, pages } from "app/src/stores/data";
 import { customFetch } from "app/src/stores/defaults";
 import defaults from "app/uno.config";
-import { createApp } from "vue";
+import { createApp, nextTick } from "vue";
 
 import vueApp from "./App.vue";
 import { fix, ready, router } from "./stores/monolit";
@@ -43,36 +44,35 @@ const response = await fetch("/index.json");
 data.push(
   response.ok ? ((await response.json()) as TPage[])[0] : ({} as TPage),
 );
+fix(data);
+await nextTick();
+{
+  const getChildren = (
+    component: RouteRecordRaw["component"],
+    name: RouteRecordRaw["name"],
+    path: RouteRecordRaw["path"],
+  ) => [{ component, name, path }] as RouteRecordRaw[];
+  const component = () => import("@/views/SingleView.vue");
+  pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
+    const alias = (loc?.replaceAll(" ", "_") ?? "")
+      .replace(/^\/?/, "/")
+      .replace(/\/?$/, "/");
+    const children = getChildren(
+      (parent?.along ?? along)
+        ? () => import("@/views/MultiView.vue")
+        : component,
+      name,
+      "",
+    );
+    const path = relative.replace(/^\/?/, "/").replace(/\/?$/, "/");
+    router.addRoute({ path, ...(loc && { alias }), children, component });
+  });
+}
+const path = "/:pathMatch(.*)*";
+const component = () => import("@/views/NotFoundView.vue");
+const name = "404";
+router.addRoute({ component, name, path });
 window.app = createApp(vueApp);
 window.app.use(router);
 window.app.use(createHead());
 window.app.mount("#app");
-fix(data);
-pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
-  const alias = (loc?.replaceAll(" ", "_") ?? "")
-    .replace(/^\/?/, "/")
-    .replace(/\/?$/, "/");
-  const children = ((path, component) => [{ component, name, path }])(
-    "",
-    (parent?.along ?? along)
-      ? () => import("@/views/MultiView.vue")
-      : () => import("@/views/SingleView.vue"),
-  );
-  ((path, component) => {
-    router.addRoute({ path, ...(loc && { alias }), children, component });
-  })(
-    relative.replace(/^\/?/, "/").replace(/\/?$/, "/"),
-    () => import("@/views/SingleView.vue"),
-  );
-});
-{
-  const path = "/:pathMatch(.*)*";
-  const component = () => import("@/views/NotFoundView.vue");
-  const name = "404";
-  router.addRoute({ component, name, path });
-}
-await router.isReady();
-router.beforeEach(({ path }) =>
-  path !== decodeURI(path) ? decodeURI(path) : undefined,
-);
-router.replace(router.currentRoute.value.fullPath).catch(() => {});
