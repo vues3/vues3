@@ -1,6 +1,6 @@
 <template lang="pug">
 q-dialog(@hide="onDialogHide", ref="dialogRef")
-  q-card.q-dialog-plugin
+  q-card.w-full
     q-card-section robots.txt
     q-separator
     q-card-section.h-96.overflow-y-auto
