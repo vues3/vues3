@@ -1,7 +1,6 @@
 import type { TPage } from "app/src/stores/types";
 import type { Reactive } from "vue";
 
-import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { configurable } from "app/src/stores/defaults";
 import { validateData } from "app/src/stores/types";
 import { computed, reactive, watch } from "vue";
@@ -122,17 +121,6 @@ export const pages = computed(() =>
     return value;
   }),
 );
-export const fetchIcon = async (name: null | string | undefined) => {
-  if (name) {
-    const icon = iconExists(name) ? getIcon(name) : await loadIcon(name);
-    if (icon) {
-      const { body, height, left, top, width } = icon;
-      return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
-    }
-    return icon;
-  }
-  return null;
-};
 export const getFonts = (fonts: string[]) =>
   Object.fromEntries(
     fonts.map((value) => [value.toLowerCase().replaceAll(" ", "_"), value]),
