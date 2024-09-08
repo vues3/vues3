@@ -121,6 +121,9 @@ let onScroll: RouterScrollBehavior | undefined;
 const scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) =>
   onScroll && onScroll(to, from, savedPosition);
 export const router: Router = createRouter({ history, routes, scrollBehavior });
+router.beforeEach(({ path }) =>
+  path !== decodeURI(path) ? decodeURI(path) : undefined,
+);
 export const a = computed(() =>
   pages.value.find(({ id }) => id === router.currentRoute.value.name),
 );
