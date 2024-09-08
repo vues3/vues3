@@ -4,7 +4,7 @@ q-layout(view="hHh Lpr lff")
     q-toolbar
       q-toolbar-title
         q-avatar(icon="img:favicon.svg", size="xl")
-        | VueS3
+        | vueS3
       q-btn-dropdown.q-mr-xs(
         dropdown-icon="apps",
         flat,
