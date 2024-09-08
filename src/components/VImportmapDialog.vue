@@ -25,7 +25,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
           )
         template(#body-cell="props")
           q-td(:auto-width="props.col.name === 'name'", :props)
-            q-input.min-w-20(
+            q-input.min-w-24(
               :disable="!props.rowIndex && props.row.name === 'vue'",
               dense,
               v-model.trim="props.row[props.col.name]"
