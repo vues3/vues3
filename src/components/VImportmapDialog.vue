@@ -1,6 +1,6 @@
 <template lang="pug">
 q-dialog(@hide="onDialogHide", ref="dialogRef")
-  q-card.q-dialog-plugin
+  q-card.w-full
     q-card-section Import Map
     q-separator
     q-card-section.mt-4.h-96(horizontal)
