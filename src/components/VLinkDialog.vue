@@ -1,7 +1,7 @@
 <template lang="pug">
 q-dialog(@hide="onDialogHide", ref="dialogRef")
-  q-card.q-dialog-plugin
-    q-card-section.scroll.q-dialog-plugin__form
+  q-card.w-full
+    q-card-section.scroll.h-96
       q-tree(
         :nodes,
         default-expand-all,
