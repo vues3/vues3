@@ -1,6 +1,6 @@
 <template lang="pug">
 q-dialog(@hide="onDialogHide", ref="dialogRef")
-  q-card.q-dialog-plugin
+  q-card.w-full
     q-card-section
       q-input(
         :hint="domain(Bucket ?? '') === Bucket ? undefined : domain(Bucket ?? '')",
