@@ -1,6 +1,6 @@
 ![banner](https://vues3.ru/images/a20a7511-f08a-419c-b62c-6757ce65e6df.png)
 
-# VueS3
+# vueS3
 
 VueS3 is a convenient and flexible tool for creating a cloud-based website.
 
@@ -12,11 +12,11 @@ All documentation are located at [vues3.ru](https://vues3.ru).
 
 ## Web Application
 
-You can starting to use VueS3 at [run.vues3.ru](https://run.vues3.ru).
+You can starting to use vueS3 at [run.vues3.ru](https://run.vues3.ru).
 
 ## Installation
 
-Use the package manager [bun](https://bun.sh) to install VueS3.
+Use the package manager [bun](https://bun.sh) to install vueS3.
 
 ```bash
 git clone https://github.com/vues3/vues3.git
