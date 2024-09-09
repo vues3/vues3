@@ -1,6 +1,6 @@
 {
   "name": "vues3",
-  "version": "3.26.11",
+  "version": "3.26.12",
   "description": "vueS3 is a program for creating websites from dynamically loaded vue.js templates at runtime and storing them in the S3 cloud storage",
   "productName": "vueS3",
   "author": "Jerry Bruwes <jbruwes@gmail.com>",
