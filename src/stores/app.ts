@@ -418,6 +418,7 @@ watch(
       .replace(
         "</head>",
         `${Object.values(imap.imports)
+          .filter((href) => !href.endsWith("/"))
           .map(
             (href) => `<link rel="modulepreload" crossorigin href="${href}">`,
           )
