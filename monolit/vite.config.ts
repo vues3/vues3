@@ -23,8 +23,11 @@ const alias: AliasOptions = { "@": ".", app };
 const resolve: UserConfig["resolve"] = { alias };
 const manifest = true;
 const outDir = "../public/monolit";
+const manualChunks = (id: string) =>
+  id.split("node_modules/")[1]?.split("/")[0]?.replace(/^@/, "");
+const output = { manualChunks };
 const external = ["vue"];
-const rollupOptions: BuildOptions["rollupOptions"] = { external };
+const rollupOptions: BuildOptions["rollupOptions"] = { external, output };
 const target = "esnext";
 const build: BuildOptions = { manifest, outDir, rollupOptions, target };
 const define: object = {
