@@ -45,6 +45,8 @@ data.push(
   response.ok ? ((await response.json()) as TPage[])[0] : ({} as TPage),
 );
 fix(data);
+window.app = createApp(vueApp);
+window.app.use(createHead());
 await nextTick();
 {
   const getChildren = (
@@ -72,7 +74,5 @@ const path = "/:pathMatch(.*)*";
 const component = () => import("@/views/NotFoundView.vue");
 const name = "404";
 router.addRoute({ component, name, path });
-window.app = createApp(vueApp);
 window.app.use(router);
-window.app.use(createHead());
 window.app.mount("#app");
