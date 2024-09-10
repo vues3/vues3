@@ -389,15 +389,17 @@ watch(pages, (objects) => {
 watch(
   pages,
   debounce((page: TPage[]) => {
-    const url = page.map(({ changefreq, lastmod, priority, to }) => {
-      const loc = `https://${domain(bucket.value)}${to === "/" ? "" : encodeURI(to)}`;
-      return {
-        ...(changefreq && { changefreq }),
-        ...(lastmod && { lastmod }),
-        ...(priority && { priority }),
-        loc,
-      };
-    });
+    const url = page
+      .filter(({ enabled }) => enabled)
+      .map(({ changefreq, lastmod, priority, to }) => {
+        const loc = `https://${domain(bucket.value)}${to === "/" ? "" : encodeURI(to)}`;
+        return {
+          ...(changefreq && { changefreq }),
+          ...(lastmod && { lastmod }),
+          ...(priority && { priority }),
+          loc,
+        };
+      });
     const urlset = {
       "@xmlns": "https://www.sitemaps.org/schemas/sitemap/0.9",
       url,
