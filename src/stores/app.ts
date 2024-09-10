@@ -427,7 +427,8 @@ watch(
         `${Object.values(imap.imports)
           .filter((href) => !href.endsWith("/"))
           .map(
-            (href) => `<link rel="modulepreload" crossorigin href="${href}">`,
+            (href) => `  <link rel="modulepreload" crossorigin href="${href}">
+  `,
           )
           .join("")}</head>`,
       );
@@ -436,27 +437,37 @@ watch(
         const canonical = `https://${domain(bucket.value)}${to === "/" ? "" : to}`;
         const htm = body.replace(
           "</head>",
-          `<title>${title}</title><link rel="canonical" href="${canonical}">${[
-            ["description", description],
-            ["keywords", keywords.join()],
-          ]
-            .map(([name, content]) =>
-              content ? `<meta name="${name!}" content="${content}">` : "",
-            )
-            .join("")}${[
-            ["url", canonical],
-            ["description", description],
-            ["title", title],
-            ["type", type],
-          ]
-            .map(([property, content]) =>
-              content
-                ? `<meta property="og:${property!}" content="${content}">`
-                : "",
-            )
-            .join(
-              "",
-            )}${images.map(({ alt, url }) => `<meta property="og:image" content="https://${domain(bucket.value)}${url ?? ""}"><meta property="og:image:alt" content="${alt ?? ""}">`).join("")}</head>`,
+          `  <title>${title}</title>
+    <link rel="canonical" href="${canonical.replaceAll('"', "&quot;")}">${[
+      ["description", description],
+      ["keywords", keywords.join()],
+    ]
+      .map(([name, content]) =>
+        content
+          ? `
+    <meta name="${name!}" content="${content.replaceAll('"', "&quot;")}">`
+          : "",
+      )
+      .join("")}${[
+      ["url", canonical],
+      ["description", description],
+      ["title", title],
+      ["type", type],
+    ]
+      .map(([property, content]) =>
+        content
+          ? `
+    <meta property="og:${property!}" content="${content.replaceAll('"', "&quot;")}">`
+          : "",
+      )
+      .join("")}${images
+      .map(
+        ({ alt, url }) => `
+    <meta property="og:image" content="https://${domain(bucket.value)}${url?.replaceAll('"', "&quot;") ?? ""}">
+    <meta property="og:image:alt" content="${alt?.replaceAll('"', "&quot;") ?? ""}">`,
+      )
+      .join("")}
+  </head>`,
         );
         if (loc)
           putObject(`${loc}/index.html`, "text/html", htm).catch(() => {});
