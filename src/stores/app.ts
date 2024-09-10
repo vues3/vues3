@@ -391,7 +391,12 @@ watch(
   debounce((page: TPage[]) => {
     const url = page.map(({ changefreq, lastmod, priority, to }) => {
       const loc = `https://${domain(bucket.value)}${to === "/" ? "" : encodeURI(to)}`;
-      return { changefreq, lastmod, loc, priority };
+      return {
+        ...(changefreq && { changefreq }),
+        ...(lastmod && { lastmod }),
+        ...(priority && { priority }),
+        loc,
+      };
     });
     const urlset = {
       "@xmlns": "https://www.sitemaps.org/schemas/sitemap/0.9",
