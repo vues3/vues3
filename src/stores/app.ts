@@ -420,53 +420,53 @@ watch(
     const body = index
       .replace(
         '<script type="importmap"></script>',
-        `<script type="importmap">${JSON.stringify(imap)}</script>`,
+        `<script type="importmap">
+${JSON.stringify(imap, null, " ")}
+    </script>`,
       )
       .replace(
         "</head>",
-        `${Object.values(imap.imports)
+        `  ${Object.values(imap.imports)
           .filter((href) => !href.endsWith("/"))
           .map(
-            (href) => `  <link rel="modulepreload" crossorigin href="${href}">
-  `,
-          )
-          .join("")}</head>`,
+            (href) => `<link rel="modulepreload" crossorigin href="${href}">`,
+          ).join(`
+    `)}
+    </head>`,
       );
     page.forEach(
       ({ description, images, keywords, loc, path, title, to, type }) => {
         const canonical = `https://${domain(bucket.value)}${to === "/" ? "" : to}`;
         const htm = body.replace(
           "</head>",
-          `  <title>${title}</title>
-    <link rel="canonical" href="${canonical.replaceAll('"', "&quot;")}">${[
-      ["description", description],
-      ["keywords", keywords.join()],
+          `<title>${title}</title>
+    <link rel="canonical" href="${canonical.replaceAll('"', "&quot;")}">
+    ${[
+      [description ?? "", "description"],
+      [keywords.join() ?? "", "keywords"],
     ]
-      .map(([name, content]) =>
-        content
-          ? `
-    <meta name="${name!}" content="${content.replaceAll('"', "&quot;")}">`
-          : "",
-      )
-      .join("")}${[
-      ["url", canonical],
-      ["description", description],
-      ["title", title],
-      ["type", type],
-    ]
-      .map(([property, content]) =>
-        content
-          ? `
-    <meta property="og:${property!}" content="${content.replaceAll('"', "&quot;")}">`
-          : "",
-      )
-      .join("")}${images
+      .filter(([content]) => content)
       .map(
-        ({ alt, url }) => `
-    <meta property="og:image" content="https://${domain(bucket.value)}${url?.replaceAll('"', "&quot;") ?? ""}">
-    <meta property="og:image:alt" content="${alt?.replaceAll('"', "&quot;") ?? ""}">`,
-      )
-      .join("")}
+        ([content, name]) =>
+          `<meta name="${name}" content="${content.replaceAll('"', "&quot;")}">`,
+      ).join(`
+    `)}
+    ${[
+      [canonical ?? "", "url"],
+      [description ?? "", "description"],
+      [title ?? "", "title"],
+      [type ?? "", "type"],
+      ...images.flatMap(({ alt, url }) => [
+        [url ? `https://${domain(bucket.value)}${url}` : "", "image"],
+        [alt ?? "", "image:alt"],
+      ]),
+    ]
+      .filter(([content]) => content)
+      .map(
+        ([content, property]) =>
+          `<meta property="og:${property}" content="${content.replaceAll('"', "&quot;")}">`,
+      ).join(`
+    `)}
   </head>`,
         );
         if (loc)
