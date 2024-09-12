@@ -178,7 +178,7 @@ export const ready: RuntimeOptions["ready"] = ({
     toggleObserver(true);
     paused.value = false;
   };
-  onScroll = async ({ name }, from, savedPosition) => {
+  onScroll = async ({ name }) => {
     return new Promise((resolve) => {
       if (name) {
         all().then(
@@ -187,10 +187,9 @@ export const ready: RuntimeOptions["ready"] = ({
             resolve(
               scroll.value && {
                 behavior,
-                ...(savedPosition ??
-                  (that.value?.parent?.along && that.value.index
-                    ? { el }
-                    : { left, top })),
+                ...(that.value?.parent?.along && that.value.index
+                  ? { el }
+                  : { left, top }),
               },
             );
             scroll.value = true;
