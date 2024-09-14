@@ -7,7 +7,7 @@
     v-for="(image, i) in images"
   )
     q-card-section(horizontal)
-      q-img.col(:src="urls.get(image.url ?? '')")
+      q-img.col(:ratio="16 / 9", :src="urls.get(image.url ?? '')", fit="cover")
         .absolute-bottom
           q-input(dark, dense, v-model="image.alt")
       q-card-actions.q-px-md.justify-around(vertical)
