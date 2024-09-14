@@ -158,9 +158,10 @@ const along = computed(() => !that.value || that.value.parent?.along);
 const promises = computed(
   () =>
     Object.fromEntries(
-      (along.value ? $siblings.value : ([that.value] as TPage[])).map(
-        ({ id }) => [id, promiseWithResolvers()],
-      ),
+      [
+        ...(along.value ? $siblings.value : ([that.value] as TPage[])),
+        pages.value[0],
+      ].map(({ id }) => [id, promiseWithResolvers()]),
     ) as Record<string, PromiseWithResolvers<undefined>>,
 );
 export const paused = ref(true);
