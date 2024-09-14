@@ -288,7 +288,7 @@ watch(bucket, async (value) => {
           ].filter(Boolean) as string[],
         ),
     );
-    const files = [vue, "robots.txt"];
+    const files = [vue, "robots.txt", "fonts.json"];
     (
       await Promise.allSettled(files.map((file) => headObject(file, cache)))
     ).forEach(({ status }, index) => {
