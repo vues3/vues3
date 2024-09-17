@@ -26,7 +26,7 @@ q-btn-group.q-mx-xs(flat, spread)
         q-checkbox.q-mr-xs(dense, v-model="prop.node.enabled")
         q-input.full-width.min-w-96(
           :bg-color="prop.node.id === selected ? 'primary' : undefined",
-          :error="!prop.node[node] || !!list.find((element) => element.id !== prop.node.id && (('path' in element && element.path === prop.node.path) || ('loc' in element && element.loc === prop.node.path)))",
+          :error="!prop.node[node] || !!list.find((element) => element.id !== prop.node.id && prop.node.path && (('path' in element && element.path === prop.node.path) || ('loc' in element && element.loc === prop.node.path)))",
           :error-message="prop.node[node] ? t('That name is already in use') : t('The name is empty')",
           :readonly="!prop.node.contenteditable",
           :type,
