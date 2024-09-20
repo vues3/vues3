@@ -33,7 +33,6 @@ export type TPage = {
   i: string;
   index: number;
   next?: TPage;
-  pages: TPage[];
   parent?: TPage;
   path: string;
   prev?: TPage;
