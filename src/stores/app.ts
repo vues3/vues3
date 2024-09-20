@@ -66,180 +66,196 @@ export const the: ComputedRef<TPage | undefined> = computed(
     pages.value.find(({ id }) => id === config.value.selected) ??
     pages.value[0],
 );
-/**
- * Динамическое вычисляемое свойство для страницы, в нем содержится компонент,
- * полученный для страницы из хранилища S3.
- */
-const sfc = {
-  /**
-   * Геттер свойства sfc, который при первом обращении создает свойство buffer и
-   * инициализирует его значением, загруженным из хранилища S3. Также он создает
-   * триггер, отслеживающий изменения свойства buffer. Если значение buffer
-   * изменяется, происходит запись в хранилище S3 по соответствующему
-   * идентификатору.
-   *
-   * @param this - Страница , которой назначено свойство sfc
-   * @returns Обещание на значение свойства buffer
-   */
-  async get(this: TPage) {
-    if (!this.buffer && this.id) {
-      /** Компонент, загружаемый из хранилища S3 */
-      const value = JSON.parse(
-        (await (await getObject(`pages/${this.id}.json`, cache)).text()) ||
-          "{}",
-      ) as TComponent;
-      validateComponent(value);
-      Reflect.defineProperty(this, "buffer", { configurable, value });
-      watch(
-        this.buffer,
-        debounce(
-          /**
-           * Функция записи компонента с соответствущим идентификатором в
-           * хранилище S3
-           *
-           * @param component - Компонент страницы для записи
-           */
-          (component) => {
-            if (this.id)
-              putObject(
-                `pages/${this.id}.json`,
-                "application/json",
-                JSON.stringify(component),
-              ).catch(
-                /** Фейковая функция обнаружения сбоев */
-                () => {},
-              );
-          },
-          second,
-        ),
-      );
-    }
-    return this.buffer;
-  },
-};
-const template = {
-  async get(this: TPage) {
-    return (await this.sfc).template;
-  },
-  set(this: TPage, value: string) {
-    if (this.buffer) this.buffer.template = value;
-  },
-};
-const style = {
-  async get(this: TPage) {
-    return (await this.sfc).style;
-  },
-  set(this: TPage, value: string) {
-    if (this.buffer) this.buffer.style = value;
-  },
-};
-const script = {
-  async get(this: TPage) {
-    return (await this.sfc).script;
-  },
-  set(this: TPage, value: string) {
-    if (this.buffer) this.buffer.script = value;
-  },
-};
 export const urls = reactive(new Map<string, string>());
-const routerLink = "router-link";
-const html = {
-  async get(this: TPage) {
-    const doc = parser.parseFromString(
-      `<head><base href="//"></head><body>${await this.template}</body>`,
-      "text/html",
-    );
-    doc.querySelectorAll(routerLink).forEach((link) => {
-      const a = document.createElement("a");
-      a.innerHTML = link.innerHTML;
-      a.setAttribute(`data-${routerLink}`, "true");
-      [...link.attributes].forEach((attr) => {
-        a.setAttribute(
-          attr.nodeName === "to" ? "href" : attr.nodeName,
-          attr.nodeValue ?? "",
+{
+  const routerLink = "router-link";
+  /**
+   * Динамическое вычисляемое свойство для страницы, в нем содержится компонент,
+   * полученный для страницы из хранилища S3.
+   */
+  const sfc = {
+    /**
+     * Геттер свойства sfc, который при первом обращении создает свойство buffer
+     * и инициализирует его значением, загруженным из хранилища S3. Также он
+     * создает триггер, отслеживающий изменения свойства buffer. Если значение
+     * buffer изменяется, происходит запись в хранилище S3 по соответствующему
+     * идентификатору.
+     *
+     * @param this - Страница , которой назначено свойство sfc
+     * @returns Обещание на значение свойства buffer
+     */
+    async get(this: TPage) {
+      if (!this.buffer && this.id) {
+        /** Компонент, загружаемый из хранилища S3 */
+        const value = JSON.parse(
+          (await (await getObject(`pages/${this.id}.json`, cache)).text()) ||
+            "{}",
+        ) as TComponent;
+        validateComponent(value);
+        Reflect.defineProperty(this, "buffer", { configurable, value });
+        watch(
+          this.buffer,
+          debounce(
+            /**
+             * Функция записи компонента с соответствущим идентификатором в
+             * хранилище S3
+             *
+             * @param component - Компонент страницы для записи
+             */
+            (component) => {
+              if (this.id)
+                putObject(
+                  `pages/${this.id}.json`,
+                  "application/json",
+                  JSON.stringify(component),
+                ).catch(
+                  /** Фейковая функция обнаружения сбоев */
+                  () => {},
+                );
+            },
+            second,
+          ),
         );
-      });
-      link.replaceWith(a);
-    });
-    (
-      await Promise.all(
-        (
-          await Promise.all(
-            [...doc.images].map((image) => {
-              const src = image.getAttribute("src") ?? "";
-              const { pathname } = new URL(
-                src,
-                new URL(`${window.location.origin}${this.to}`),
-              );
-              const url = src && pathname.replace(/^\/+/, "");
-              const { origin } = new URL(url, window.location.origin);
-              return bucket.value &&
-                url &&
-                !urls.has(url) &&
-                window.location.origin === origin
-                ? getObject(url)
-                : undefined;
-            }),
-          )
-        ).map((image) => image?.blob()),
-      )
-    ).forEach((image, index) => {
-      const src = doc.images[index].getAttribute("src") ?? "";
-      const { pathname } = new URL(
-        src,
-        new URL(`${window.location.origin}${this.to}`),
+      }
+      return this.buffer;
+    },
+  };
+  const template = {
+    async get(this: TPage) {
+      return (await this.sfc).template;
+    },
+    set(this: TPage, value: string) {
+      if (this.buffer) this.buffer.template = value;
+    },
+  };
+  const style = {
+    async get(this: TPage) {
+      return (await this.sfc).style;
+    },
+    set(this: TPage, value: string) {
+      if (this.buffer) this.buffer.style = value;
+    },
+  };
+  const script = {
+    async get(this: TPage) {
+      return (await this.sfc).script;
+    },
+    set(this: TPage, value: string) {
+      if (this.buffer) this.buffer.script = value;
+    },
+  };
+  const html = {
+    async get(this: TPage) {
+      const doc = parser.parseFromString(
+        `<head><base href="//"></head><body>${await this.template}</body>`,
+        "text/html",
       );
-      const url = src && pathname.replace(/^\/+/, "");
-      if (image)
-        if (image.size) urls.set(url, URL.createObjectURL(image));
-        else urls.set(url, "");
-      if (urls.get(url)) {
-        doc.images[index].setAttribute("data-src", src);
-        doc.images[index].setAttribute("src", urls.get(url) ?? "");
-      }
-    });
-    return doc.body.innerHTML;
-  },
-  set(this: TPage, value: string) {
-    const doc = parser.parseFromString(
-      `<head><base href="//"></head><body>${value}</body>`,
-      "text/html",
-    );
-    doc.querySelectorAll("a").forEach((a) => {
-      try {
-        const url = new URL(
-          a.attributes.getNamedItem("href")?.value ?? "",
-          window.location.origin,
+      doc.querySelectorAll(routerLink).forEach((link) => {
+        const a = document.createElement("a");
+        a.innerHTML = link.innerHTML;
+        a.setAttribute(`data-${routerLink}`, "true");
+        [...link.attributes].forEach((attr) => {
+          a.setAttribute(
+            attr.nodeName === "to" ? "href" : attr.nodeName,
+            attr.nodeValue ?? "",
+          );
+        });
+        link.replaceWith(a);
+      });
+      (
+        await Promise.all(
+          (
+            await Promise.all(
+              [...doc.images].map((image) => {
+                const src = image.getAttribute("src") ?? "";
+                const { pathname } = new URL(
+                  src,
+                  new URL(`${window.location.origin}${this.to}`),
+                );
+                const url = src && pathname.replace(/^\/+/, "");
+                const { origin } = new URL(url, window.location.origin);
+                return bucket.value &&
+                  url &&
+                  !urls.has(url) &&
+                  window.location.origin === origin
+                  ? getObject(url)
+                  : undefined;
+              }),
+            )
+          ).map((image) => image?.blob()),
+        )
+      ).forEach((image, index) => {
+        const src = doc.images[index].getAttribute("src") ?? "";
+        const { pathname } = new URL(
+          src,
+          new URL(`${window.location.origin}${this.to}`),
         );
-        if (
-          Boolean(a.dataset[routerLink]) ||
-          (window.location.origin === url.origin &&
-            url.href === `${url.origin}${url.pathname}`)
-        ) {
-          a.removeAttribute(`data-${routerLink}`);
-          const link = document.createElement(routerLink);
-          link.innerHTML = a.innerHTML;
-          [...a.attributes].forEach((attr) => {
-            link.setAttribute(
-              attr.nodeName === "href" ? "to" : attr.nodeName,
-              attr.nodeValue ?? "",
-            );
-          });
-          a.replaceWith(link);
+        const url = src && pathname.replace(/^\/+/, "");
+        if (image)
+          if (image.size) urls.set(url, URL.createObjectURL(image));
+          else urls.set(url, "");
+        if (urls.get(url)) {
+          doc.images[index].setAttribute("data-src", src);
+          doc.images[index].setAttribute("src", urls.get(url) ?? "");
         }
-      } catch (e) {
-        //
-      }
+      });
+      return doc.body.innerHTML;
+    },
+    set(this: TPage, value: string) {
+      const doc = parser.parseFromString(
+        `<head><base href="//"></head><body>${value}</body>`,
+        "text/html",
+      );
+      doc.querySelectorAll("a").forEach((a) => {
+        try {
+          const url = new URL(
+            a.attributes.getNamedItem("href")?.value ?? "",
+            window.location.origin,
+          );
+          if (
+            Boolean(a.dataset[routerLink]) ||
+            (window.location.origin === url.origin &&
+              url.href === `${url.origin}${url.pathname}`)
+          ) {
+            a.removeAttribute(`data-${routerLink}`);
+            const link = document.createElement(routerLink);
+            link.innerHTML = a.innerHTML;
+            [...a.attributes].forEach((attr) => {
+              link.setAttribute(
+                attr.nodeName === "href" ? "to" : attr.nodeName,
+                attr.nodeValue ?? "",
+              );
+            });
+            a.replaceWith(link);
+          }
+        } catch (e) {
+          //
+        }
+      });
+      [...doc.images].forEach((image) => {
+        if (image.dataset.src) {
+          image.setAttribute("src", image.dataset.src);
+          image.removeAttribute("data-src");
+        }
+      });
+      this.template = doc.body.innerHTML;
+    },
+  };
+  const value = false;
+  const contenteditable = { value, writable };
+  watch(pages, (objects) => {
+    objects.forEach((object) => {
+      Object.defineProperties(object, {
+        contenteditable,
+        html,
+        script,
+        sfc,
+        style,
+        template,
+      });
     });
-    [...doc.images].forEach((image) => {
-      if (image.dataset.src) {
-        image.setAttribute("src", image.dataset.src);
-        image.removeAttribute("data-src");
-      }
-    });
-    this.template = doc.body.innerHTML;
-  },
-};
+  });
+}
 const vue = `assets/vue.esm-browser.prod-${version}.js`;
 export const importmap = reactive({} as TImportmap);
 export const fonts = reactive([]);
@@ -372,20 +388,6 @@ export const domain = (value: string) => {
   }
   return value;
 };
-const value = false;
-const contenteditable = { value, writable };
-watch(pages, (objects) => {
-  objects.forEach((object) => {
-    Object.defineProperties(object, {
-      contenteditable,
-      html,
-      script,
-      sfc,
-      style,
-      template,
-    });
-  });
-});
 watch(
   pages,
   debounce((page: TPage[]) => {
