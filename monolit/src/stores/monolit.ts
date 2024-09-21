@@ -127,14 +127,9 @@ router.beforeEach(({ path }) =>
 export const a = computed(() =>
   pages.value.find(({ id }) => id === router.currentRoute.value.name),
 );
-const current = {
-  get() {
-    return a.value;
-  },
-};
 export const fix = (siblings: TPage[]) => {
   siblings.forEach((value) => {
-    Object.defineProperties(value, { current, sfc });
+    Object.defineProperties(value, { sfc });
     if (value.children) fix(value.children);
   });
 };
