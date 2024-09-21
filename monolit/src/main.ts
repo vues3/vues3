@@ -1,6 +1,5 @@
 import type { Preset } from "@unocss/core";
 import type { TPage } from "app/src/stores/types";
-import type { App } from "vue";
 import type { RouteRecordRaw } from "vue-router";
 
 import { createHead } from "@unhead/vue";
@@ -10,7 +9,7 @@ import initUnocssRuntime from "@unocss/runtime";
 import { data, getFonts, pages } from "app/src/stores/data";
 import { customFetch } from "app/src/stores/defaults";
 import defaults from "app/uno.config";
-import { createApp, nextTick } from "vue";
+import { computed, createApp, nextTick, readonly } from "vue";
 
 import vueApp from "./App.vue";
 import { fix, ready, router } from "./stores/monolit";
@@ -30,10 +29,6 @@ import "./style.sass";
   const rootElement = () => document.getElementById("app") as Element;
   initUnocssRuntime({ defaults, ready, rootElement });
 })().catch(() => {});
-declare const window: {
-  app: App;
-} & typeof globalThis &
-  Window;
 window.console.info(
   "⛵",
   "vueS3",
@@ -48,6 +43,10 @@ fix(data);
 window.app = createApp(vueApp);
 window.app.use(createHead());
 await nextTick();
+window.app.provide(
+  "pages",
+  readonly(Object.fromEntries(pages.value.map((value) => [value.id, value]))),
+);
 {
   const getChildren = (
     component: RouteRecordRaw["component"],
@@ -74,5 +73,7 @@ const path = "/:pathMatch(.*)*";
 const component = () => import("@/views/NotFoundView.vue");
 const name = "404";
 router.addRoute({ component, name, path });
+const id = computed(() => router.currentRoute.value.name);
+window.app.provide("id", readonly(id));
 window.app.use(router);
 window.app.mount("#app");
