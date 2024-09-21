@@ -1,6 +1,6 @@
 <template lang="pug">
 router-view(v-slot="{ Component }")
-  component(:is="Component", :the)
+  component(:id="pages[0].id", :is="Component")
 </template>
 <script setup lang="ts">
 import type { MetaFlat } from "zhead";
@@ -12,7 +12,6 @@ import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const the = computed(() => pages.value[0]);
 const a = computed(() => pages.value.find(({ id }) => id === route.name));
 const canonical = computed(() =>
   a.value?.to === undefined
