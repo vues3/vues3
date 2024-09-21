@@ -28,7 +28,6 @@ export type TPage = {
   buffer?: TComponent;
   children?: TPage[];
   contenteditable: boolean;
-  current: TPage;
   html: Promise<string> | string;
   i: string;
   index: number;
@@ -36,7 +35,7 @@ export type TPage = {
   parent?: TPage;
   path: string;
   prev?: TPage;
-  root?: TPage;
+  root: TPage;
   script: Promise<string> | string;
   sfc: Promise<TComponent>;
   siblings: TPage[];
