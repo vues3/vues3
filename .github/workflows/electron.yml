@@ -16,13 +16,11 @@ jobs:
           - ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
+      - uses: oven-sh/setup-bun@v1
+      - run: bun i
       - if: matrix.os == 'ubuntu-latest'
         run: sudo snap install snapcraft --classic
-      - run: npm run build:electron
+      - run: bun run build:electron
         env:
           USE_HARD_LINKS: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
