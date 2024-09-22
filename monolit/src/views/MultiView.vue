@@ -8,11 +8,7 @@ div(
   un-cloak,
   v-for="the in $siblings"
 )
-  component(
-    :id="the.id",
-    :is="template(the)",
-    @vue:mounted="() => { resolve(the); }"
-  )
+  component(:id="the.id", :is="template(the)", @vue:mounted="resolve(the)")
 </template>
 <script setup lang="ts">
 import type { TPage } from "app/src/stores/types";
