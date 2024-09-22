@@ -52,7 +52,7 @@
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^5.2.0",
     "@prettier/plugin-pug": "^3.1.0",
-    "@quasar/app-vite": "2.0.0-beta.21",
+    "@quasar/app-vite": "^2.0.0-beta.22",
     "@quasar/extras": "^1.16.12",
     "@quasar/quasar-app-extension-qiconpicker": "^2.0.7",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
