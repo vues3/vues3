@@ -43,4 +43,5 @@ export default Object.fromEntries([
   ["vues3.com", "vues3.ru"],
   ["Favicon uploaded successfully", "Фавиконка успешно загружена"],
   ["Favicon upload failed", "Сбой загрузки фавиконки"],
+  ["Prohibited characters are used", "Использованы запрещенные символы"],
 ]);
