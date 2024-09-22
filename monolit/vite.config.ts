@@ -34,4 +34,8 @@ const define: object = {
   __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
   __VUE_PROD_DEVTOOLS__: true,
 };
-export default defineConfig({ build, define, plugins, resolve });
+const api = "modern-compiler";
+const sass = { api };
+const preprocessorOptions = { sass };
+const css = { preprocessorOptions };
+export default defineConfig({ build, css, define, plugins, resolve });
