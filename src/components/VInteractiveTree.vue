@@ -26,8 +26,8 @@ q-btn-group.q-mx-xs(flat, spread)
         q-checkbox.q-mr-xs(dense, v-model="prop.node.enabled")
         q-input.full-width.min-w-96(
           :bg-color="prop.node.id === selected ? 'primary' : undefined",
-          :error="!prop.node[node] || !!list.find((element) => element.id !== prop.node.id && prop.node.path && (('path' in element && element.path === prop.node.path) || ('loc' in element && element.loc === prop.node.path)))",
-          :error-message="prop.node[node] ? t('That name is already in use') : t('The name is empty')",
+          :error="error(prop.node)",
+          :error-message="errorMessage(prop.node)",
           :readonly="!prop.node.contenteditable",
           :type,
           @click.stop="updateSelected(prop.node.id)",
@@ -70,6 +70,39 @@ const props = withDefaults(
 );
 const { t } = useI18n();
 const node = props.type === "text" ? "name" : props.type;
+const errors = [
+  (propNode: TPage) => !propNode[node as keyof object],
+  (propNode: TPage) =>
+    !!props.list.find(
+      (element) =>
+        element.id !== propNode.id &&
+        propNode.path &&
+        (("path" in element && element.path === propNode.path) ||
+          ("loc" in element && element.loc === propNode.path)),
+    ),
+  (propNode: TPage) =>
+    ["?", "\\", "#"].some((value) =>
+      (propNode[node as keyof object] as string).includes(value),
+    ),
+];
+const error = (propNode: TPage) =>
+  errors
+    .map((value) => value(propNode))
+    .reduceRight(
+      (previousValue, currentValue) => previousValue || currentValue,
+    );
+const errorMessage = (propNode: TPage) => {
+  switch (true) {
+    case errors[0](propNode):
+      return t("The name is empty");
+    case errors[1](propNode):
+      return t("That name is already in use");
+    case errors[2](propNode):
+      return t("Prohibited characters are used");
+    default:
+      return undefined;
+  }
+};
 const nodes = computed(() => (props.tree ?? props.list) as QTreeNode[]);
 const the = computed(() =>
   props.list.length
