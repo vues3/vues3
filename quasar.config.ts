@@ -5,6 +5,7 @@ import type { QuasarFonts, QuasarIconSets, QuasarPlugins } from "quasar";
 import extractorPug from "@unocss/extractor-pug";
 import { fileURLToPath } from "node:url";
 import { configure } from "quasar/wrappers";
+import { enumerable } from "stores/defaults";
 import { mergeConfig } from "vite";
 
 const boot: string[] = ["route", "quasar-lang-pack", "i18n", "monaco"];
@@ -15,11 +16,20 @@ const extras: (QuasarFonts | QuasarIconSets)[] = [
   "material-icons",
 ];
 const vueRouterMode = "history";
+const api = "modern-compiler";
+const sass = { api };
+const preprocessorOptions = { sass };
 const extendViteConf = (viteConf: Record<string, object>) => {
-  const value = mergeConfig(viteConf.define, {
-    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-  });
-  Reflect.defineProperty(viteConf, "define", { value });
+  {
+    const value = mergeConfig(viteConf.define, {
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    });
+    Reflect.defineProperty(viteConf, "define", { value });
+  }
+  {
+    const value = mergeConfig(viteConf.css, { preprocessorOptions });
+    Reflect.defineProperty(viteConf, "css", { enumerable, value });
+  }
 };
 const tsconfigPath = "tsconfig.vue-tsc.json";
 const vueTsc = { tsconfigPath };
