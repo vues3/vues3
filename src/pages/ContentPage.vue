@@ -89,8 +89,8 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           v-model.trim="the.keywords"
         )
         q-input(
-          :error="!!the.loc && !!pages.find((element) => element.id !== the?.id && (element.path === the?.loc || element.loc === the?.loc))",
-          :error-message="t('That path is already in use')",
+          :error="error()",
+          :error-message="errorMessage()",
           :label="t('Permanent Link')",
           hint="the.loc",
           prefix="/",
@@ -229,4 +229,26 @@ const loc = computed({
       the.value.loc = value?.replace(/((?=(\/+))\2)$|(^\/+)/g, "") ?? null;
   },
 });
+const errors = [
+  () =>
+    !!the.value?.loc &&
+    !!pages.value.find(
+      (element) =>
+        element.id !== the.value?.id &&
+        (element.path === the.value?.loc || element.loc === the.value?.loc),
+    ),
+  () => ["?", "\\", "#"].some((value) => the.value?.loc?.includes(value)),
+];
+const error = () =>
+  errors.map((value) => value()).reduceRight((a, b) => a || b);
+const errorMessage = () => {
+  switch (true) {
+    case errors[0]():
+      return t("That name is already in use");
+    case errors[1]():
+      return t("Prohibited characters are used");
+    default:
+      return undefined;
+  }
+};
 </script>
