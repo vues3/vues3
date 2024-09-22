@@ -38,5 +38,6 @@ export default Object.fromEntries(
     "vues3.com",
     "Favicon uploaded successfully",
     "Favicon upload failed",
+    "Prohibited characters are used",
   ].map((key) => [key, key]),
 );
