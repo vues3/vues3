@@ -1,6 +1,6 @@
 <template lang="pug">
 div(:class="the?.class", :id="the?.id", un-cloak, v-if="the?.enabled")
-  component(:id="the?.id", :is, @vue:mounted="resolve(the)")
+  component(:id="the?.id", :is, @vue:mounted="() => { resolve(the); }")
 </template>
 <script setup lang="ts">
 import type { TPage } from "src/stores/types";
@@ -14,6 +14,6 @@ const pages: Record<string, TPage> = inject("pages")!;
 const the = computed(() => (id ? pages[id as keyof object] : that.value));
 const is = computed(() => the.value && getAsyncComponent(the.value));
 onUpdated(() => {
-  resolve(the.value);
+  if (id) resolve(the.value);
 });
 </script>
