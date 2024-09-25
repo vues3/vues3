@@ -82,7 +82,7 @@ const errors = [
     ),
   (propNode: TPage) =>
     ["?", "\\", "#"].some((value) =>
-      (propNode[node as keyof object] as string).includes(value),
+      (propNode[node as keyof object] as string)?.includes(value),
     ),
 ];
 const error = (propNode: TPage) =>
