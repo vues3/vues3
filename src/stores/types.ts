@@ -3,7 +3,6 @@ import type { ValidateFunction } from "ajv";
 import Ajv from "ajv";
 import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
 import Component from "app/src/schemas/component";
-import Config from "app/src/schemas/config";
 import Credentials from "app/src/schemas/credentials";
 import Data from "app/src/schemas/data";
 import Importmap from "app/src/schemas/importmap";
@@ -47,9 +46,8 @@ export type TPage = {
 dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uuid();
 const code = { esm };
 export type TCredentials = FromSchema<typeof Credentials>;
-export type TConfig = FromSchema<typeof Config>;
 export type TImportmap = FromSchema<typeof Importmap>;
-const schemas = [Config, Credentials, Page, Data, Component, Importmap];
+const schemas = [Credentials, Page, Data, Component, Importmap];
 const keywords = [dynamicDefaults()];
 const ajv = new Ajv({
   code,
@@ -61,9 +59,6 @@ const ajv = new Ajv({
 });
 export const validatePage = ajv.getSchema(
   "urn:jsonschema:page",
-) as ValidateFunction;
-export const validateConfig = ajv.getSchema(
-  "urn:jsonschema:config",
 ) as ValidateFunction;
 export const validateComponent = ajv.getSchema(
   "urn:jsonschema:component",
