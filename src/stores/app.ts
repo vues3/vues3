@@ -223,7 +223,7 @@ watch(bucket, async (value) => {
           JSON.parse(
             (await (await getObject("index.json", cache)).text()) || "[{}]",
           ) as TPage[]
-        )[0],
+        )[0] ?? {},
       );
     })().catch(() => {});
     (async () => {
