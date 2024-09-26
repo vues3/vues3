@@ -2,8 +2,8 @@
 q-btn-group.q-mx-xs(flat, spread)
   q-btn(@click="newPage", icon="note")
   q-btn(@click="deletePage", icon="delete")
-  q-btn(@click="leftPage", icon="chevron_left", v-if="data")
-  q-btn(@click="rightPage", icon="chevron_right", v-if="data")
+  q-btn(@click="leftPage", icon="chevron_left")
+  q-btn(@click="rightPage", icon="chevron_right")
   q-btn(@click="downPage", icon="expand_more")
   q-btn(@click="upPage", icon="expand_less")
 .scroll.col
@@ -91,27 +91,28 @@ const message = t("Do you really want to delete?");
 const deletePage = () => {
   if (the.value) {
     const { index, next, parent, prev, siblings } = the.value;
-    $q.dialog({ cancel, message, persistent, title }).onOk(() => {
-      let id;
-      switch (true) {
-        case !!next:
-          ({ id } = next);
-          break;
-        case !!prev:
-          ({ id } = prev);
-          break;
-        default:
-          ({ id } = parent ?? {});
-      }
-      siblings.splice(index, 1);
-      (async () => {
-        if (!id) {
-          await nextTick();
-          [{ id }] = pages.value;
+    if (parent)
+      $q.dialog({ cancel, message, persistent, title }).onOk(() => {
+        let id;
+        switch (true) {
+          case !!next:
+            ({ id } = next);
+            break;
+          case !!prev:
+            ({ id } = prev);
+            break;
+          default:
+            ({ id } = parent ?? {});
         }
-        selected.value = id;
-      })().catch(() => {});
-    });
+        siblings.splice(index, 1);
+        (async () => {
+          if (!id) {
+            await nextTick();
+            [{ id }] = pages.value;
+          }
+          selected.value = id;
+        })().catch(() => {});
+      });
   }
 };
 const upPage = () => {
