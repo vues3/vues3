@@ -2,17 +2,14 @@
 q-btn-group.q-mx-xs(flat, spread)
   q-btn(@click="newPage", icon="note")
   q-btn(@click="deletePage", icon="delete")
-  q-btn(@click="leftPage", icon="chevron_left", v-if="tree")
-  q-btn(@click="rightPage", icon="chevron_right", v-if="tree")
+  q-btn(@click="leftPage", icon="chevron_left", v-if="data")
+  q-btn(@click="rightPage", icon="chevron_right", v-if="data")
   q-btn(@click="downPage", icon="expand_more")
   q-btn(@click="upPage", icon="expand_less")
 .scroll.col
   q-tree.q-ma-xs(
-    :expanded,
     :nodes,
     :selected,
-    @update:expanded="updateExpanded($event)",
-    @update:selected="updateSelected($event)",
     accordion,
     no-selection-unset,
     node-key="id",
@@ -29,51 +26,31 @@ q-btn-group.q-mx-xs(flat, spread)
           :error="error(prop.node)",
           :error-message="errorMessage(prop.node)",
           :readonly="!prop.node.contenteditable",
-          :type,
-          @click.stop="updateSelected(prop.node.id)",
+          @click.stop="selected = prop.node.id",
           @keyup.enter="prop.node.contenteditable = false",
           dense,
           hide-bottom-space,
           outlined,
-          v-model.trim="prop.node[node]"
+          v-model.trim="prop.node.name"
         )
 </template>
 <script setup lang="ts">
-import type { QInputProps, QTree, QTreeNode } from "quasar";
+import type { QTree, QTreeNode } from "quasar";
 import type { TPage } from "stores/types";
 import type { Ref } from "vue";
 
 import { uid, useQuasar } from "quasar";
+import { selected } from "stores/app";
+import { data, pages } from "stores/data";
 import { cancel, immediate, persistent } from "stores/defaults";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-interface IEmits {
-  (e: "update:expanded", value: readonly string[]): void;
-  (e: "update:selected", value: string | undefined): void;
-}
-const props = withDefaults(
-  defineProps<{
-    expanded?: string[];
-    list: TPage[];
-    selected?: string;
-    tree?: TPage[];
-    type?: QInputProps["type"];
-  }>(),
-  {
-    expanded: (): string[] => [],
-    list: (): TPage[] => [],
-    selected: "",
-    tree: undefined,
-    type: "text",
-  },
-);
 const { t } = useI18n();
-const node = props.type === "text" ? "name" : props.type;
 const errors = [
-  (propNode: TPage) => !propNode[node as keyof object],
+  (propNode: TPage) => !propNode.name,
   (propNode: TPage) =>
-    !!props.list.find(
+    !!pages.value.find(
       (element) =>
         element.id !== propNode.id &&
         propNode.path &&
@@ -81,9 +58,7 @@ const errors = [
           ("loc" in element && element.loc === propNode.path)),
     ),
   (propNode: TPage) =>
-    ["?", "\\", "#"].some((value) =>
-      (propNode[node as keyof object] as string)?.includes(value),
-    ),
+    ["?", "\\", "#"].some((value) => propNode.name?.includes(value)),
 ];
 const error = (propNode: TPage) =>
   errors
@@ -103,19 +78,12 @@ const errorMessage = (propNode: TPage) => {
       return undefined;
   }
 };
-const nodes = computed(() => (props.tree ?? props.list) as QTreeNode[]);
+const nodes = data as QTreeNode[];
 const the = computed(() =>
-  props.list.length
-    ? (props.list.find(({ id }) => id === props.selected) ?? null)
+  pages.value.length
+    ? (pages.value.find(({ id }) => id === selected.value) ?? null)
     : undefined,
 );
-const emits = defineEmits<IEmits>();
-const updateExpanded = (value: readonly string[]) => {
-  emits("update:expanded", value);
-};
-const updateSelected = (value: string | undefined) => {
-  emits("update:selected", value);
-};
 const $q = useQuasar();
 const qtree: Ref<QTree | undefined> = ref();
 const title = t("Confirm");
@@ -139,9 +107,9 @@ const deletePage = () => {
       (async () => {
         if (!id) {
           await nextTick();
-          [{ id }] = props.list;
+          [{ id }] = pages.value;
         }
-        updateSelected(id);
+        selected.value = id;
       })().catch(() => {});
     });
   }
@@ -215,19 +183,19 @@ const newPage = () => {
         siblings.splice(index + 1, 0, { id } as TPage);
         break;
     }
-    updateSelected(id);
+    selected.value = id;
   }
 };
 onMounted(() => {
-  const [{ id }] = props.tree ?? [{}];
+  const [{ id }] = data;
   if (id) qtree.value?.setExpanded(id, true);
 });
 watch(
   the,
   (newVal, oldVal) => {
-    if (!newVal && props.list.length) {
-      const [{ id }] = props.list;
-      updateSelected(id);
+    if (!newVal) {
+      const [{ id }] = pages.value;
+      selected.value = id;
     }
     if (oldVal) Reflect.defineProperty(oldVal, "contenteditable", { value });
   },
