@@ -1,4 +1,4 @@
-import type { RuntimeOptions } from "@unocss/runtime";
+import type { RuntimeContext } from "@unocss/runtime";
 import type { TComponent, TPage } from "app/src/stores/types";
 import type { App, AsyncComponentLoader } from "vue";
 import type {
@@ -160,7 +160,7 @@ const promises = computed(
     ) as Record<string, PromiseWithResolvers<undefined>>,
 );
 export const paused = ref(true);
-export const ready: RuntimeOptions["ready"] = ({
+export const setScroll: (runtime: RuntimeContext) => void = ({
   extractAll,
   toggleObserver,
 }) => {
@@ -197,8 +197,6 @@ export const ready: RuntimeOptions["ready"] = ({
       } else resolve(false);
     });
   };
-  toggleObserver(true);
-  return false;
 };
 export const resolve = ({ id }: TPage | undefined = {} as TPage) => {
   (
