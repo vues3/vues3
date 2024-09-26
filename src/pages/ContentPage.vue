@@ -7,12 +7,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
       header-class="text-primary",
       icon="account_tree"
     )
-      v-interactive-tree(
-        :list="pages",
-        :tree="data",
-        v-model:expanded="config.expanded",
-        v-model:selected="config.selected"
-      )
+      v-interactive-tree
     q-separator
     q-card(flat)
       q-item.text-teal
@@ -150,7 +145,7 @@ q-page.column.full-height(v-if="the")
     dense,
     indicator-color="primary",
     narrow-indicator,
-    v-model="config.tab"
+    v-model="tab"
   )
     q-tab(label="wysiwyg", name="wysiwyg")
     q-tab(label="template", name="template")
@@ -158,7 +153,7 @@ q-page.column.full-height(v-if="the")
     q-tab(:label="`style${the.scoped ? ' scoped' : ''}`", name="style")
     q-tab(label="images", name="images")
   q-separator
-  q-tab-panels.full-width.col(v-model="config.tab")
+  q-tab-panels.full-width.col(v-model="tab")
     q-tab-panel.column(name="wysiwyg")
       Suspense
         v-wysiwyg.full-width.col.column(:key="the.id", v-model="the.html")
@@ -202,7 +197,7 @@ import VImages from "components/VImages.vue";
 import VInteractiveTree from "components/VInteractiveTree.vue";
 import VSourceCode from "components/VSourceCode.vue";
 import VWysiwyg from "components/VWysiwyg.vue";
-import { config, rightDrawer, the } from "stores/app";
+import { rightDrawer, the } from "stores/app";
 import { data, pages } from "stores/data";
 import { itemsPerPage, page } from "stores/defaults";
 import { computed, ref } from "vue";
@@ -210,6 +205,7 @@ import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 const filter = ref("");
+const tab = ref("template");
 const pagination = ref({ itemsPerPage, page });
 const { icons } = mdi as Record<string, object[]>;
 const icon = computed({
