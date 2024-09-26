@@ -4,67 +4,23 @@
  * @packageDocumentation
  */
 
-import type { TComponent, TConfig, TImportmap, TPage } from "stores/types";
-import type { ComputedRef } from "vue";
+import type { TComponent, TImportmap, TPage } from "stores/types";
 
-import { useStorage } from "@vueuse/core";
 import mimes from "assets/mimes.json";
 import mime from "mime";
 import { debounce, uid } from "quasar";
 import { data, pages } from "stores/data";
-import {
-  cache,
-  configurable,
-  deep,
-  mergeDefaults,
-  second,
-  writable,
-} from "stores/defaults";
+import { cache, configurable, deep, second, writable } from "stores/defaults";
 import { bucket, getObject, headObject, putFile, putObject } from "stores/s3";
-import {
-  validateComponent,
-  validateConfig,
-  validateImportmap,
-} from "stores/types";
+import { validateComponent, validateImportmap } from "stores/types";
 import { toXML } from "to-xml";
 import { computed, reactive, ref, version, watch } from "vue";
 
 /** Экземпляр парсера DOM для преобразования шаблона в WYSIWYG и обратно */
 const parser = new DOMParser();
-/**
- * Хранилище настроек приложения. В нем сохраняется последний открытый документ,
- * распахнутая ветка дерева и выбранная закладка.
- */
-export const config = useStorage(
-  `.${bucket.value}`,
-  /**
-   * Функция инициализации хранилища настроек приложения
-   *
-   * @returns Объект типа TConfig инициализированный значениями по умолчанию
-   */
-  () => {
-    /**
-     * Пустой объект для валидатора, который проставляет в нем свойства со
-     * значениями по умолчанию в соответствии с TConfig
-     */
-    const value = {} as TConfig;
-    validateConfig(value);
-    return value;
-  },
-  localStorage,
-  { mergeDefaults },
-);
-/** Выбранная пользователем страница в дереве */
-export const the: ComputedRef<TPage | undefined> = computed(
-  /**
-   * Функция поиска выбранной пользователем страницы в общем массиве страниц
-   *
-   * @returns Выбранная пользователем страница, если такая существует, либо
-   *   корневая страница, если такая существует
-   */
-  () =>
-    pages.value.find(({ id }) => id === config.value.selected) ??
-    pages.value[0],
+export const selected = ref();
+export const the = computed(
+  () => pages.value.find(({ id }) => id === selected.value) ?? pages.value[0],
 );
 export const urls = reactive(new Map<string, string>());
 {
