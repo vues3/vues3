@@ -19,10 +19,12 @@ const canonical = computed(() =>
     : `${window.location.origin}${a.value.to === "/" ? "" : a.value.to}`,
 );
 const ogImage = () =>
-  a.value?.images.map(({ alt, url }) => ({
-    alt,
-    url: url ? `${window.location.origin}${url}` : "",
-  }));
+  a.value?.images
+    .filter(({ url }) => url)
+    .map(({ alt, url }) => ({
+      alt,
+      url: url ? `${window.location.origin}${url}` : "",
+    }));
 const favicon = ref();
 const link = [
   [favicon, "icon", "icon"],
