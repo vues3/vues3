@@ -21,7 +21,7 @@ const canonical = computed(() =>
 const ogImage = () =>
   a.value?.images.map(({ alt, url }) => ({
     alt,
-    url: url ? `${window.location.origin}${url}` : "",
+    url: url && `${window.location.origin}${url}`,
   }));
 const favicon = ref();
 const link = [
@@ -30,9 +30,9 @@ const link = [
 ].map(([href, rel, key]) => ({ href, key, rel }));
 useHead({ link });
 const title = () => a.value?.title ?? "";
-const ogTitle = () => a.value?.title ?? "";
-const description = () => a.value?.description ?? "";
-const ogDescription = () => a.value?.description ?? "";
+const ogTitle = () => a.value?.title;
+const description = () => a.value?.description;
+const ogDescription = () => a.value?.description;
 const ogType = () => a.value?.type as MetaFlat["ogType"];
 const ogUrl = canonical;
 const keywords = () => a.value?.keywords.join();
