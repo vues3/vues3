@@ -134,7 +134,7 @@ export const fix = (siblings: TPage[]) => {
   });
 };
 export const that = computed(() =>
-  router.currentRoute.value.path === "/" ? a.value?.children?.[0] : a.value,
+  router.currentRoute.value.path === "/" ? a.value?.$children?.[0] : a.value,
 );
 const siblings = computed(() => that.value?.siblings ?? []);
 export const $siblings = computed(() =>
