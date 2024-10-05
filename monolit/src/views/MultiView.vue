@@ -45,11 +45,19 @@ const template = ({ id }: TPage) =>
 const intersecting = computed(
   () => new Map($siblings.value.map(({ id }) => [id, false])),
 );
+const $intersecting = ref(new Map(intersecting.value));
 const onStop = () => {
-  const name = [...intersecting.value.entries()].find(
-    ([, value]) => value,
-  )?.[0];
-  if (!paused.value && name && name !== that.value?.id) {
+  if (!paused.value && that.value && $siblings.value.length) {
+    const { scrollX, scrollY } = window;
+    const [first] = $siblings.value;
+    const { root } = first;
+    const { $children: [{ id }] = [{}] } = root;
+    const name =
+      !Math.floor(scrollX) && !Math.floor(scrollY) && first.id === id
+        ? root.id
+        : ([...intersecting.value.entries()].find(([, value]) => value)?.[0] ??
+          [...$intersecting.value.entries()].find(([, value]) => value)?.[0] ??
+          first.id);
     scroll.value = false;
     router.push({ name }).catch(() => {});
   }
@@ -61,6 +69,7 @@ const callback = ([
     target: { id },
   },
 ]: IntersectionObserverEntry[]) => {
+  $intersecting.value = new Map(intersecting.value);
   intersecting.value.set(id, isIntersecting);
 };
 const stops: (() => void)[] = [];
