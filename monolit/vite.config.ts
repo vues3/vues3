@@ -28,8 +28,7 @@ const manualChunks = (id: string) =>
 const output = { manualChunks };
 const external = ["vue"];
 const rollupOptions: BuildOptions["rollupOptions"] = { external, output };
-const target = "esnext";
-const build: BuildOptions = { manifest, outDir, rollupOptions, target };
+const build: BuildOptions = { manifest, outDir, rollupOptions };
 const define: object = {
   __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
   __VUE_PROD_DEVTOOLS__: true,
