@@ -370,34 +370,35 @@ watch(
   }, second),
   { deep },
 );
-const index = await (await fetch("monolit/index.html")).text();
-watch(
-  [pages, importmap],
-  debounce((arr) => {
-    const [page, imap] = arr as [TPage[], TImportmap];
-    const body = index
-      .replace(
-        '<script type="importmap"></script>',
-        `<script type="importmap">
+(async () => {
+  const index = await (await fetch("monolit/index.html")).text();
+  watch(
+    [pages, importmap],
+    debounce((arr) => {
+      const [page, imap] = arr as [TPage[], TImportmap];
+      const body = index
+        .replace(
+          '<script type="importmap"></script>',
+          `<script type="importmap">
 ${JSON.stringify(imap, null, " ")}
     </script>`,
-      )
-      .replace(
-        "</head>",
-        `  ${Object.values(imap.imports)
-          .filter((href) => !href.endsWith("/"))
-          .map(
-            (href) => `<link rel="modulepreload" crossorigin href="${href}">`,
-          ).join(`
+        )
+        .replace(
+          "</head>",
+          `  ${Object.values(imap.imports)
+            .filter((href) => !href.endsWith("/"))
+            .map(
+              (href) => `<link rel="modulepreload" crossorigin href="${href}">`,
+            ).join(`
     `)}
     </head>`,
-      );
-    page.forEach(
-      ({ description, images, keywords, loc, path, title, to, type }) => {
-        const canonical = `https://${domain(bucket.value)}${to === "/" ? "" : to}`;
-        const htm = body.replace(
-          "</head>",
-          `<title>${title}</title>
+        );
+      page.forEach(
+        ({ description, images, keywords, loc, path, title, to, type }) => {
+          const canonical = `https://${domain(bucket.value)}${to === "/" ? "" : to}`;
+          const htm = body.replace(
+            "</head>",
+            `<title>${title}</title>
     <link rel="canonical" href="${canonical.replaceAll('"', "&quot;")}">
     ${[
       [description ?? "", "description"],
@@ -426,16 +427,17 @@ ${JSON.stringify(imap, null, " ")}
       ).join(`
     `)}
   </head>`,
-        );
-        if (loc)
-          putObject(`${loc}/index.html`, "text/html", htm).catch(() => {});
-        putObject(
-          path ? `${path}/index.html` : "index.html",
-          "text/html",
-          htm,
-        ).catch(() => {});
-      },
-    );
-  }, second),
-  { deep },
-);
+          );
+          if (loc)
+            putObject(`${loc}/index.html`, "text/html", htm).catch(() => {});
+          putObject(
+            path ? `${path}/index.html` : "index.html",
+            "text/html",
+            htm,
+          ).catch(() => {});
+        },
+      );
+    }, second),
+    { deep },
+  );
+})().catch(() => {});
