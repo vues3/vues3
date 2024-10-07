@@ -64,24 +64,26 @@ const initRouter = (async () => {
   const name = "404";
   router.addRoute({ component, name, path });
 })();
+const rootElement = () => document.getElementById("app") as Element;
 const ready: RuntimeOptions["ready"] = async (runtime) => {
   const { toggleObserver } = runtime;
   setScroll(runtime);
   await initRouter;
   window.app.use(router);
-  window.app.mount("#app");
+  window.app.mount(rootElement());
   toggleObserver(true);
   return false;
 };
-const response = await fetch("/fonts.json");
-const fonts = getFonts(
-  response.ok ? ((await response.json()) as string[]) : [],
-);
-defaults.presets.push(
-  presetWebFonts({
-    customFetch,
-    fonts,
-  }) as Preset,
-);
-const rootElement = () => document.getElementById("app") as Element;
-initUnocssRuntime({ defaults, ready, rootElement });
+(async () => {
+  const response = await fetch("/fonts.json");
+  const fonts = getFonts(
+    response.ok ? ((await response.json()) as string[]) : [],
+  );
+  defaults.presets.push(
+    presetWebFonts({
+      customFetch,
+      fonts,
+    }) as Preset,
+  );
+  initUnocssRuntime({ defaults, ready, rootElement });
+})().catch(() => {});
