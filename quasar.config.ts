@@ -44,9 +44,7 @@ const vitePlugins = [
   ["vite-plugin-checker", { eslint, vueTsc }, { server }],
   ["@unocss/vite", { configFile, extractors }],
 ];
-const browser = ["esnext"];
-const target = { browser };
-const build: object = { extendViteConf, target, vitePlugins, vueRouterMode };
+const build: object = { extendViteConf, vitePlugins, vueRouterMode };
 const open = false;
 const devServer = { open };
 const plugins: (keyof QuasarPlugins)[] = ["Dialog", "Notify"];
