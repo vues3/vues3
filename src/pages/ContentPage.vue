@@ -22,19 +22,19 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
               q-checkbox(v-model="the.setup")
             q-item-section
               q-item-label script setup
-              q-item-label(caption) the.setup
+              q-item-label(caption) setup
           q-item(tag="label", v-ripple)
             q-item-section(avatar)
               q-checkbox(v-model="the.scoped")
             q-item-section
               q-item-label style scoped
-              q-item-label(caption) the.scoped
+              q-item-label(caption) scoped
           q-item(tag="label", v-ripple)
             q-item-section(avatar)
               q-checkbox(v-model="the.along")
             q-item-section
               q-item-label along
-              q-item-label(caption) the.along
+              q-item-label(caption) along
           q-select(
             hide-dropdown-icon,
             label="class",
@@ -57,25 +57,25 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           :label="t('The type of media of your content')",
           :options="types",
           clearable,
-          hint="the.type",
+          hint="type",
           v-model="the.type"
         )
         q-input(
           :label="t('Page Header')",
-          hint="the.header",
+          hint="header",
           v-model.trim="the.header"
         )
         q-input(
           :label="t('Page Description')",
           autogrow,
-          hint="the.description",
+          hint="description",
           type="textarea",
           v-model.trim="the.description"
         )
         q-select(
           :label="t('Keywords')",
           hide-dropdown-icon,
-          hint="the.keywords",
+          hint="keywords",
           multiple,
           new-value-mode="add",
           stack-label,
@@ -87,7 +87,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           :error="error()",
           :error-message="errorMessage()",
           :label="t('Permanent Link')",
-          hint="the.loc",
+          hint="loc",
           prefix="/",
           type="url",
           v-model.trim="loc"
@@ -96,12 +96,12 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           :label="t('Change Frequency')",
           :options="changefreq",
           clearable,
-          hint="the.changefreq",
+          hint="changefreq",
           v-model="the.changefreq"
         )
         q-input(
           :label="t('Priority')",
-          hint="the.priority",
+          hint="priority",
           max="1",
           min="0",
           step="0.1",
@@ -111,14 +111,14 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-input(
           :label="t('Last Modification')",
           clearable,
-          hint="the.lastmod",
+          hint="lastmod",
           type="datetime-local",
           v-model="the.lastmod"
         )
         q-input(
           :label="t('Icon')",
           clearable,
-          hint="the.icon",
+          hint="icon",
           v-model.trim="the.icon"
         )
           template(#prepend)
