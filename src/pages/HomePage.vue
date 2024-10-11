@@ -47,7 +47,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
 q-page.column
   .col.column.q-ma-md
     q-img.col.rounded-borders(no-spinner, src="~/assets/bg.jpg")
-      q-card.absolute-center
+      q-card.backdrop-blur-sm.absolute-center
         q-card-section
           .text-h5 vueS3
         q-card-section
