@@ -20,7 +20,7 @@ import type { Ref } from "vue";
 
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
 import { behavior, deep, threshold } from "app/src/stores/defaults";
-import { computed, ref, watch } from "vue";
+import { computed, onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import {
@@ -73,18 +73,26 @@ const callback = ([
   intersecting.value.set(id, isIntersecting);
 };
 const stops: (() => void)[] = [];
+const clearStops = () => {
+  stops.forEach((stop: () => void) => {
+    stop();
+  });
+  stops.length = 0;
+};
 watch(
   refs,
   (value) => {
-    stops.forEach((stop: () => void) => {
-      stop();
-    });
-    stops.length = 0;
-    value.forEach((target) => {
-      const { stop } = useIntersectionObserver(target, callback, { threshold });
-      stops.push(stop);
+    clearStops();
+    setTimeout(() => {
+      value.forEach((target) => {
+        const { stop } = useIntersectionObserver(target, callback, {
+          threshold,
+        });
+        stops.push(stop);
+      });
     });
   },
   { deep },
 );
+onUnmounted(clearStops);
 </script>
