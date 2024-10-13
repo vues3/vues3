@@ -1,5 +1,10 @@
 <template lang="pug">
-div
+form(
+  autocapitalize="on",
+  autocomplete="on",
+  autocorrect="on",
+  spellcheck="true"
+)
   q-editor.col.column.full-width(
     :definitions,
     :dense="$q.screen.lt.md",
