@@ -7,12 +7,17 @@ import type { TPage } from "src/stores/types";
 
 import { computed, inject, onUpdated } from "vue";
 
-import { getAsyncComponent, resolve, that } from "../stores/monolit";
+import { getAsyncComponent, promises, resolve, that } from "../stores/monolit";
 
 const { id } = defineProps<{ id?: string }>();
 const pages: Record<string, TPage> = inject("pages")!;
 const the = computed(() => (id ? pages[id as keyof object] : that.value));
-const is = computed(() => the.value && getAsyncComponent(the.value));
+const is = computed(() => {
+  const [[key, value] = []] = promises;
+  promises.clear();
+  if (key) promises.set(key, value);
+  return the.value && getAsyncComponent(the.value);
+});
 onUpdated(() => {
   if (id) resolve(the.value);
 });
