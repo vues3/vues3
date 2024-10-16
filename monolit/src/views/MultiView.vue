@@ -27,6 +27,7 @@ import {
   $siblings,
   getAsyncComponent,
   paused,
+  promises,
   resolve,
   scroll,
   that,
@@ -34,12 +35,16 @@ import {
 
 const refs: Ref<HTMLElement[]> = ref([]);
 const router = useRouter();
-const templates = computed(
-  () =>
-    Object.fromEntries(
-      $siblings.value.map((value) => [value.id, getAsyncComponent(value)]),
-    ) as object,
-);
+const templates = computed(() => {
+  {
+    const [[key, value]] = promises;
+    promises.clear();
+    promises.set(key, value);
+  }
+  return Object.fromEntries(
+    $siblings.value.map((value) => [value.id, getAsyncComponent(value)]),
+  ) as object;
+});
 const template = ({ id }: TPage) =>
   templates.value[id as keyof object] as object;
 const intersecting = computed(
