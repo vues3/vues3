@@ -21,7 +21,7 @@
     "@quasar/quasar-ui-qiconpicker": "^2.0.7",
     "@smithy/fetch-http-handler": "^3.2.9",
     "@types/crypto-js": "^4.2.2",
-    "@unhead/vue": "^1.11.9",
+    "@unhead/vue": "^1.11.10",
     "@unocss/core": "^0.63.4",
     "@unocss/extractor-pug": "^0.63.4",
     "@unocss/preset-attributify": "^0.63.4",
