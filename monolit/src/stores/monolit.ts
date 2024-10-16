@@ -23,6 +23,16 @@ declare const window: {
   Window;
 
 const { computed, defineAsyncComponent, markRaw, ref } = vue;
+export const promises = new Map();
+const promiseWithResolvers = () => {
+  let resolve;
+  let reject;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, reject, resolve };
+};
 const moduleCache = { vue };
 const getResource: Options["getResource"] = (pathCx, options) => {
   const { refPath } = pathCx;
@@ -78,7 +88,8 @@ const log = (type: keyof Console, ...args: string[]) => {
 const addStyle = (styles: string, id: string | undefined) => {
   useStyleTag(styles, { id });
 };
-export const getAsyncComponent = ({ path, scoped, setup, sfc }: TPage) => {
+export const getAsyncComponent = ({ id, path, scoped, setup, sfc }: TPage) => {
+  promises.set(id, promiseWithResolvers());
   const getFile = async () => {
     const { script, style, template } = await sfc;
     const cntScript =
@@ -140,25 +151,6 @@ const siblings = computed(() => that.value?.siblings ?? []);
 export const $siblings = computed(() =>
   siblings.value.filter(({ enabled }) => enabled),
 );
-const promiseWithResolvers = () => {
-  let resolve;
-  let reject;
-  const promise = new Promise((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-  return { promise, reject, resolve };
-};
-const along = computed(() => !that.value || that.value.parent?.along);
-const promises = computed(
-  () =>
-    Object.fromEntries(
-      [
-        ...(along.value ? $siblings.value : ([that.value] as TPage[])),
-        pages.value[0],
-      ].map(({ id }) => [id, promiseWithResolvers()]),
-    ) as Record<string, PromiseWithResolvers<undefined>>,
-);
 export const paused = ref(true);
 export const setScroll: (runtime: RuntimeContext) => void = ({
   extractAll,
@@ -167,8 +159,14 @@ export const setScroll: (runtime: RuntimeContext) => void = ({
   const all = async () => {
     paused.value = true;
     toggleObserver(false);
+    {
+      const [{ promise }] = promises.values();
+      await promise;
+    }
     await Promise.all(
-      Object.values(promises.value).map(({ promise }) => promise),
+      [...promises.values()].map(
+        ({ promise }) => promise as Promise<undefined>,
+      ),
     );
     await extractAll();
     toggleObserver(true);
@@ -199,9 +197,7 @@ export const setScroll: (runtime: RuntimeContext) => void = ({
   };
 };
 export const resolve = ({ id }: TPage | undefined = {} as TPage) => {
-  (
-    promises.value[id as keyof object] as
-      | PromiseWithResolvers<undefined>
-      | undefined
-  )?.resolve(undefined);
+  (promises.get(id) as PromiseWithResolvers<undefined> | undefined)?.resolve(
+    undefined,
+  );
 };
