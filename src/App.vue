@@ -5,6 +5,7 @@ q-layout(view="hHh Lpr lff")
       q-toolbar-title
         q-avatar(icon="img:favicon.svg", size="xl")
         | vueS3
+      q-chip(icon="language", v-if="bucket", :label="bucket", :ripple="false")
       q-btn-dropdown.q-mr-xs(
         dropdown-icon="apps",
         flat,
