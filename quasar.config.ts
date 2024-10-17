@@ -49,19 +49,12 @@ const open = false;
 const devServer = { open };
 const plugins: (keyof QuasarPlugins)[] = ["Dialog", "Notify"];
 const framework = { plugins };
-const inspectPort = 5858;
 const bundler = "builder";
 const appId = "com.electron.vues3";
 const grade: SnapOptions["grade"] = "stable";
 const snap = { grade };
 const builder = { appId, snap };
-const preloadScripts = ["electron-preload"];
-const electron: QuasarElectronConfiguration = {
-  builder,
-  bundler,
-  inspectPort,
-  preloadScripts,
-};
+const electron: QuasarElectronConfiguration = { builder, bundler };
 export default configure(() => ({
   boot,
   build,
