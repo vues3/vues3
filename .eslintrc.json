@@ -45,6 +45,7 @@
   "settings": {
     "import/resolver": {
       "typescript": true
-    }
+    },
+    "import/core-modules": ["electron"]
   }
 }
