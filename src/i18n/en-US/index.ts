@@ -39,5 +39,6 @@ export default Object.fromEntries(
     "Favicon uploaded successfully",
     "Favicon upload failed",
     "Prohibited characters are used",
+    "Open...",
   ].map((key) => [key, key]),
 );
