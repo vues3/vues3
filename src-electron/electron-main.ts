@@ -10,19 +10,19 @@ let mainWindow: BrowserWindow | undefined;
 const icon = path.resolve(currentDir, "icons/icon.png");
 const devTools = false;
 const show = false;
-// const preload = path.resolve(
-//   currentDir,
-//   path.join(
-//     process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
-//     `electron-preload${process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION}`,
-//   ),
-// );
-const webPreferences = {
-  devTools,
-  //  preload
-};
+const height = 600;
+const width = 1000;
+const sandbox = false;
+const preload = path.resolve(
+  currentDir,
+  path.join(
+    process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
+    `electron-preload${process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION}`,
+  ),
+);
+const webPreferences = { devTools, preload, sandbox };
 const createWindow = async () => {
-  mainWindow = new BrowserWindow({ icon, show, webPreferences });
+  mainWindow = new BrowserWindow({ height, icon, show, webPreferences, width });
   enable(mainWindow.webContents);
   if (process.env.DEV)
     await mainWindow.loadURL(process.env.APP_URL).catch(() => {});
@@ -31,6 +31,7 @@ const createWindow = async () => {
     mainWindow = undefined;
   });
   mainWindow.show();
+  // mainWindow.webContents.openDevTools();
 };
 app
   .whenReady()
