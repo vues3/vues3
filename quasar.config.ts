@@ -54,11 +54,11 @@ const appId = "com.electron.vues3";
 const grade: SnapOptions["grade"] = "stable";
 const snap = { grade };
 const builder = { appId, snap };
-// const preloadScripts = ["electron-preload"];
+const preloadScripts = ["electron-preload"];
 const electron: QuasarElectronConfiguration = {
   builder,
   bundler,
-  // preloadScripts,
+  preloadScripts,
 };
 export default configure(() => ({
   boot,
