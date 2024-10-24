@@ -44,4 +44,5 @@ export default Object.fromEntries([
   ["Favicon uploaded successfully", "Фавиконка успешно загружена"],
   ["Favicon upload failed", "Сбой загрузки фавиконки"],
   ["Prohibited characters are used", "Использованы запрещенные символы"],
+  ["Open...", "Открыть..."],
 ]);
