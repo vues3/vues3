@@ -12,14 +12,18 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       )
         template(#prepend)
           q-icon(name="delete")
-      q-input(clearable, label="access key id", v-model.trim="accessKeyId")
+        template(#append, v-if="isElectron()")
+          q-btn(:label="t('Open...')", outline, @click="getDir")
+      q-input(clearable, label="access key id", v-model.trim="accessKeyId", hint="", :disable="isDirectory" )
         template(#prepend)
           q-icon(name="key")
       q-input(
         :type="isPwd ? 'password' : 'text'",
         clearable,
         label="secret access key",
-        v-model.trim="secretAccessKey"
+        v-model.trim="secretAccessKey",
+        hint="",
+        :disable="isDirectory"
       )
         template(#prepend)
           q-icon(name="lock")
@@ -39,7 +43,8 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         label="endpoint url",
         type="url",
         use-input,
-        v-model.trim="endpoint"
+        v-model.trim="endpoint",
+        :disable="isDirectory"
       )
         template(#prepend)
           q-icon(name="link")
@@ -53,12 +58,13 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         hint="",
         label="region",
         use-input,
-        v-model.trim="region"
+        v-model.trim="region",
+        :disable="isDirectory"
       )
         template(#prepend)
           q-icon(name="flag")
     q-separator
-    q-card-actions.text-primary(align="right")
+    q-card-actions.text-primary.bg-grey-1(align="right")
       q-btn(@click="onDialogCancel", flat, label="Cancel")
       q-btn(
         @click="() => { bucket.validate(); if (!bucket.hasError) click(encrypt({ Bucket, secretAccessKey, region, endpoint, accessKeyId })); }",
@@ -77,7 +83,7 @@ import { useDialogPluginComponent, useQuasar } from "quasar";
 import { domain } from "stores/app";
 import { enumerable, mergeDefaults, writable } from "stores/defaults";
 import { validateCredentials } from "stores/types";
-import { ref, triggerRef } from "vue";
+import { computed, ref, triggerRef } from "vue";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
@@ -142,4 +148,16 @@ const click = (value: Record<string, null | string>) => {
       onDialogOK();
     }
 };
+const isElectron = () => process.env.MODE === "electron";
+const getDir = async () => {
+  const {
+    filePaths: [filePath],
+  } = await window.dialog.showOpenDialog({
+    properties: ["openDirectory"],
+  });
+  Bucket.value = filePath;
+};
+const isDirectory = computed(
+  () => isElectron() && window.isDirectory(Bucket.value ?? ""),
+);
 </script>
