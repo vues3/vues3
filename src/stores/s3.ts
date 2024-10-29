@@ -29,14 +29,19 @@ const creds = useStorage(
   { mergeDefaults },
 );
 export const bucket = ref("");
+export const domain = ref("");
 export const headBucket = async (Bucket: string, pin?: string) => {
   let { accessKeyId, endpoint, region, secretAccessKey } = creds.value[Bucket];
   if (pin) {
     accessKeyId = CryptoJS.AES.decrypt(accessKeyId ?? "", pin).toString(
       CryptoJS.enc.Utf8,
     );
-    endpoint = CryptoJS.AES.decrypt(endpoint, pin).toString(CryptoJS.enc.Utf8);
-    region = CryptoJS.AES.decrypt(region, pin).toString(CryptoJS.enc.Utf8);
+    endpoint = CryptoJS.AES.decrypt(endpoint ?? "", pin).toString(
+      CryptoJS.enc.Utf8,
+    );
+    region = CryptoJS.AES.decrypt(region ?? "", pin).toString(
+      CryptoJS.enc.Utf8,
+    );
     secretAccessKey = CryptoJS.AES.decrypt(secretAccessKey ?? "", pin).toString(
       CryptoJS.enc.Utf8,
     );
