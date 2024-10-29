@@ -11,7 +11,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
     q-list(padding)
       q-item(
         :key="name",
-        @click="login(name)",
+        @click="login(name.toString(), cred.domain ?? '')",
         clickable,
         v-for="(cred, name) in creds",
         v-ripple
@@ -25,7 +25,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           )
         q-item-section
           q-item-label(overline) {{ name }}
-          q-item-label(caption, v-if="name !== domain(String(name))") {{ domain(String(name)) }}
+          q-item-label(caption, v-if="cred.domain && name !== cred.domain") {{ cred.domain }}
         q-item-section(side)
           .q-gutter-xs
             q-btn.gt-xs(
@@ -85,9 +85,9 @@ import VOtpDialog from "components/VOtpDialog.vue";
 import CryptoJS from "crypto-js";
 import contentPage from "pages/ContentPage.vue";
 import { useQuasar } from "quasar";
-import { domain, rightDrawer } from "stores/app";
+import { rightDrawer } from "stores/app";
 import { mergeDefaults } from "stores/defaults";
-import { bucket, headBucket } from "stores/s3";
+import { bucket, domain, headBucket } from "stores/s3";
 import { validateCredentials } from "stores/types";
 import { triggerRef } from "vue";
 import { useI18n } from "vue-i18n";
@@ -123,18 +123,19 @@ const getPin = async (name: string): Promise<string | undefined> =>
         });
     } else resolve(undefined);
   });
-const login = async (value: number | string) => {
-  const name = value as string;
+const login = async (name: string, domainValue: string) => {
   const path = `/${name}`;
   const component = contentPage;
   if (!bucket.value)
     try {
       await headBucket(name, await getPin(name));
       bucket.value = name;
+      domain.value = domainValue;
       router.addRoute({ component, name, path });
       router.push(path).catch(() => {});
     } catch (err) {
       bucket.value = "";
+      domain.value = "";
       const { message } = err as Error;
       $q.notify({ message });
     }
