@@ -11,7 +11,14 @@ import mime from "mime";
 import { debounce, uid } from "quasar";
 import { data, pages } from "stores/data";
 import { cache, configurable, deep, second, writable } from "stores/defaults";
-import { bucket, getObject, headObject, putFile, putObject } from "stores/s3";
+import {
+  bucket,
+  domain,
+  getObject,
+  headObject,
+  putFile,
+  putObject,
+} from "stores/s3";
 import { validateComponent, validateImportmap } from "stores/types";
 import { toXML } from "to-xml";
 import { computed, reactive, ref, version, watch } from "vue";
@@ -335,22 +342,13 @@ watch(
   }),
   { deep },
 );
-export const domain = (value: string) => {
-  const lastIndexOfHyphen = value.lastIndexOf("-");
-  if (lastIndexOfHyphen > value.lastIndexOf(".")) {
-    const chars = [...value];
-    chars[lastIndexOfHyphen] = ".";
-    return chars.join("");
-  }
-  return value;
-};
 watch(
   pages,
   debounce((page: TPage[]) => {
     const url = page
       .filter(({ enabled }) => enabled)
       .map(({ changefreq, lastmod, priority, to }) => {
-        const loc = `https://${domain(bucket.value)}${to === "/" ? "" : encodeURI(to)}`;
+        const loc = `https://${domain.value || bucket.value}${to === "/" ? "" : encodeURI(to)}`;
         return {
           ...(changefreq && { changefreq }),
           ...(lastmod && { lastmod }),
@@ -395,7 +393,7 @@ ${JSON.stringify(imap, null, " ")}
         );
       page.forEach(
         ({ description, images, keywords, loc, path, title, to, type }) => {
-          const canonical = `https://${domain(bucket.value)}${to === "/" ? "" : to}`;
+          const canonical = `https://${domain.value || bucket.value}${to === "/" ? "" : to}`;
           const htm = body.replace(
             "</head>",
             `<title>${title}</title>
@@ -416,7 +414,7 @@ ${JSON.stringify(imap, null, " ")}
       [title ?? "", "title"],
       [type ?? "", "type"],
       ...images.flatMap(({ alt, url }) => [
-        [url ? `https://${domain(bucket.value)}${url}` : "", "image"],
+        [url ? `https://${domain.value || bucket.value}${url}` : "", "image"],
         [alt ?? "", "image:alt"],
       ]),
     ]
