@@ -345,26 +345,28 @@ watch(
 watch(
   pages,
   debounce((page: TPage[]) => {
-    const url = page
-      .filter(({ enabled }) => enabled)
-      .map(({ changefreq, lastmod, priority, to }) => {
-        const loc = `https://${domain.value || bucket.value}${to === "/" ? "" : encodeURI(to)}`;
-        return {
-          ...(changefreq && { changefreq }),
-          ...(lastmod && { lastmod }),
-          ...(priority && { priority }),
-          loc,
-        };
-      });
-    const urlset = {
-      "@xmlns": "https://www.sitemaps.org/schemas/sitemap/0.9",
-      url,
-    };
-    putObject(
-      "sitemap.xml",
-      "application/xml",
-      toXML({ "?": 'xml version="1.0" encoding="UTF-8"', urlset }),
-    ).catch(() => {});
+    if (domain.value) {
+      const url = page
+        .filter(({ enabled }) => enabled)
+        .map(({ changefreq, lastmod, priority, to }) => {
+          const loc = `https://${domain.value}${to === "/" ? "" : encodeURI(to)}`;
+          return {
+            ...(changefreq && { changefreq }),
+            ...(lastmod && { lastmod }),
+            ...(priority && { priority }),
+            loc,
+          };
+        });
+      const urlset = {
+        "@xmlns": "https://www.sitemaps.org/schemas/sitemap/0.9",
+        url,
+      };
+      putObject(
+        "sitemap.xml",
+        "application/xml",
+        toXML({ "?": 'xml version="1.0" encoding="UTF-8"', urlset }),
+      ).catch(() => {});
+    }
   }, second),
   { deep },
 );
@@ -383,7 +385,7 @@ ${JSON.stringify(imap, null, " ")}
         )
         .replace(
           "</head>",
-          `  ${Object.values(imap.imports)
+          `  ${Object.values(imap.imports ?? {})
             .filter((href) => !href.endsWith("/"))
             .map(
               (href) => `<link rel="modulepreload" crossorigin href="${href}">`,
@@ -393,11 +395,12 @@ ${JSON.stringify(imap, null, " ")}
         );
       page.forEach(
         ({ description, images, keywords, loc, path, title, to, type }) => {
-          const canonical = `https://${domain.value || bucket.value}${to === "/" ? "" : to}`;
+          const canonical =
+            domain.value && `https://${domain.value}${to === "/" ? "" : to}`;
           const htm = body.replace(
             "</head>",
             `<title>${title}</title>
-    <link rel="canonical" href="${canonical.replaceAll('"', "&quot;")}">
+    ${canonical && `<link rel="canonical" href="${canonical.replaceAll('"', "&quot;")}">`}
     ${[
       [description ?? "", "description"],
       [keywords.join() ?? "", "keywords"],
@@ -413,10 +416,11 @@ ${JSON.stringify(imap, null, " ")}
       [description ?? "", "description"],
       [title ?? "", "title"],
       [type ?? "", "type"],
-      ...images.flatMap(({ alt, url }) => [
-        [url ? `https://${domain.value || bucket.value}${url}` : "", "image"],
-        [alt ?? "", "image:alt"],
-      ]),
+      ...(domain.value &&
+        images.flatMap(({ alt, url }) => [
+          [url ? `https://${domain.value}${url}` : "", "image"],
+          [alt ?? "", "image:alt"],
+        ])),
     ]
       .filter(([content]) => content)
       .map(
