@@ -3,7 +3,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
   q-card.w-full
     q-card-section
       q-input(
-        :rules="[(v: string) => !!v || t('Item is required')]",
+        :rules="[(v: null | string) => !!v || t('Item is required')]",
         clearable,
         label="bucket",
         ref="bucketRef",
@@ -128,7 +128,7 @@ const decrypt = (value?: null | string) =>
     : (value ?? null);
 const Bucket = ref(decrypt(cred?.Bucket));
 const domain = ref(decrypt(cred?.domain));
-const equal = ref(Bucket.value === domain.value);
+const equal = ref(!!(Bucket.value && Bucket.value === domain.value));
 const secretAccessKey = ref(decrypt(cred?.secretAccessKey));
 const region = ref(decrypt(cred?.region));
 const endpoint = ref(decrypt(cred?.endpoint));
@@ -177,10 +177,12 @@ const isDirectory = computed(
 );
 /** @see {@link https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch08s15.html} */
 const rules = [
-  (v: string) => !!v || t("Item is required"),
-  (v: string) =>
-    /\b((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}\b/.test(
-      v,
+  (v: null | string) =>
+    !(
+      v &&
+      !/\b((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}\b/.test(
+        v ?? "",
+      )
     ) || t("Not a valid domain"),
 ];
 watch(isDirectory, (value) => {
