@@ -1,6 +1,6 @@
 import { boot } from "quasar/wrappers";
 import routes from "src/router/routes";
-import { bucket, domain } from "stores/s3";
+import { bucket } from "stores/s3";
 
 export default boot(({ router }) => {
   const [route] = routes;
@@ -9,7 +9,6 @@ export default boot(({ router }) => {
     else next("/");
     if (path === "/") {
       bucket.value = "";
-      domain.value = "";
       router.clearRoutes();
       router.addRoute(route);
     }
