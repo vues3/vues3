@@ -225,7 +225,7 @@ const loc = computed({
   },
 });
 const rules = [
-  (v: string) =>
+  (v: null | string) =>
     !(
       !!v &&
       !!pages.value.find(
@@ -234,8 +234,8 @@ const rules = [
           (element.path === v || element.loc === v),
       )
     ) || t("That name is already in use"),
-  (v: string) =>
-    !["?", "\\", "#"].some((value) => v.includes(value)) ||
+  (v: null | string) =>
+    !["?", "\\", "#"].some((value) => v?.includes(value)) ||
     t("Prohibited characters are used"),
 ];
 </script>
