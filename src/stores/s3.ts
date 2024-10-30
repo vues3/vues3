@@ -99,5 +99,8 @@ export const getObject = async (Key: string, ResponseCacheControl?: string) => {
   return new Response();
 };
 watch(bucket, (value) => {
-  if (!value) s3Client = undefined;
+  if (!value) {
+    s3Client = undefined;
+    domain.value = "";
+  }
 });
