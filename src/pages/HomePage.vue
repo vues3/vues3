@@ -135,7 +135,6 @@ const login = async (name: string, domainValue: string) => {
       router.push(path).catch(() => {});
     } catch (err) {
       bucket.value = "";
-      domain.value = "";
       const { message } = err as Error;
       $q.notify({ message });
     }
