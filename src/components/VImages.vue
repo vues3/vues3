@@ -41,7 +41,7 @@ import {
   multiple,
   reset,
 } from "stores/defaults";
-import { getObject, putFile } from "stores/s3";
+import { getObject, putObject } from "stores/io";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -66,7 +66,9 @@ onChange((files) => {
     const { type } = file;
     if (mimes.includes(type)) {
       const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
-      putFile(filePath, type, file).catch(() => {});
+      (async () => {
+        await putObject(filePath, type, new Blob([await file.arrayBuffer()]));
+      })().catch(() => {});
       urls.set(filePath, URL.createObjectURL(file));
       images.value[index].url = filePath;
     } else $q.notify({ message });
