@@ -1,6 +1,6 @@
 import { boot } from "quasar/wrappers";
 import routes from "src/router/routes";
-import { bucket } from "stores/s3";
+import { bucket } from "stores/io";
 
 export default boot(({ router }) => {
   const [route] = routes;
