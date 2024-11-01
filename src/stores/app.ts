@@ -11,14 +11,7 @@ import mime from "mime";
 import { debounce, uid } from "quasar";
 import { data, pages } from "stores/data";
 import { cache, configurable, deep, second, writable } from "stores/defaults";
-import {
-  bucket,
-  domain,
-  getObject,
-  headObject,
-  putFile,
-  putObject,
-} from "stores/s3";
+import { bucket, domain, getObject, headObject, putObject } from "stores/io";
 import { validateComponent, validateImportmap } from "stores/types";
 import { toXML } from "to-xml";
 import { computed, reactive, ref, version, watch } from "vue";
@@ -305,7 +298,8 @@ export const putImage = async (file: File) => {
   const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
   let message;
   try {
-    if (mimes.includes(type)) await putFile(filePath, type, file);
+    if (mimes.includes(type))
+      await putObject(filePath, type, new Blob([await file.arrayBuffer()]));
     else
       throw new Error(
         "The graphic file type is not suitable for use on the Internet",
