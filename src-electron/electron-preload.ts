@@ -8,3 +8,7 @@ contextBridge.exposeInMainWorld(
   "isDirectory",
   (path: string) => lstatSync(path, { throwIfNoEntry })?.isDirectory() ?? false,
 );
+// headBucket
+// headObject
+// putObject
+// getObject
