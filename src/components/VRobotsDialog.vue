@@ -21,7 +21,7 @@ import type { Ref } from "vue";
 
 import { debounce, useDialogPluginComponent } from "quasar";
 import { cache, second } from "stores/defaults";
-import { getObject, putObject } from "stores/s3";
+import { getObject, putObject } from "stores/io";
 import { onBeforeMount, ref, watch } from "vue";
 
 defineEmits([...useDialogPluginComponent.emits]);
