@@ -87,7 +87,7 @@ import contentPage from "pages/ContentPage.vue";
 import { useQuasar } from "quasar";
 import { rightDrawer } from "stores/app";
 import { mergeDefaults } from "stores/defaults";
-import { bucket, domain, headBucket } from "stores/s3";
+import { bucket, domain, headBucket } from "stores/io";
 import { validateCredentials } from "stores/types";
 import { triggerRef } from "vue";
 import { useI18n } from "vue-i18n";
@@ -126,18 +126,16 @@ const getPin = async (name: string): Promise<string | undefined> =>
 const login = async (name: string, domainValue: string) => {
   const path = `/${name}`;
   const component = contentPage;
-  if (!bucket.value)
-    try {
-      await headBucket(name, await getPin(name));
-      bucket.value = name;
-      domain.value = domainValue;
-      router.addRoute({ component, name, path });
-      router.push(path).catch(() => {});
-    } catch (err) {
-      bucket.value = "";
-      const { message } = err as Error;
-      $q.notify({ message });
-    }
+  try {
+    await headBucket(name, await getPin(name));
+    bucket.value = name;
+    domain.value = domainValue;
+    router.addRoute({ component, name, path });
+    router.push(path).catch(() => {});
+  } catch (err) {
+    const { message } = err as Error;
+    $q.notify({ message });
+  }
 };
 const add = () => {
   const component = VCredsDialog;
