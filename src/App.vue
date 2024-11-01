@@ -76,7 +76,7 @@ import VFontsDialog from "src/components/VFontsDialog.vue";
 import VImportmapDialog from "src/components/VImportmapDialog.vue";
 import VRobotsDialog from "src/components/VRobotsDialog.vue";
 import { rightDrawer } from "stores/app";
-import { bucket } from "stores/s3";
+import { bucket } from "stores/io";
 // eslint-disable-next-line import/no-unresolved
 import "virtual:uno.css";
 
