@@ -19,7 +19,7 @@ import type { QUploader, QUploaderFactoryFn } from "quasar";
 import type { Ref } from "vue";
 
 import { useDialogPluginComponent, useQuasar } from "quasar";
-import { putFile } from "stores/s3";
+import { putObject } from "stores/io";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -33,7 +33,11 @@ const factory: QUploaderFactoryFn = async (files) => {
   const [file] = files;
   let message = t("Favicon uploaded successfully");
   try {
-    await putFile("favicon.ico", "image/vnd.microsoft.icon", file);
+    await putObject(
+      "favicon.ico",
+      "image/vnd.microsoft.icon",
+      new Blob([await file.arrayBuffer()]),
+    );
     uploader.value?.reset();
   } catch (e) {
     message = t("Favicon upload failed");
