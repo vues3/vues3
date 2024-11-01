@@ -43,7 +43,7 @@ import { uid, useQuasar } from "quasar";
 import { fonts as Fonts, urls } from "stores/app";
 import { getFonts } from "stores/data";
 import { accept, bypassDefined, customFetch, immediate } from "stores/defaults";
-import { putFile } from "stores/s3";
+import { putObject } from "stores/io";
 import { computed, nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -95,7 +95,9 @@ const insertImage = (file: File) => {
   const { type } = file;
   if (mimes.includes(type)) {
     const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
-    putFile(filePath, type, file).catch(() => {});
+    (async () => {
+      await putObject(filePath, type, new Blob([await file.arrayBuffer()]));
+    })().catch(() => {});
     urls.set(filePath, URL.createObjectURL(file));
     editor.value?.runCmd(
       "insertHTML",
