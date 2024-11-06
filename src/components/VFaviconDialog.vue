@@ -35,11 +35,11 @@ const factory: QUploaderFactoryFn = async (files) => {
   try {
     await putObject(
       "favicon.ico",
+      new Uint8Array(await file.arrayBuffer()),
       "image/vnd.microsoft.icon",
-      new Blob([await file.arrayBuffer()]),
     );
     uploader.value?.reset();
-  } catch (e) {
+  } catch {
     message = t("Favicon upload failed");
   }
   $q.notify({ message });
