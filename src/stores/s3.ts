@@ -28,7 +28,7 @@ const creds = useStorage(
   { mergeDefaults },
 );
 export const setS3Client = (value?: S3Client) => {
-  if (!value) s3Client?.destroy();
+  s3Client?.destroy();
   s3Client = value;
 };
 export const headBucket = async (Bucket: string, pin?: string) => {
@@ -71,15 +71,15 @@ export const headObject = async (
 export const putObject = async (
   Bucket: string,
   Key: string,
-  ContentType: string,
   body: StreamingBlobPayloadInputTypes,
+  ContentType: string,
 ) => {
   const Body = typeof body === "string" ? new TextEncoder().encode(body) : body;
   await s3Client?.send(
     new PutObjectCommand({ Body, Bucket, ContentType, Key }),
   );
 };
-export const getObject = async (
+const getObject = async (
   Bucket: string,
   Key: string,
   ResponseCacheControl?: string,
@@ -91,8 +91,18 @@ export const getObject = async (
       );
       const headers = new Headers({ "content-type": ContentType ?? "" });
       return new Response(Body as BodyInit, { headers });
-    } catch (e) {
+    } catch {
       //
     }
   return new Response();
 };
+export const getObjectText = async (
+  Bucket: string,
+  Key: string,
+  ResponseCacheControl?: string,
+) => (await getObject(Bucket, Key, ResponseCacheControl)).text();
+export const getObjectBlob = async (
+  Bucket: string,
+  Key: string,
+  ResponseCacheControl?: string,
+) => (await getObject(Bucket, Key, ResponseCacheControl)).blob();
