@@ -21,19 +21,19 @@ import type { Ref } from "vue";
 
 import { debounce, useDialogPluginComponent } from "quasar";
 import { cache, second } from "stores/defaults";
-import { getObject, putObject } from "stores/io";
+import { getObjectText, putObject } from "stores/io";
 import { onBeforeMount, ref, watch } from "vue";
 
 defineEmits([...useDialogPluginComponent.emits]);
 const { dialogRef, onDialogHide } = useDialogPluginComponent();
 const text: Ref<string | undefined> = ref();
 onBeforeMount(async () => {
-  text.value = await (await getObject("robots.txt", cache)).text();
+  text.value = await getObjectText("robots.txt", cache);
 });
 watch(
   text,
   debounce((value) => {
-    putObject("robots.txt", "text/plain", value as string).catch(() => {});
+    putObject("robots.txt", value as string, "text/plain").catch(() => {});
   }, second),
 );
 </script>
