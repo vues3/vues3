@@ -11,7 +11,14 @@ import mime from "mime";
 import { debounce, uid } from "quasar";
 import { data, pages } from "stores/data";
 import { cache, configurable, deep, second, writable } from "stores/defaults";
-import { bucket, domain, getObject, headObject, putObject } from "stores/io";
+import {
+  bucket,
+  domain,
+  getObjectBlob,
+  getObjectText,
+  headObject,
+  putObject,
+} from "stores/io";
 import { validateComponent, validateImportmap } from "stores/types";
 import { toXML } from "to-xml";
 import { computed, reactive, ref, version, watch } from "vue";
@@ -44,8 +51,7 @@ export const urls = reactive(new Map<string, string>());
       if (!this.buffer && this.id) {
         /** Компонент, загружаемый из хранилища S3 */
         const value = JSON.parse(
-          (await (await getObject(`pages/${this.id}.json`, cache)).text()) ||
-            "{}",
+          (await getObjectText(`pages/${this.id}.json`, cache)) || "{}",
         ) as TComponent;
         validateComponent(value);
         Reflect.defineProperty(this, "buffer", { configurable, value });
@@ -62,8 +68,8 @@ export const urls = reactive(new Map<string, string>());
               if (this.id)
                 putObject(
                   `pages/${this.id}.json`,
-                  "application/json",
                   JSON.stringify(component),
+                  "application/json",
                 ).catch(
                   /** Фейковая функция обнаружения сбоев */
                   () => {},
@@ -120,25 +126,21 @@ export const urls = reactive(new Map<string, string>());
       });
       (
         await Promise.all(
-          (
-            await Promise.all(
-              [...doc.images].map((image) => {
-                const src = image.getAttribute("src") ?? "";
-                const { pathname } = new URL(
-                  src,
-                  new URL(`${window.location.origin}${this.to}`),
-                );
-                const url = src && pathname.replace(/^\/+/, "");
-                const { origin } = new URL(url, window.location.origin);
-                return bucket.value &&
-                  url &&
-                  !urls.has(url) &&
-                  window.location.origin === origin
-                  ? getObject(url)
-                  : undefined;
-              }),
-            )
-          ).map((image) => image?.blob()),
+          [...doc.images].map((image) => {
+            const src = image.getAttribute("src") ?? "";
+            const { pathname } = new URL(
+              src,
+              new URL(`${window.location.origin}${this.to}`),
+            );
+            const url = src && pathname.replace(/^\/+/, "");
+            const { origin } = new URL(url, window.location.origin);
+            return bucket.value &&
+              url &&
+              !urls.has(url) &&
+              window.location.origin === origin
+              ? getObjectBlob(url)
+              : undefined;
+          }),
         )
       ).forEach((image, index) => {
         const src = doc.images[index].getAttribute("src") ?? "";
@@ -184,7 +186,7 @@ export const urls = reactive(new Map<string, string>());
             });
             a.replaceWith(link);
           }
-        } catch (e) {
+        } catch {
           //
         }
       });
@@ -221,7 +223,7 @@ watch(bucket, async (value) => {
       data.push(
         (
           JSON.parse(
-            (await (await getObject("index.json", cache)).text()) || "[{}]",
+            (await getObjectText("index.json", cache)) || "[{}]",
           ) as TPage[]
         )[0] ?? {},
       );
@@ -230,13 +232,13 @@ watch(bucket, async (value) => {
       fonts.length = 0;
       fonts.push(
         ...(JSON.parse(
-          (await (await getObject("fonts.json", cache)).text()) || "[]",
+          (await getObjectText("fonts.json", cache)) || "[]",
         ) as never[]),
       );
     })().catch(() => {});
     (async () => {
       const { imports } = JSON.parse(
-        (await (await getObject("index.importmap", cache)).text()) || "{}",
+        (await getObjectText("index.importmap", cache)) || "{}",
       ) as TImportmap;
       importmap.imports = imports;
       validateImportmap(importmap);
@@ -245,9 +247,8 @@ watch(bucket, async (value) => {
       (await Promise.all([
         (await fetch("monolit/.vite/manifest.json")).json(),
         Promise.resolve(
-          (async (response) =>
-            JSON.parse((await (await response).text()) || "{}") as object)(
-            getObject(".vite/manifest.json", cache),
+          JSON.parse(
+            (await getObjectText(".vite/manifest.json", cache)) || "{}",
           ),
         ),
       ])) as Record<string, Record<string, string | string[]> | undefined>[]
@@ -271,7 +272,11 @@ watch(bucket, async (value) => {
       .forEach((element) => {
         (async () => {
           const body = await (await fetch(`monolit/${element}`)).blob();
-          putObject(element, body.type, body).catch(() => {});
+          putObject(
+            element,
+            new Uint8Array(await body.arrayBuffer()),
+            body.type,
+          ).catch(() => {});
         })().catch(() => {});
       });
   } else {
@@ -286,7 +291,7 @@ watch(
   data,
   debounce((value) => {
     if (value)
-      putObject("index.json", "application/json", JSON.stringify(value)).catch(
+      putObject("index.json", JSON.stringify(value), "application/json").catch(
         () => {},
       );
   }, second),
@@ -299,7 +304,7 @@ export const putImage = async (file: File) => {
   let message;
   try {
     if (mimes.includes(type))
-      await putObject(filePath, type, new Blob([await file.arrayBuffer()]));
+      await putObject(filePath, new Uint8Array(await file.arrayBuffer()), type);
     else
       throw new Error(
         "The graphic file type is not suitable for use on the Internet",
@@ -313,7 +318,7 @@ watch(
   fonts,
   debounce((value, oldValue) => {
     if (oldValue)
-      putObject("fonts.json", "application/json", JSON.stringify(value)).catch(
+      putObject("fonts.json", JSON.stringify(value), "application/json").catch(
         () => {},
       );
   }),
@@ -330,8 +335,8 @@ watch(
     if (save)
       putObject(
         "index.importmap",
-        "application/importmap+json",
         JSON.stringify({ imports }),
+        "application/importmap+json",
       ).catch(() => {});
   }),
   { deep },
@@ -357,8 +362,8 @@ watch(
       };
       putObject(
         "sitemap.xml",
-        "application/xml",
         toXML({ "?": 'xml version="1.0" encoding="UTF-8"', urlset }),
+        "application/xml",
       ).catch(() => {});
     }
   }, second),
@@ -425,11 +430,11 @@ ${JSON.stringify(imap, null, " ")}
   </head>`,
           );
           if (loc)
-            putObject(`${loc}/index.html`, "text/html", htm).catch(() => {});
+            putObject(`${loc}/index.html`, htm, "text/html").catch(() => {});
           putObject(
             path ? `${path}/index.html` : "index.html",
-            "text/html",
             htm,
+            "text/html",
           ).catch(() => {});
         },
       );
