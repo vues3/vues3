@@ -7,7 +7,7 @@ q-layout(view="hHh Lpr lff")
       text-white
     )
       q-icon(name="wysiwyg")
-      .col.text-weight-bold vueS3
+      .col.text-weight-bold.text-center vueS3
       q-space
       q-btn(@click="minimize", dense, flat, icon="minimize")
       q-btn(
