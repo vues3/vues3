@@ -15,7 +15,6 @@ const extras: (QuasarFonts | QuasarIconSets)[] = [
   "roboto-font",
   "material-icons",
 ];
-const vueRouterMode = "history";
 const api = "modern-compiler";
 const sass = { api };
 const preprocessorOptions = { sass };
@@ -44,7 +43,7 @@ const vitePlugins = [
   ["vite-plugin-checker", { eslint, vueTsc }, { server }],
   ["@unocss/vite", { configFile, extractors }],
 ];
-const build: object = { extendViteConf, vitePlugins, vueRouterMode };
+const build: object = { extendViteConf, vitePlugins };
 const open = false;
 const devServer = { open };
 const plugins: (keyof QuasarPlugins)[] = ["Dialog", "Notify"];
