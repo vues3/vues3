@@ -1,6 +1,22 @@
 <template lang="pug">
 q-layout(view="hHh Lpr lff")
   q-header
+    q-bar.q-electron-drag(
+      v-if="$q.platform.is.electron",
+      bg-primary,
+      text-white
+    )
+      q-icon(name="wysiwyg")
+      .col.text-weight-bold vueS3
+      q-space
+      q-btn(@click="minimize", dense, flat, icon="minimize")
+      q-btn(
+        @click="toggleMaximize",
+        dense,
+        flat,
+        :icon="isMaximized() ? 'unfold_less' : 'unfold_more'"
+      )
+      q-btn(@click="closeApp", dense, flat, icon="close")
     q-toolbar
       q-toolbar-title
         q-avatar(icon="img:favicon.svg", size="xl")
@@ -84,4 +100,14 @@ const $q = useQuasar();
 const click = (component: Component) => {
   $q.dialog({ component });
 };
+const minimize = () => {
+  window.focusedWindowMinimize();
+};
+const toggleMaximize = () => {
+  window.focusedWindowToggleMaximize();
+};
+const closeApp = () => {
+  window.focusedWindowClose();
+};
+const isMaximized = () => window.focusedWindowIsMaximized();
 </script>
