@@ -24,7 +24,8 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
             padding="sm"
           )
         q-item-section
-          q-item-label.rtl(overline, :lines="1") {{ name }}
+          q-item-label.rtl(overline, lines="1")
+            span.plaintext {{ name }}
         q-item-section(side)
           .q-gutter-xs
             q-btn.gt-xs(
@@ -191,4 +192,6 @@ const lock = (name: number | string) => {
 <style scope lang="sass">
 .rtl
   direction: rtl
+.plaintext
+  unicode-bidi: plaintext
 </style>
