@@ -96,7 +96,7 @@ const insertImage = (file: File) => {
   if (mimes.includes(type)) {
     const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
     (async () => {
-      await putObject(filePath, type, new Blob([await file.arrayBuffer()]));
+      await putObject(filePath, new Uint8Array(await file.arrayBuffer()), type);
     })().catch(() => {});
     urls.set(filePath, URL.createObjectURL(file));
     editor.value?.runCmd(
