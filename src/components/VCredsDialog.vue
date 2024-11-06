@@ -94,7 +94,6 @@ import regions from "assets/regions.json";
 import CryptoJS from "crypto-js";
 import { useDialogPluginComponent, useQuasar } from "quasar";
 import { enumerable, mergeDefaults, writable } from "stores/defaults";
-import { isElectron } from "stores/io";
 import { validateCredentials } from "stores/types";
 import { computed, ref, triggerRef, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -164,6 +163,7 @@ const click = (value: Record<string, null | string>) => {
       onDialogOK();
     }
 };
+const isElectron = () => process.env.MODE === "electron";
 const getDir = async () => {
   const {
     filePaths: [filePath],
@@ -172,9 +172,7 @@ const getDir = async () => {
   });
   Bucket.value = filePath;
 };
-const isDirectory = computed(
-  () => isElectron() && window.isDirectory(Bucket.value ?? ""),
-);
+const isDirectory = computed(() => window.isDirectory?.(Bucket.value ?? ""));
 /** @see {@link https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch08s15.html} */
 const rules = [
   (v: null | string) =>
