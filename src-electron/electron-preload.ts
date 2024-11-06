@@ -1,4 +1,4 @@
-import { dialog } from "@electron/remote";
+import { BrowserWindow, dialog } from "@electron/remote";
 import { contextBridge } from "electron";
 import { lstatSync } from "fs";
 import { access, mkdir, readFile, stat, writeFile } from "fs/promises";
@@ -54,4 +54,18 @@ contextBridge.exposeInMainWorld(
 contextBridge.exposeInMainWorld(
   "getObjectBlob",
   async (Bucket: string, Key: string) => (await getObject(Bucket, Key)).blob(),
+);
+contextBridge.exposeInMainWorld("focusedWindowClose", () => {
+  BrowserWindow.getFocusedWindow()?.close();
+});
+contextBridge.exposeInMainWorld("focusedWindowMinimize", () => {
+  BrowserWindow.getFocusedWindow()?.minimize();
+});
+contextBridge.exposeInMainWorld("focusedWindowToggleMaximize", () => {
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (focusedWindow?.isMaximized()) focusedWindow.unmaximize();
+  else focusedWindow?.maximize();
+});
+contextBridge.exposeInMainWorld("focusedWindowIsMaximized", () =>
+  BrowserWindow.getFocusedWindow()?.isMaximized(),
 );
