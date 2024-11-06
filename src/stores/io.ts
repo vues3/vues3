@@ -5,21 +5,28 @@ import { ref, watch } from "vue";
 
 export const bucket = ref("");
 export const domain = ref("");
-export const isElectron = () => process.env.MODE === "electron";
+const io = (Bucket: string = bucket.value ?? "") =>
+  window.isDirectory?.(Bucket) ? window : s3;
 export const headBucket = async (Bucket: string, pin?: string) => {
-  await s3.headBucket(Bucket, pin);
+  await io(Bucket).headBucket(Bucket, pin);
 };
 export const headObject = async (Key: string, ResponseCacheControl?: string) =>
-  s3.headObject(bucket.value, Key, ResponseCacheControl);
+  io().headObject(bucket.value, Key, ResponseCacheControl);
 export const putObject = async (
   Key: string,
-  ContentType: string,
   body: StreamingBlobPayloadInputTypes,
+  ContentType: string,
 ) => {
-  await s3.putObject(bucket.value, Key, ContentType, body);
+  await io().putObject(bucket.value, Key, body, ContentType);
 };
-export const getObject = async (Key: string, ResponseCacheControl?: string) =>
-  s3.getObject(bucket.value, Key, ResponseCacheControl);
+export const getObjectText = async (
+  Key: string,
+  ResponseCacheControl?: string,
+) => io().getObjectText(bucket.value, Key, ResponseCacheControl);
+export const getObjectBlob = async (
+  Key: string,
+  ResponseCacheControl?: string,
+) => io().getObjectBlob(bucket.value, Key, ResponseCacheControl);
 watch(bucket, (value) => {
   if (!value) {
     s3.setS3Client(undefined);
