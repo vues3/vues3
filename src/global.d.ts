@@ -4,6 +4,10 @@ import type { Dialog } from "electron";
 declare global {
   interface Window {
     dialog: Dialog;
+    focusedWindowClose: () => void;
+    focusedWindowIsMaximized: () => boolean;
+    focusedWindowMinimize: () => void;
+    focusedWindowToggleMaximize: () => void;
     getObjectBlob: (
       Bucket: string,
       Key: string,
