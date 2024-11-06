@@ -24,8 +24,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
             padding="sm"
           )
         q-item-section
-          q-item-label(overline) {{ name }}
-          q-item-label(caption, v-if="cred.domain && name !== cred.domain") {{ cred.domain }}
+          q-item-label.rtl(overline, :lines="1") {{ name }}
         q-item-section(side)
           .q-gutter-xs
             q-btn.gt-xs(
@@ -123,12 +122,13 @@ const getPin = async (name: string): Promise<string | undefined> =>
         });
     } else resolve(undefined);
   });
-const login = async (name: string, domainValue: string) => {
+const login = async (bucketValue: string, domainValue: string) => {
+  const name = "main";
   const path = `/${name}`;
   const component = contentPage;
   try {
-    await headBucket(name, await getPin(name));
-    bucket.value = name;
+    await headBucket(bucketValue, await getPin(bucketValue));
+    bucket.value = bucketValue;
     domain.value = domainValue;
     router.addRoute({ component, name, path });
     router.push(path).catch(() => {});
@@ -188,3 +188,7 @@ const lock = (name: number | string) => {
   });
 };
 </script>
+<style scope lang="sass">
+.rtl
+  direction: rtl
+</style>
