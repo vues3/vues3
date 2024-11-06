@@ -13,6 +13,7 @@ const show = false;
 const height = 600;
 const width = 1000;
 const sandbox = false;
+const frame = false;
 const preload = path.resolve(
   currentDir,
   path.join(
@@ -22,7 +23,14 @@ const preload = path.resolve(
 );
 const webPreferences = { devTools, preload, sandbox };
 const createWindow = async () => {
-  mainWindow = new BrowserWindow({ height, icon, show, webPreferences, width });
+  mainWindow = new BrowserWindow({
+    frame,
+    height,
+    icon,
+    show,
+    webPreferences,
+    width,
+  });
   enable(mainWindow.webContents);
   if (process.env.DEV)
     await mainWindow.loadURL(process.env.APP_URL).catch(() => {});
