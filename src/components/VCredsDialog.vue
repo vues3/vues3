@@ -11,7 +11,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       )
         template(#prepend)
           q-icon(name="delete")
-        template(#append, v-if="isElectron()")
+        template(#append, v-if="$q.platform.is.electron")
           q-btn(:label="t('Open...')", outline, @click="getDir")
       q-input(
         clearable,
@@ -163,7 +163,6 @@ const click = (value: Record<string, null | string>) => {
       onDialogOK();
     }
 };
-const isElectron = () => process.env.MODE === "electron";
 const getDir = async () => {
   const {
     filePaths: [filePath],
