@@ -1,4 +1,4 @@
-name: Run
+name: Spa
 on:
   push:
     tags:
