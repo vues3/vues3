@@ -37,4 +37,5 @@ const api = "modern-compiler";
 const sass = { api };
 const preprocessorOptions = { sass };
 const css = { preprocessorOptions };
-export default defineConfig({ build, css, define, plugins, resolve });
+const base = "./";
+export default defineConfig({ base, build, css, define, plugins, resolve });
