@@ -33,9 +33,7 @@
     "urlset",
     "vues",
     "vueuse",
-    "zhead",
-    "валидатора",
-    "парсера"
+    "zhead"
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
   "svg.preview.background": "transparent"
