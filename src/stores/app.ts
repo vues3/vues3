@@ -23,7 +23,6 @@ import { validateComponent, validateImportmap } from "stores/types";
 import { toXML } from "to-xml";
 import { computed, reactive, ref, version, watch } from "vue";
 
-/** Экземпляр парсера DOM для преобразования шаблона в WYSIWYG и обратно */
 const parser = new DOMParser();
 export const selected = ref();
 export const the = computed(
@@ -32,24 +31,9 @@ export const the = computed(
 export const urls = reactive(new Map<string, string>());
 {
   const routerLink = "router-link";
-  /**
-   * Динамическое вычисляемое свойство для страницы, в нем содержится компонент,
-   * полученный для страницы из хранилища S3.
-   */
   const sfc = {
-    /**
-     * Геттер свойства sfc, который при первом обращении создает свойство buffer
-     * и инициализирует его значением, загруженным из хранилища S3. Также он
-     * создает триггер, отслеживающий изменения свойства buffer. Если значение
-     * buffer изменяется, происходит запись в хранилище S3 по соответствующему
-     * идентификатору.
-     *
-     * @param this - Страница , которой назначено свойство sfc
-     * @returns Обещание на значение свойства buffer
-     */
     async get(this: TPage) {
       if (!this.buffer && this.id) {
-        /** Компонент, загружаемый из хранилища S3 */
         const value = JSON.parse(
           (await getObjectText(`pages/${this.id}.json`, cache)) || "{}",
         ) as TComponent;
@@ -57,26 +41,14 @@ export const urls = reactive(new Map<string, string>());
         Reflect.defineProperty(this, "buffer", { configurable, value });
         watch(
           this.buffer,
-          debounce(
-            /**
-             * Функция записи компонента с соответствущим идентификатором в
-             * хранилище S3
-             *
-             * @param component - Компонент страницы для записи
-             */
-            (component) => {
-              if (this.id)
-                putObject(
-                  `pages/${this.id}.json`,
-                  JSON.stringify(component),
-                  "application/json",
-                ).catch(
-                  /** Фейковая функция обнаружения сбоев */
-                  () => {},
-                );
-            },
-            second,
-          ),
+          debounce((component) => {
+            if (this.id)
+              putObject(
+                `pages/${this.id}.json`,
+                JSON.stringify(component),
+                "application/json",
+              ).catch(() => {});
+          }, second),
         );
       }
       return this.buffer;
@@ -127,34 +99,17 @@ export const urls = reactive(new Map<string, string>());
       (
         await Promise.all(
           [...doc.images].map((image) => {
-            const src = image.getAttribute("src") ?? "";
-            const { pathname } = new URL(
-              src,
-              new URL(`${window.location.origin}${this.to}`),
-            );
-            const url = src && pathname.replace(/^\/+/, "");
-            const { origin } = new URL(url, window.location.origin);
-            return bucket.value &&
-              url &&
-              !urls.has(url) &&
-              window.location.origin === origin
-              ? getObjectBlob(url)
-              : undefined;
+            const src = image.getAttribute("src");
+            return src && !urls.has(src) ? getObjectBlob(src) : undefined;
           }),
         )
       ).forEach((image, index) => {
         const src = doc.images[index].getAttribute("src") ?? "";
-        const { pathname } = new URL(
-          src,
-          new URL(`${window.location.origin}${this.to}`),
-        );
-        const url = src && pathname.replace(/^\/+/, "");
-        if (image)
-          if (image.size) urls.set(url, URL.createObjectURL(image));
-          else urls.set(url, "");
-        if (urls.get(url)) {
+        if (image?.size) urls.set(src, URL.createObjectURL(image));
+        const url = urls.get(src);
+        if (url) {
           doc.images[index].setAttribute("data-src", src);
-          doc.images[index].setAttribute("src", urls.get(url) ?? "");
+          doc.images[index].setAttribute("src", url);
         }
       });
       return doc.body.innerHTML;
@@ -328,8 +283,8 @@ watch(
   debounce((value, oldValue) => {
     const { imports } = value as TImportmap;
     let save = Boolean(oldValue);
-    if (imports.vue !== `/${vue}`) {
-      imports.vue = `/${vue}`;
+    if (imports.vue !== `./${vue}`) {
+      imports.vue = `./${vue}`;
       save = true;
     }
     if (save)
@@ -393,12 +348,31 @@ ${JSON.stringify(imap, null, " ")}
     </head>`,
         );
       page.forEach(
-        ({ description, images, keywords, loc, path, title, to, type }) => {
+        ({
+          branch,
+          description,
+          images,
+          keywords,
+          loc,
+          path,
+          title,
+          to,
+          type,
+        }) => {
           const canonical =
             domain.value && `https://${domain.value}${to === "/" ? "" : to}`;
-          const htm = body.replace(
-            "</head>",
-            `<title>${title}</title>
+          const htm = body
+            .replace(
+              '<base href="" />',
+              `<base href="${
+                Array(branch.length - 1)
+                  .fill("..")
+                  .join("/") || "./"
+              }" />`,
+            )
+            .replace(
+              "</head>",
+              `<title>${title}</title>
     ${canonical && `<link rel="canonical" href="${canonical.replaceAll('"', "&quot;")}">`}
     ${[
       [description ?? "", "description"],
@@ -428,7 +402,7 @@ ${JSON.stringify(imap, null, " ")}
       ).join(`
     `)}
   </head>`,
-          );
+            );
           if (loc)
             putObject(`${loc}/index.html`, htm, "text/html").catch(() => {});
           putObject(
