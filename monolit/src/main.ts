@@ -27,7 +27,7 @@ window.app.use(createHead());
 const id = computed(() => router.currentRoute.value.name);
 window.app.provide("id", readonly(id));
 const initRouter = (async () => {
-  const response = await fetch("/index.json");
+  const response = await fetch("index.json");
   data.push(
     response.ok ? ((await response.json()) as TPage[])[0] : ({} as TPage),
   );
@@ -75,7 +75,7 @@ const ready: RuntimeOptions["ready"] = async (runtime) => {
   return false;
 };
 (async () => {
-  const response = await fetch("/fonts.json");
+  const response = await fetch("fonts.json");
   const fonts = getFonts(
     response.ok ? ((await response.json()) as string[]) : [],
   );
