@@ -113,7 +113,7 @@ export const getAsyncComponent = ({ id, path, scoped, setup, sfc }: TPage) => {
 const sfc = {
   async get(this: TPage) {
     if (!this.buffer) {
-      const response = await fetch(`/pages/${this.id ?? ""}.json`, {
+      const response = await fetch(`pages/${this.id ?? ""}.json`, {
         cache,
       });
       const value = markRaw(
@@ -125,7 +125,8 @@ const sfc = {
     return this.buffer;
   },
 };
-const history: RouterHistory = createWebHistory(import.meta.env.BASE_URL);
+const { pathname } = new URL(document.baseURI);
+const history: RouterHistory = createWebHistory(pathname);
 const routes: RouteRecordRaw[] = [];
 export const scroll = ref(true);
 let onScroll: RouterScrollBehavior | undefined;
