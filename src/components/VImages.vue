@@ -45,17 +45,12 @@ import { getObjectBlob, putObject } from "stores/io";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-/**
- * Quasar supplies a $q object that you can use for various purposes. You will
- * notice it throughout the docs.
- */
 const $q = useQuasar();
 const { t } = useI18n();
 const { onChange, open } = useFileDialog({ accept, capture, multiple, reset });
 const message = t("The graphic file type is not suitable for use on the web");
 const images = ref([] as Record<string, string | undefined>[]);
 let index = 0;
-/** The proxy function that opened a file dialog */
 const upload = (i: number) => {
   index = i;
   open();
@@ -108,7 +103,7 @@ watch(
     if (oldValue.length && the.value)
       the.value.images = value
         .filter(({ url }) => url)
-        .map(({ alt, url }) => ({ alt, url: `/${url ?? ""}` }));
+        .map(({ alt, url }) => ({ alt, url: `${url ?? ""}` }));
   },
   { deep },
 );
@@ -118,11 +113,7 @@ watch(
     if (!value?.images.length) {
       images.value.length = 0;
       add(-1);
-    } else
-      images.value = value.images.map(({ alt, url }) => ({
-        alt,
-        url: url?.replace(/^\/+/, ""),
-      }));
+    } else images.value = value.images.map(({ alt, url }) => ({ alt, url }));
   },
   { immediate },
 );
