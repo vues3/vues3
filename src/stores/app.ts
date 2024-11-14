@@ -391,7 +391,7 @@ ${JSON.stringify(imap, null, " ")}
       [type ?? "", "type"],
       ...(domain.value &&
         images.flatMap(({ alt, url }) => [
-          [url ? `https://${domain.value}${url}` : "", "image"],
+          [url ? `https://${domain.value}/${url}` : "", "image"],
           [alt ?? "", "image:alt"],
         ])),
     ]
