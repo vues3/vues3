@@ -1,6 +1,6 @@
 import type { RuntimeContext } from "@unocss/runtime";
 import type { TComponent, TPage } from "app/src/stores/types";
-import type { App, AsyncComponentLoader } from "vue";
+import type { AsyncComponentLoader } from "vue";
 import type {
   Router,
   RouteRecordRaw,
@@ -17,11 +17,6 @@ import * as vue from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { loadModule } from "vue3-sfc-loader";
 
-declare const window: {
-  app: App;
-} & typeof globalThis &
-  Window;
-
 const { computed, defineAsyncComponent, markRaw, ref } = vue;
 export const promises = new Map();
 const promiseWithResolvers = () => {
@@ -34,36 +29,6 @@ const promiseWithResolvers = () => {
   return { promise, reject, resolve };
 };
 const moduleCache = { vue };
-const getResource: Options["getResource"] = (pathCx, options) => {
-  const { refPath } = pathCx;
-  const { getPathname, pathResolve } = options;
-  const path = pathResolve(pathCx, options);
-  const id = path.toString();
-  const ext = getPathname(id).split(".").pop() ?? "";
-  const type = ext && `.${ext}`;
-  const getContent = async () => {
-    if (
-      refPath &&
-      !(
-        id.startsWith("./") ||
-        id.startsWith("../") ||
-        (id.startsWith("/") && !id.startsWith("//"))
-      )
-    ) {
-      if (type === ".css") return { type } as File;
-      const getContentData: File["getContentData"] = () =>
-        import(id) as Promise<ContentData>;
-      return { getContentData } as File;
-    }
-    const res = await options.getFile(path);
-    if (typeof res === "string" || res instanceof ArrayBuffer) {
-      const getContentData = () => Promise.resolve(res);
-      return { getContentData, type };
-    }
-    return res;
-  };
-  return { getContent, id, path };
-};
 const handleModule = async (
   type: string,
   getContentData: File["getContentData"],
@@ -72,9 +37,9 @@ const handleModule = async (
 ) => {
   switch (type) {
     case ".css":
-      options.addStyle(await (await fetch(path as string)).text(), undefined);
+      options.addStyle((await getContentData(false)) as string, undefined);
       return null;
-    case undefined:
+    case ".module":
       return getContentData(false);
     default:
       return undefined;
@@ -85,29 +50,52 @@ const log = (type: keyof Console, ...args: string[]) => {
     ...args.map((value) => decodeURIComponent(value)),
   );
 };
-const addStyle = (styles: string, id: string | undefined) => {
+const addStyle = (styles: string, id?: string) => {
   useStyleTag(styles, { id });
 };
 export const getAsyncComponent = ({ id, path, scoped, setup, sfc }: TPage) => {
   promises.set(id, promiseWithResolvers());
-  const getFile = async () => {
-    const { script, style, template } = await sfc;
-    const cntScript =
-      script && `<script${setup ? " setup" : ""}>${script}</script>`;
-    const cntTemplate = template && `<template>${template}</template>`;
-    const cntStyle =
-      style && `<style${scoped ? " scoped" : ""}>${style}</style>`;
-    return `${cntScript}${cntTemplate}${cntStyle}`;
+  const getFile = async (filePath: string) => {
+    switch (true) {
+      case filePath.startsWith("//"): {
+        const { script, style, template } = await sfc;
+        const cntScript =
+          script && `<script${setup ? " setup" : ""}>${script}</script>`;
+        const cntTemplate = template && `<template>${template}</template>`;
+        const cntStyle =
+          style && `<style${scoped ? " scoped" : ""}>${style}</style>`;
+        return `${cntScript}${cntTemplate}${cntStyle}`;
+      }
+      case URL.canParse(filePath):
+      case filePath.startsWith("/"): {
+        const fileName = filePath.split("/").pop();
+        return (
+          await fetch(
+            fileName === fileName?.split(".").pop()
+              ? `${filePath}.js`
+              : filePath,
+          )
+        ).text();
+      }
+      default: {
+        const getContentData: File["getContentData"] = () =>
+          import(filePath) as Promise<ContentData>;
+        const type = ".module";
+        return { getContentData, type };
+      }
+    }
   };
   return defineAsyncComponent((async () => {
-    return loadModule(`${pages.value[0].name ?? ""}${path && "/"}${path}.vue`, {
-      addStyle,
-      getFile,
-      getResource,
-      handleModule,
-      log,
-      moduleCache,
-    } as unknown as Options);
+    return loadModule(
+      `//${pages.value[0].name ?? ""}${path && "/"}${path}.vue`,
+      {
+        addStyle,
+        getFile,
+        handleModule,
+        log,
+        moduleCache,
+      } as unknown as Options,
+    );
   }) as AsyncComponentLoader<Promise<object>>);
 };
 const sfc = {
