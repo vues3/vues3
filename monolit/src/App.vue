@@ -23,7 +23,7 @@ const ogImage = () =>
     .filter(({ url }) => url)
     .map(({ alt, url }) => ({
       alt,
-      url: url ? `${window.location.origin}${url}` : "",
+      url: url ? `${window.location.origin}/${url}` : "",
     }));
 const favicon = ref();
 const link = [
