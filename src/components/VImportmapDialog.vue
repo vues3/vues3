@@ -43,7 +43,7 @@ import type { Ref } from "vue";
 
 import json from "assets/importmap.json";
 import { uid, useDialogPluginComponent } from "quasar";
-import { importmap } from "stores/app";
+import { importmap } from "stores/data";
 import { deep } from "stores/defaults";
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
