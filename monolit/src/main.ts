@@ -1,14 +1,15 @@
 import type { Preset } from "@unocss/core";
 import type { RuntimeOptions } from "@unocss/runtime";
-import type { TPage } from "app/src/stores/types";
+import type { TImportmap, TPage } from "app/src/stores/types";
 import type { RouteRecordRaw } from "vue-router";
 
 import { createHead } from "@unhead/vue";
 import presetWebFonts from "@unocss/preset-web-fonts";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
-import { data, getFonts, pages } from "app/src/stores/data";
+import { data, getFonts, importmap, pages } from "app/src/stores/data";
 import { customFetch } from "app/src/stores/defaults";
+import { validateImportmap } from "app/src/stores/types";
 import defaults from "app/uno.config";
 import { computed, createApp, nextTick, readonly } from "vue";
 
@@ -27,10 +28,17 @@ window.app.use(createHead());
 const id = computed(() => router.currentRoute.value.name);
 window.app.provide("id", readonly(id));
 const initRouter = (async () => {
-  const response = await fetch("index.json");
-  data.push(
-    response.ok ? ((await response.json()) as TPage[])[0] : ({} as TPage),
+  const [{ imports }, [page]] = await Promise.all(
+    ["index.importmap", "index.json"].map(async (value, index) => {
+      const response = await fetch(value);
+      return (
+        response.ok ? response : new Response(index ? "[{}]" : "{}")
+      ).json();
+    }) as unknown as [TImportmap, TPage[]],
   );
+  importmap.imports = imports;
+  validateImportmap(importmap);
+  data.push(page);
   fix(data);
   await nextTick();
   window.app.provide(
@@ -77,7 +85,7 @@ const ready: RuntimeOptions["ready"] = async (runtime) => {
 (async () => {
   const response = await fetch("fonts.json");
   const fonts = getFonts(
-    response.ok ? ((await response.json()) as string[]) : [],
+    (await (response.ok ? response : new Response("[]")).json()) as string[],
   );
   defaults.presets.push(
     presetWebFonts({
