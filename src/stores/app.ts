@@ -1,15 +1,9 @@
-/**
- * Основное место хранения общего программного кода для приложение vueS3
- *
- * @packageDocumentation
- */
-
 import type { TComponent, TImportmap, TPage } from "stores/types";
 
 import mimes from "assets/mimes.json";
 import mime from "mime";
 import { debounce, uid } from "quasar";
-import { data, pages } from "stores/data";
+import { data, importmap, pages } from "stores/data";
 import { cache, configurable, deep, second, writable } from "stores/defaults";
 import {
   bucket,
@@ -170,7 +164,6 @@ export const urls = reactive(new Map<string, string>());
   });
 }
 const vue = `assets/vue.esm-browser.prod-${version}.js`;
-export const importmap = reactive({} as TImportmap);
 export const fonts = reactive([]);
 watch(bucket, async (value) => {
   if (value) {
