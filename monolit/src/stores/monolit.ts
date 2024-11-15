@@ -10,7 +10,7 @@ import type {
 import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 
 import { useStyleTag } from "@vueuse/core";
-import { pages } from "app/src/stores/data";
+import { importmap, pages } from "app/src/stores/data";
 import { behavior, cache, left, top } from "app/src/stores/defaults";
 import { validateComponent } from "app/src/stores/types";
 import * as vue from "vue";
@@ -37,9 +37,19 @@ const handleModule = async (
 ) => {
   switch (type) {
     case ".css":
-      options.addStyle((await getContentData(false)) as string, undefined);
+      options.addStyle(
+        (await getContentData(false)) as string,
+        path.toString(),
+      );
       return null;
-    case ".module":
+    // case "css": {
+    //   const { default: css } = (await getContentData(false)) as unknown as {
+    //     default: CSSStyleSheet;
+    //   };
+    //   document.adoptedStyleSheets = [...document.adoptedStyleSheets, css];
+    //   return null;
+    // }
+    case "js":
       return getContentData(false);
     default:
       return undefined;
@@ -54,10 +64,12 @@ const addStyle = (styles: string, id?: string) => {
   useStyleTag(styles, { id });
 };
 export const getAsyncComponent = ({ id, path, scoped, setup, sfc }: TPage) => {
+  const abstractPath = `${pages.value[0].name ?? ""}${path && "/"}${path}.vue`;
   promises.set(id, promiseWithResolvers());
   const getFile = async (filePath: string) => {
+    const { imports } = importmap;
     switch (true) {
-      case filePath.startsWith("//"): {
+      case filePath === abstractPath: {
         const { script, style, template } = await sfc;
         const cntScript =
           script && `<script${setup ? " setup" : ""}>${script}</script>`;
@@ -66,8 +78,21 @@ export const getAsyncComponent = ({ id, path, scoped, setup, sfc }: TPage) => {
           style && `<style${scoped ? " scoped" : ""}>${style}</style>`;
         return `${cntScript}${cntTemplate}${cntStyle}`;
       }
-      case URL.canParse(filePath):
-      case filePath.startsWith("/"): {
+      case Object.keys(imports).some((value) => filePath.startsWith(value)): {
+        // const fileName = filePath.split("/").pop();
+        // const ext = fileName?.split(".").pop();
+        // let type = ext === fileName ? "" : ext;
+        const getContentData: File["getContentData"] = () => {
+          return import(
+            filePath
+            // type === "css" ? { with: { type } } : undefined
+          ) as Promise<ContentData>;
+        };
+        // type = type === "css" ? type : "js";
+        const type = "js";
+        return { getContentData, type };
+      }
+      default: {
         const fileName = filePath.split("/").pop();
         return (
           await fetch(
@@ -77,25 +102,16 @@ export const getAsyncComponent = ({ id, path, scoped, setup, sfc }: TPage) => {
           )
         ).text();
       }
-      default: {
-        const getContentData: File["getContentData"] = () =>
-          import(filePath) as Promise<ContentData>;
-        const type = ".module";
-        return { getContentData, type };
-      }
     }
   };
   return defineAsyncComponent((async () => {
-    return loadModule(
-      `//${pages.value[0].name ?? ""}${path && "/"}${path}.vue`,
-      {
-        addStyle,
-        getFile,
-        handleModule,
-        log,
-        moduleCache,
-      } as unknown as Options,
-    );
+    return loadModule(abstractPath, {
+      addStyle,
+      getFile,
+      handleModule,
+      log,
+      moduleCache,
+    } as unknown as Options);
   }) as AsyncComponentLoader<Promise<object>>);
 };
 const sfc = {
