@@ -103,7 +103,7 @@ watch(
     if (oldValue.length && the.value)
       the.value.images = value
         .filter(({ url }) => url)
-        .map(({ alt, url }) => ({ alt, url: `${url ?? ""}` }));
+        .map(({ alt, url }) => ({ alt, url }));
   },
   { deep },
 );
