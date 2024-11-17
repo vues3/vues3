@@ -78,6 +78,7 @@ q-page.column
 </template>
 <script setup lang="ts">
 import type { TCredentials } from "stores/types";
+import type { Component } from "vue";
 
 import { useStorage } from "@vueuse/core";
 import VCredsDialog from "components/VCredsDialog.vue";
@@ -111,7 +112,7 @@ const creds = useStorage(
 const getPin = async (name: string): Promise<string | undefined> =>
   new Promise((resolve, reject) => {
     if (name !== creds.value[name].Bucket) {
-      const component = VOtpDialog;
+      const component = VOtpDialog as Component;
       const value = creds.value[name].Bucket;
       const componentProps = { value };
       $q.dialog({ component, componentProps })
@@ -126,7 +127,7 @@ const getPin = async (name: string): Promise<string | undefined> =>
 const login = async (bucketValue: string, domainValue: string) => {
   const name = "main";
   const path = `/${name}`;
-  const component = contentPage;
+  const component = contentPage as Component;
   try {
     await headBucket(bucketValue, await getPin(bucketValue));
     bucket.value = bucketValue;
@@ -139,11 +140,11 @@ const login = async (bucketValue: string, domainValue: string) => {
   }
 };
 const add = () => {
-  const component = VCredsDialog;
+  const component = VCredsDialog as Component;
   $q.dialog({ component });
 };
 const edit = async (name: number | string) => {
-  const component = VCredsDialog;
+  const component = VCredsDialog as Component;
   const value = name;
   try {
     const pin = await getPin(name.toString());
@@ -168,7 +169,7 @@ const lock = (name: number | string) => {
   const value =
     name === creds.value[name].Bucket ? undefined : creds.value[name].Bucket;
   const componentProps = { value };
-  const component = VOtpDialog;
+  const component = VOtpDialog as Component;
   $q.dialog({ component, componentProps }).onOk((payload: string) => {
     const cred = creds.value[name];
     if (name === cred.Bucket) {
