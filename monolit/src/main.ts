@@ -1,6 +1,7 @@
 import type { Preset } from "@unocss/core";
 import type { RuntimeOptions } from "@unocss/runtime";
 import type { TImportmap, TPage } from "app/src/stores/types";
+import type { Component } from "vue";
 import type { RouteRecordRaw } from "vue-router";
 
 import { createHead } from "@unhead/vue";
@@ -23,7 +24,7 @@ window.console.info(
   `ver:${__APP_VERSION__}`,
   "https://vues3.com",
 );
-window.app = createApp(vueApp);
+window.app = createApp(vueApp as Component);
 window.app.use(createHead());
 const id = computed(() => router.currentRoute.value.name);
 window.app.provide("id", readonly(id));
@@ -51,14 +52,14 @@ const initRouter = (async () => {
       name: RouteRecordRaw["name"],
       path: RouteRecordRaw["path"],
     ) => [{ component, name, path }] as RouteRecordRaw[];
-    const component = () => import("@/views/SingleView.vue");
+    const component = () => import("./views/SingleView.vue");
     pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
       const alias = (loc?.replaceAll(" ", "_") ?? "")
         .replace(/^\/?/, "/")
         .replace(/\/?$/, "/");
       const children = getChildren(
         (parent?.along ?? along)
-          ? () => import("@/views/MultiView.vue")
+          ? () => import("./views/MultiView.vue")
           : component,
         name,
         "",
@@ -68,7 +69,7 @@ const initRouter = (async () => {
     });
   }
   const path = "/:pathMatch(.*)*";
-  const component = () => import("@/views/NotFoundView.vue");
+  const component = () => import("./views/NotFoundView.vue");
   const name = "404";
   router.addRoute({ component, name, path });
 })();
