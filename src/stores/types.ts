@@ -1,4 +1,5 @@
 import type { ValidateFunction } from "ajv";
+import type { FromSchema } from "json-schema-to-ts";
 
 import Ajv from "ajv";
 import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
@@ -13,7 +14,6 @@ import {
   removeAdditional,
   useDefaults,
 } from "app/src/stores/defaults";
-import { FromSchema } from "json-schema-to-ts";
 import uuid from "uuid-random";
 
 export type TComponent = FromSchema<typeof Component>;
