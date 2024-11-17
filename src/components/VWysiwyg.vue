@@ -30,7 +30,7 @@ import type {
   QuasarLanguageEditorLabel,
   StringDictionary,
 } from "quasar";
-import type { Ref } from "vue";
+import type { Component, Ref } from "vue";
 
 import presetWebFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
@@ -125,7 +125,7 @@ const definitions = {
         "share",
         t("Insert Route"),
         () => {
-          const component = VLinkDialog;
+          const component = VLinkDialog as Component;
           $q.dialog({ component }).onOk((value: string) => {
             editor.value?.runCmd("createLink", value);
           });
