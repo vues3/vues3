@@ -2,10 +2,9 @@ import type { QuasarElectronConfiguration } from "@quasar/app-vite/types/configu
 import type { SnapOptions } from "app-builder-lib";
 import type { QuasarFonts, QuasarIconSets, QuasarPlugins } from "quasar";
 
+import { defineConfig } from "#q-app/wrappers";
 import extractorPug from "@unocss/extractor-pug";
-import { fileURLToPath } from "node:url";
-import { configure } from "quasar/wrappers";
-import { enumerable } from "stores/defaults";
+import { fileURLToPath } from "url";
 import { mergeConfig } from "vite";
 
 const boot: string[] = ["route", "quasar-lang-pack", "i18n", "monaco"];
@@ -16,6 +15,7 @@ const extras: (QuasarFonts | QuasarIconSets)[] = [
   "material-icons",
 ];
 const api = "modern-compiler";
+const enumerable = true;
 const sass = { api };
 const preprocessorOptions = { sass };
 const extendViteConf = (viteConf: Record<string, object>) => {
@@ -30,8 +30,7 @@ const extendViteConf = (viteConf: Record<string, object>) => {
     Reflect.defineProperty(viteConf, "css", { enumerable, value });
   }
 };
-const tsconfigPath = "tsconfig.vue-tsc.json";
-const vueTsc = { tsconfigPath };
+const vueTsc = true;
 const server = false;
 const lintCommand = 'eslint "./**/*.{js,ts,mjs,cjs,vue}"';
 const eslint = { lintCommand };
@@ -59,7 +58,7 @@ const electron: QuasarElectronConfiguration = {
   bundler,
   preloadScripts,
 };
-export default configure(() => ({
+export default defineConfig(() => ({
   boot,
   build,
   css,
