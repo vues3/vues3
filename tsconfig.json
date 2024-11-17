@@ -1,19 +1,10 @@
 {
-  "extends": "@quasar/app-vite/tsconfig-preset",
+  "extends": "./.quasar/tsconfig.json",
   "compilerOptions": {
-    "lib": ["esnext", "dom", "dom.iterable"],
-    "baseUrl": ".",
     "types": ["vite/client", "node"],
-    "resolvePackageJsonExports": false
+    "resolvePackageJsonExports": false,
+    "strict": true
   },
-  "exclude": [
-    "./dist",
-    "./.quasar",
-    "./node_modules",
-    "./src-capacitor",
-    "./src-cordova",
-    "./quasar.config.*.temporary.compiled*"
-  ],
   "vueCompilerOptions": {
     "plugins": ["@vue/language-plugin-pug"]
   }
