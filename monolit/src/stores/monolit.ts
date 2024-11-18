@@ -63,8 +63,8 @@ const log = (type: keyof Console, ...args: string[]) => {
 const addStyle = (styles: string, id?: string) => {
   useStyleTag(styles, { id });
 };
-export const getAsyncComponent = ({ id, path, scoped, setup, sfc }: TPage) => {
-  const abstractPath = `${pages.value[0].name ?? ""}${path && "/"}${path}.vue`;
+export const getAsyncComponent = ({ id, scoped, setup, sfc }: TPage) => {
+  const abstractPath = `${id}.vue`;
   promises.set(id, promiseWithResolvers());
   const getFile = async (filePath: string) => {
     const { imports } = importmap;
