@@ -30,4 +30,8 @@ export const scrollBeyondLastLine = false;
 export const autoIndent = "full";
 export const ambiguousCharacters = false;
 export const threshold = 0.1;
+export const fixedOverflowWidgets = true;
 export const customFetch = async (url: string) => (await fetch(url)).text();
+export const allowImportingTsExtensions = true;
+export const allowJs = true;
+export const checkJs = true;
