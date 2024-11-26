@@ -110,7 +110,7 @@ const deletePage = () => {
             await nextTick();
             [{ id }] = pages.value;
           }
-          selected.value = id;
+          selected.value = id as string;
         })().catch(() => {});
       });
   }
