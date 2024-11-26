@@ -147,9 +147,7 @@ q-page.column.full-height(v-if="the")
     v-model="tab"
   )
     q-tab(label="wysiwyg", name="wysiwyg")
-    q-tab(label="template", name="template")
-    q-tab(:label="`script${the.setup ? ' setup' : ''}`", name="script")
-    q-tab(:label="`style${the.scoped ? ' scoped' : ''}`", name="style")
+    q-tab(label="vue", name="vue")
     q-tab(label="images", name="images")
   q-separator
   q-tab-panels.full-width.col(v-model="tab")
@@ -159,28 +157,12 @@ q-page.column.full-height(v-if="the")
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
-    q-tab-panel(name="template")
+    q-tab-panel(name="vue")
       Suspense
-        v-source-code(:key="the.id", language="html", v-model="the.template")
-        template(#fallback)
-          q-inner-loading(showing)
-            q-spinner-hourglass
-    q-tab-panel(name="script")
-      Suspense
-        v-source-code(
-          :key="the.id",
-          language="javascript",
-          v-model="the.script"
-        )
-        template(#fallback)
-          q-inner-loading(showing)
-            q-spinner-hourglass
-    q-tab-panel(name="style")
-      Suspense
-        v-source-code(:key="the.id", language="css", v-model="the.style")
-        template(#fallback)
-          q-inner-loading(showing)
-            q-spinner-hourglass
+        v-source-code(:key="the.id", v-model="the.sfc2", :id="the.id")
+          template(#fallback)
+            q-inner-loading(showing)
+              q-spinner-hourglass
     q-tab-panel(name="images")
       v-images
 q-page.column.full-height.bg-light(v-else)
@@ -194,8 +176,8 @@ import changefreq from "assets/changefreq.json";
 import types from "assets/types.json";
 import VImages from "components/VImages.vue";
 import VInteractiveTree from "components/VInteractiveTree.vue";
-import VSourceCode from "components/VSourceCode.vue";
 import VWysiwyg from "components/VWysiwyg.vue";
+import VSourceCode from "src/components/VSourceCode.vue";
 import { rightDrawer, the } from "stores/app";
 import { data, pages } from "stores/data";
 import { itemsPerPage, page } from "stores/defaults";
@@ -204,7 +186,7 @@ import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 const filter = ref("");
-const tab = ref("template");
+const tab = ref("wysiwyg");
 const pagination = ref({ itemsPerPage, page });
 const { icons } = mdi as Record<string, object[]>;
 const icon = computed({
