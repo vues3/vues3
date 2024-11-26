@@ -25,6 +25,7 @@ declare global {
       ResponseCacheControl?: string,
     ) => Promise<undefined>;
     isDirectory: (path: string) => boolean;
+    MonacoEnvironment: Environment;
     putObject: (
       Bucket: string,
       Key: string,
