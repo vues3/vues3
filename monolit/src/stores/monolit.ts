@@ -1,32 +1,32 @@
 import type { RuntimeContext } from "@unocss/runtime";
 import type { TComponent, TPage } from "app/src/stores/types";
 import type { AsyncComponentLoader } from "vue";
+import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 import type {
   Router,
   RouteRecordRaw,
   RouterHistory,
   RouterScrollBehavior,
 } from "vue-router";
-import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 
 import { useStyleTag } from "@vueuse/core";
 import { importmap, pages } from "app/src/stores/data";
 import { behavior, cache, left, top } from "app/src/stores/defaults";
 import { validateComponent } from "app/src/stores/types";
 import * as vue from "vue";
-import { createRouter, createWebHistory } from "vue-router";
 import { loadModule } from "vue3-sfc-loader";
+import { createRouter, createWebHistory } from "vue-router";
 
 const { computed, defineAsyncComponent, markRaw, ref } = vue;
 export const promises = new Map();
-const promiseWithResolvers = () => {
-  let resolve;
-  let reject;
-  const promise = new Promise((res, rej) => {
+const promiseWithResolvers = <T>() => {
+  let resolve: PromiseWithResolvers<T>["resolve"];
+  let reject: PromiseWithResolvers<T>["reject"];
+  const promise = new Promise<T>((res, rej) => {
     resolve = res;
     reject = rej;
   });
-  return { promise, reject, resolve };
+  return { promise, reject: reject!, resolve: resolve! };
 };
 const moduleCache = { vue };
 const handleModule = async (
