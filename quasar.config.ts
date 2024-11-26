@@ -42,7 +42,9 @@ const vitePlugins = [
   ["vite-plugin-checker", { eslint, vueTsc }, { server }],
   ["@unocss/vite", { configFile, extractors }],
 ];
-const build: object = { extendViteConf, vitePlugins };
+const path = "path-browserify";
+const alias = { path };
+const build: object = { alias, extendViteConf, vitePlugins };
 const open = false;
 const devServer = { open };
 const plugins: (keyof QuasarPlugins)[] = ["Dialog", "Notify"];
