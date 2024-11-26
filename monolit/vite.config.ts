@@ -2,6 +2,7 @@ import type {
   AliasOptions,
   BuildOptions,
   PluginOption,
+  SassPreprocessorOptions,
   UserConfig,
 } from "vite";
 import type { RenameFunc } from "vite-plugin-static-copy";
@@ -40,7 +41,7 @@ const define: object = {
   __VUE_PROD_DEVTOOLS__: true,
 };
 const api = "modern-compiler";
-const sass = { api };
+const sass: SassPreprocessorOptions = { api };
 const preprocessorOptions = { sass };
 const css = { preprocessorOptions };
 const base = "./";
