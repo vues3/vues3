@@ -10,8 +10,8 @@ import { computed, inject, onUpdated } from "vue";
 import { getAsyncComponent, promises, resolve, that } from "../stores/monolit";
 
 const { id } = defineProps<{ id?: string }>();
-const pages: Record<string, TPage> = inject("pages")!;
-const the = computed(() => (id ? pages[id as keyof object] : that.value));
+const pages: Record<string, TPage> | undefined = inject("pages");
+const the = computed(() => (id ? pages?.[id as keyof object] : that.value));
 const is = computed(() => {
   const [[key, value] = []] = promises;
   promises.clear();
