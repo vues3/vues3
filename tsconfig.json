@@ -1,10 +1,10 @@
 {
   "extends": "./.quasar/tsconfig.json",
   "compilerOptions": {
-    "types": ["vite/client", "node"],
     "resolvePackageJsonExports": false,
-    "strict": true,
-    "noImplicitAny": false
+    "noImplicitOverride": false,
+    "exactOptionalPropertyTypes": false,
+    "noUncheckedIndexedAccess": false
   },
   "vueCompilerOptions": {
     "plugins": ["@vue/language-plugin-pug"]
