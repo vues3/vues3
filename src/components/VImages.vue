@@ -100,7 +100,7 @@ watch(
           urls.set(url, URL.createObjectURL(await getObjectBlob(url)));
         })().catch(() => {});
     });
-    if (oldValue.length && the.value)
+    if (oldValue.length)
       the.value.images = value
         .filter(({ url }) => url)
         .map(({ alt, url }) => ({ alt, url }));
@@ -110,7 +110,7 @@ watch(
 watch(
   the,
   (value) => {
-    if (!value?.images.length) {
+    if (!value.images.length) {
       images.value.length = 0;
       add(-1);
     } else images.value = value.images.map(({ alt, url }) => ({ alt, url }));
