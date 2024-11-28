@@ -19,18 +19,6 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-list
           q-item(tag="label", v-ripple)
             q-item-section(avatar)
-              q-checkbox(v-model="the.setup")
-            q-item-section
-              q-item-label script setup
-              q-item-label(caption) setup
-          q-item(tag="label", v-ripple)
-            q-item-section(avatar)
-              q-checkbox(v-model="the.scoped")
-            q-item-section
-              q-item-label style scoped
-              q-item-label(caption) scoped
-          q-item(tag="label", v-ripple)
-            q-item-section(avatar)
               q-checkbox(v-model="the.along")
             q-item-section
               q-item-label along
@@ -159,7 +147,7 @@ q-page.column.full-height(v-if="the")
             q-spinner-hourglass
     q-tab-panel(name="vue")
       Suspense
-        v-source-code(:key="the.id", v-model="the.sfc2", :id="the.id")
+        v-source-code(:key="the.id", v-model="the.sfc", :id="the.id")
           template(#fallback)
             q-inner-loading(showing)
               q-spinner-hourglass
