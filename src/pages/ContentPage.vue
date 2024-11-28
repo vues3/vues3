@@ -191,19 +191,18 @@ const pagination = ref({ itemsPerPage, page });
 const { icons } = mdi as Record<string, object[]>;
 const icon = computed({
   get() {
-    return the.value?.icon?.replace(/^mdi:/, "mdi-");
+    return the.value.icon?.replace(/^mdi:/, "mdi-");
   },
   set(value) {
-    if (value && the.value) the.value.icon = value.replace(/^mdi-/, "mdi:");
+    if (value) the.value.icon = value.replace(/^mdi-/, "mdi:");
   },
 });
 const loc = computed({
   get() {
-    return the.value?.loc ?? null;
+    return the.value.loc ?? null;
   },
   set(value) {
-    if (the.value)
-      the.value.loc = value?.replace(/((?=(\/+))\2)$|(^\/+)/g, "") ?? null;
+    the.value.loc = value?.replace(/((?=(\/+))\2)$|(^\/+)/g, "") ?? null;
   },
 });
 const rules = [
@@ -212,7 +211,7 @@ const rules = [
       !!v &&
       !!pages.value.find(
         (element) =>
-          element.id !== the.value?.id &&
+          element.id !== the.value.id &&
           (element.path === v || element.loc === v),
       )
     ) || t("That name is already in use"),
