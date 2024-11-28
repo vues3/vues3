@@ -102,7 +102,7 @@ const deletePage = () => {
             ({ id } = prev);
             break;
           default:
-            ({ id } = parent ?? {});
+            ({ id } = parent);
         }
         siblings.splice(index, 1);
         (async () => {
@@ -110,7 +110,7 @@ const deletePage = () => {
             await nextTick();
             [{ id }] = pages.value;
           }
-          selected.value = id!;
+          selected.value = id;
         })().catch(() => {});
       });
   }
