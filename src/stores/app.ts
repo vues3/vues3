@@ -1,4 +1,5 @@
-import type { TComponent, TImportmap, TPage } from "stores/types";
+import type { SFCDescriptor } from "@vue/compiler-sfc";
+import type { TImportmap, TPage } from "stores/types";
 
 import mimes from "assets/mimes.json";
 import mime from "mime";
@@ -13,9 +14,11 @@ import {
   headObject,
   putObject,
 } from "stores/io";
-import { validateComponent, validateImportmap } from "stores/types";
+import { validateImportmap } from "stores/types";
 import { toXML } from "to-xml";
 import { computed, reactive, ref, version, watch } from "vue";
+import toString from "vue-sfc-descriptor-to-string";
+import { parse } from "vue/compiler-sfc";
 
 const parser = new DOMParser();
 export const selected = ref();
@@ -28,85 +31,72 @@ export const urls = reactive(new Map<string, string>());
   const sfc = {
     async get(this: TPage) {
       if (!this.buffer && this.id) {
-        const value = JSON.parse(
-          (await getObjectText(`pages/${this.id}.json`, cache)) || "{}",
-        ) as TComponent;
-        validateComponent(value);
-        Reflect.defineProperty(this, "buffer", { configurable, value });
+        const value = await getObjectText(`pages/${this.id}.vue`, cache);
+        Reflect.defineProperty(this, "buffer", {
+          configurable,
+          value,
+          writable,
+        });
         watch(
-          this.buffer,
+          () => this.buffer,
           debounce((component) => {
             if (this.id)
               putObject(
-                `pages/${this.id}.json`,
-                JSON.stringify(component),
-                "application/json",
+                `pages/${this.id}.vue`,
+                component as string,
+                "text/html",
               ).catch(() => {});
           }, second),
         );
       }
       return this.buffer;
     },
-  };
-  const template = {
-    async get(this: TPage) {
-      return (await this.sfc).template;
-    },
     set(this: TPage, value: string) {
-      if (this.buffer) this.buffer.template = value;
-    },
-  };
-  const style = {
-    async get(this: TPage) {
-      return (await this.sfc).style;
-    },
-    set(this: TPage, value: string) {
-      if (this.buffer) this.buffer.style = value;
-    },
-  };
-  const script = {
-    async get(this: TPage) {
-      return (await this.sfc).script;
-    },
-    set(this: TPage, value: string) {
-      if (this.buffer) this.buffer.script = value;
+      this.buffer = value;
     },
   };
   const html = {
     async get(this: TPage) {
-      const doc = parser.parseFromString(
-        `<head><base href="//"></head><body>${await this.template}</body>`,
-        "text/html",
-      );
-      doc.querySelectorAll(routerLink).forEach((link) => {
-        const a = document.createElement("a");
-        a.innerHTML = link.innerHTML;
-        a.setAttribute(`data-${routerLink}`, "true");
-        [...link.attributes].forEach((attr) => {
-          a.setAttribute(
-            attr.nodeName === "to" ? "href" : attr.nodeName,
-            attr.nodeValue ?? "",
-          );
+      const {
+        descriptor: { template },
+      } = parse(await this.sfc);
+      if (template) {
+        const { content } = template;
+        const doc = parser.parseFromString(
+          `<head><base href="//"></head><body>${content}</body>`,
+          "text/html",
+        );
+        doc.querySelectorAll(routerLink).forEach((link) => {
+          const a = document.createElement("a");
+          a.innerHTML = link.innerHTML;
+          a.setAttribute(`data-${routerLink}`, "true");
+          [...link.attributes].forEach((attr) => {
+            a.setAttribute(
+              attr.nodeName === "to" ? "href" : attr.nodeName,
+              attr.nodeValue ?? "",
+            );
+          });
+          link.replaceWith(a);
         });
-        link.replaceWith(a);
-      });
-      (
-        await Promise.all(
-          [...doc.images].map((image) => {
-            const src = image.getAttribute("src");
-            return src && !urls.has(src) ? getObjectBlob(src) : undefined;
-          }),
-        )
-      ).forEach((image, index) => {
-        const src = doc.images[index].getAttribute("src") ?? "";
-        if (image?.size) urls.set(src, URL.createObjectURL(image));
-        const url = urls.get(src);
-        if (url) {
-          doc.images[index].setAttribute("data-src", src);
-          doc.images[index].setAttribute("src", url);
-        }
-      });
-      return doc.body.innerHTML;
+        (
+          await Promise.all(
+            [...doc.images].map((image) => {
+              const src = image.getAttribute("src");
+              return src && !urls.has(src) ? getObjectBlob(src) : undefined;
+            }),
+          )
+        ).forEach((image, index) => {
+          const src = doc.images[index].getAttribute("src") ?? "";
+          if (image?.size) urls.set(src, URL.createObjectURL(image));
+          const url = urls.get(src);
+          if (url) {
+            doc.images[index].setAttribute("data-src", src);
+            doc.images[index].setAttribute("src", url);
+          }
+        });
+        return doc.body.innerHTML;
+      }
+      return "";
     },
     set(this: TPage, value: string) {
       const doc = parser.parseFromString(
@@ -145,7 +135,15 @@ export const urls = reactive(new Map<string, string>());
           image.removeAttribute("data-src");
         }
       });
-      this.template = doc.body.innerHTML;
+      if (this.buffer) {
+        const { descriptor } = parse(this.buffer);
+        if (descriptor.template) {
+          descriptor.template.content = doc.body.innerHTML;
+          this.buffer = (toString as (descriptor: SFCDescriptor) => string)(
+            descriptor,
+          );
+        }
+      }
     },
   };
   const value = false;
@@ -155,10 +153,7 @@ export const urls = reactive(new Map<string, string>());
       Object.defineProperties(object, {
         contenteditable,
         html,
-        script,
         sfc,
-        style,
-        template,
       });
     });
   });
@@ -249,7 +244,7 @@ export const rightDrawer = ref(false);
 export const putImage = async (file: File) => {
   const { type } = file;
   const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
-  let message;
+  let message = "";
   try {
     if (mimes.includes(type))
       await putObject(filePath, new Uint8Array(await file.arrayBuffer()), type);
@@ -332,7 +327,7 @@ ${JSON.stringify(imap, null, " ")}
         )
         .replace(
           "</head>",
-          `  ${Object.values(imap.imports ?? {})
+          `  ${Object.values(imap.imports)
             .filter((href) => !href.endsWith("/"))
             .map(
               (href) => `<link rel="modulepreload" crossorigin href="${href}">`,
@@ -369,7 +364,7 @@ ${JSON.stringify(imap, null, " ")}
     ${canonical && `<link rel="canonical" href="${canonical.replaceAll('"', "&quot;")}">`}
     ${[
       [description ?? "", "description"],
-      [keywords.join() ?? "", "keywords"],
+      [keywords.join(), "keywords"],
     ]
       .filter(([content]) => content)
       .map(
@@ -378,9 +373,9 @@ ${JSON.stringify(imap, null, " ")}
       ).join(`
     `)}
     ${[
-      [canonical ?? "", "url"],
+      [canonical, "url"],
       [description ?? "", "description"],
-      [title ?? "", "title"],
+      [title, "title"],
       [type ?? "", "type"],
       ...(domain.value &&
         images.flatMap(({ alt, url }) => [
