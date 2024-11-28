@@ -61,8 +61,6 @@ const properties = {
   loc: { default: null, nullable, type: "string" },
   name: { default: null, nullable, type: "string" },
   priority: { default: null, maximum: 1, minimum: 0, nullable, type: "number" },
-  scoped: { default: true, type: "boolean" },
-  setup: { default: true, type: "boolean" },
   type: {
     default: null,
     enum: [
