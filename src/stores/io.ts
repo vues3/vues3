@@ -5,7 +5,7 @@ import { ref, watch } from "vue";
 
 export const bucket = ref("");
 export const domain = ref("");
-const io = (Bucket: string = bucket.value ?? "") =>
+const io = (Bucket: string = bucket.value) =>
   window.isDirectory?.(Bucket) ? window : s3;
 export const headBucket = async (Bucket: string, pin?: string) => {
   await io(Bucket).headBucket(Bucket, pin);
