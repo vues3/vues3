@@ -3,7 +3,6 @@ import type { FromSchema } from "json-schema-to-ts";
 
 import Ajv from "ajv";
 import dynamicDefaults from "ajv-keywords/dist/definitions/dynamicDefaults";
-import Component from "app/src/schemas/component";
 import Credentials from "app/src/schemas/credentials";
 import Data from "app/src/schemas/data";
 import Importmap from "app/src/schemas/importmap";
@@ -16,15 +15,14 @@ import {
 } from "app/src/stores/defaults";
 import uuid from "uuid-random";
 
-export type TComponent = FromSchema<typeof Component>;
-export type TPage = {
+export type TPage = FromSchema<typeof plainPage> & {
   $children?: TPage[];
   $index: number;
   $next?: TPage;
   $prev?: TPage;
   $siblings: TPage[];
   branch: TPage[];
-  buffer?: TComponent;
+  buffer?: string;
   children?: TPage[];
   contenteditable: boolean;
   html: Promise<string> | string;
@@ -35,19 +33,16 @@ export type TPage = {
   path: string;
   prev?: TPage;
   root: TPage;
-  script: Promise<string> | string;
-  sfc: Promise<TComponent>;
+  sfc: Promise<string>;
   siblings: TPage[];
-  style: Promise<string> | string;
-  template: Promise<string> | string;
   title: string;
   to: string;
-} & FromSchema<typeof plainPage>;
+};
 dynamicDefaults.DEFAULTS.uuid = (): (() => string) => () => uuid();
 const code = { esm };
 export type TCredentials = FromSchema<typeof Credentials>;
 export type TImportmap = FromSchema<typeof Importmap>;
-const schemas = [Credentials, Page, Data, Component, Importmap];
+const schemas = [Credentials, Page, Data, Importmap];
 const keywords = [dynamicDefaults()];
 const ajv = new Ajv({
   code,
@@ -59,9 +54,6 @@ const ajv = new Ajv({
 });
 export const validatePage = ajv.getSchema(
   "urn:jsonschema:page",
-) as ValidateFunction;
-export const validateComponent = ajv.getSchema(
-  "urn:jsonschema:component",
 ) as ValidateFunction;
 export const validateCredentials = ajv.getSchema(
   "urn:jsonschema:credentials",
