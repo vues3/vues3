@@ -54,11 +54,9 @@ onMounted(() => {
 });
 watch(
   rows,
-  (value, oldValue) => {
-    if (oldValue) {
-      fonts.length = 0;
-      fonts.push(...(value.map(({ name }) => name).filter(Boolean) as never[]));
-    }
+  (value) => {
+    fonts.length = 0;
+    fonts.push(...(value.map(({ name }) => name).filter(Boolean) as never[]));
   },
   { deep },
 );
