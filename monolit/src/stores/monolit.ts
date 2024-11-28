@@ -1,5 +1,5 @@
 import type { RuntimeContext } from "@unocss/runtime";
-import type { TComponent, TPage } from "app/src/stores/types";
+import type { TPage } from "app/src/stores/types";
 import type { AsyncComponentLoader } from "vue";
 import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 import type {
@@ -11,22 +11,22 @@ import type {
 
 import { useStyleTag } from "@vueuse/core";
 import { importmap, pages } from "app/src/stores/data";
-import { behavior, cache, left, top } from "app/src/stores/defaults";
-import { validateComponent } from "app/src/stores/types";
+import { behavior, left, top } from "app/src/stores/defaults";
+import uuid from "uuid-random";
 import * as vue from "vue";
 import { loadModule } from "vue3-sfc-loader";
 import { createRouter, createWebHistory } from "vue-router";
 
-const { computed, defineAsyncComponent, markRaw, ref } = vue;
+const { computed, defineAsyncComponent, ref } = vue;
 export const promises = new Map();
 const promiseWithResolvers = <T>() => {
-  let resolve: PromiseWithResolvers<T>["resolve"];
-  let reject: PromiseWithResolvers<T>["reject"];
+  let resolve: PromiseWithResolvers<T>["resolve"] | undefined;
+  let reject: PromiseWithResolvers<T>["reject"] | undefined;
   const promise = new Promise<T>((res, rej) => {
     resolve = res;
     reject = rej;
   });
-  return { promise, reject: reject!, resolve: resolve! };
+  return { promise, reject, resolve };
 };
 const moduleCache = { vue };
 const handleModule = async (
@@ -63,21 +63,14 @@ const log = (type: keyof Console, ...args: string[]) => {
 const addStyle = (styles: string, id?: string) => {
   useStyleTag(styles, { id });
 };
-export const getAsyncComponent = ({ id, scoped, setup, sfc }: TPage) => {
-  const abstractPath = `${id}.vue`;
+export const getAsyncComponent = ({ id }: TPage) => {
+  const abstractPath = `${id ?? uuid()}.vue`;
   promises.set(id, promiseWithResolvers());
   const getFile = async (filePath: string) => {
     const { imports } = importmap;
     switch (true) {
-      case filePath === abstractPath: {
-        const { script, style, template } = await sfc;
-        const cntScript =
-          script && `<script${setup ? " setup" : ""}>${script}</script>`;
-        const cntTemplate = template && `<template>${template}</template>`;
-        const cntStyle =
-          style && `<style${scoped ? " scoped" : ""}>${style}</style>`;
-        return `${cntScript}${cntTemplate}${cntStyle}`;
-      }
+      case filePath === abstractPath:
+        return (await fetch(`./pages/${filePath}`)).text();
       case Object.keys(imports).some((value) => filePath.startsWith(value)): {
         // const fileName = filePath.split("/").pop();
         // const ext = fileName?.split(".").pop();
@@ -114,21 +107,6 @@ export const getAsyncComponent = ({ id, scoped, setup, sfc }: TPage) => {
     } as unknown as Options);
   }) as AsyncComponentLoader<Promise<object>>);
 };
-const sfc = {
-  async get(this: TPage) {
-    if (!this.buffer) {
-      const response = await fetch(`pages/${this.id ?? ""}.json`, {
-        cache,
-      });
-      const value = markRaw(
-        response.ok ? await response.json() : {},
-      ) as TComponent;
-      validateComponent(value);
-      Reflect.defineProperty(this, "buffer", { value });
-    }
-    return this.buffer;
-  },
-};
 const { pathname } = new URL(document.baseURI);
 const history: RouterHistory = createWebHistory(pathname);
 const routes: RouteRecordRaw[] = [];
@@ -143,12 +121,6 @@ router.beforeEach(({ path }) =>
 export const a = computed(() =>
   pages.value.find(({ id }) => id === router.currentRoute.value.name),
 );
-export const fix = (siblings: TPage[]) => {
-  siblings.forEach((value) => {
-    Object.defineProperties(value, { sfc });
-    if (value.children) fix(value.children);
-  });
-};
 export const that = computed(() =>
   router.currentRoute.value.path === "/" ? a.value?.$children?.[0] : a.value,
 );
