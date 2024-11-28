@@ -69,13 +69,12 @@ onMounted(() => {
 });
 watch(
   rows,
-  (value, oldValue) => {
-    if (oldValue)
-      importmap.imports = Object.fromEntries(
-        value
-          .filter(({ name, path }) => path && name)
-          .map(({ name, path }) => [name, path]),
-      );
+  (value) => {
+    importmap.imports = Object.fromEntries(
+      value
+        .filter(({ name, path }) => path && name)
+        .map(({ name, path }) => [name, path]),
+    );
   },
   { deep },
 );
