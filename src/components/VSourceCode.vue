@@ -4,8 +4,9 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
+import { registerHighlighter } from "@vues3/monaco-volar-worker/src/highlight";
+import { getOrCreateModel } from "@vues3/monaco-volar-worker/src/utils";
 import { editor, Uri } from "monaco-editor-core";
-import themeLight from "shiki/themes/light-plus.mjs";
 import {
   ambiguousCharacters,
   automaticLayout,
@@ -23,19 +24,7 @@ const emit = defineEmits(["update:modelValue"]);
 const monaco: Ref<HTMLElement | undefined> = ref();
 let editorInstance: editor.IStandaloneCodeEditor | undefined;
 const unicodeHighlight = { ambiguousCharacters };
-const getOrCreateModel = (
-  uri: Uri,
-  lang: string | undefined,
-  value: string,
-) => {
-  const model = editor.getModel(uri);
-  if (model) {
-    model.setValue(value);
-    return model;
-  }
-  return editor.createModel(value, lang, uri);
-};
-const { name: theme } = themeLight;
+const { light: theme } = registerHighlighter();
 const model = getOrCreateModel(
   Uri.parse(`file:///${props.id}.vue`),
   "vue",
