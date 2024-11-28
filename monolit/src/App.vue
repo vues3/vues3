@@ -51,9 +51,9 @@ useSeoMeta({
 watch(a, async (value) => {
   let href = "/favicon.ico";
   if (value?.icon) {
-    const icon = iconExists(value?.icon)
-      ? getIcon(value?.icon)
-      : await loadIcon(value?.icon);
+    const icon = iconExists(value.icon)
+      ? getIcon(value.icon)
+      : await loadIcon(value.icon);
     if (icon) {
       const { body, height, left, top, width } = icon;
       href = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
