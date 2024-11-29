@@ -6,7 +6,7 @@ import presetTagify from "@unocss/preset-tagify";
 import presetTypography from "@unocss/preset-typography";
 import presetUno from "@unocss/preset-uno";
 
-const cdn = "https://unpkg.com/";
+const cdn = "https://cdn.jsdelivr.net/npm/";
 const presets: Preset[] = [
   presetUno(),
   presetTypography(),
