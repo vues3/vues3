@@ -13,24 +13,20 @@ import EditorWorker from "monaco-editor-core/esm/vs/editor/editor.worker?worker"
 const getWorker = (workerId: string, label: string) =>
   label === "vue" ? new VueWorker() : new EditorWorker();
 window.MonacoEnvironment = { getWorker };
-[
-  ["vue", "vue"],
-  ["javascript", "js"],
-  ["typescript", "ts"],
-  ["css", "css"],
-].forEach(([id, key]) => {
-  const extensions = [`.${key}`];
+const languageId = ["vue", "javascript", "typescript", "css"];
+["vue", "js", "ts", "css"].forEach((value, index) => {
+  const id = languageId[index];
+  const extensions = [`.${value}`];
   languages.register({ extensions, id });
   languages.setLanguageConfiguration(
     id,
     languageConfigs[
-      key as keyof typeof import("@vues3/monaco-volar-worker/src/language-configs")
+      value as keyof typeof import("@vues3/monaco-volar-worker/src/language-configs")
     ],
   );
 });
-const label = "vue";
+const [label] = languageId;
 const moduleId = "vs/language/vue/vueWorker";
-const languageId = ["vue", "javascript", "typescript", "css"];
 const getSyncUris = () => editor.getModels().map(({ uri }) => uri);
 const worker = editor.createWebWorker<WorkerLanguageService>({
   label,
