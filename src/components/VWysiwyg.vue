@@ -63,7 +63,7 @@ const placeholder = t("Add some content to your page...");
 const rootElement = editor.value?.getContentEl;
 watch(
   () => getFonts(Fonts),
-  (fonts) => {
+  async (fonts) => {
     let { presets } = Defaults;
     presets = [
       ...presets,
@@ -73,7 +73,7 @@ watch(
       }),
     ];
     const defaults = { presets };
-    initUnocssRuntime({ bypassDefined, defaults, rootElement });
+    await initUnocssRuntime({ bypassDefined, defaults, rootElement });
   },
   { immediate },
 );
