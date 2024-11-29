@@ -26,126 +26,126 @@ export const the = computed(
   () => pages.value.find(({ id }) => id === selected.value) ?? pages.value[0],
 );
 export const urls = reactive(new Map<string, string>());
-{
-  const routerLink = "router-link";
-  const sfc = {
-    async get(this: TPage) {
-      if (!this.buffer && this.id) {
-        const value = await getObjectText(`pages/${this.id}.vue`, cache);
-        Reflect.defineProperty(this, "buffer", {
-          configurable,
-          value,
-          writable,
+const routerLink = "router-link";
+let sfcDescriptor: SFCDescriptor | undefined;
+const sfc = {
+  async get(this: TPage) {
+    if (!this.buffer && this.id) {
+      const value = await getObjectText(`pages/${this.id}.vue`, cache);
+      Reflect.defineProperty(this, "buffer", {
+        configurable,
+        value,
+        writable,
+      });
+      watch(
+        () => this.buffer,
+        debounce((component) => {
+          if (this.id)
+            putObject(
+              `pages/${this.id}.vue`,
+              component as string,
+              "text/html",
+            ).catch(() => {});
+        }, second),
+      );
+    }
+    return this.buffer;
+  },
+  set(this: TPage, value: string) {
+    this.buffer = value;
+  },
+};
+const html = {
+  async get(this: TPage) {
+    const { descriptor } = parse(await this.sfc);
+    sfcDescriptor = descriptor;
+    const { template } = descriptor;
+    if (template) {
+      const { content } = template;
+      const doc = parser.parseFromString(
+        `<head><base href="//"></head><body>${content}</body>`,
+        "text/html",
+      );
+      doc.querySelectorAll(routerLink).forEach((link) => {
+        const a = document.createElement("a");
+        a.innerHTML = link.innerHTML;
+        a.setAttribute(`data-${routerLink}`, "true");
+        [...link.attributes].forEach((attr) => {
+          a.setAttribute(
+            attr.nodeName === "to" ? "href" : attr.nodeName,
+            attr.nodeValue ?? "",
+          );
         });
-        watch(
-          () => this.buffer,
-          debounce((component) => {
-            if (this.id)
-              putObject(
-                `pages/${this.id}.vue`,
-                component as string,
-                "text/html",
-              ).catch(() => {});
-          }, second),
+        link.replaceWith(a);
+      });
+      (
+        await Promise.all(
+          [...doc.images].map((image) => {
+            const src = image.getAttribute("src");
+            return src && !urls.has(src) ? getObjectBlob(src) : undefined;
+          }),
+        )
+      ).forEach((image, index) => {
+        const src = doc.images[index].getAttribute("src") ?? "";
+        if (image?.size) urls.set(src, URL.createObjectURL(image));
+        const url = urls.get(src);
+        if (url) {
+          doc.images[index].setAttribute("data-src", src);
+          doc.images[index].setAttribute("src", url);
+        }
+      });
+      return doc.body.innerHTML;
+    }
+    return "";
+  },
+  set(this: TPage, value: string) {
+    const doc = parser.parseFromString(
+      `<head><base href="//"></head><body>${value}</body>`,
+      "text/html",
+    );
+    doc.querySelectorAll("a").forEach((a) => {
+      try {
+        const url = new URL(
+          a.attributes.getNamedItem("href")?.value ?? "",
+          window.location.origin,
         );
-      }
-      return this.buffer;
-    },
-    set(this: TPage, value: string) {
-      this.buffer = value;
-    },
-  };
-  const html = {
-    async get(this: TPage) {
-      const {
-        descriptor: { template },
-      } = parse(await this.sfc);
-      if (template) {
-        const { content } = template;
-        const doc = parser.parseFromString(
-          `<head><base href="//"></head><body>${content}</body>`,
-          "text/html",
-        );
-        doc.querySelectorAll(routerLink).forEach((link) => {
-          const a = document.createElement("a");
-          a.innerHTML = link.innerHTML;
-          a.setAttribute(`data-${routerLink}`, "true");
-          [...link.attributes].forEach((attr) => {
-            a.setAttribute(
-              attr.nodeName === "to" ? "href" : attr.nodeName,
+        if (
+          Boolean(a.dataset[routerLink]) ||
+          (window.location.origin === url.origin &&
+            url.href === `${url.origin}${url.pathname}`)
+        ) {
+          a.removeAttribute(`data-${routerLink}`);
+          const link = document.createElement(routerLink);
+          link.innerHTML = a.innerHTML;
+          [...a.attributes].forEach((attr) => {
+            link.setAttribute(
+              attr.nodeName === "href" ? "to" : attr.nodeName,
               attr.nodeValue ?? "",
             );
           });
-          link.replaceWith(a);
-        });
-        (
-          await Promise.all(
-            [...doc.images].map((image) => {
-              const src = image.getAttribute("src");
-              return src && !urls.has(src) ? getObjectBlob(src) : undefined;
-            }),
-          )
-        ).forEach((image, index) => {
-          const src = doc.images[index].getAttribute("src") ?? "";
-          if (image?.size) urls.set(src, URL.createObjectURL(image));
-          const url = urls.get(src);
-          if (url) {
-            doc.images[index].setAttribute("data-src", src);
-            doc.images[index].setAttribute("src", url);
-          }
-        });
-        return doc.body.innerHTML;
+          a.replaceWith(link);
+        }
+      } catch {
+        //
       }
-      return "";
-    },
-    set(this: TPage, value: string) {
-      const doc = parser.parseFromString(
-        `<head><base href="//"></head><body>${value}</body>`,
-        "text/html",
-      );
-      doc.querySelectorAll("a").forEach((a) => {
-        try {
-          const url = new URL(
-            a.attributes.getNamedItem("href")?.value ?? "",
-            window.location.origin,
-          );
-          if (
-            Boolean(a.dataset[routerLink]) ||
-            (window.location.origin === url.origin &&
-              url.href === `${url.origin}${url.pathname}`)
-          ) {
-            a.removeAttribute(`data-${routerLink}`);
-            const link = document.createElement(routerLink);
-            link.innerHTML = a.innerHTML;
-            [...a.attributes].forEach((attr) => {
-              link.setAttribute(
-                attr.nodeName === "href" ? "to" : attr.nodeName,
-                attr.nodeValue ?? "",
-              );
-            });
-            a.replaceWith(link);
-          }
-        } catch {
-          //
-        }
-      });
-      [...doc.images].forEach((image) => {
-        if (image.dataset.src) {
-          image.setAttribute("src", image.dataset.src);
-          image.removeAttribute("data-src");
-        }
-      });
-      if (this.buffer) {
-        const { descriptor } = parse(this.buffer);
-        if (descriptor.template) {
-          descriptor.template.content = doc.body.innerHTML;
-          this.buffer = (toString as (descriptor: SFCDescriptor) => string)(
-            descriptor,
-          );
-        }
+    });
+    [...doc.images].forEach((image) => {
+      if (image.dataset.src) {
+        image.setAttribute("src", image.dataset.src);
+        image.removeAttribute("data-src");
       }
-    },
-  };
+    });
+    if (this.buffer) {
+      if (sfcDescriptor?.template) {
+        sfcDescriptor.template.content = doc.body.innerHTML;
+        this.buffer = (toString as (sfcDescriptor: SFCDescriptor) => string)(
+          sfcDescriptor,
+        );
+      }
+    }
+  },
+};
+{
   const value = false;
   const contenteditable = { value, writable };
   watch(pages, (objects) => {
