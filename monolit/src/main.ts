@@ -12,12 +12,7 @@ import { data, getFonts, importmap, pages } from "app/src/stores/data";
 import { customFetch } from "app/src/stores/defaults";
 import { validateImportmap } from "app/src/stores/types";
 import defaults from "app/uno.config";
-import {
-  computed,
-  createApp,
-  // nextTick,
-  readonly,
-} from "vue";
+import { computed, createApp, nextTick, readonly } from "vue";
 
 import vueApp from "./App.vue";
 import { router, setScroll } from "./stores/monolit";
@@ -45,7 +40,7 @@ const initRouter = (async () => {
   importmap.imports = imports;
   validateImportmap(importmap);
   data.push(page);
-  // await nextTick();
+  await nextTick();
   window.app.provide(
     "pages",
     readonly(Object.fromEntries(pages.value.map((value) => [value.id, value]))),
@@ -98,5 +93,5 @@ const ready: RuntimeOptions["ready"] = async (runtime) => {
       fonts,
     }) as Preset,
   );
-  initUnocssRuntime({ defaults, ready, rootElement });
+  await initUnocssRuntime({ defaults, ready, rootElement });
 })().catch(() => {});
