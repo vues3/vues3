@@ -8,6 +8,7 @@ import { data, importmap, pages } from "stores/data";
 import { cache, configurable, deep, second, writable } from "stores/defaults";
 import {
   bucket,
+  deleteObject,
   domain,
   getObjectBlob,
   getObjectText,
@@ -210,6 +211,11 @@ watch(bucket, async (value) => {
     ).forEach(({ status }, index) => {
       if (status === "rejected") localManifest.add(files[index]);
     });
+    [...serverManifest]
+      .filter((x) => !localManifest.has(x))
+      .forEach((element) => {
+        deleteObject(element).catch(() => {});
+      });
     [...localManifest.add(".vite/manifest.json")]
       .filter((x) => !serverManifest.has(x))
       .forEach((element) => {
