@@ -3,6 +3,7 @@ import type { Dialog } from "electron";
 
 declare global {
   interface Window {
+    deleteObject: (Bucket: string, Key: string) => Promise<undefined>;
     dialog: Dialog;
     focusedWindowClose: () => void;
     focusedWindowIsMaximized: () => boolean;
@@ -32,5 +33,6 @@ declare global {
       body: StreamingBlobPayloadInputTypes,
       ContentType: string,
     ) => Promise<undefined>;
+    removeEmptyDirectories?: (Bucket: string) => Promise<undefined>;
   }
 }
