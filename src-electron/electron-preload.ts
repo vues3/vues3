@@ -1,8 +1,17 @@
 import { BrowserWindow, dialog } from "@electron/remote";
 import { contextBridge } from "electron";
 import { lstatSync } from "fs";
-import { access, mkdir, readFile, stat, writeFile } from "fs/promises";
-import { dirname, join } from "path";
+import {
+  access,
+  lstat,
+  mkdir,
+  readdir,
+  readFile,
+  rmdir,
+  unlink,
+  writeFile,
+} from "fs/promises";
+import { basename, dirname, join } from "path";
 
 const throwIfNoEntry = false;
 const recursive = true;
@@ -12,13 +21,13 @@ contextBridge.exposeInMainWorld(
   (path: string) => lstatSync(path, { throwIfNoEntry })?.isDirectory() ?? false,
 );
 contextBridge.exposeInMainWorld("headBucket", async (Bucket: string) => {
-  const stats = await stat(Bucket);
+  const stats = await lstat(Bucket);
   if (!stats.isDirectory()) throw new Error("It's not a directory");
 });
 contextBridge.exposeInMainWorld(
   "headObject",
   async (Bucket: string, Key: string) => {
-    const stats = await stat(join(Bucket, Key));
+    const stats = await lstat(join(Bucket, Key));
     if (!stats.isFile()) throw new Error("It's not a file");
   },
 );
@@ -33,6 +42,33 @@ contextBridge.exposeInMainWorld(
       await mkdir(dirName, { recursive });
     }
     await writeFile(filePath, Buffer.from(body));
+  },
+);
+const removeEmptyDirectories = async (
+  directory: string,
+  exclude: string[] = ["node_modules"],
+) => {
+  const fileStats = await lstat(directory);
+  if (!fileStats.isDirectory() || exclude.includes(basename(directory))) return;
+  let fileNames = await readdir(directory);
+  if (fileNames.length) {
+    await Promise.all(
+      fileNames.map((fileName) =>
+        removeEmptyDirectories(join(directory, fileName)),
+      ),
+    );
+    fileNames = await readdir(directory);
+  }
+  if (!fileNames.length) await rmdir(directory);
+};
+contextBridge.exposeInMainWorld(
+  "removeEmptyDirectories",
+  removeEmptyDirectories,
+);
+contextBridge.exposeInMainWorld(
+  "deleteObject",
+  async (Bucket: string, Key: string) => {
+    await unlink(join(Bucket, Key));
   },
 );
 const getObject = async (Bucket: string, Key: string) => {
