@@ -3,6 +3,7 @@ import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
 import type { TCredentials } from "stores/types";
 
 import {
+  DeleteObjectCommand,
   GetObjectCommand,
   HeadBucketCommand,
   HeadObjectCommand,
@@ -78,6 +79,10 @@ export const putObject = async (
   await s3Client?.send(
     new PutObjectCommand({ Body, Bucket, ContentType, Key }),
   );
+};
+export const removeEmptyDirectories = undefined;
+export const deleteObject = async (Bucket: string, Key: string) => {
+  await s3Client?.send(new DeleteObjectCommand({ Bucket, Key }));
 };
 const getObject = async (
   Bucket: string,
