@@ -20,9 +20,7 @@ const languageId = ["vue", "javascript", "typescript", "css"];
   languages.register({ extensions, id });
   languages.setLanguageConfiguration(
     id,
-    languageConfigs[
-      value as keyof typeof import("@vues3/monaco-volar-worker/src/language-configs")
-    ],
+    languageConfigs[value as keyof typeof languageConfigs],
   );
 });
 const [label] = languageId;
