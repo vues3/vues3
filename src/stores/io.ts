@@ -19,6 +19,12 @@ export const putObject = async (
 ) => {
   await io().putObject(bucket.value, Key, body, ContentType);
 };
+export const removeEmptyDirectories = async () => {
+  await io().removeEmptyDirectories?.(bucket.value);
+};
+export const deleteObject = async (Key: string) => {
+  await io().deleteObject(bucket.value, Key);
+};
 export const getObjectText = async (
   Key: string,
   ResponseCacheControl?: string,
