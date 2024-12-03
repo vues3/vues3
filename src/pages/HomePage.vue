@@ -77,9 +77,10 @@ q-page.column
           .text-overline {{ t("ver") }}.: {{ APP_VERSION }}
 </template>
 <script setup lang="ts">
-import type { TCredentials } from "stores/types";
+import type { TCredentials } from "@vues3/types";
 import type { Component } from "vue";
 
+import { validateCredentials } from "@vues3/types";
 import { useStorage } from "@vueuse/core";
 import VCredsDialog from "components/VCredsDialog.vue";
 import VOtpDialog from "components/VOtpDialog.vue";
@@ -89,7 +90,6 @@ import { useQuasar } from "quasar";
 import { rightDrawer } from "stores/app";
 import { mergeDefaults } from "stores/defaults";
 import { bucket, domain, headBucket } from "stores/io";
-import { validateCredentials } from "stores/types";
 import { triggerRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
