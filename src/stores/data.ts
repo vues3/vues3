@@ -1,8 +1,8 @@
-import type { TImportmap, TPage } from "app/src/stores/types";
+import type { TImportmap, TPage } from "@vues3/types";
 import type { Reactive } from "vue";
 
+import { validateData } from "@vues3/types";
 import { configurable } from "app/src/stores/defaults";
-import { validateData } from "app/src/stores/types";
 import { computed, reactive, watch } from "vue";
 
 export const importmap = reactive({} as TImportmap);
