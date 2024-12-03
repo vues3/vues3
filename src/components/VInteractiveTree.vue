@@ -35,8 +35,8 @@ q-btn-group.q-mx-xs(flat, spread)
         )
 </template>
 <script setup lang="ts">
+import type { TPage } from "@vues3/types";
 import type { QTree, QTreeNode } from "quasar";
-import type { TPage } from "stores/types";
 import type { Ref } from "vue";
 
 import { uid, useQuasar } from "quasar";
