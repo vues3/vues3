@@ -15,7 +15,7 @@ div(
   )
 </template>
 <script setup lang="ts">
-import type { TPage } from "app/src/stores/types";
+import type { TPage } from "@vues3/types";
 import type { Ref } from "vue";
 
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
