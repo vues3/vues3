@@ -1,6 +1,7 @@
 import type { SFCDescriptor } from "@vue/compiler-sfc";
-import type { TImportmap, TPage } from "stores/types";
+import type { TImportmap, TPage } from "@vues3/types";
 
+import { validateImportmap } from "@vues3/types";
 import mimes from "assets/mimes.json";
 import mime from "mime";
 import { debounce, uid } from "quasar";
@@ -15,7 +16,6 @@ import {
   headObject,
   putObject,
 } from "stores/io";
-import { validateImportmap } from "stores/types";
 import { toXML } from "to-xml";
 import { computed, reactive, ref, version, watch } from "vue";
 import toString from "vue-sfc-descriptor-to-string";
