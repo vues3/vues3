@@ -85,16 +85,16 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       )
 </template>
 <script setup lang="ts">
+import type { TCredentials } from "@vues3/types";
 import type { QInput } from "quasar";
-import type { TCredentials } from "stores/types";
 
+import { validateCredentials } from "@vues3/types";
 import { useStorage } from "@vueuse/core";
 import endpoints from "assets/endpoints.json";
 import regions from "assets/regions.json";
 import CryptoJS from "crypto-js";
 import { useDialogPluginComponent, useQuasar } from "quasar";
 import { enumerable, mergeDefaults, writable } from "stores/defaults";
-import { validateCredentials } from "stores/types";
 import { computed, ref, triggerRef, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
