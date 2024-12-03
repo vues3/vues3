@@ -3,7 +3,7 @@ div(:class="the?.class", :id="the?.id", un-cloak, v-if="the?.enabled")
   component(:id="the?.id", :is, @vue:mounted="() => { resolve(the); }")
 </template>
 <script setup lang="ts">
-import type { TPage } from "src/stores/types";
+import type { TPage } from "@vues3/types";
 
 import { computed, inject, onUpdated } from "vue";
 
