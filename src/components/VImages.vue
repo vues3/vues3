@@ -28,19 +28,13 @@
         q-btn(@click="() => { upload(i); }", flat, icon="upload", round)
 </template>
 <script setup lang="ts">
+import { deep } from "@vues3/shared";
 import { useFileDialog } from "@vueuse/core";
 import mimes from "assets/mimes.json";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { the, urls } from "stores/app";
-import {
-  accept,
-  capture,
-  deep,
-  immediate,
-  multiple,
-  reset,
-} from "stores/defaults";
+import { accept, capture, immediate, multiple, reset } from "stores/defaults";
 import { getObjectBlob, putObject } from "stores/io";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
