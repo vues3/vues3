@@ -18,19 +18,21 @@ div(
 import type { TPage } from "@vues3/types";
 import type { Ref } from "vue";
 
+import { deep, pages } from "@vues3/shared";
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
-import { behavior, deep, threshold } from "app/src/stores/defaults";
 import { computed, onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import {
   $siblings,
+  behavior,
   getAsyncComponent,
   paused,
   promises,
   resolve,
   scroll,
   that,
+  threshold,
 } from "../stores/monolit";
 
 const refs: Ref<HTMLElement[]> = ref([]);
@@ -55,7 +57,7 @@ const onStop = () => {
   if (!paused.value && that.value && $siblings.value.length) {
     const { scrollX, scrollY } = window;
     const [first] = $siblings.value;
-    const { root } = first;
+    const [root] = pages.value;
     const { $children: [{ id }] = [{}] } = root;
     const name =
       !Math.floor(scrollX) && !Math.floor(scrollY) && first.id === id
