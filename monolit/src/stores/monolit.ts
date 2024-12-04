@@ -9,14 +9,17 @@ import type {
   RouterScrollBehavior,
 } from "vue-router";
 
+import { importmap, pages } from "@vues3/shared";
 import { useStyleTag } from "@vueuse/core";
-import { importmap, pages } from "app/src/stores/data";
-import { behavior, left, top } from "app/src/stores/defaults";
 import uuid from "uuid-random";
 import * as vue from "vue";
 import { loadModule } from "vue3-sfc-loader";
 import { createRouter, createWebHistory } from "vue-router";
 
+export const behavior = "smooth";
+export const threshold = 0.1;
+const top = 0;
+const left = 0;
 const { computed, defineAsyncComponent, ref } = vue;
 export const promises = new Map();
 const promiseWithResolvers = <T>() => {
