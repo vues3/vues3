@@ -33,10 +33,10 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 import type { QTableProps } from "quasar";
 import type { Ref } from "vue";
 
+import { deep } from "@vues3/shared";
 import json from "assets/fonts.json";
 import { uid, useDialogPluginComponent } from "quasar";
 import { fonts } from "stores/app";
-import { deep } from "stores/defaults";
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
