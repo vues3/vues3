@@ -1,12 +1,12 @@
 import type { SFCDescriptor } from "@vue/compiler-sfc";
 import type { TImportmap, TPage } from "@vues3/types";
 
+import { data, deep, importmap, pages } from "@vues3/shared";
 import { validateImportmap } from "@vues3/types";
 import mimes from "assets/mimes.json";
 import mime from "mime";
 import { debounce, uid } from "quasar";
-import { data, importmap, pages } from "stores/data";
-import { cache, configurable, deep, second, writable } from "stores/defaults";
+import { cache, configurable, second, writable } from "stores/defaults";
 import {
   bucket,
   deleteObject,
