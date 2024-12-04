@@ -22,8 +22,8 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 import type { QTreeNode } from "quasar";
 
 import { Icon } from "@iconify/vue";
+import { data, pages } from "@vues3/shared";
 import { useDialogPluginComponent } from "quasar";
-import { data, pages } from "stores/data";
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
