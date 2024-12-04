@@ -34,6 +34,7 @@ import type { Component, Ref } from "vue";
 
 import presetWebFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
+import { customFetch, getFonts } from "@vues3/shared";
 import { useFileDialog } from "@vueuse/core";
 import Defaults from "app/uno.config";
 import mimes from "assets/mimes.json";
@@ -41,8 +42,7 @@ import VLinkDialog from "components/VLinkDialog.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { fonts as Fonts, urls } from "stores/app";
-import { getFonts } from "stores/data";
-import { accept, bypassDefined, customFetch, immediate } from "stores/defaults";
+import { accept, bypassDefined, immediate } from "stores/defaults";
 import { putObject } from "stores/io";
 import { computed, nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
