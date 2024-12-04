@@ -29,9 +29,9 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 import type { QInput } from "quasar";
 import type { ComponentPublicInstance, ComputedRef, Ref } from "vue";
 
+import { deep } from "@vues3/shared";
 import CryptoJS from "crypto-js";
 import { useDialogPluginComponent } from "quasar";
-import { deep } from "stores/defaults";
 import { computed, ref, watch } from "vue";
 
 defineEmits([...useDialogPluginComponent.emits]);
