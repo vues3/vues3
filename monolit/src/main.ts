@@ -8,9 +8,8 @@ import { createHead } from "@unhead/vue";
 import presetWebFonts from "@unocss/preset-web-fonts";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
+import { customFetch, data, getFonts, importmap, pages } from "@vues3/shared";
 import { validateImportmap } from "@vues3/types";
-import { data, getFonts, importmap, pages } from "app/src/stores/data";
-import { customFetch } from "app/src/stores/defaults";
 import defaults from "app/uno.config";
 import { computed, createApp, nextTick, readonly } from "vue";
 
