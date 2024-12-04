@@ -7,7 +7,7 @@ import type { MetaFlat } from "zhead";
 
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { useHead, useSeoMeta } from "@unhead/vue";
-import { pages } from "app/src/stores/data";
+import { pages } from "@vues3/shared";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
