@@ -160,6 +160,7 @@ q-page.column.full-height.bg-light(v-else)
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
 import mdi from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
+import { data, pages } from "@vues3/shared";
 import changefreq from "assets/changefreq.json";
 import types from "assets/types.json";
 import VImages from "components/VImages.vue";
@@ -167,7 +168,6 @@ import VInteractiveTree from "components/VInteractiveTree.vue";
 import VWysiwyg from "components/VWysiwyg.vue";
 import VSourceCode from "src/components/VSourceCode.vue";
 import { rightDrawer, the } from "stores/app";
-import { data, pages } from "stores/data";
 import { itemsPerPage, page } from "stores/defaults";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
