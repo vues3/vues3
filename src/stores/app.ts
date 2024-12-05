@@ -189,7 +189,7 @@ watch(bucket, async (value) => {
     })().catch(() => {});
     const [localManifest, serverManifest] = (
       (await Promise.all([
-        (await fetch("monolit/.vite/manifest.json")).json(),
+        (await fetch("runtime/.vite/manifest.json")).json(),
         Promise.resolve(
           JSON.parse(
             (await getObjectText(".vite/manifest.json", cache)) || "{}",
@@ -220,7 +220,7 @@ watch(bucket, async (value) => {
       .filter((x) => !serverManifest.has(x))
       .forEach((element) => {
         (async () => {
-          const body = await (await fetch(`monolit/${element}`)).blob();
+          const body = await (await fetch(`runtime/${element}`)).blob();
           putObject(
             element,
             new Uint8Array(await body.arrayBuffer()),
@@ -319,7 +319,7 @@ watch(
   { deep },
 );
 (async () => {
-  const index = await (await fetch("monolit/index.html")).text();
+  const index = await (await fetch("runtime/index.html")).text();
   watch(
     [pages, importmap],
     debounce((arr) => {
