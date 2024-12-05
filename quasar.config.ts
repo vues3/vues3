@@ -6,6 +6,7 @@ import { defineConfig } from "#q-app/wrappers";
 import extractorPug from "@unocss/extractor-pug";
 import { fileURLToPath } from "url";
 import { mergeConfig } from "vite";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
 const boot: string[] = ["route", "quasar-lang-pack", "i18n", "monaco"];
 const css: string[] = ["app.sass"];
@@ -31,16 +32,19 @@ const extendViteConf = (viteConf: Record<string, object>) => {
   }
 };
 const vueTsc = true;
-const server = false;
 const lintCommand = 'eslint "./**/*.{js,ts,mjs,cjs,vue}"';
 const eslint = { lintCommand };
 const include = [fileURLToPath(new URL("./src/i18n", import.meta.url))];
 const extractors = [extractorPug()];
 const configFile = "./uno.config.ts";
+const src = "./node_modules/@vues3/runtime/dist/*";
+const dest = "runtime";
+const targets = [{ dest, src }];
 const vitePlugins = [
   ["@intlify/unplugin-vue-i18n/vite", { include }],
-  ["vite-plugin-checker", { eslint, vueTsc }, { server }],
+  ["vite-plugin-checker", { eslint, vueTsc }],
   ["@unocss/vite", { configFile, extractors }],
+  [viteStaticCopy, { targets }],
 ];
 const strict = true;
 const vueShim = true;
