@@ -77,10 +77,10 @@ q-page.column
           .text-overline {{ t("ver") }}.: {{ APP_VERSION }}
 </template>
 <script setup lang="ts">
-import type { TCredentials } from "@vues3/types";
+import type { TCredentials } from "@vues3/shared";
 import type { Component } from "vue";
 
-import { validateCredentials } from "@vues3/types";
+import { validateCredentials } from "@vues3/shared";
 import { useStorage } from "@vueuse/core";
 import VCredsDialog from "components/VCredsDialog.vue";
 import VOtpDialog from "components/VOtpDialog.vue";
@@ -103,7 +103,7 @@ const creds = useStorage(
   "@",
   () => {
     const value = {} as TCredentials;
-    validateCredentials(value);
+    validateCredentials?.(value) as boolean;
     return value;
   },
   localStorage,
