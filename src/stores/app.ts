@@ -4,8 +4,9 @@ import type { TImportmap, TPage } from "@vues3/shared";
 import { data, deep, importmap, pages } from "@vues3/shared";
 import mimes from "assets/mimes.json";
 import mime from "mime";
+import { editor, Uri } from "monaco-editor-core";
 import { debounce, uid } from "quasar";
-import { cache, configurable, second, writable } from "stores/defaults";
+import { cache, second, writable } from "stores/defaults";
 import {
   bucket,
   deleteObject,
@@ -21,10 +22,9 @@ import toString from "vue-sfc-descriptor-to-string";
 import { parse } from "vue/compiler-sfc";
 
 export type TAppPage = TPage & {
-  buffer?: string;
   contenteditable: boolean;
   html: Promise<string> | string;
-  sfc: Promise<string>;
+  sfc: Promise<editor.ITextModel> | undefined;
 };
 
 const parser = new DOMParser();
@@ -39,34 +39,34 @@ const routerLink = "router-link";
 let sfcDescriptor: SFCDescriptor | undefined;
 const sfc = {
   async get(this: TAppPage) {
-    if (!this.buffer && this.id) {
-      const value = await getObjectText(`pages/${this.id}.vue`, cache);
-      Reflect.defineProperty(this, "buffer", {
-        configurable,
-        value,
-        writable,
-      });
-      watch(
-        () => this.buffer,
-        debounce((component) => {
-          if (this.id)
-            putObject(
-              `pages/${this.id}.vue`,
-              component as string,
-              "text/html",
-            ).catch(() => {});
-        }, second),
-      );
+    if (this.id) {
+      const uri = Uri.parse(`file:///${this.id}.vue`);
+      let model = editor.getModel(uri);
+      if (!model) {
+        const value = await getObjectText(`pages/${this.id}.vue`, cache);
+        model = editor.getModel(uri);
+        if (!model) {
+          model = editor.createModel(value, "vue", uri);
+          model.onDidChangeContent(
+            debounce(() => {
+              if (this.id)
+                putObject(
+                  `pages/${this.id}.vue`,
+                  model?.getValue() ?? "",
+                  "text/html",
+                ).catch(() => {});
+            }, second),
+          );
+        }
+      }
+      return model;
     }
-    return this.buffer;
-  },
-  set(this: TAppPage, value: string) {
-    this.buffer = value;
+    return undefined;
   },
 };
 const html = {
   async get(this: TAppPage) {
-    const { descriptor } = parse(await this.sfc);
+    const { descriptor } = parse((await this.sfc)?.getValue() ?? "");
     sfcDescriptor = descriptor;
     const { template } = descriptor;
     if (template) {
@@ -107,7 +107,7 @@ const html = {
     }
     return "";
   },
-  set(this: TAppPage, value: string) {
+  async set(this: TAppPage, value: string) {
     const doc = parser.parseFromString(
       `<head><base href="//"></head><body>${value}</body>`,
       "text/html",
@@ -144,13 +144,11 @@ const html = {
         image.removeAttribute("data-src");
       }
     });
-    if (this.buffer) {
-      if (sfcDescriptor?.template) {
-        sfcDescriptor.template.content = doc.body.innerHTML;
-        this.buffer = (toString as (sfcDescriptor: SFCDescriptor) => string)(
-          sfcDescriptor,
-        );
-      }
+    if (this.sfc && sfcDescriptor?.template) {
+      sfcDescriptor.template.content = doc.body.innerHTML;
+      (await this.sfc).setValue(
+        (toString as (sfcDescriptor: SFCDescriptor) => string)(sfcDescriptor),
+      );
     }
   },
 };
