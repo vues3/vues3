@@ -202,4 +202,10 @@ watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });
 const htm = ref(await props.modelValue);
+watch(
+  () => props.modelValue,
+  async (value) => {
+    htm.value = await value;
+  },
+);
 </script>
