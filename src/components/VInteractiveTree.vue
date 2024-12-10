@@ -35,7 +35,7 @@ q-btn-group.q-mx-xs(flat, spread)
         )
 </template>
 <script setup lang="ts">
-import type { TPage } from "@vues3/types";
+import type { TPage } from "@vues3/shared";
 import type { QTree, QTreeNode } from "quasar";
 import type { Ref } from "vue";
 
