@@ -4,35 +4,21 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-// import model from "boot/monaco";
-import { editor, Uri } from "monaco-editor-core";
+import { editor } from "monaco-editor-core";
 import themeLight from "shiki/themes/light-plus.mjs";
-import uuid from "uuid-random";
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
-const props = withDefaults(
-  defineProps<{ id?: string; modelValue?: Promise<string> | string }>(),
-  { id: uuid(), modelValue: "" },
-);
-const emit = defineEmits(["update:modelValue"]);
+const props = defineProps<{
+  model?: Promise<editor.ITextModel>;
+}>();
 const monaco: Ref<HTMLElement | undefined> = ref();
 let editorInstance: editor.IStandaloneCodeEditor | undefined;
-const getOrCreateModel = (
-  uri: Uri,
-  lang: string | undefined,
-  value: string,
-) => {
-  const model = editor.getModel(uri);
-  if (model) {
-    model.setValue(value);
-    return model;
-  }
-  return editor.createModel(value, lang, uri);
-};
-const model = getOrCreateModel(
-  Uri.parse(`file:///${props.id}.vue`),
-  "vue",
-  await props.modelValue,
+const model = await props.model;
+watch(
+  () => props.model,
+  async (value) => {
+    editorInstance?.setModel((await value) ?? null);
+  },
 );
 onMounted(() => {
   editorInstance = (() => {
@@ -57,9 +43,6 @@ onMounted(() => {
     );
   })();
   if (editorInstance) {
-    editorInstance.onDidChangeModelContent(() => {
-      emit("update:modelValue", editorInstance?.getValue());
-    });
     editorInstance.focus();
     const { _themeService: themeService } = editorInstance as unknown as Record<
       string,
@@ -88,7 +71,6 @@ onMounted(() => {
   }
 });
 onBeforeUnmount(() => {
-  editorInstance?.getModel()?.dispose();
   editorInstance?.dispose();
 });
 </script>
