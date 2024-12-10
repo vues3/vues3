@@ -141,13 +141,13 @@ q-page.column.full-height(v-if="the")
   q-tab-panels.full-width.col(v-model="tab")
     q-tab-panel.column(name="wysiwyg")
       Suspense
-        v-wysiwyg.full-width.col.column(:key="the.id", v-model="the.html")
+        v-wysiwyg.full-width.col.column(v-model="the.html")
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
     q-tab-panel(name="vue")
       Suspense
-        v-source-code(:key="the.id", v-model="the.sfc", :id="the.id")
+        v-source-code(:model="the.sfc")
           template(#fallback)
             q-inner-loading(showing)
               q-spinner-hourglass
