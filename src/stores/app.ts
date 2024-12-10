@@ -235,6 +235,9 @@ watch(bucket, async (value) => {
       });
   } else {
     data.length = 0;
+    editor.getModels().forEach((model) => {
+      model.dispose();
+    });
     urls.forEach((url, key) => {
       URL.revokeObjectURL(url);
       urls.delete(key);
