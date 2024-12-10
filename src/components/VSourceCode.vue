@@ -4,15 +4,9 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { registerHighlighter } from "@vues3/monaco-volar-worker/src/highlight";
-import { getOrCreateModel } from "@vues3/monaco-volar-worker/src/utils";
+// import model from "boot/monaco";
 import { editor, Uri } from "monaco-editor-core";
-import {
-  ambiguousCharacters,
-  automaticLayout,
-  fixedOverflowWidgets,
-  scrollBeyondLastLine,
-} from "stores/defaults";
+import themeLight from "shiki/themes/light-plus.mjs";
 import uuid from "uuid-random";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
@@ -23,23 +17,46 @@ const props = withDefaults(
 const emit = defineEmits(["update:modelValue"]);
 const monaco: Ref<HTMLElement | undefined> = ref();
 let editorInstance: editor.IStandaloneCodeEditor | undefined;
-const unicodeHighlight = { ambiguousCharacters };
-const { light: theme } = registerHighlighter();
+const getOrCreateModel = (
+  uri: Uri,
+  lang: string | undefined,
+  value: string,
+) => {
+  const model = editor.getModel(uri);
+  if (model) {
+    model.setValue(value);
+    return model;
+  }
+  return editor.createModel(value, lang, uri);
+};
 const model = getOrCreateModel(
   Uri.parse(`file:///${props.id}.vue`),
   "vue",
   await props.modelValue,
 );
 onMounted(() => {
-  if (monaco.value) {
-    editorInstance = editor.create(monaco.value, {
-      automaticLayout,
-      fixedOverflowWidgets,
-      model,
-      scrollBeyondLastLine,
-      theme,
-      unicodeHighlight,
-    });
+  editorInstance = (() => {
+    const automaticLayout = true;
+    const unicodeHighlight = (() => {
+      const ambiguousCharacters = false;
+      return { ambiguousCharacters };
+    })();
+    const scrollBeyondLastLine = false;
+    const fixedOverflowWidgets = true;
+    const { name: theme } = themeLight;
+    return (
+      monaco.value &&
+      editor.create(monaco.value, {
+        automaticLayout,
+        fixedOverflowWidgets,
+        model,
+        scrollBeyondLastLine,
+        theme,
+        unicodeHighlight,
+      })
+    );
+  })();
+  if (editorInstance) {
     editorInstance.onDidChangeModelContent(() => {
       emit("update:modelValue", editorInstance?.getValue());
     });
@@ -71,6 +88,7 @@ onMounted(() => {
   }
 });
 onBeforeUnmount(() => {
+  editorInstance?.getModel()?.dispose();
   editorInstance?.dispose();
 });
 </script>
