@@ -85,10 +85,10 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       )
 </template>
 <script setup lang="ts">
-import type { TCredentials } from "@vues3/types";
+import type { TCredentials } from "@vues3/shared";
 import type { QInput } from "quasar";
 
-import { validateCredentials } from "@vues3/types";
+import { validateCredentials } from "@vues3/shared";
 import { useStorage } from "@vueuse/core";
 import endpoints from "assets/endpoints.json";
 import regions from "assets/regions.json";
@@ -113,7 +113,7 @@ const creds = useStorage(
   "@",
   () => {
     const value = {} as TCredentials;
-    validateCredentials(value);
+    validateCredentials?.(value) as boolean;
     return value;
   },
   localStorage,
