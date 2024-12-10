@@ -1,6 +1,6 @@
 import type { S3ClientConfig } from "@aws-sdk/client-s3";
 import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
-import type { TCredentials } from "@vues3/types";
+import type { TCredentials } from "@vues3/shared";
 
 import {
   DeleteObjectCommand,
@@ -11,7 +11,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { FetchHttpHandler } from "@smithy/fetch-http-handler";
-import { validateCredentials } from "@vues3/types";
+import { validateCredentials } from "@vues3/shared";
 import { useStorage } from "@vueuse/core";
 import CryptoJS from "crypto-js";
 import { mergeDefaults } from "stores/defaults";
@@ -22,7 +22,7 @@ const creds = useStorage(
   "@",
   () => {
     const value = {} as TCredentials;
-    validateCredentials(value);
+    validateCredentials?.(value) as boolean;
     return value;
   },
   localStorage,
