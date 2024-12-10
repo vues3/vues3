@@ -1,8 +1,7 @@
 import type { SFCDescriptor } from "@vue/compiler-sfc";
-import type { TImportmap, TPage } from "@vues3/types";
+import type { TImportmap, TPage } from "@vues3/shared";
 
 import { data, deep, importmap, pages } from "@vues3/shared";
-import { validateImportmap } from "@vues3/types";
 import mimes from "assets/mimes.json";
 import mime from "mime";
 import { debounce, uid } from "quasar";
@@ -21,16 +20,25 @@ import { computed, reactive, ref, version, watch } from "vue";
 import toString from "vue-sfc-descriptor-to-string";
 import { parse } from "vue/compiler-sfc";
 
+export type TAppPage = TPage & {
+  buffer?: string;
+  contenteditable: boolean;
+  html: Promise<string> | string;
+  sfc: Promise<string>;
+};
+
 const parser = new DOMParser();
 export const selected = ref();
 export const the = computed(
-  () => pages.value.find(({ id }) => id === selected.value) ?? pages.value[0],
+  () =>
+    (pages.value.find(({ id }) => id === selected.value) ??
+      pages.value[0]) as TAppPage,
 );
 export const urls = reactive(new Map<string, string>());
 const routerLink = "router-link";
 let sfcDescriptor: SFCDescriptor | undefined;
 const sfc = {
-  async get(this: TPage) {
+  async get(this: TAppPage) {
     if (!this.buffer && this.id) {
       const value = await getObjectText(`pages/${this.id}.vue`, cache);
       Reflect.defineProperty(this, "buffer", {
@@ -52,12 +60,12 @@ const sfc = {
     }
     return this.buffer;
   },
-  set(this: TPage, value: string) {
+  set(this: TAppPage, value: string) {
     this.buffer = value;
   },
 };
 const html = {
-  async get(this: TPage) {
+  async get(this: TAppPage) {
     const { descriptor } = parse(await this.sfc);
     sfcDescriptor = descriptor;
     const { template } = descriptor;
@@ -99,7 +107,7 @@ const html = {
     }
     return "";
   },
-  set(this: TPage, value: string) {
+  set(this: TAppPage, value: string) {
     const doc = parser.parseFromString(
       `<head><base href="//"></head><body>${value}</body>`,
       "text/html",
@@ -185,7 +193,6 @@ watch(bucket, async (value) => {
         (await getObjectText("index.importmap", cache)) || "{}",
       ) as TImportmap;
       importmap.imports = imports;
-      validateImportmap(importmap);
     })().catch(() => {});
     const [localManifest, serverManifest] = (
       (await Promise.all([
