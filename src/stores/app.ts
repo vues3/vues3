@@ -144,10 +144,16 @@ const html = {
         image.removeAttribute("data-src");
       }
     });
-    if (this.sfc && sfcDescriptor?.template) {
-      sfcDescriptor.template.content = doc.body.innerHTML;
+    if (this.sfc && sfcDescriptor) {
+      if (sfcDescriptor.template)
+        sfcDescriptor.template.content = doc.body.innerHTML;
       (await this.sfc).setValue(
-        (toString as (sfcDescriptor: SFCDescriptor) => string)(sfcDescriptor),
+        `${
+          sfcDescriptor.template
+            ? ""
+            : `<template>${doc.body.innerHTML}</template>
+`
+        }${(toString as (sfcDescriptor: SFCDescriptor) => string)(sfcDescriptor)}`,
       );
     }
   },
