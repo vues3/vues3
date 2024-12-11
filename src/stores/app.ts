@@ -43,7 +43,10 @@ const sfc = {
       const uri = Uri.parse(`file:///${this.id}.vue`);
       let model = editor.getModel(uri);
       if (!model) {
-        const value = await getObjectText(`pages/${this.id}.vue`, cache);
+        const value =
+          (await getObjectText(`pages/${this.id}.vue`, cache)) ||
+          `<template></template>
+`;
         model = editor.getModel(uri);
         if (!model) {
           model = editor.createModel(value, "vue", uri);
