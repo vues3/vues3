@@ -33,7 +33,8 @@ export const setS3Client = (value?: S3Client) => {
   s3Client = value;
 };
 export const headBucket = async (Bucket: string, pin?: string) => {
-  let { accessKeyId, endpoint, region, secretAccessKey } = creds.value[Bucket];
+  let { accessKeyId, endpoint, region, secretAccessKey } =
+    creds.value[Bucket] ?? {};
   if (pin) {
     accessKeyId = CryptoJS.AES.decrypt(accessKeyId ?? "", pin).toString(
       CryptoJS.enc.Utf8,
