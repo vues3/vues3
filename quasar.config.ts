@@ -46,8 +46,7 @@ const vitePlugins = [
   [viteStaticCopy, { targets }],
 ];
 const strict = true;
-const vueShim = true;
-const typescript = { strict, vueShim };
+const typescript = { strict };
 const build: object = { extendViteConf, typescript, vitePlugins };
 const open = false;
 const devServer = { open };
