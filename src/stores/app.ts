@@ -4,7 +4,7 @@ import type { TImportmap, TPage } from "@vues3/shared";
 import { data, deep, importmap, pages } from "@vues3/shared";
 import mimes from "assets/mimes.json";
 import mime from "mime";
-import { editor, Uri } from "monaco-editor-core";
+import { editor, Uri } from "monaco-editor";
 import { debounce, uid } from "quasar";
 import { cache, second, writable } from "stores/defaults";
 import {
@@ -24,7 +24,7 @@ import { parse } from "vue/compiler-sfc";
 export type TAppPage = TPage & {
   contenteditable: boolean;
   html: Promise<string> | string;
-  sfc: Promise<editor.ITextModel> | undefined;
+  sfc: Promise<editor.ITextModel>;
 };
 
 const parser = new DOMParser();
@@ -69,7 +69,7 @@ const sfc = {
 };
 const html = {
   async get(this: TAppPage) {
-    const { descriptor } = parse((await this.sfc)?.getValue() ?? "");
+    const { descriptor } = parse((await this.sfc).getValue());
     sfcDescriptor = descriptor;
     const { template } = descriptor;
     if (template) {
@@ -147,7 +147,7 @@ const html = {
         image.removeAttribute("data-src");
       }
     });
-    if (this.sfc && sfcDescriptor) {
+    if (sfcDescriptor) {
       if (sfcDescriptor.template)
         sfcDescriptor.template.content = doc.body.innerHTML;
       (await this.sfc).setValue(
@@ -184,7 +184,7 @@ watch(bucket, async (value) => {
           JSON.parse(
             (await getObjectText("index.json", cache)) || "[{}]",
           ) as TPage[]
-        )[0] ?? {},
+        )[0] ?? ({} as TPage),
       );
     })().catch(() => {});
     (async () => {
