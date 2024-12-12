@@ -1,8 +1,6 @@
 {
   "extends": "./.quasar/tsconfig.json",
   "compilerOptions": {
-    "resolvePackageJsonExports": false,
-    "noImplicitAny": false,
     "exactOptionalPropertyTypes": false,
     "noUncheckedIndexedAccess": false
   },
