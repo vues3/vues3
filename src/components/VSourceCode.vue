@@ -4,12 +4,12 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { editor } from "monaco-editor-core";
+import { editor } from "monaco-editor";
 import themeLight from "shiki/themes/light-plus.mjs";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 const props = defineProps<{
-  model?: Promise<editor.ITextModel>;
+  model: Promise<editor.ITextModel>;
 }>();
 const monaco: Ref<HTMLElement | undefined> = ref();
 let editorInstance: editor.IStandaloneCodeEditor | undefined;
@@ -17,7 +17,7 @@ const model = await props.model;
 watch(
   () => props.model,
   async (value) => {
-    editorInstance?.setModel((await value) ?? null);
+    editorInstance?.setModel(await value);
   },
 );
 onMounted(() => {
@@ -29,7 +29,7 @@ onMounted(() => {
     })();
     const scrollBeyondLastLine = false;
     const fixedOverflowWidgets = true;
-    const { name: theme } = themeLight;
+    const { name: theme = "light-plus" } = themeLight;
     return (
       monaco.value &&
       editor.create(monaco.value, {
