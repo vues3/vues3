@@ -2,7 +2,8 @@ import type {
   LanguageServiceEnvironment,
   ProjectContext,
 } from "@volar/language-service";
-import type { worker } from "monaco-editor-core";
+import type { WorkerLanguageService } from "@volar/monaco/worker";
+import type { worker } from "monaco-editor";
 
 import { createNpmFileSystem } from "@volar/jsdelivr";
 import { createTypeScriptWorkerLanguageService } from "@volar/monaco/worker";
@@ -11,7 +12,7 @@ import {
   getFullLanguageServicePlugins,
   resolveVueCompilerOptions,
 } from "@vue/language-service";
-import { initialize } from "monaco-editor-core/esm/vs/editor/editor.worker";
+import { initialize } from "monaco-editor/esm/vs/editor/editor.worker";
 import * as typescript from "typescript";
 import { URI } from "vscode-uri";
 import { version } from "vue";
@@ -67,17 +68,22 @@ const uriConverter = (() => {
 })();
 // eslint-disable-next-line no-restricted-globals
 self.onmessage = () => {
-  (initialize as (workerContext) => void)(
-    (workerContext: worker.IWorkerContext) =>
-      createTypeScriptWorkerLanguageService({
-        compilerOptions,
-        env,
-        languagePlugins,
-        languageServicePlugins,
-        setup,
-        typescript,
-        uriConverter,
-        workerContext,
-      }),
+  (
+    initialize as (
+      foreignModule: (
+        workerContext: worker.IWorkerContext,
+      ) => WorkerLanguageService,
+    ) => void
+  )((workerContext) =>
+    createTypeScriptWorkerLanguageService({
+      compilerOptions,
+      env,
+      languagePlugins,
+      languageServicePlugins,
+      setup,
+      typescript,
+      uriConverter,
+      workerContext,
+    }),
   );
 };
