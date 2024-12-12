@@ -1,4 +1,4 @@
-import { languages } from 'monaco-editor-core'
+import { languages } from "monaco-editor";
 
 // export const html: languages.LanguageConfiguration = {
 //   comments: {
@@ -68,19 +68,19 @@ import { languages } from 'monaco-editor-core'
 
 export const css: languages.LanguageConfiguration = {
   comments: {
-    blockComment: ['/*', '*/'],
+    blockComment: ["/*", "*/"],
   },
   brackets: [
-    ['{', '}'],
-    ['[', ']'],
-    ['(', ')'],
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"],
   ],
   autoClosingPairs: [
-    { open: '{', close: '}', notIn: ['string', 'comment'] },
-    { open: '[', close: ']', notIn: ['string', 'comment'] },
-    { open: '(', close: ')', notIn: ['string', 'comment'] },
-    { open: '"', close: '"', notIn: ['string', 'comment'] },
-    { open: "'", close: "'", notIn: ['string', 'comment'] },
+    { open: "{", close: "}", notIn: ["string", "comment"] },
+    { open: "[", close: "]", notIn: ["string", "comment"] },
+    { open: "(", close: ")", notIn: ["string", "comment"] },
+    { open: '"', close: '"', notIn: ["string", "comment"] },
+    { open: "'", close: "'", notIn: ["string", "comment"] },
   ],
   surroundingPairs: [
     {
@@ -92,55 +92,55 @@ export const css: languages.LanguageConfiguration = {
       close: '"',
     },
     {
-      open: '{',
-      close: '}',
+      open: "{",
+      close: "}",
     },
     {
-      open: '[',
-      close: ']',
+      open: "[",
+      close: "]",
     },
     {
-      open: '(',
-      close: ')',
+      open: "(",
+      close: ")",
     },
   ],
   folding: {
     markers: {
-      start: new RegExp('^\\s*\\/\\*\\s*#region\\b\\s*(.*?)\\s*\\*\\/'),
-      end: new RegExp('^\\s*\\/\\*\\s*#endregion\\b.*\\*\\/'),
+      start: new RegExp("^\\s*\\/\\*\\s*#region\\b\\s*(.*?)\\s*\\*\\/"),
+      end: new RegExp("^\\s*\\/\\*\\s*#endregion\\b.*\\*\\/"),
     },
   },
   indentationRules: {
-    increaseIndentPattern: new RegExp('(^.*\\{[^}]*$)'),
-    decreaseIndentPattern: new RegExp('^\\s*\\}'),
+    increaseIndentPattern: new RegExp("(^.*\\{[^}]*$)"),
+    decreaseIndentPattern: new RegExp("^\\s*\\}"),
   },
   wordPattern: new RegExp(
-    '(#?-?\\d*\\.\\d\\w*%?)|(::?[\\w-]*(?=[^,{;]*[,{]))|(([@#.!])?[\\w-?]+%?|[@#!.])',
+    "(#?-?\\d*\\.\\d\\w*%?)|(::?[\\w-]*(?=[^,{;]*[,{]))|(([@#.!])?[\\w-?]+%?|[@#!.])",
   ),
-}
+};
 
 export const vue: languages.LanguageConfiguration = {
   comments: {
-    blockComment: ['<!--', '-->'],
+    blockComment: ["<!--", "-->"],
   },
   brackets: [
-    ['<!--', '-->'],
-    ['<', '>'],
-    ['{', '}'],
-    ['(', ')'],
+    ["<!--", "-->"],
+    ["<", ">"],
+    ["{", "}"],
+    ["(", ")"],
   ],
   autoClosingPairs: [
     {
-      open: '{',
-      close: '}',
+      open: "{",
+      close: "}",
     },
     {
-      open: '[',
-      close: ']',
+      open: "[",
+      close: "]",
     },
     {
-      open: '(',
-      close: ')',
+      open: "(",
+      close: ")",
     },
     {
       open: "'",
@@ -151,22 +151,22 @@ export const vue: languages.LanguageConfiguration = {
       close: '"',
     },
     {
-      open: '<!--',
-      close: '-->',
-      notIn: ['comment', 'string'],
+      open: "<!--",
+      close: "-->",
+      notIn: ["comment", "string"],
     },
     {
-      open: '`',
-      close: '`',
-      notIn: ['string', 'comment'],
+      open: "`",
+      close: "`",
+      notIn: ["string", "comment"],
     },
     {
-      open: '/**',
-      close: ' */',
-      notIn: ['string'],
+      open: "/**",
+      close: " */",
+      notIn: ["string"],
     },
   ],
-  autoCloseBefore: ';:.,=}])><`\'" \n\t',
+  autoCloseBefore: ";:.,=}])><`'\" \n\t",
   surroundingPairs: [
     {
       open: "'",
@@ -177,24 +177,24 @@ export const vue: languages.LanguageConfiguration = {
       close: '"',
     },
     {
-      open: '{',
-      close: '}',
+      open: "{",
+      close: "}",
     },
     {
-      open: '[',
-      close: ']',
+      open: "[",
+      close: "]",
     },
     {
-      open: '(',
-      close: ')',
+      open: "(",
+      close: ")",
     },
     {
-      open: '<',
-      close: '>',
+      open: "<",
+      close: ">",
     },
     {
-      open: '`',
-      close: '`',
+      open: "`",
+      close: "`",
     },
   ],
   colorizedBracketPairs: [],
@@ -228,51 +228,51 @@ export const vue: languages.LanguageConfiguration = {
       /<(?!\?|(?:area|base|br|col|frame|hr|html|img|input|keygen|link|menuitem|meta|param|source|track|wbr|script|style)\b|[^>]*\/>)([-_\.A-Za-z0-9]+)(?=\s|>)\b[^>]*>(?!\s*\()(?!.*<\/\1>)|<!--(?!.*-->)|\{[^}"']*$/i,
     decreaseIndentPattern: /^\s*(<\/(?!html)[-_\.A-Za-z0-9]+\b[^>]*>|-->|\})/,
   },
-}
+};
 
 export const js: languages.LanguageConfiguration = {
   comments: {
-    lineComment: '//',
-    blockComment: ['/*', '*/'],
+    lineComment: "//",
+    blockComment: ["/*", "*/"],
   },
   brackets: [
-    ['${', '}'],
-    ['{', '}'],
-    ['[', ']'],
-    ['(', ')'],
+    ["${", "}"],
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"],
   ],
   autoClosingPairs: [
     {
-      open: '{',
-      close: '}',
+      open: "{",
+      close: "}",
     },
     {
-      open: '[',
-      close: ']',
+      open: "[",
+      close: "]",
     },
     {
-      open: '(',
-      close: ')',
+      open: "(",
+      close: ")",
     },
     {
       open: "'",
       close: "'",
-      notIn: ['string', 'comment'],
+      notIn: ["string", "comment"],
     },
     {
       open: '"',
       close: '"',
-      notIn: ['string'],
+      notIn: ["string"],
     },
     {
-      open: '`',
-      close: '`',
-      notIn: ['string', 'comment'],
+      open: "`",
+      close: "`",
+      notIn: ["string", "comment"],
     },
     {
-      open: '/**',
-      close: ' */',
-      notIn: ['string'],
+      open: "/**",
+      close: " */",
+      notIn: ["string"],
     },
   ],
   surroundingPairs: [
@@ -285,27 +285,27 @@ export const js: languages.LanguageConfiguration = {
       close: '"',
     },
     {
-      open: '{',
-      close: '}',
+      open: "{",
+      close: "}",
     },
     {
-      open: '[',
-      close: ']',
+      open: "[",
+      close: "]",
     },
     {
-      open: '(',
-      close: ')',
+      open: "(",
+      close: ")",
     },
     {
-      open: '<',
-      close: '>',
+      open: "<",
+      close: ">",
     },
     {
-      open: '`',
-      close: '`',
+      open: "`",
+      close: "`",
     },
   ],
-  autoCloseBefore: ';:.,=}])>` \n\t',
+  autoCloseBefore: ";:.,=}])>` \n\t",
   folding: {
     markers: {
       start: /^\s*\/\/\s*#?region\b/,
@@ -327,14 +327,14 @@ export const js: languages.LanguageConfiguration = {
       afterText: /^\s*\*\/$/,
       action: {
         indentAction: languages.IndentAction.IndentOutdent,
-        appendText: ' * ',
+        appendText: " * ",
       },
     },
     {
       beforeText: /^\s*\/\*\*(?!\/)([^\*]|\*(?!\/))*$/,
       action: {
         indentAction: languages.IndentAction.None,
-        appendText: ' * ',
+        appendText: " * ",
       },
     },
     {
@@ -342,7 +342,7 @@ export const js: languages.LanguageConfiguration = {
       previousLineText: /(?=^(\s*(\/\*\*|\*)).*)(?=(?!(\s*\*\/)))/,
       action: {
         indentAction: languages.IndentAction.None,
-        appendText: '* ',
+        appendText: "* ",
       },
     },
     {
@@ -374,51 +374,51 @@ export const js: languages.LanguageConfiguration = {
       },
     },
   ],
-}
+};
 
 export const ts: languages.LanguageConfiguration = {
   comments: {
-    lineComment: '//',
-    blockComment: ['/*', '*/'],
+    lineComment: "//",
+    blockComment: ["/*", "*/"],
   },
   brackets: [
-    ['${', '}'],
-    ['{', '}'],
-    ['[', ']'],
-    ['(', ')'],
+    ["${", "}"],
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"],
   ],
   autoClosingPairs: [
     {
-      open: '{',
-      close: '}',
+      open: "{",
+      close: "}",
     },
     {
-      open: '[',
-      close: ']',
+      open: "[",
+      close: "]",
     },
     {
-      open: '(',
-      close: ')',
+      open: "(",
+      close: ")",
     },
     {
       open: "'",
       close: "'",
-      notIn: ['string', 'comment'],
+      notIn: ["string", "comment"],
     },
     {
       open: '"',
       close: '"',
-      notIn: ['string'],
+      notIn: ["string"],
     },
     {
-      open: '`',
-      close: '`',
-      notIn: ['string', 'comment'],
+      open: "`",
+      close: "`",
+      notIn: ["string", "comment"],
     },
     {
-      open: '/**',
-      close: ' */',
-      notIn: ['string'],
+      open: "/**",
+      close: " */",
+      notIn: ["string"],
     },
   ],
   surroundingPairs: [
@@ -431,33 +431,33 @@ export const ts: languages.LanguageConfiguration = {
       close: '"',
     },
     {
-      open: '{',
-      close: '}',
+      open: "{",
+      close: "}",
     },
     {
-      open: '[',
-      close: ']',
+      open: "[",
+      close: "]",
     },
     {
-      open: '(',
-      close: ')',
+      open: "(",
+      close: ")",
     },
     {
-      open: '<',
-      close: '>',
+      open: "<",
+      close: ">",
     },
     {
-      open: '`',
-      close: '`',
+      open: "`",
+      close: "`",
     },
   ],
   colorizedBracketPairs: [
-    ['(', ')'],
-    ['[', ']'],
-    ['{', '}'],
-    ['<', '>'],
+    ["(", ")"],
+    ["[", "]"],
+    ["{", "}"],
+    ["<", ">"],
   ],
-  autoCloseBefore: ';:.,=}])>` \n\t',
+  autoCloseBefore: ";:.,=}])>` \n\t",
   folding: {
     markers: {
       start: /^\s*\/\/\s*#?region\b/,
@@ -479,14 +479,14 @@ export const ts: languages.LanguageConfiguration = {
       afterText: /^\s*\*\/$/,
       action: {
         indentAction: languages.IndentAction.IndentOutdent,
-        appendText: ' * ',
+        appendText: " * ",
       },
     },
     {
       beforeText: /^\s*\/\*\*(?!\/)([^\*]|\*(?!\/))*$/,
       action: {
         indentAction: languages.IndentAction.None,
-        appendText: ' * ',
+        appendText: " * ",
       },
     },
     {
@@ -494,7 +494,7 @@ export const ts: languages.LanguageConfiguration = {
       previousLineText: /(?=^(\s*(\/\*\*|\*)).*)(?=(?!(\s*\*\/)))/,
       action: {
         indentAction: languages.IndentAction.None,
-        appendText: '* ',
+        appendText: "* ",
       },
     },
     {
@@ -526,4 +526,4 @@ export const ts: languages.LanguageConfiguration = {
       },
     },
   ],
-}
+};
