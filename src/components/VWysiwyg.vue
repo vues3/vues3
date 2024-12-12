@@ -60,7 +60,7 @@ const $q = useQuasar();
 const { t } = useI18n();
 const editor: Ref<QEditor | undefined> = ref();
 const placeholder = t("Add some content to your page...");
-const rootElement = editor.value?.getContentEl;
+const rootElement = editor.value?.getContentEl as () => Element | undefined;
 watch(
   () => getFonts(Fonts),
   async (fonts) => {
