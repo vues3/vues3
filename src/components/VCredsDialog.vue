@@ -169,7 +169,7 @@ const getDir = async () => {
   } = await window.dialog.showOpenDialog({
     properties: ["openDirectory"],
   });
-  Bucket.value = filePath;
+  Bucket.value = filePath ?? null;
 };
 const isDirectory = computed(() => window.isDirectory?.(Bucket.value ?? ""));
 /** @see {@link https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch08s15.html} */
