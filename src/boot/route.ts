@@ -7,7 +7,7 @@ export default defineBoot(({ router }) => {
   router.beforeEach(({ path }, from, next) => {
     if (["/", "/main"].includes(path)) next();
     else next("/");
-    if (path === "/") {
+    if (path === "/" && route) {
       bucket.value = "";
       router.clearRoutes();
       router.addRoute(route);
