@@ -48,26 +48,30 @@ onMounted(() => {
       string,
       Record<string, Record<string, ((...args: never) => unknown) | boolean>>
     >;
-    const { _theme: t } = themeService;
-    t.semanticHighlighting = true;
-    t.getTokenStyleMetadata = (type: string, modifiers: string[]) => {
-      let foreground = 0;
-      switch (type) {
-        case "class":
-          foreground = 11;
-          break;
-        case "function":
-        case "method":
-          foreground = 12;
-          break;
-        case "property":
-        case "variable":
-          foreground = modifiers.includes("readonly") ? 19 : 9;
-          break;
-        default:
+    if (themeService) {
+      const { _theme: t } = themeService;
+      if (t) {
+        t.semanticHighlighting = true;
+        t.getTokenStyleMetadata = (type: string, modifiers: string[]) => {
+          let foreground = 0;
+          switch (type) {
+            case "class":
+              foreground = 11;
+              break;
+            case "function":
+            case "method":
+              foreground = 12;
+              break;
+            case "property":
+            case "variable":
+              foreground = modifiers.includes("readonly") ? 19 : 9;
+              break;
+            default:
+          }
+          return { foreground };
+        };
       }
-      return { foreground };
-    };
+    }
   }
 });
 onBeforeUnmount(() => {
