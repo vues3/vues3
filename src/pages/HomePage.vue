@@ -111,9 +111,9 @@ const creds = useStorage(
 );
 const getPin = async (name: string): Promise<string | undefined> =>
   new Promise((resolve, reject) => {
-    if (name !== creds.value[name].Bucket) {
+    if (name !== creds.value[name]?.Bucket) {
       const component = VOtpDialog as Component;
-      const value = creds.value[name].Bucket;
+      const value = creds.value[name]?.Bucket;
       const componentProps = { value };
       $q.dialog({ component, componentProps })
         .onOk((payload: string) => {
@@ -167,26 +167,27 @@ const remove = (name: number | string) => {
 };
 const lock = (name: number | string) => {
   const value =
-    name === creds.value[name].Bucket ? undefined : creds.value[name].Bucket;
+    name === creds.value[name]?.Bucket ? undefined : creds.value[name]?.Bucket;
   const componentProps = { value };
   const component = VOtpDialog as Component;
   $q.dialog({ component, componentProps }).onOk((payload: string) => {
     const cred = creds.value[name];
-    if (name === cred.Bucket) {
-      Object.keys(cred).forEach((key) => {
-        cred[key] = CryptoJS.AES.encrypt(
-          (cred[key] ?? "") as string,
-          payload,
-        ).toString();
-      });
-    } else {
-      Object.keys(cred).forEach((key) => {
-        cred[key] = CryptoJS.AES.decrypt(
-          (cred[key] ?? "") as string,
-          payload,
-        ).toString(CryptoJS.enc.Utf8);
-      });
-    }
+    if (cred)
+      if (name === cred.Bucket) {
+        Object.keys(cred).forEach((key) => {
+          cred[key] = CryptoJS.AES.encrypt(
+            (cred[key] ?? "") as string,
+            payload,
+          ).toString();
+        });
+      } else {
+        Object.keys(cred).forEach((key) => {
+          cred[key] = CryptoJS.AES.decrypt(
+            (cred[key] ?? "") as string,
+            payload,
+          ).toString(CryptoJS.enc.Utf8);
+        });
+      }
   });
 };
 </script>
