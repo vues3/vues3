@@ -1,7 +1,7 @@
 <template lang="pug">
 .q-pa-md.row.q-gutter-md.items-start
   q-card.w-full.max-w-96(
-    :key="image.url",
+    :key="i",
     bordered,
     flat,
     v-for="(image, i) in images"
@@ -11,21 +11,11 @@
         .absolute-bottom
           q-input(dark, dense, v-model="image.alt")
       q-card-actions.q-px-md.justify-around(vertical)
-        q-btn(@click="() => { add(i); }", flat, icon="add", round)
-        q-btn(@click="() => { remove(i); }", flat, icon="remove", round)
-        q-btn(
-          @click="() => { if (i) [images[i - 1], images[i]] = [images[i], images[i - 1]]; }",
-          flat,
-          icon="arrow_left",
-          round
-        )
-        q-btn(
-          @click="() => { if (i < images.length - 1) [images[i], images[i + 1]] = [images[i + 1], images[i]]; }",
-          flat,
-          icon="arrow_right",
-          round
-        )
-        q-btn(@click="() => { upload(i); }", flat, icon="upload", round)
+        q-btn(@click="add(i)", flat, icon="add", round)
+        q-btn(@click="remove(i)", flat, icon="remove", round)
+        q-btn(@click="left(i)", flat, icon="arrow_left", round)
+        q-btn(@click="right(i)", flat, icon="arrow_right", round)
+        q-btn(@click="upload(i)", flat, icon="upload", round)
 </template>
 <script setup lang="ts">
 import { deep } from "@vues3/shared";
@@ -50,23 +40,40 @@ const upload = (i: number) => {
   open();
 };
 onChange((files) => {
-  if (files) {
+  const image = images.value[index];
+  if (files && image) {
     const [file] = files;
-    const { type } = file;
-    if (mimes.includes(type)) {
-      const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
-      (async () => {
-        await putObject(
-          filePath,
-          new Uint8Array(await file.arrayBuffer()),
-          type,
-        );
-      })().catch(() => {});
-      urls.set(filePath, URL.createObjectURL(file));
-      images.value[index].url = filePath;
-    } else $q.notify({ message });
+    if (file) {
+      const { type } = file;
+      if (mimes.includes(type)) {
+        const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
+        (async () => {
+          await putObject(
+            filePath,
+            new Uint8Array(await file.arrayBuffer()),
+            type,
+          );
+        })().catch(() => {});
+        urls.set(filePath, URL.createObjectURL(file));
+        image.url = filePath;
+      } else $q.notify({ message });
+    }
   }
 });
+const left = (i: number) => {
+  if (i) {
+    const prev = images.value[i - 1];
+    if (images.value[i] && prev)
+      [images.value[i - 1], images.value[i]] = [images.value[i], prev];
+  }
+};
+const right = (i: number) => {
+  if (i < images.value.length - 1) {
+    const next = images.value[i + 1];
+    if (images.value[i] && next)
+      [images.value[i], images.value[i + 1]] = [next, images.value[i]];
+  }
+};
 const add = (i: number) => {
   images.value.splice(
     i + 1,
@@ -97,7 +104,7 @@ watch(
     if (oldValue.length)
       the.value.images = value
         .filter(({ url }) => url)
-        .map(({ alt, url }) => ({ alt, url }));
+        .map(({ alt = "", url = "" }) => ({ alt, url }));
   },
   { deep },
 );
