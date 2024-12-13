@@ -6,7 +6,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         :class="{ 'bg-negative': error }",
         :key="i",
         :ref="(el) => { updateFieldRef(el, i - 1); }",
-        @blur="fields[selected].focus()",
+        @blur="fields[selected]?.focus()",
         @click="selected = i - 1",
         @keydown.tab.prevent,
         @keyup.delete="focus(i - 2)",
@@ -68,6 +68,6 @@ const focus = (index: number) => {
   if (index >= 0 && index < length.value) selected.value = index;
 };
 watch(selected, (value) => {
-  fields.value[value].select();
+  fields.value[value]?.select();
 });
 </script>
