@@ -133,7 +133,7 @@ const definitions = {
       ],
     ].map(([icon, tip, handler]) => [icon, { handler, icon, tip }]),
   ) as Record<string, QEditorCommand>),
-  ...Object.fromEntries(
+  ...(Object.fromEntries(
     [
       ...[...Array(6).keys()].map((key) => [
         `h${String(key + 1)}`,
@@ -141,13 +141,13 @@ const definitions = {
       ]),
       ["p", "paragraph"],
       ["code", "code"],
-    ].map(([key, value]) => [
+    ].map(([key = "div", value]) => [
       key,
       {
         htmlTip: `<span class="prose"><${key} class="!my-0">${$q.lang.editor[value as keyof StringDictionary<QuasarLanguageEditorLabel>]}</${key}></span>`,
       },
     ]),
-  ),
+  ) as Record<string, QEditorCommand>),
 };
 const list = "no-icons";
 const toolbar = computed(() => [
