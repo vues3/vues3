@@ -1,9 +1,5 @@
 {
   "extends": "./.quasar/tsconfig.json",
-  "compilerOptions": {
-    "exactOptionalPropertyTypes": false,
-    "noUncheckedIndexedAccess": false
-  },
   "vueCompilerOptions": {
     "plugins": ["@vue/language-plugin-pug"]
   }
