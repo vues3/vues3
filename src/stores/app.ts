@@ -98,12 +98,12 @@ const html = {
           }),
         )
       ).forEach((image, index) => {
-        const src = doc.images[index].getAttribute("src") ?? "";
+        const src = doc.images[index]?.getAttribute("src") ?? "";
         if (image?.size) urls.set(src, URL.createObjectURL(image));
         const url = urls.get(src);
         if (url) {
-          doc.images[index].setAttribute("data-src", src);
-          doc.images[index].setAttribute("src", url);
+          doc.images[index]?.setAttribute("data-src", src);
+          doc.images[index]?.setAttribute("src", url);
         }
       });
       return doc.body.innerHTML;
@@ -219,29 +219,32 @@ watch(bucket, async (value) => {
           ].filter(Boolean) as string[],
         ),
     );
-    const files = [vue, "robots.txt", "fonts.json"];
-    (
-      await Promise.allSettled(files.map((file) => headObject(file, cache)))
-    ).forEach(({ status }, index) => {
-      if (status === "rejected") localManifest.add(files[index]);
-    });
-    [...serverManifest]
-      .filter((x) => !localManifest.has(x))
-      .forEach((element) => {
-        deleteObject(element).catch(() => {});
+    if (localManifest && serverManifest) {
+      const files = [vue, "robots.txt", "fonts.json"];
+      (
+        await Promise.allSettled(files.map((file) => headObject(file, cache)))
+      ).forEach(({ status }, index) => {
+        if (status === "rejected" && files[index])
+          localManifest.add(files[index]);
       });
-    [...localManifest.add(".vite/manifest.json")]
-      .filter((x) => !serverManifest.has(x))
-      .forEach((element) => {
-        (async () => {
-          const body = await (await fetch(`runtime/${element}`)).blob();
-          putObject(
-            element,
-            new Uint8Array(await body.arrayBuffer()),
-            body.type,
-          ).catch(() => {});
-        })().catch(() => {});
-      });
+      [...serverManifest]
+        .filter((x) => !localManifest.has(x))
+        .forEach((element) => {
+          deleteObject(element).catch(() => {});
+        });
+      [...localManifest.add(".vite/manifest.json")]
+        .filter((x) => !serverManifest.has(x))
+        .forEach((element) => {
+          (async () => {
+            const body = await (await fetch(`runtime/${element}`)).blob();
+            putObject(
+              element,
+              new Uint8Array(await body.arrayBuffer()),
+              body.type,
+            ).catch(() => {});
+          })().catch(() => {});
+        });
+    }
   } else {
     data.length = 0;
     editor.getModels().forEach((model) => {
@@ -392,6 +395,8 @@ ${JSON.stringify(imap, null, " ")}
       .filter(([content]) => content)
       .map(
         ([content, name]) =>
+          content &&
+          name &&
           `<meta name="${name}" content="${content.replaceAll('"', "&quot;")}">`,
       ).join(`
     `)}
@@ -409,6 +414,8 @@ ${JSON.stringify(imap, null, " ")}
       .filter(([content]) => content)
       .map(
         ([content, property]) =>
+          content &&
+          property &&
           `<meta property="og:${property}" content="${content.replaceAll('"', "&quot;")}">`,
       ).join(`
     `)}
