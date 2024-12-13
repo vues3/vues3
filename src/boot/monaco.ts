@@ -33,17 +33,19 @@ const getWorker = (moduleId: string, label: string) => {
 const getSyncUris = () => monaco.editor.getModels().map(({ uri }) => uri);
 const moduleId = "vs/language/vue/vueWorker";
 const languageId = ["vue", "javascript", "typescript", "css"];
-const [label] = languageId;
-const [languageSelector] = languageId;
+const label = "vue";
+const languageSelector = "vue";
 window.MonacoEnvironment = { getWorker };
 ["vue", "js", "ts", "css"].forEach((value, index) => {
   const id = languageId[index];
-  const extensions = [`.${value}`];
-  monaco.languages.register({ extensions, id });
-  monaco.languages.setLanguageConfiguration(
-    id,
-    languageConfigs[value as keyof typeof languageConfigs],
-  );
+  if (id) {
+    const extensions = [`.${value}`];
+    monaco.languages.register({ extensions, id });
+    monaco.languages.setLanguageConfiguration(
+      id,
+      languageConfigs[value as keyof typeof languageConfigs],
+    );
+  }
 });
 const worker = monaco.editor.createWebWorker<WorkerLanguageService>({
   label,
