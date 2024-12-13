@@ -7,13 +7,13 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "postinstall": "bunx --bun quasar prepare",
-    "lint": "bunx --bun eslint --ext .js,.ts,.vue ./",
-    "format": "bunx --bun prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
-    "dev": "bunx --bun quasar dev",
-    "dev:electron": "bunx --bun quasar dev -m electron",
-    "build": "bunx --bun quasar build",
-    "build:electron": "bunx --bun quasar build -m electron"
+    "postinstall": "quasar prepare",
+    "lint": "eslint --ext .js,.ts,.vue ./",
+    "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
+    "dev": "quasar dev",
+    "dev:electron": "quasar dev -m electron",
+    "build": "quasar build",
+    "build:electron": "quasar build -m electron"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.709.0",
