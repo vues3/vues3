@@ -68,11 +68,11 @@ const error = (propNode: TPage) =>
     );
 const errorMessage = (propNode: TPage) => {
   switch (true) {
-    case errors[0](propNode):
+    case errors[0]?.(propNode):
       return t("The name is empty");
-    case errors[1](propNode):
+    case errors[1]?.(propNode):
       return t("That name is already in use");
-    case errors[2](propNode):
+    case errors[2]?.(propNode):
       return t("Prohibited characters are used");
     default:
       return undefined;
@@ -120,14 +120,14 @@ const clickRemove = () => {
 };
 const value = false;
 onMounted(() => {
-  const [{ id }] = data;
+  const [{ id } = {}] = data;
   if (id) qtree.value?.setExpanded(id, true);
 });
 watch(
   the,
   (newVal, oldVal) => {
     if (!newVal) {
-      const [{ id }] = pages.value;
+      const [{ id } = {}] = pages.value;
       selected.value = id;
     }
     if (oldVal) Reflect.defineProperty(oldVal, "contenteditable", { value });
