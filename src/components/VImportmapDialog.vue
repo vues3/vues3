@@ -38,6 +38,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       q-btn(:label="t('Close')", @click="onDialogHide", flat)
 </template>
 <script setup lang="ts">
+import type { TImportmap } from "@vues3/shared";
 import type { QTableProps } from "quasar";
 import type { Ref } from "vue";
 
@@ -73,7 +74,7 @@ watch(
       value
         .filter(({ name, path }) => path && name)
         .map(({ name, path }) => [name, path]),
-    );
+    ) as TImportmap["imports"];
   },
   { deep },
 );
