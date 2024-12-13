@@ -33,11 +33,13 @@ const factory: QUploaderFactoryFn = async (files) => {
   const [file] = files;
   let message = t("Favicon uploaded successfully");
   try {
-    await putObject(
-      "favicon.ico",
-      new Uint8Array(await file.arrayBuffer()),
-      "image/vnd.microsoft.icon",
-    );
+    if (file)
+      await putObject(
+        "favicon.ico",
+        new Uint8Array(await file.arrayBuffer()),
+        "image/vnd.microsoft.icon",
+      );
+    else throw new Error();
     uploader.value?.reset();
   } catch {
     message = t("Favicon upload failed");
