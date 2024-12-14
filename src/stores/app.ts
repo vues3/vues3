@@ -15,6 +15,7 @@ import {
   getObjectText,
   headObject,
   putObject,
+  removeEmptyDirectories,
 } from "stores/io";
 import { toXML } from "to-xml";
 import { computed, reactive, ref, version, watch } from "vue";
@@ -339,11 +340,25 @@ watch(
   { deep },
 );
 (async () => {
+  const oldPages: Record<string, null | string>[] = [];
   const index = await (await fetch("runtime/index.html")).text();
   watch(
     [pages, importmap],
     debounce((arr) => {
       const [page, imap] = arr as [TPage[], TImportmap];
+      const promises: Promise<void>[] = [];
+      oldPages.forEach(({ loc, path }) => {
+        if (loc && !page.find((value) => value.loc === loc))
+          promises.push(deleteObject(`${loc}/index.html`));
+        if (!page.find((value) => value.path === path))
+          promises.push(
+            deleteObject(path ? `${path}/index.html` : "index.html"),
+          );
+      });
+      (async () => {
+        await Promise.allSettled(promises);
+        await removeEmptyDirectories();
+      })().catch(() => {});
       const body = index
         .replace(
           '<script type="importmap"></script>',
@@ -361,6 +376,7 @@ ${JSON.stringify(imap, null, " ")}
     `)}
     </head>`,
         );
+      oldPages.length = 0;
       page.forEach(
         ({
           branch,
@@ -373,6 +389,7 @@ ${JSON.stringify(imap, null, " ")}
           to,
           type,
         }) => {
+          oldPages.push({ loc, path });
           const canonical =
             domain.value && `https://${domain.value}${to === "/" ? "" : to}`;
           const htm = body
