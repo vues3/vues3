@@ -18,7 +18,6 @@ form(
     @vue:mounted="nextTick(editor?.focus)",
     content-class="col prose max-w-none",
     flat,
-    paragraph-tag="div",
     ref="editor"
   )
 </template>
@@ -42,16 +41,18 @@ import VLinkDialog from "components/VLinkDialog.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { fonts as Fonts, urls } from "stores/app";
-import { accept, bypassDefined, immediate } from "stores/defaults";
+import { accept, bypassDefined, immediate, reset } from "stores/defaults";
 import { putObject } from "stores/io";
 import { computed, nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 const props = withDefaults(
   defineProps<{
+    id: string | undefined;
     modelValue: Promise<string> | string;
   }>(),
   {
+    id: "",
     modelValue: "",
   },
 );
@@ -101,7 +102,7 @@ const insertImage = (file: File) => {
     urls.set(filePath, URL.createObjectURL(file));
     editor.value?.runCmd(
       "insertHTML",
-      `<img src="${urls.get(filePath) ?? ""}" data-src="${filePath}">`,
+      `<div><img src="${urls.get(filePath) ?? ""}" data-src="${filePath}" alt="" decoding="async" loading="lazy" /></div>`,
     );
   } else $q.notify({ message });
 };
@@ -116,7 +117,7 @@ const capture = (evt: ClipboardEvent | DragEvent) => {
     [...files].forEach(insertImage);
   }
 };
-const { files, open } = useFileDialog({ accept });
+const { files, open } = useFileDialog({ accept, reset });
 const definitions = {
   ...(Object.fromEntries(
     [
@@ -203,9 +204,9 @@ watch(files, (newFiles) => {
 });
 const htm = ref(await props.modelValue);
 watch(
-  () => props.modelValue,
-  async (value) => {
-    htm.value = await value;
+  () => props.id,
+  async () => {
+    htm.value = await props.modelValue;
   },
 );
 </script>
