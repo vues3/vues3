@@ -20,7 +20,7 @@ import {
 import { toXML } from "to-xml";
 import { computed, reactive, ref, version, watch } from "vue";
 import toString from "vue-sfc-descriptor-to-string";
-import { parse } from "vue/compiler-sfc";
+import { parse, parseCache } from "vue/compiler-sfc";
 
 export type TAppPage = TPage & {
   contenteditable: boolean;
@@ -29,6 +29,22 @@ export type TAppPage = TPage & {
 };
 
 const parser = new DOMParser();
+const getDocument = (value: string) =>
+  parser.parseFromString(
+    `<head><base href="//"></head><body>${value}</body>`,
+    "text/html",
+  );
+const getContent = (model: editor.ITextModel) => {
+  const {
+    descriptor: { template },
+  } = parse(model.getValue());
+  const { content } = template ?? {};
+  return content ?? "";
+};
+const getImages = (model: editor.ITextModel) => {
+  const { images } = getDocument(getContent(model));
+  return [...images].map(({ src }: { src: string }) => src);
+};
 export const selected = ref();
 export const the = computed(
   () =>
@@ -37,48 +53,11 @@ export const the = computed(
 );
 export const urls = reactive(new Map<string, string>());
 const routerLink = "router-link";
-let sfcDescriptor: SFCDescriptor | undefined;
-const sfc = {
-  async get(this: TAppPage) {
-    if (this.id) {
-      const uri = Uri.parse(`file:///${this.id}.vue`);
-      let model = editor.getModel(uri);
-      if (!model) {
-        const value =
-          (await getObjectText(`pages/${this.id}.vue`, cache)) ||
-          `<template></template>
-`;
-        model = editor.getModel(uri);
-        if (!model) {
-          model = editor.createModel(value, "vue", uri);
-          model.onDidChangeContent(
-            debounce(() => {
-              if (this.id)
-                putObject(
-                  `pages/${this.id}.vue`,
-                  model?.getValue() ?? "",
-                  "text/html",
-                ).catch(() => {});
-            }, second),
-          );
-        }
-      }
-      return model;
-    }
-    return undefined;
-  },
-};
-const html = {
-  async get(this: TAppPage) {
-    const { descriptor } = parse((await this.sfc).getValue());
-    sfcDescriptor = descriptor;
-    const { template } = descriptor;
-    if (template) {
-      const { content } = template;
-      const doc = parser.parseFromString(
-        `<head><base href="//"></head><body>${content}</body>`,
-        "text/html",
-      );
+{
+  const html = {
+    async get(this: TAppPage) {
+      parseCache.clear();
+      const doc = getDocument(getContent(await this.sfc));
       doc.querySelectorAll(routerLink).forEach((link) => {
         const a = document.createElement("a");
         a.innerHTML = link.innerHTML;
@@ -108,61 +87,106 @@ const html = {
         }
       });
       return doc.body.innerHTML;
-    }
-    return "";
-  },
-  async set(this: TAppPage, value: string) {
-    const doc = parser.parseFromString(
-      `<head><base href="//"></head><body>${value}</body>`,
-      "text/html",
-    );
-    doc.querySelectorAll("a").forEach((a) => {
-      try {
-        const url = new URL(
-          a.attributes.getNamedItem("href")?.value ?? "",
-          window.location.origin,
-        );
-        if (
-          Boolean(a.dataset[routerLink]) ||
-          (window.location.origin === url.origin &&
-            url.href === `${url.origin}${url.pathname}`)
-        ) {
-          a.removeAttribute(`data-${routerLink}`);
-          const link = document.createElement(routerLink);
-          link.innerHTML = a.innerHTML;
-          [...a.attributes].forEach((attr) => {
-            link.setAttribute(
-              attr.nodeName === "href" ? "to" : attr.nodeName,
-              attr.nodeValue ?? "",
-            );
-          });
-          a.replaceWith(link);
+    },
+    async set(this: TAppPage, value: string) {
+      const doc = getDocument(value);
+      doc.querySelectorAll("a").forEach((a) => {
+        try {
+          const url = new URL(
+            a.attributes.getNamedItem("href")?.value ?? "",
+            window.location.origin,
+          );
+          if (
+            Boolean(a.dataset[routerLink]) ||
+            (window.location.origin === url.origin &&
+              url.href === `${url.origin}${url.pathname}`)
+          ) {
+            a.removeAttribute(`data-${routerLink}`);
+            const link = document.createElement(routerLink);
+            link.innerHTML = a.innerHTML;
+            [...a.attributes].forEach((attr) => {
+              link.setAttribute(
+                attr.nodeName === "href" ? "to" : attr.nodeName,
+                attr.nodeValue ?? "",
+              );
+            });
+            a.replaceWith(link);
+          }
+        } catch {
+          //
         }
-      } catch {
-        //
-      }
-    });
-    [...doc.images].forEach((image) => {
-      if (image.dataset.src) {
-        image.setAttribute("src", image.dataset.src);
-        image.removeAttribute("data-src");
-      }
-    });
-    if (sfcDescriptor) {
-      if (sfcDescriptor.template)
-        sfcDescriptor.template.content = doc.body.innerHTML;
-      (await this.sfc).setValue(
+      });
+      [...doc.images].forEach((image) => {
+        if (image.dataset.src) {
+          image.setAttribute("src", image.dataset.src);
+          image.removeAttribute("data-src");
+        }
+      });
+      const sfc = await this.sfc;
+      parseCache.clear();
+      const { descriptor } = parse(sfc.getValue());
+      if (descriptor.template) descriptor.template.content = doc.body.innerHTML;
+      sfc.setValue(
         `${
-          sfcDescriptor.template
+          descriptor.template
             ? ""
             : `<template>${doc.body.innerHTML}</template>
 `
-        }${(toString as (sfcDescriptor: SFCDescriptor) => string)(sfcDescriptor)}`,
+        }${(toString as (sfcDescriptor: SFCDescriptor) => string)(descriptor)}`,
       );
-    }
-  },
-};
-{
+      console.log(
+        `${
+          descriptor.template
+            ? ""
+            : `<template>${doc.body.innerHTML}</template>
+`
+        }${(toString as (sfcDescriptor: SFCDescriptor) => string)(descriptor)}`,
+      );
+    },
+  };
+  const sfc = {
+    async get(this: TAppPage) {
+      if (this.id) {
+        const uri = Uri.parse(`file:///${this.id}.vue`);
+        let model = editor.getModel(uri);
+        if (!model) {
+          const value =
+            (await getObjectText(`pages/${this.id}.vue`, cache)) ||
+            `<template></template>
+`;
+          model = editor.getModel(uri);
+          if (!model) {
+            model = editor.createModel(value, "vue", uri);
+            const oldImages = getImages(model);
+            model.onDidChangeContent(
+              debounce(() => {
+                if (model) {
+                  const sources = new Set(getImages(model));
+                  oldImages
+                    .filter((src: string) => !sources.has(src))
+                    .forEach((src) => {
+                      URL.revokeObjectURL(urls.get(src) ?? "");
+                      urls.delete(src);
+                      deleteObject(src).catch(() => {});
+                    });
+                  oldImages.length = 0;
+                  oldImages.push(...sources);
+                  if (this.id)
+                    putObject(
+                      `pages/${this.id}.vue`,
+                      model.getValue(),
+                      "text/html",
+                    ).catch(() => {});
+                }
+              }, second),
+            );
+          }
+        }
+        return model;
+      }
+      return undefined;
+    },
+  };
   const value = false;
   const contenteditable = { value, writable };
   watch(pages, (objects) => {
