@@ -1,5 +1,6 @@
 import type { SFCDescriptor } from "@vue/compiler-sfc";
 import type { TImportmap, TPage } from "@vues3/shared";
+import type { Ref } from "vue";
 
 import { data, deep, importmap, pages } from "@vues3/shared";
 import mimes from "assets/mimes.json";
@@ -34,18 +35,21 @@ const getDocument = (value: string) =>
     `<head><base href="//"></head><body>${value}</body>`,
     "text/html",
   );
+export const selected: Ref<string | undefined> = ref();
+let descriptor: SFCDescriptor | undefined;
+let errors = [];
 const getContent = (model: editor.ITextModel) => {
-  const {
-    descriptor: { template },
-  } = parse(model.getValue());
+  const filename = `${selected.value ?? "anonymous"}.vue`;
+  ({ descriptor, errors } = parse(model.getValue(), { filename }));
+  const { template } = descriptor;
   const { content } = template ?? {};
   return content ?? "";
 };
 const getImages = (model: editor.ITextModel) => {
+  parseCache.clear();
   const { images } = getDocument(getContent(model));
   return [...images].map(({ src }: { src: string }) => src);
 };
-export const selected = ref();
 export const the = computed(
   () =>
     (pages.value.find(({ id }) => id === selected.value) ??
@@ -56,7 +60,6 @@ const routerLink = "router-link";
 {
   const html = {
     async get(this: TAppPage) {
-      parseCache.clear();
       const doc = getDocument(getContent(await this.sfc));
       doc.querySelectorAll(routerLink).forEach((link) => {
         const a = document.createElement("a");
@@ -123,25 +126,18 @@ const routerLink = "router-link";
         }
       });
       const sfc = await this.sfc;
-      parseCache.clear();
-      const { descriptor } = parse(sfc.getValue());
-      if (descriptor.template) descriptor.template.content = doc.body.innerHTML;
-      sfc.setValue(
-        `${
-          descriptor.template
-            ? ""
-            : `<template>${doc.body.innerHTML}</template>
+      if (descriptor) {
+        if (descriptor.template)
+          descriptor.template.content = doc.body.innerHTML;
+        sfc.setValue(
+          `${
+            descriptor.template
+              ? ""
+              : `<template>${doc.body.innerHTML}</template>
 `
-        }${(toString as (sfcDescriptor: SFCDescriptor) => string)(descriptor)}`,
-      );
-      console.log(
-        `${
-          descriptor.template
-            ? ""
-            : `<template>${doc.body.innerHTML}</template>
-`
-        }${(toString as (sfcDescriptor: SFCDescriptor) => string)(descriptor)}`,
-      );
+          }${(toString as (sfcDescriptor: SFCDescriptor) => string)(descriptor)}`,
+        );
+      }
     },
   };
   const sfc = {
@@ -162,21 +158,23 @@ const routerLink = "router-link";
               debounce(() => {
                 if (model) {
                   const sources = new Set(getImages(model));
-                  oldImages
-                    .filter((src: string) => !sources.has(src))
-                    .forEach((src) => {
-                      URL.revokeObjectURL(urls.get(src) ?? "");
-                      urls.delete(src);
-                      deleteObject(src).catch(() => {});
-                    });
-                  oldImages.length = 0;
-                  oldImages.push(...sources);
-                  if (this.id)
-                    putObject(
-                      `pages/${this.id}.vue`,
-                      model.getValue(),
-                      "text/html",
-                    ).catch(() => {});
+                  if (!errors.length) {
+                    oldImages
+                      .filter((src: string) => !sources.has(src))
+                      .forEach((src) => {
+                        URL.revokeObjectURL(urls.get(src) ?? "");
+                        urls.delete(src);
+                        deleteObject(src).catch(() => {});
+                      });
+                    oldImages.length = 0;
+                    oldImages.push(...sources);
+                    if (this.id)
+                      putObject(
+                        `pages/${this.id}.vue`,
+                        model.getValue(),
+                        "text/html",
+                      ).catch(() => {});
+                  }
                 }
               }, second),
             );
