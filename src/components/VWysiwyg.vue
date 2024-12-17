@@ -102,7 +102,7 @@ const insertImage = (file: File) => {
     urls.set(filePath, URL.createObjectURL(file));
     editor.value?.runCmd(
       "insertHTML",
-      `<div><img src="${urls.get(filePath) ?? ""}" data-src="${filePath}" alt="" decoding="async" loading="lazy" /></div>`,
+      `<img src="${urls.get(filePath) ?? ""}" data-src="${filePath}" alt="" decoding="async" loading="lazy" />`,
     );
   } else $q.notify({ message });
 };
