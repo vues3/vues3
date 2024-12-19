@@ -18,6 +18,8 @@
         q-btn(@click="upload(i)", flat, icon="upload", round)
 </template>
 <script setup lang="ts">
+import type { TPage } from "@vues3/shared";
+
 import { deep } from "@vues3/shared";
 import { useFileDialog } from "@vueuse/core";
 import mimes from "assets/mimes.json";
@@ -25,7 +27,7 @@ import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { the, urls } from "stores/app";
 import { accept, capture, immediate, multiple, reset } from "stores/defaults";
-import { getObjectBlob, putObject } from "stores/io";
+import { deleteObject, getObjectBlob, putObject } from "stores/io";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -33,7 +35,7 @@ const $q = useQuasar();
 const { t } = useI18n();
 const { onChange, open } = useFileDialog({ accept, capture, multiple, reset });
 const message = t("The graphic file type is not suitable for use on the web");
-const images = ref([] as Record<string, string | undefined>[]);
+const images = ref([] as TPage["images"]);
 let index = 0;
 const upload = (i: number) => {
   index = i;
@@ -91,20 +93,31 @@ const remove = (i: number) => {
     images.value.splice(i, 1);
   });
 };
+const oldImages: string[] = [];
 watch(
   images,
-  (value, oldValue) => {
+  (value) => {
     if (!value.length) add(-1);
-    value.forEach(({ url }) => {
-      if (url && !urls.has(url))
+    the.value.images = value
+      .filter(({ url }) => url)
+      .map(({ alt = "", url = "" }) => ({ alt, url }));
+    const sources = the.value.images.map(({ url = "" }) => url);
+    oldImages
+      .filter((url: string) => !sources.includes(url))
+      .forEach((url) => {
+        URL.revokeObjectURL(urls.get(url) ?? "");
+        urls.delete(url);
+        deleteObject(url).catch(() => {});
+      });
+    oldImages.length = 0;
+    oldImages.push(...sources);
+    the.value.images
+      .filter(({ url = "" }) => !urls.has(url))
+      .forEach(({ url = "" }) => {
         (async () => {
           urls.set(url, URL.createObjectURL(await getObjectBlob(url)));
         })().catch(() => {});
-    });
-    if (oldValue.length)
-      the.value.images = value
-        .filter(({ url }) => url)
-        .map(({ alt = "", url = "" }) => ({ alt, url }));
+      });
   },
   { deep },
 );
@@ -114,7 +127,13 @@ watch(
     if (!value.images.length) {
       images.value.length = 0;
       add(-1);
-    } else images.value = value.images.map(({ alt, url }) => ({ alt, url }));
+    } else
+      images.value = value.images.map(({ alt = "", url = "" }) => ({
+        alt,
+        url,
+      }));
+    oldImages.length = 0;
+    oldImages.push(...images.value.map(({ url = "" }) => url));
   },
   { immediate },
 );
