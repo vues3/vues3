@@ -157,10 +157,10 @@ const routerLink = "router-link";
             model.onDidChangeContent(
               debounce(() => {
                 if (model) {
-                  const sources = new Set(getImages(model));
+                  const sources = getImages(model);
                   if (!errors.length) {
                     oldImages
-                      .filter((src: string) => !sources.has(src))
+                      .filter((src: string) => !sources.includes(src))
                       .forEach((src) => {
                         URL.revokeObjectURL(urls.get(src) ?? "");
                         urls.delete(src);
