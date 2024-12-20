@@ -27,7 +27,7 @@ import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { the, urls } from "stores/app";
 import { accept, capture, immediate, multiple, reset } from "stores/defaults";
-import { deleteObject, getObjectBlob, putObject } from "stores/io";
+import { getObjectBlob, putObject } from "stores/io";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -93,38 +93,29 @@ const remove = (i: number) => {
     images.value.splice(i, 1);
   });
 };
-const oldImages: string[] = [];
 watch(
   images,
   (value) => {
     if (!value.length) add(-1);
-    the.value.images = value
-      .filter(({ url }) => url)
-      .map(({ alt = "", url = "" }) => ({ alt, url }));
-    const sources = the.value.images.map(({ url = "" }) => url);
-    oldImages
-      .filter((url: string) => !sources.includes(url))
-      .forEach((url) => {
-        URL.revokeObjectURL(urls.get(url) ?? "");
-        urls.delete(url);
-        deleteObject(url).catch(() => {});
-      });
-    oldImages.length = 0;
-    oldImages.push(...sources);
-    the.value.images
-      .filter(({ url = "" }) => !urls.has(url))
-      .forEach(({ url = "" }) => {
-        (async () => {
-          urls.set(url, URL.createObjectURL(await getObjectBlob(url)));
-        })().catch(() => {});
-      });
+    if (the.value) {
+      the.value.images = value
+        .filter(({ url }) => url)
+        .map(({ alt = "", url = "" }) => ({ alt, url }));
+      the.value.images
+        .filter(({ url = "" }) => !urls.has(url))
+        .forEach(({ url = "" }) => {
+          (async () => {
+            urls.set(url, URL.createObjectURL(await getObjectBlob(url)));
+          })().catch(() => {});
+        });
+    }
   },
   { deep },
 );
 watch(
   the,
   (value) => {
-    if (!value.images.length) {
+    if (!value?.images.length) {
       images.value.length = 0;
       add(-1);
     } else
@@ -132,8 +123,6 @@ watch(
         alt,
         url,
       }));
-    oldImages.length = 0;
-    oldImages.push(...images.value.map(({ url = "" }) => url));
   },
   { immediate },
 );
