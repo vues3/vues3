@@ -52,10 +52,32 @@ const getImages = (model: editor.ITextModel) => {
 };
 export const the = computed(
   () =>
-    (pages.value.find(({ id }) => id === selected.value) ??
-      pages.value[0]) as TAppPage,
+    (pages.value.find(({ id }) => id === selected.value) ?? pages.value[0]) as
+      | TAppPage
+      | undefined,
 );
 export const urls = reactive(new Map<string, string>());
+const prevImages: string[] = [];
+watch(
+  the,
+  (value, oldValue) => {
+    const images = value?.images.map(({ url = "" }) => url);
+    if (images) {
+      if (value?.id === oldValue?.id) {
+        prevImages
+          .filter((url: string) => !images.includes(url))
+          .forEach((url) => {
+            URL.revokeObjectURL(urls.get(url) ?? "");
+            urls.delete(url);
+            deleteObject(url).catch(() => {});
+          });
+      }
+      prevImages.length = 0;
+      prevImages.push(...images);
+    }
+  },
+  { deep },
+);
 const routerLink = "router-link";
 {
   const html = {
@@ -338,9 +360,9 @@ watch(
   debounce((page: TPage[]) => {
     if (domain.value) {
       const url = page
-        .filter(({ enabled }) => enabled)
+        .filter(({ enabled, path }) => enabled && path !== undefined)
         .map(({ changefreq, lastmod, priority, to }) => {
-          const loc = `https://${domain.value}${to === "/" ? "" : encodeURI(to)}`;
+          const loc = `https://${domain.value}${to === "/" ? "" : encodeURI(to ?? "")}`;
           return {
             ...(changefreq && { changefreq }),
             ...(lastmod && { lastmod }),
@@ -362,7 +384,7 @@ watch(
   { deep },
 );
 (async () => {
-  const oldPages: Record<string, null | string>[] = [];
+  const oldPages: Record<string, null | string | undefined>[] = [];
   const index = await (await fetch("runtime/index.html")).text();
   watch(
     [pages, importmap],
@@ -399,33 +421,36 @@ ${JSON.stringify(imap, null, " ")}
     </head>`,
         );
       oldPages.length = 0;
-      page.forEach(
-        ({
-          branch,
-          description,
-          images,
-          keywords,
-          loc,
-          path,
-          title,
-          to,
-          type,
-        }) => {
-          oldPages.push({ loc, path });
-          const canonical =
-            domain.value && `https://${domain.value}${to === "/" ? "" : to}`;
-          const htm = body
-            .replace(
-              '<base href="" />',
-              `<base href="${
-                Array(branch.length - 1)
-                  .fill("..")
-                  .join("/") || "./"
-              }" />`,
-            )
-            .replace(
-              "</head>",
-              `<title>${title}</title>
+      page
+        .filter(({ path }) => path !== undefined)
+        .forEach(
+          ({
+            branch,
+            description,
+            images,
+            keywords,
+            loc,
+            path,
+            title,
+            to,
+            type,
+          }) => {
+            oldPages.push({ loc, path });
+            const canonical =
+              domain.value &&
+              `https://${domain.value}${to === "/" ? "" : (to ?? "")}`;
+            const htm = body
+              .replace(
+                '<base href="" />',
+                `<base href="${
+                  Array(branch.length - 1)
+                    .fill("..")
+                    .join("/") || "./"
+                }" />`,
+              )
+              .replace(
+                "</head>",
+                `<title>${title}</title>
     ${canonical && `<link rel="canonical" href="${canonical.replaceAll('"', "&quot;")}">`}
     ${[
       [description ?? "", "description"],
@@ -459,16 +484,16 @@ ${JSON.stringify(imap, null, " ")}
       ).join(`
     `)}
   </head>`,
-            );
-          if (loc)
-            putObject(`${loc}/index.html`, htm, "text/html").catch(() => {});
-          putObject(
-            path ? `${path}/index.html` : "index.html",
-            htm,
-            "text/html",
-          ).catch(() => {});
-        },
-      );
+              );
+            if (loc)
+              putObject(`${loc}/index.html`, htm, "text/html").catch(() => {});
+            putObject(
+              path ? `${path}/index.html` : "index.html",
+              htm,
+              "text/html",
+            ).catch(() => {});
+          },
+        );
     }, second),
     { deep },
   );
