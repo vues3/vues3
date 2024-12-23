@@ -16,12 +16,12 @@
     "build:electron": "quasar build -m electron"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.716.0",
+    "@aws-sdk/client-s3": "^3.717.0",
     "@electron/remote": "^2.1.2",
     "@iconify/vue": "^4.2.0",
     "@quasar/app-vite": "^2.0.4",
     "@quasar/quasar-ui-qiconpicker": "^2.0.7",
-    "@shikijs/monaco": "^1.24.3",
+    "@shikijs/monaco": "^1.24.4",
     "@smithy/fetch-http-handler": "^4.1.2",
     "@types/crypto-js": "^4.2.2",
     "@unocss/core": "^0.65.2",
@@ -39,12 +39,12 @@
     "@volar/monaco": "^2.4.11",
     "@vue/language-service": "^2.1.10",
     "@vues3/shared": "^0.3.3",
-    "@vueuse/core": "^12.0.0",
+    "@vueuse/core": "^12.2.0",
     "crypto-js": "^4.2.0",
     "mime": "^4.0.6",
     "monaco-editor": "^0.52.2",
     "quasar": "^2.17.5",
-    "shiki": "^1.24.3",
+    "shiki": "^1.24.4",
     "to-xml": "^0.1.11",
     "typescript": "~5.6.3",
     "vite": "^6.0.5",
@@ -57,7 +57,7 @@
     "monaco-tailwindcss": "^0.6.1"
   },
   "devDependencies": {
-    "@intlify/unplugin-vue-i18n": "^6.0.1",
+    "@intlify/unplugin-vue-i18n": "^6.0.2",
     "@prettier/plugin-pug": "^3.2.0",
     "@quasar/extras": "^1.16.15",
     "@quasar/quasar-app-extension-qiconpicker": "^2.0.7",
