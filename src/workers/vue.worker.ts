@@ -79,7 +79,6 @@ self.onmessage = () => {
       compilerOptions,
       env,
       languagePlugins,
-      // @ts-expect-error LanguageServicePlugin
       languageServicePlugins,
       setup,
       typescript,
