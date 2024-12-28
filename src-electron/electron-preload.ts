@@ -41,7 +41,7 @@ contextBridge.exposeInMainWorld(
     } catch {
       await mkdir(dirName, { recursive });
     }
-    await writeFile(filePath, Buffer.from(body));
+    await writeFile(filePath, body);
   },
 );
 const removeEmptyDirectories = async (
