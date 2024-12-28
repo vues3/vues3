@@ -50,6 +50,22 @@ const getImages = (model: editor.ITextModel) => {
   const { images } = getDocument(getContent(model));
   return [...images].map(({ src }: { src: string }) => src);
 };
+export const deleted: Ref<TPage | undefined> = ref();
+const cleaner = (value: TAppPage[]) => {
+  value.forEach(({ children, id, sfc }) => {
+    if (children.length) cleaner(children as TAppPage[]);
+    (async () => {
+      const { images } = getDocument(getContent(await sfc));
+      if (id) deleteObject(`pages/${id}.vue`).catch(() => {});
+      [...images].forEach(({ src }) => {
+        deleteObject(src).catch(() => {});
+      });
+    })().catch(() => {});
+  });
+};
+watch(deleted, (value) => {
+  if (value) cleaner([value as TAppPage]);
+});
 export const the = computed(
   () =>
     (pages.value.find(({ id }) => id === selected.value) ?? pages.value[0]) as
