@@ -110,7 +110,8 @@ const clickAdd = () => {
   if (the.value?.id) {
     const id = add(the.value.id);
     if (id) {
-      if (the.value.children) qtree.value?.setExpanded(the.value.id, true);
+      if (the.value.children.length)
+        qtree.value?.setExpanded(the.value.id, true);
       selected.value = id;
     }
   }
