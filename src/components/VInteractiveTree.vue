@@ -41,7 +41,7 @@ import type { Ref } from "vue";
 
 import { add, data, down, left, pages, remove, right, up } from "@vues3/shared";
 import { useQuasar } from "quasar";
-import { selected } from "stores/app";
+import { deleted, selected } from "stores/app";
 import { cancel, immediate, persistent } from "stores/defaults";
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -89,33 +89,40 @@ const qtree: Ref<QTree | undefined> = ref();
 const title = t("Confirm");
 const message = t("Do you really want to delete?");
 const clickUp = () => {
-  up(the.value?.id);
+  if (the.value?.id) up(the.value.id);
 };
 const clickDown = () => {
-  down(the.value?.id);
+  if (the.value?.id) down(the.value.id);
 };
 const clickLeft = () => {
-  const id = left(the.value?.id);
-  if (id) qtree.value?.setExpanded(id, true);
+  if (the.value?.id) {
+    const id = left(the.value.id);
+    if (id) qtree.value?.setExpanded(id, true);
+  }
 };
 const clickRight = () => {
-  const id = right(the.value?.id);
-  if (id) qtree.value?.setExpanded(id, true);
+  if (the.value?.id) {
+    const id = right(the.value.id);
+    if (id) qtree.value?.setExpanded(id, true);
+  }
 };
 const clickAdd = () => {
-  const id = add(the.value?.id);
-  if (id) {
-    if (the.value?.children) qtree.value?.setExpanded(the.value.id, true);
-    selected.value = id;
+  if (the.value?.id) {
+    const id = add(the.value.id);
+    if (id) {
+      if (the.value.children) qtree.value?.setExpanded(the.value.id, true);
+      selected.value = id;
+    }
   }
 };
 const clickRemove = () => {
   if (the.value?.parent)
     $q.dialog({ cancel, message, persistent, title }).onOk(() => {
-      (async () => {
-        const id = await remove(the.value?.id);
+      if (the.value?.id) {
+        deleted.value = the.value;
+        const id = remove(the.value.id);
         if (id) selected.value = id;
-      })().catch(() => {});
+      }
     });
 };
 const value = false;
