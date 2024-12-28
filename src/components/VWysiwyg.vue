@@ -43,7 +43,7 @@ import { uid, useQuasar } from "quasar";
 import { fonts as Fonts, urls } from "stores/app";
 import { accept, bypassDefined, immediate, reset } from "stores/defaults";
 import { putObject } from "stores/io";
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 const props = withDefaults(
@@ -61,23 +61,38 @@ const $q = useQuasar();
 const { t } = useI18n();
 const editor: Ref<QEditor | undefined> = ref();
 const placeholder = t("Add some content to your page...");
-const rootElement = editor.value?.getContentEl as () => Element | undefined;
-watch(
-  () => getFonts(Fonts),
-  async (fonts) => {
-    let { presets } = Defaults;
-    presets = [
-      ...presets,
-      presetWebFonts({
-        customFetch,
-        fonts,
-      }),
-    ];
-    const defaults = { presets };
-    await initUnocssRuntime({ bypassDefined, defaults, rootElement });
-  },
-  { immediate },
-);
+const htm = ref(await props.modelValue);
+onMounted(() => {
+  const rootElement = editor.value?.getContentEl as () => Element | undefined;
+  watch(
+    () => getFonts(Fonts),
+    async (fonts) => {
+      let { presets } = Defaults;
+      presets = [
+        ...presets,
+        presetWebFonts({
+          customFetch,
+          fonts,
+        }),
+      ];
+      const defaults = { presets };
+      await initUnocssRuntime({ bypassDefined, defaults, rootElement });
+    },
+    { immediate },
+  );
+  watch(
+    () => props.id,
+    async () => {
+      htm.value = await props.modelValue;
+      const contentEl = rootElement();
+      if (
+        contentEl?.innerHTML !== undefined &&
+        contentEl.innerHTML !== htm.value
+      )
+        contentEl.innerHTML = htm.value;
+    },
+  );
+});
 const fonts = computed(() => ({
   ...getFonts([
     "Arial",
@@ -202,11 +217,4 @@ const toolbar = computed(() => [
 watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });
-const htm = ref(await props.modelValue);
-watch(
-  () => props.id,
-  async () => {
-    htm.value = await props.modelValue;
-  },
-);
 </script>
