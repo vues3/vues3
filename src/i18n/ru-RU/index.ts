@@ -45,9 +45,6 @@ export default Object.fromEntries([
   ["Favicon upload failed", "Сбой загрузки фавиконки"],
   ["Prohibited characters are used", "Использованы запрещенные символы"],
   ["Open...", "Открыть..."],
-  ["Not a valid domain", "Это не домен"],
-  [
-    "Select the checkbox if the bucket and the domain are the same",
-    "Поставьте галочку, если корзина и домен совпадают",
-  ],
+  ["Enter a valid domain name:", "Введите доменное имя:"],
+  ["Domain", "Домен"],
 ]);
