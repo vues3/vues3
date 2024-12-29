@@ -4,7 +4,6 @@ import * as s3 from "stores/s3";
 import { ref, watch } from "vue";
 
 export const bucket = ref("");
-export const domain = ref("");
 const io = (Bucket: string = bucket.value) =>
   window.isDirectory?.(Bucket) ? window : s3;
 export const headBucket = async (Bucket: string, pin?: string) => {
@@ -34,8 +33,5 @@ export const getObjectBlob = async (
   ResponseCacheControl?: string,
 ) => io().getObjectBlob(bucket.value, Key, ResponseCacheControl);
 watch(bucket, (value) => {
-  if (!value) {
-    s3.setS3Client(undefined);
-    domain.value = "";
-  }
+  if (!value) s3.setS3Client(undefined);
 });
