@@ -8,10 +8,12 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-item-section
           .text-overline {{ t("S3 Accounts") }}
     q-separator
+    .full-width.q-pt-lg.q-px-lg.q-pb-sm(v-if="$q.platform.is.electron || isFileSystemAccess()")
+      q-btn.fit(:label="t('Open...')", push, @click="getDir", color="primary")
     q-list(padding)
       q-item(
         :key="name",
-        @click="login(name.toString(), cred.domain ?? '')",
+        @click="login(name.toString())",
         clickable,
         v-for="(cred, name) in creds",
         v-ripple
@@ -89,7 +91,7 @@ import contentPage from "pages/ContentPage.vue";
 import { useQuasar } from "quasar";
 import { rightDrawer } from "stores/app";
 import { mergeDefaults } from "stores/defaults";
-import { bucket, domain, headBucket } from "stores/io";
+import { bucket, headBucket } from "stores/io";
 import { triggerRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
@@ -99,6 +101,37 @@ const { t } = useI18n();
 const APP_VERSION = __APP_VERSION__;
 const router = useRouter();
 const $q = useQuasar();
+const isFileSystemAccess = () => "showOpenFilePicker" in window;
+const getDir = async () => {
+  if ($q.platform.is.electron) {
+    const {
+      filePaths: [filePath],
+    } = await window.dialog.showOpenDialog({
+      properties: ["openDirectory"],
+    });
+    console.log("🚀 ~ getDir ~ filePath:", filePath);
+    // Bucket.value = filePath ?? null;
+  } else if (isFileSystemAccess()) {
+    let dirHandle;
+    try {
+      dirHandle = await window.showDirectoryPicker();
+    } catch (e) {
+      //
+    }
+    if (dirHandle) {
+      // // eslint-disable-next-line no-restricted-syntax
+      // for await (const [key, value] of dirHandle.entries()) {
+      //   console.log({ key, value });
+      // }
+      // // eslint-disable-next-line no-restricted-syntax
+      // for await (const value of dirHandle.values()) {
+      //   console.log(value);
+      // }
+      console.log("🚀 ~ getDir ~ dirHandle:", dirHandle);
+    }
+  }
+};
+
 const creds = useStorage(
   "@",
   () => {
@@ -124,14 +157,13 @@ const getPin = async (name: string): Promise<string | undefined> =>
         });
     } else resolve(undefined);
   });
-const login = async (bucketValue: string, domainValue: string) => {
+const login = async (bucketValue: string) => {
   const name = "main";
   const path = `/${name}`;
   const component = contentPage as Component;
   try {
     await headBucket(bucketValue, await getPin(bucketValue));
     bucket.value = bucketValue;
-    domain.value = domainValue;
     router.addRoute({ component, name, path });
     router.push(path).catch(() => {});
   } catch (err) {
