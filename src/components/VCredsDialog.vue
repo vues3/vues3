@@ -11,22 +11,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       )
         template(#prepend)
           q-icon(name="delete")
-        template(#append, v-if="$q.platform.is.electron")
-          q-btn(:label="t('Open...')", outline, @click="getDir")
-      q-input(
-        clearable,
-        label="domain",
-        ref="domainRef",
-        v-model.trim="domain",
-        :readonly="equal",
-        :rules,
-        :hint="t('Select the checkbox if the bucket and the domain are the same')",
-      )
-        template(#prepend)
-          q-icon(name="public")
-        template(#after)
-          q-checkbox(dense, v-model="equal", :disable="isDirectory")
-      q-input(clearable, label="access key id", v-model.trim="accessKeyId", hint="", :disable="isDirectory" )
+      q-input(clearable, label="access key id", v-model.trim="accessKeyId", hint="" )
         template(#prepend)
           q-icon(name="key")
       q-input(
@@ -34,8 +19,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         clearable,
         label="secret access key",
         v-model.trim="secretAccessKey",
-        hint="",
-        :disable="isDirectory"
+        hint=""
       )
         template(#prepend)
           q-icon(name="lock")
@@ -55,8 +39,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         label="endpoint url",
         type="url",
         use-input,
-        v-model.trim="endpoint",
-        :disable="isDirectory"
+        v-model.trim="endpoint"
       )
         template(#prepend)
           q-icon(name="link")
@@ -70,8 +53,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         hint="",
         label="region",
         use-input,
-        v-model.trim="region",
-        :disable="isDirectory"
+        v-model.trim="region"
       )
         template(#prepend)
           q-icon(name="flag")
@@ -79,7 +61,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
     q-card-actions.text-primary.bg-grey-1(align="right")
       q-btn(@click="onDialogCancel", flat, label="Cancel")
       q-btn(
-        @click="() => { bucketRef?.validate(); domainRef?.validate(); if (!bucketRef?.hasError && !domainRef?.hasError) click(encrypt({ Bucket, domain, secretAccessKey, region, endpoint, accessKeyId })); }",
+        @click="() => { bucketRef?.validate(); if (!bucketRef?.hasError) click(encrypt({ Bucket, secretAccessKey, region, endpoint, accessKeyId })); }",
         flat,
         label="Ok"
       )
@@ -95,7 +77,7 @@ import regions from "assets/regions.json";
 import CryptoJS from "crypto-js";
 import { useDialogPluginComponent, useQuasar } from "quasar";
 import { enumerable, mergeDefaults, writable } from "stores/defaults";
-import { computed, ref, triggerRef, useTemplateRef, watch } from "vue";
+import { ref, triggerRef, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
@@ -108,7 +90,6 @@ const { t } = useI18n();
 const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
   useDialogPluginComponent();
 const bucketRef = useTemplateRef<QInput>("bucketRef");
-const domainRef = useTemplateRef<QInput>("domainRef");
 const creds = useStorage(
   "@",
   () => {
@@ -127,8 +108,6 @@ const decrypt = (value?: null | string) =>
     ? CryptoJS.AES.decrypt(value ?? "", props.pin).toString(CryptoJS.enc.Utf8)
     : (value ?? null);
 const Bucket = ref(decrypt(cred?.Bucket));
-const domain = ref(decrypt(cred?.domain));
-const equal = ref(!!(Bucket.value && Bucket.value === domain.value));
 const secretAccessKey = ref(decrypt(cred?.secretAccessKey));
 const region = ref(decrypt(cred?.region));
 const endpoint = ref(decrypt(cred?.endpoint));
@@ -163,35 +142,4 @@ const click = (value: Record<string, null | string>) => {
       onDialogOK();
     }
 };
-const getDir = async () => {
-  const {
-    filePaths: [filePath],
-  } = await window.dialog.showOpenDialog({
-    properties: ["openDirectory"],
-  });
-  Bucket.value = filePath ?? null;
-};
-const isDirectory = computed(() => window.isDirectory?.(Bucket.value ?? ""));
-/** @see {@link https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch08s15.html} */
-const rules = [
-  (v: null | string) =>
-    !(
-      v &&
-      !/\b((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}\b/.test(
-        v,
-      )
-    ) || t("Not a valid domain"),
-];
-watch(isDirectory, (value) => {
-  if (value) {
-    accessKeyId.value = null;
-    secretAccessKey.value = null;
-    endpoint.value = null;
-    region.value = null;
-    equal.value = false;
-  }
-});
-watch([Bucket, equal], ([newBucket, newEqBucket]) => {
-  if (newEqBucket) domain.value = newBucket;
-});
 </script>
