@@ -40,7 +40,7 @@ export default Object.fromEntries(
     "Favicon upload failed",
     "Prohibited characters are used",
     "Open...",
-    "Not a valid domain",
-    "Select the checkbox if the bucket and the domain are the same",
+    "Enter a valid domain name:",
+    "Domain",
   ].map((key) => [key, key]),
 );
