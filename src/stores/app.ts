@@ -11,7 +11,6 @@ import { cache, second, writable } from "stores/defaults";
 import {
   bucket,
   deleteObject,
-  domain,
   getObjectBlob,
   getObjectText,
   headObject,
@@ -29,6 +28,7 @@ export type TAppPage = TPage & {
   sfc: Promise<editor.ITextModel>;
 };
 
+export const domain = ref("");
 const parser = new DOMParser();
 const getDocument = (value: string) =>
   parser.parseFromString(
@@ -262,6 +262,18 @@ watch(bucket, async (value) => {
       ) as TImportmap;
       importmap.imports = imports;
     })().catch(() => {});
+    (async () => {
+      {
+        const [cname = ""] = (await getObjectText("CNAME", cache)).split(
+          "\n",
+          1,
+        );
+        domain.value = cname.trim();
+      }
+      watch(domain, (cname) => {
+        putObject("CNAME", cname, "text/plain").catch(() => {});
+      });
+    })().catch(() => {});
     const [localManifest, serverManifest] = (
       (await Promise.all([
         (await fetch("runtime/.vite/manifest.json")).json(),
@@ -372,13 +384,14 @@ watch(
   { deep },
 );
 watch(
-  pages,
-  debounce((page: TPage[]) => {
-    if (domain.value) {
+  [pages, domain],
+  debounce((arr) => {
+    const [page, cname] = arr as [TPage[], string];
+    if (cname) {
       const url = page
         .filter(({ enabled, path }) => enabled && path !== undefined)
         .map(({ changefreq, lastmod, priority, to }) => {
-          const loc = `https://${domain.value}${to === "/" ? "" : encodeURI(to ?? "")}`;
+          const loc = `https://${cname}${to === "/" ? "" : encodeURI(to ?? "")}`;
           return {
             ...(changefreq && { changefreq }),
             ...(lastmod && { lastmod }),
@@ -403,9 +416,9 @@ watch(
   const oldPages: Record<string, null | string | undefined>[] = [];
   const index = await (await fetch("runtime/index.html")).text();
   watch(
-    [pages, importmap],
+    [pages, importmap, domain],
     debounce((arr) => {
-      const [page, imap] = arr as [TPage[], TImportmap];
+      const [page, imap, cname] = arr as [TPage[], TImportmap, string];
       const promises: Promise<void>[] = [];
       oldPages.forEach(({ loc, path }) => {
         if (loc && !page.find((value) => value.loc === loc))
@@ -453,8 +466,7 @@ ${JSON.stringify(imap, null, " ")}
           }) => {
             oldPages.push({ loc, path });
             const canonical =
-              domain.value &&
-              `https://${domain.value}${to === "/" ? "" : (to ?? "")}`;
+              cname && `https://${cname}${to === "/" ? "" : (to ?? "")}`;
             const htm = body
               .replace(
                 '<base href="" />',
@@ -485,9 +497,9 @@ ${JSON.stringify(imap, null, " ")}
       [description ?? "", "description"],
       [title, "title"],
       [type ?? "", "type"],
-      ...(domain.value &&
+      ...(cname &&
         images.flatMap(({ alt, url }) => [
-          [url ? `https://${domain.value}/${url}` : "", "image"],
+          [url ? `https://${cname}/${url}` : "", "image"],
           [alt ?? "", "image:alt"],
         ])),
     ]
