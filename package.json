@@ -58,7 +58,7 @@
     "monaco-tailwindcss": "^0.6.1"
   },
   "devDependencies": {
-    "@intlify/unplugin-vue-i18n": "^6.0.2",
+    "@intlify/unplugin-vue-i18n": "^6.0.3",
     "@prettier/plugin-pug": "^3.2.0",
     "@quasar/extras": "^1.16.15",
     "@quasar/quasar-app-extension-qiconpicker": "^2.0.7",
