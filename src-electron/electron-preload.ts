@@ -1,6 +1,5 @@
 import { BrowserWindow, dialog } from "@electron/remote";
 import { contextBridge } from "electron";
-import { lstatSync } from "fs";
 import {
   access,
   lstat,
@@ -13,17 +12,8 @@ import {
 } from "fs/promises";
 import { basename, dirname, join } from "path";
 
-const throwIfNoEntry = false;
 const recursive = true;
 contextBridge.exposeInMainWorld("dialog", dialog);
-contextBridge.exposeInMainWorld(
-  "isDirectory",
-  (path: string) => lstatSync(path, { throwIfNoEntry })?.isDirectory() ?? false,
-);
-contextBridge.exposeInMainWorld("headBucket", async (Bucket: string) => {
-  const stats = await lstat(Bucket);
-  if (!stats.isDirectory()) throw new Error("It's not a directory");
-});
 contextBridge.exposeInMainWorld(
   "headObject",
   async (Bucket: string, Key: string) => {
