@@ -4,10 +4,22 @@ import * as s3 from "stores/s3";
 import { ref, watch } from "vue";
 
 export const bucket = ref("");
-const io = (Bucket: string = bucket.value) =>
-  window.isDirectory?.(Bucket) ? window : s3;
+let fileSystemDirectoryHandle: FileSystemDirectoryHandle | undefined;
+export const setFileSystemDirectoryHandle = (
+  value: FileSystemDirectoryHandle,
+) => {
+  fileSystemDirectoryHandle = value;
+};
+const remote = ref(false);
+const io = () => (remote.value ? s3 : window);
 export const headBucket = async (Bucket: string, pin?: string) => {
-  await io(Bucket).headBucket(Bucket, pin);
+  try {
+    await s3.headBucket(Bucket, pin);
+    remote.value = true;
+  } catch (err) {
+    const { message } = err as Error;
+    throw new Error(message);
+  }
 };
 export const headObject = async (Key: string, ResponseCacheControl?: string) =>
   io().headObject(bucket.value, Key, ResponseCacheControl);
@@ -16,13 +28,13 @@ export const putObject = async (
   body: StreamingBlobPayloadInputTypes,
   ContentType: string,
 ) => {
-  await io().putObject(bucket.value, Key, body, ContentType);
+  if (bucket.value) await io().putObject(bucket.value, Key, body, ContentType);
 };
 export const removeEmptyDirectories = async () => {
-  await io().removeEmptyDirectories?.(bucket.value);
+  if (bucket.value) await io().removeEmptyDirectories?.(bucket.value);
 };
 export const deleteObject = async (Key: string) => {
-  await io().deleteObject(bucket.value, Key);
+  if (bucket.value) await io().deleteObject(bucket.value, Key);
 };
 export const getObjectText = async (
   Key: string,
@@ -33,5 +45,9 @@ export const getObjectBlob = async (
   ResponseCacheControl?: string,
 ) => io().getObjectBlob(bucket.value, Key, ResponseCacheControl);
 watch(bucket, (value) => {
-  if (!value) s3.setS3Client(undefined);
+  if (!value) {
+    s3.setS3Client(undefined);
+    remote.value = false;
+    if (fileSystemDirectoryHandle) fileSystemDirectoryHandle = undefined;
+  }
 });
