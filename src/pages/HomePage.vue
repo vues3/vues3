@@ -91,7 +91,7 @@ import contentPage from "pages/ContentPage.vue";
 import { useQuasar } from "quasar";
 import { rightDrawer } from "stores/app";
 import { mergeDefaults } from "stores/defaults";
-import { bucket, headBucket } from "stores/io";
+import { bucket, headBucket, setFileSystemDirectoryHandle } from "stores/io";
 import { triggerRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
@@ -102,6 +102,15 @@ const APP_VERSION = __APP_VERSION__;
 const router = useRouter();
 const $q = useQuasar();
 const isFileSystemAccess = () => "showOpenFilePicker" in window;
+const directLogin = (bucketValue: string) => {
+  const name = "main";
+  const path = `/${name}`;
+  const component = contentPage as Component;
+  bucket.value = bucketValue;
+  router.addRoute({ component, name, path });
+  router.push(path).catch(() => {});
+};
+const mode = "readwrite";
 const getDir = async () => {
   if ($q.platform.is.electron) {
     const {
@@ -109,29 +118,17 @@ const getDir = async () => {
     } = await window.dialog.showOpenDialog({
       properties: ["openDirectory"],
     });
-    console.log("🚀 ~ getDir ~ filePath:", filePath);
-    // Bucket.value = filePath ?? null;
-  } else if (isFileSystemAccess()) {
-    let dirHandle;
+    if (filePath) directLogin(filePath);
+  } else
     try {
-      dirHandle = await window.showDirectoryPicker();
+      const dirHandle = await window.showDirectoryPicker({ mode });
+      setFileSystemDirectoryHandle(dirHandle);
+      const { name } = dirHandle;
+      directLogin(name);
     } catch (e) {
       //
     }
-    if (dirHandle) {
-      // // eslint-disable-next-line no-restricted-syntax
-      // for await (const [key, value] of dirHandle.entries()) {
-      //   console.log({ key, value });
-      // }
-      // // eslint-disable-next-line no-restricted-syntax
-      // for await (const value of dirHandle.values()) {
-      //   console.log(value);
-      // }
-      console.log("🚀 ~ getDir ~ dirHandle:", dirHandle);
-    }
-  }
 };
-
 const creds = useStorage(
   "@",
   () => {
@@ -158,14 +155,9 @@ const getPin = async (name: string): Promise<string | undefined> =>
     } else resolve(undefined);
   });
 const login = async (bucketValue: string) => {
-  const name = "main";
-  const path = `/${name}`;
-  const component = contentPage as Component;
   try {
     await headBucket(bucketValue, await getPin(bucketValue));
-    bucket.value = bucketValue;
-    router.addRoute({ component, name, path });
-    router.push(path).catch(() => {});
+    directLogin(bucketValue);
   } catch (err) {
     const { message } = err as Error;
     $q.notify({ message });
