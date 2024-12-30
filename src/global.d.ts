@@ -19,13 +19,11 @@ declare global {
       Key: string,
       ResponseCacheControl?: string,
     ) => Promise<string>;
-    headBucket: (Bucket: string, pin?: string) => Promise<undefined>;
     headObject: (
       Bucket: string,
       Key: string,
       ResponseCacheControl?: string,
     ) => Promise<undefined>;
-    isDirectory?: (path: string) => boolean;
     MonacoEnvironment: Environment;
     putObject: (
       Bucket: string,
