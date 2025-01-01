@@ -1,6 +1,14 @@
-import type { S3ClientConfig } from "@aws-sdk/client-s3";
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
+import type {
+  HeadObjectCommandOutput,
+  S3ClientConfig,
+} from "@aws-sdk/client-s3";
 import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
 import type { TCredentials } from "@vues3/shared";
+import type { RemovableRef } from "@vueuse/core";
 
 import {
   DeleteObjectCommand,
@@ -16,25 +24,80 @@ import { useStorage } from "@vueuse/core";
 import CryptoJS from "crypto-js";
 import { mergeDefaults } from "stores/defaults";
 
-let s3Client: S3Client | undefined;
-const requestHandler = new FetchHttpHandler();
-const creds = useStorage(
+/* -------------------------------------------------------------------------- */
+/*                                  Constants                                 */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The HTTP handler to use or its constructor options. Fetch in browser and
+ * Https in Nodejs.
+ */
+
+const requestHandler: FetchHttpHandler = new FetchHttpHandler();
+
+/* -------------------------------------------------------------------------- */
+
+/** There are no empty directories on S3 */
+
+const removeEmptyDirectories = null;
+
+/* -------------------------------------------------------------------------- */
+/*                                  Variables                                 */
+/* -------------------------------------------------------------------------- */
+
+/** S3 Client Class */
+
+let s3Client: null | S3Client = null;
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+/** Generate a default value for the credentials storage */
+
+const credentialDefaults: () => TCredentials = () => {
+  const value = {} as TCredentials;
+  validateCredentials?.(value) as boolean;
+  return value;
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
+/** A credential storage reference */
+
+const credential: RemovableRef<TCredentials> = useStorage(
   "@",
-  () => {
-    const value = {} as TCredentials;
-    validateCredentials?.(value) as boolean;
-    return value;
-  },
+  credentialDefaults,
   localStorage,
   { mergeDefaults },
 );
-export const setS3Client = (value?: S3Client) => {
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+/** S3 client class setter */
+
+const setS3Client: (value: null | S3Client) => void = (value) => {
   s3Client?.destroy();
   s3Client = value;
 };
-export const headBucket = async (Bucket: string, pin?: string) => {
+
+/* -------------------------------------------------------------------------- */
+
+/**
+ * You can use this operation to determine if a bucket exists and if you have
+ * permission to access it.
+ */
+
+const headBucket: (Bucket: string, pin?: string) => Promise<void> = async (
+  Bucket,
+  pin,
+) => {
   let { accessKeyId, endpoint, region, secretAccessKey } =
-    creds.value[Bucket] ?? {};
+    credential.value[Bucket] ?? {};
   if (pin) {
     accessKeyId = CryptoJS.AES.decrypt(accessKeyId ?? "", pin).toString(
       CryptoJS.enc.Utf8,
@@ -59,32 +122,64 @@ export const headBucket = async (Bucket: string, pin?: string) => {
   try {
     await s3Client.send(new HeadBucketCommand({ Bucket }));
   } catch (err) {
-    setS3Client(undefined);
+    setS3Client(null);
     const { message } = err as Error;
     throw new Error(message);
   }
 };
-export const headObject = async (
+
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The HEAD operation retrieves metadata from an object without returning the
+ * object itself. This operation is useful if you're interested only in an
+ * object's metadata.
+ */
+
+const headObject: (
   Bucket: string,
   Key: string,
   ResponseCacheControl?: string,
+) => Promise<HeadObjectCommandOutput | null> = async (
+  Bucket,
+  Key,
+  ResponseCacheControl,
 ) =>
-  s3Client?.send(new HeadObjectCommand({ Bucket, Key, ResponseCacheControl }));
-export const putObject = async (
+  s3Client?.send(
+    new HeadObjectCommand({ Bucket, Key, ResponseCacheControl }),
+  ) ?? null;
+
+/* -------------------------------------------------------------------------- */
+
+/** Adds an object to a bucket */
+
+const putObject: (
   Bucket: string,
   Key: string,
   body: StreamingBlobPayloadInputTypes,
   ContentType: string,
-) => {
+) => Promise<void> = async (Bucket, Key, body, ContentType) => {
   const Body = typeof body === "string" ? new TextEncoder().encode(body) : body;
   await s3Client?.send(
     new PutObjectCommand({ Body, Bucket, ContentType, Key }),
   );
 };
-export const removeEmptyDirectories = undefined;
-export const deleteObject = async (Bucket: string, Key: string) => {
+
+/* -------------------------------------------------------------------------- */
+
+/** Removes an object from a bucket */
+
+const deleteObject: (Bucket: string, Key: string) => Promise<void> = async (
+  Bucket,
+  Key,
+) => {
   await s3Client?.send(new DeleteObjectCommand({ Bucket, Key }));
 };
+
+/* -------------------------------------------------------------------------- */
+
+/** Retrieves an object */
+
 const getObject = async (
   Bucket: string,
   Key: string,
@@ -102,13 +197,42 @@ const getObject = async (
     }
   return new Response();
 };
-export const getObjectText = async (
+
+/* -------------------------------------------------------------------------- */
+
+/** Retrieves a text object */
+
+const getObjectText: (
   Bucket: string,
   Key: string,
   ResponseCacheControl?: string,
-) => (await getObject(Bucket, Key, ResponseCacheControl)).text();
-export const getObjectBlob = async (
+) => Promise<string> = async (Bucket, Key, ResponseCacheControl) =>
+  (await getObject(Bucket, Key, ResponseCacheControl)).text();
+
+/* -------------------------------------------------------------------------- */
+
+/** Retrieves a blob object */
+
+const getObjectBlob: (
   Bucket: string,
   Key: string,
   ResponseCacheControl?: string,
-) => (await getObject(Bucket, Key, ResponseCacheControl)).blob();
+) => Promise<Blob> = async (Bucket, Key, ResponseCacheControl) =>
+  (await getObject(Bucket, Key, ResponseCacheControl)).blob();
+
+/* -------------------------------------------------------------------------- */
+/*                                   Exports                                  */
+/* -------------------------------------------------------------------------- */
+
+export {
+  deleteObject,
+  getObjectBlob,
+  getObjectText,
+  headBucket,
+  headObject,
+  putObject,
+  removeEmptyDirectories,
+  setS3Client,
+};
+
+/* -------------------------------------------------------------------------- */
