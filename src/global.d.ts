@@ -3,34 +3,24 @@ import type { Dialog } from "electron";
 
 declare global {
   interface Window {
-    deleteObject: (Bucket: string, Key: string) => Promise<undefined>;
+    deleteObject: (Bucket: string, Key: string) => Promise<void>;
     dialog: Dialog;
     focusedWindowClose: () => void;
-    focusedWindowIsMaximized: () => boolean;
+    focusedWindowIsMaximized: () => boolean | null;
     focusedWindowMinimize: () => void;
     focusedWindowToggleMaximize: () => void;
-    getObjectBlob: (
-      Bucket: string,
-      Key: string,
-      ResponseCacheControl?: string,
-    ) => Promise<Blob>;
-    getObjectText: (
-      Bucket: string,
-      Key: string,
-      ResponseCacheControl?: string,
-    ) => Promise<string>;
-    headObject: (
-      Bucket: string,
-      Key: string,
-      ResponseCacheControl?: string,
-    ) => Promise<undefined>;
+    getObjectBlob: (Bucket: string, Key: string) => Promise<Blob>;
+    getObjectText: (Bucket: string, Key: string) => Promise<string>;
+    headObject: (Bucket: string, Key: string) => Promise<null>;
     MonacoEnvironment: Environment;
     putObject: (
       Bucket: string,
       Key: string,
       body: StreamingBlobPayloadInputTypes,
-      ContentType: string,
-    ) => Promise<undefined>;
-    removeEmptyDirectories?: (Bucket: string) => Promise<undefined>;
+    ) => Promise<void>;
+    removeEmptyDirectories: (
+      directory: string,
+      exclude?: string[],
+    ) => Promise<void>;
   }
 }
