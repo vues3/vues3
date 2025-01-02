@@ -25,9 +25,11 @@ const create = true;
 const getHandle: (
   Bucket: FileSystemDirectoryHandle,
   Key: string,
+  Create?: boolean,
 ) => Promise<FileSystemDirectoryHandle | FileSystemFileHandle | null> = async (
   Bucket,
   Key,
+  Create = false,
 ) => {
   const branch = [null, ...Key.split("/")];
   const callbackfnBranch: (
@@ -42,11 +44,13 @@ const getHandle: (
     (leaf, index) => async (resultAggregator) => {
       if (!leaf) return Bucket;
       const { value = null } = resultAggregator[index - 1] ?? {};
-      if (value instanceof FileSystemDirectoryHandle) {
-        const entries = await Array.fromAsync(value.entries());
-        const [, handle = null] = entries.find(([key]) => key === leaf) ?? [];
-        return handle;
-      }
+      if (value?.kind === "directory")
+        return (
+          (await Array.fromAsync(value.values())).find(
+            ({ name }) => name === leaf,
+          ) ??
+          (Create ? await value.getDirectoryHandle(leaf, { create }) : null)
+        );
       return null;
     };
   const handle = (
@@ -59,12 +63,34 @@ const getHandle: (
 
 /* -------------------------------------------------------------------------- */
 
+/** Remove empty directories */
+
+const removeEmptyDirectories: (
+  directory: FileSystemDirectoryHandle,
+  exclude?: string[],
+) => Promise<void> = async (directory, exclude = ["node_modules", ".git"]) => {
+  if (exclude.includes(directory.name)) return;
+  const values = (await Array.fromAsync(directory.values())).filter(
+    ({ kind }) => kind === "directory",
+  );
+  await Promise.all(
+    values.map((value) =>
+      removeEmptyDirectories(value as FileSystemDirectoryHandle, exclude),
+    ),
+  );
+  await Promise.allSettled(
+    values.map(({ name }) => directory.removeEntry(name)),
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+
 const headObject: (
   Bucket: FileSystemDirectoryHandle,
   Key: string,
 ) => Promise<null> = async (Bucket, Key) => {
   const handle = await getHandle(Bucket, Key);
-  if (handle instanceof FileSystemFileHandle) return null;
+  if (handle?.kind === "file") return null;
   throw new Error("It's not a file");
 };
 
@@ -77,9 +103,8 @@ const deleteObject: (
   const keys = Key.split("/");
   const name = keys.pop();
   if (name) {
-    const handle = await getHandle(Bucket, keys.slice(0, -1).join("/"));
-    if (handle instanceof FileSystemDirectoryHandle)
-      await handle.removeEntry(name);
+    const handle = await getHandle(Bucket, keys.join("/"));
+    if (handle?.kind === "directory") await handle.removeEntry(name);
   }
 };
 
@@ -93,8 +118,8 @@ const putObject: (
   const keys = Key.split("/");
   const name = keys.pop();
   if (name) {
-    const handle = await getHandle(Bucket, keys.slice(0, -1).join("/"));
-    if (handle instanceof FileSystemDirectoryHandle) {
+    const handle = await getHandle(Bucket, keys.join("/"), true);
+    if (handle?.kind === "directory") {
       const fileHandle = await handle.getFileHandle(name, { create });
       const writable = await fileHandle.createWritable();
       await writable.write(body as FileSystemWriteChunkType);
@@ -111,7 +136,7 @@ const getObjectBlob: (
   Key: string,
 ) => Promise<Blob> = async (Bucket, Key) => {
   const handle = await getHandle(Bucket, Key);
-  if (handle instanceof FileSystemFileHandle) return handle.getFile();
+  if (handle?.kind === "file") return handle.getFile();
   return new Blob();
 };
 // (await Bucket.getFileHandle(Key)).getFile();
@@ -132,11 +157,11 @@ const getObjectText: (
 
 export {
   deleteObject,
-  getHandle,
   getObjectBlob,
   getObjectText,
   headObject,
   putObject,
+  removeEmptyDirectories,
 };
 
 /* -------------------------------------------------------------------------- */
