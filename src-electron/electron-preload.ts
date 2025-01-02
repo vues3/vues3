@@ -65,15 +65,15 @@ const putObject: (
 
 const removeEmptyDirectories: (
   directory: string,
-  exclude?: string[],
-) => Promise<void> = async (directory, exclude = ["node_modules"]) => {
+  exclude: string[],
+) => Promise<void> = async (directory, exclude) => {
   const fileStats = await lstat(directory);
   if (!fileStats.isDirectory() || exclude.includes(basename(directory))) return;
   let fileNames = await readdir(directory);
   if (fileNames.length) {
     await Promise.all(
       fileNames.map((fileName) =>
-        removeEmptyDirectories(join(directory, fileName)),
+        removeEmptyDirectories(join(directory, fileName), exclude),
       ),
     );
     fileNames = await readdir(directory);
