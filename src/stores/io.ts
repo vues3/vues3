@@ -60,10 +60,10 @@ const io: () => typeof s3 | Window = () => (remote.value ? s3 : window);
  * permission to access it.
  */
 
-const headBucket: (Bucket: string, pin?: string) => Promise<void> = async (
-  Bucket,
-  pin,
-) => {
+const headBucket: (
+  Bucket: string,
+  pin: null | string,
+) => Promise<void> = async (Bucket, pin) => {
   try {
     await s3.headBucket(Bucket, pin);
     remote.value = true;
@@ -114,9 +114,9 @@ const putObject: (
 
 const removeEmptyDirectories: () => Promise<void> = async () => {
   if (bucket.value)
-    if (fileSystemDirectoryHandle) {
-      // console.log("removeEmptyDirectories");
-    } else await io().removeEmptyDirectories?.(bucket.value);
+    if (fileSystemDirectoryHandle)
+      await fsa.removeEmptyDirectories(fileSystemDirectoryHandle);
+    else await io().removeEmptyDirectories?.(bucket.value);
 };
 
 /* -------------------------------------------------------------------------- */
