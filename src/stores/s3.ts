@@ -62,7 +62,7 @@ const credentialDefaults: () => TCredentials = () => {
 };
 
 /* -------------------------------------------------------------------------- */
-/*                                 References                                 */
+/*                                 Composables                                */
 /* -------------------------------------------------------------------------- */
 
 /** A credential storage reference */
@@ -92,10 +92,10 @@ const setS3Client: (value: null | S3Client) => void = (value) => {
  * permission to access it.
  */
 
-const headBucket: (Bucket: string, pin?: string) => Promise<void> = async (
-  Bucket,
-  pin,
-) => {
+const headBucket: (
+  Bucket: string,
+  pin: null | string,
+) => Promise<void> = async (Bucket, pin) => {
   let { accessKeyId, endpoint, region, secretAccessKey } =
     credential.value[Bucket] ?? {};
   if (pin) {
