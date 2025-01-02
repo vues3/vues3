@@ -67,8 +67,8 @@ const getHandle: (
 
 const removeEmptyDirectories: (
   directory: FileSystemDirectoryHandle,
-  exclude?: string[],
-) => Promise<void> = async (directory, exclude = ["node_modules", ".git"]) => {
+  exclude: string[],
+) => Promise<void> = async (directory, exclude) => {
   if (exclude.includes(directory.name)) return;
   const values = (await Array.fromAsync(directory.values())).filter(
     ({ kind }) => kind === "directory",
