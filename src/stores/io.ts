@@ -113,10 +113,11 @@ const putObject: (
 /** Remove empty directories */
 
 const removeEmptyDirectories: () => Promise<void> = async () => {
+  const exclude = ["node_modules", ".git"];
   if (bucket.value)
     if (fileSystemDirectoryHandle)
-      await fsa.removeEmptyDirectories(fileSystemDirectoryHandle);
-    else await io().removeEmptyDirectories?.(bucket.value);
+      await fsa.removeEmptyDirectories(fileSystemDirectoryHandle, exclude);
+    else await io().removeEmptyDirectories?.(bucket.value, exclude);
 };
 
 /* -------------------------------------------------------------------------- */
