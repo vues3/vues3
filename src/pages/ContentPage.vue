@@ -158,6 +158,15 @@ q-page.column.full-height.bg-light(v-else)
     q-spinner-hourglass
 </template>
 <script setup lang="ts">
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
+import type { IconNameArray, Pagination } from "@quasar/quasar-ui-qiconpicker";
+import type { ValidationRule } from "quasar";
+import type { Ref, WritableComputedRef } from "vue";
+import type { ComposerTranslation } from "vue-i18n";
+
 import { Icon } from "@iconify/vue";
 import mdi from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
 import { data, pages } from "@vues3/shared";
@@ -172,20 +181,75 @@ import { itemsPerPage, page } from "stores/defaults";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
-const filter = ref("");
-const tab = ref("wysiwyg");
-const pagination = ref({ itemsPerPage, page });
-const { icons } = mdi as Record<string, object[]>;
-const icon = computed({
+/* -------------------------------------------------------------------------- */
+/*                                 Composables                                */
+/* -------------------------------------------------------------------------- */
+
+const { t }: { t: ComposerTranslation } = useI18n();
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const nameInUse: ValidationRule = (v) =>
+  !(
+    !!v &&
+    !!pages.value.find(
+      (element) =>
+        element.id !== the.value?.id &&
+        (element.path === v || element.loc === v),
+    )
+  ) || t("That name is already in use");
+
+/* -------------------------------------------------------------------------- */
+
+const prohibitedCharacters: ValidationRule = (v: string) =>
+  !["?", "\\", "#"].some((value) => v.includes(value)) ||
+  t("Prohibited characters are used");
+
+/* -------------------------------------------------------------------------- */
+/*                                  Constants                                 */
+/* -------------------------------------------------------------------------- */
+
+const { icons }: { icons: IconNameArray } = mdi as Record<
+  "icons",
+  IconNameArray
+>;
+
+/* -------------------------------------------------------------------------- */
+
+const rules: ValidationRule[] = [nameInUse, prohibitedCharacters];
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
+const filter: Ref<string> = ref("");
+
+/* -------------------------------------------------------------------------- */
+
+const tab: Ref<string> = ref("wysiwyg");
+
+/* -------------------------------------------------------------------------- */
+
+const pagination: Ref<Pagination> = ref({ itemsPerPage, page });
+
+/* -------------------------------------------------------------------------- */
+/*                                Computations                                */
+/* -------------------------------------------------------------------------- */
+
+const icon: WritableComputedRef<null | string> = computed({
   get() {
-    return the.value?.icon?.replace(/^mdi:/, "mdi-");
+    return the.value?.icon?.replace(/^mdi:/, "mdi-") ?? null;
   },
   set(value) {
     if (value && the.value) the.value.icon = value.replace(/^mdi-/, "mdi:");
   },
 });
-const loc = computed({
+
+/* -------------------------------------------------------------------------- */
+
+const loc: WritableComputedRef<null | string> = computed({
   get() {
     return the.value?.loc ?? null;
   },
@@ -194,18 +258,6 @@ const loc = computed({
       the.value.loc = value?.replace(/((?=(\/+))\2)$|(^\/+)/g, "") ?? null;
   },
 });
-const rules = [
-  (v: null | string) =>
-    !(
-      !!v &&
-      !!pages.value.find(
-        (element) =>
-          element.id !== the.value?.id &&
-          (element.path === v || element.loc === v),
-      )
-    ) || t("That name is already in use"),
-  (v: null | string) =>
-    !["?", "\\", "#"].some((value) => v?.includes(value)) ||
-    t("Prohibited characters are used"),
-];
+
+/* -------------------------------------------------------------------------- */
 </script>
