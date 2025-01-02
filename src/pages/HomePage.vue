@@ -15,7 +15,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         :key="name",
         @click="login(name.toString())",
         clickable,
-        v-for="(cred, name) in creds",
+        v-for="(cred, name) in credential",
         v-ripple
       )
         q-item-section(avatar)
@@ -79,8 +79,16 @@ q-page.column
           .text-overline {{ t("ver") }}.: {{ APP_VERSION }}
 </template>
 <script setup lang="ts">
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
 import type { TCredentials } from "@vues3/shared";
+import type { RemovableRef } from "@vueuse/core";
+import type { QVueGlobals } from "quasar";
 import type { Component } from "vue";
+import type { ComposerTranslation } from "vue-i18n";
+import type { Router } from "vue-router";
 
 import { validateCredentials } from "@vues3/shared";
 import { useStorage } from "@vueuse/core";
@@ -96,13 +104,63 @@ import { triggerRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 
-const { t } = useI18n();
+/* -------------------------------------------------------------------------- */
+/*                                  Constants                                 */
+/* -------------------------------------------------------------------------- */
+
 // eslint-disable-next-line no-undef
-const APP_VERSION = __APP_VERSION__;
-const router = useRouter();
-const $q = useQuasar();
-const isFileSystemAccess = () => "showOpenFilePicker" in window;
-const directLogin = (bucketValue: string) => {
+const APP_VERSION: string = __APP_VERSION__;
+
+/* -------------------------------------------------------------------------- */
+
+const mode = "readwrite";
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+/** Generate a default value for the credentials storage */
+
+const credentialDefaults: () => TCredentials = () => {
+  const value = {} as TCredentials;
+  validateCredentials?.(value) as boolean;
+  return value;
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                 Composables                                */
+/* -------------------------------------------------------------------------- */
+
+const router: Router = useRouter();
+
+/* -------------------------------------------------------------------------- */
+
+const $q: QVueGlobals = useQuasar();
+
+/* -------------------------------------------------------------------------- */
+
+/** A credential storage reference */
+
+const credential: RemovableRef<TCredentials> = useStorage(
+  "@",
+  credentialDefaults,
+  localStorage,
+  { mergeDefaults },
+);
+
+/* -------------------------------------------------------------------------- */
+
+const { t }: { t: ComposerTranslation } = useI18n();
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const isFileSystemAccess: () => boolean = () => "showOpenFilePicker" in window;
+
+/* -------------------------------------------------------------------------- */
+
+const directLogin: (bucketValue: string) => void = (bucketValue) => {
   const name = "main";
   const path = `/${name}`;
   const component = contentPage as Component;
@@ -110,8 +168,10 @@ const directLogin = (bucketValue: string) => {
   router.addRoute({ component, name, path });
   router.push(path).catch(() => {});
 };
-const mode = "readwrite";
-const getDir = async () => {
+
+/* -------------------------------------------------------------------------- */
+
+const getDir: () => Promise<void> = async () => {
   if ($q.platform.is.electron) {
     const {
       filePaths: [filePath],
@@ -129,21 +189,14 @@ const getDir = async () => {
       //
     }
 };
-const creds = useStorage(
-  "@",
-  () => {
-    const value = {} as TCredentials;
-    validateCredentials?.(value) as boolean;
-    return value;
-  },
-  localStorage,
-  { mergeDefaults },
-);
-const getPin = async (name: string): Promise<string | undefined> =>
+
+/* -------------------------------------------------------------------------- */
+
+const getPin: (name: string) => Promise<null | string> = async (name) =>
   new Promise((resolve, reject) => {
-    if (name !== creds.value[name]?.Bucket) {
+    if (name !== credential.value[name]?.Bucket) {
       const component = VOtpDialog as Component;
-      const value = creds.value[name]?.Bucket;
+      const value = credential.value[name]?.Bucket;
       const componentProps = { value };
       $q.dialog({ component, componentProps })
         .onOk((payload: string) => {
@@ -152,9 +205,12 @@ const getPin = async (name: string): Promise<string | undefined> =>
         .onCancel(() => {
           reject(new Error(t("Pin is not entered")));
         });
-    } else resolve(undefined);
+    } else resolve(null);
   });
-const login = async (bucketValue: string) => {
+
+/* -------------------------------------------------------------------------- */
+
+const login: (bucketValue: string) => Promise<void> = async (bucketValue) => {
   try {
     await headBucket(bucketValue, await getPin(bucketValue));
     directLogin(bucketValue);
@@ -163,11 +219,17 @@ const login = async (bucketValue: string) => {
     $q.notify({ message });
   }
 };
-const add = () => {
+
+/* -------------------------------------------------------------------------- */
+
+const add: () => void = () => {
   const component = VCredsDialog as Component;
   $q.dialog({ component });
 };
-const edit = async (name: number | string) => {
+
+/* -------------------------------------------------------------------------- */
+
+const edit: (name: number | string) => Promise<void> = async (name) => {
   const component = VCredsDialog as Component;
   const value = name;
   try {
@@ -179,23 +241,31 @@ const edit = async (name: number | string) => {
     $q.notify({ message });
   }
 };
-const remove = (name: number | string) => {
+
+/* -------------------------------------------------------------------------- */
+
+const remove: (name: number | string) => void = (name) => {
   $q.dialog({
     cancel: true,
     message: t("Do you really want to remove an account from the list?"),
     title: t("Confirm"),
   }).onOk(() => {
-    Reflect.deleteProperty(creds.value, name.toString());
-    triggerRef(creds);
+    Reflect.deleteProperty(credential.value, name.toString());
+    triggerRef(credential);
   });
 };
-const lock = (name: number | string) => {
+
+/* -------------------------------------------------------------------------- */
+
+const lock: (name: number | string) => void = (name) => {
   const value =
-    name === creds.value[name]?.Bucket ? undefined : creds.value[name]?.Bucket;
+    name === credential.value[name]?.Bucket
+      ? undefined
+      : credential.value[name]?.Bucket;
   const componentProps = { value };
   const component = VOtpDialog as Component;
   $q.dialog({ component, componentProps }).onOk((payload: string) => {
-    const cred = creds.value[name];
+    const cred = credential.value[name];
     if (cred)
       if (name === cred.Bucket) {
         Object.keys(cred).forEach((key) => {
@@ -214,10 +284,22 @@ const lock = (name: number | string) => {
       }
   });
 };
+
+/* -------------------------------------------------------------------------- */
 </script>
+
 <style scope lang="sass">
+/* -------------------------------------------------------------------------- */
+/*                                   Classes                                  */
+/* -------------------------------------------------------------------------- */
+
 .rtl
   direction: rtl
+
+/* -------------------------------------------------------------------------- */
+
 .plaintext
   unicode-bidi: plaintext
+
+/* -------------------------------------------------------------------------- */
 </style>
