@@ -389,7 +389,7 @@ watch(
     const [page, cname] = arr as [TPage[], string];
     if (cname) {
       const url = page
-        .filter(({ enabled, path }) => enabled && path !== undefined)
+        .filter(({ enabled, path }) => enabled && path !== null)
         .map(({ changefreq, lastmod, priority, to }) => {
           const loc = `https://${cname}${to === "/" ? "" : encodeURI(to ?? "")}`;
           return {
@@ -451,7 +451,7 @@ ${JSON.stringify(imap, null, " ")}
         );
       oldPages.length = 0;
       page
-        .filter(({ path }) => path !== undefined)
+        .filter(({ path }) => path !== null)
         .forEach(
           ({
             branch,
@@ -478,7 +478,7 @@ ${JSON.stringify(imap, null, " ")}
               )
               .replace(
                 "</head>",
-                `<title>${title}</title>
+                `<title>${title ?? ""}</title>
     ${canonical && `<link rel="canonical" href="${canonical.replaceAll('"', "&quot;")}">`}
     ${[
       [description ?? "", "description"],
