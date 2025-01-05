@@ -39,7 +39,7 @@
     "@volar/jsdelivr": "^2.4.11",
     "@volar/monaco": "^2.4.11",
     "@vue/language-service": "^2.2.0",
-    "@vues3/shared": "^0.3.16",
+    "@vues3/shared": "^0.3.17",
     "@vueuse/core": "^12.3.0",
     "crypto-js": "^4.2.0",
     "mime": "^4.0.6",
