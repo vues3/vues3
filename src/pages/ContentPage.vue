@@ -203,8 +203,8 @@ const nameInUse: ValidationRule = (v) =>
 
 /* -------------------------------------------------------------------------- */
 
-const prohibitedCharacters: ValidationRule = (v: string) =>
-  !["?", "\\", "#"].some((value) => v.includes(value)) ||
+const prohibitedCharacters: ValidationRule = (v: null | string) =>
+  !["?", "\\", "#"].some((value) => v?.includes(value)) ||
   t("Prohibited characters are used");
 
 /* -------------------------------------------------------------------------- */
