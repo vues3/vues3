@@ -159,25 +159,20 @@ const focusedWindowIsMaximized: () => boolean | null = () =>
 /*                                    Main                                    */
 /* -------------------------------------------------------------------------- */
 
-contextBridge.exposeInMainWorld("dialog", dialog);
-contextBridge.exposeInMainWorld("headObject", headObject);
-contextBridge.exposeInMainWorld("putObject", putObject);
-contextBridge.exposeInMainWorld(
-  "removeEmptyDirectories",
-  removeEmptyDirectories,
-);
-contextBridge.exposeInMainWorld("deleteObject", deleteObject);
-contextBridge.exposeInMainWorld("getObjectText", getObjectText);
-contextBridge.exposeInMainWorld("getObjectBlob", getObjectBlob);
-contextBridge.exposeInMainWorld("focusedWindowClose", focusedWindowClose);
-contextBridge.exposeInMainWorld("focusedWindowMinimize", focusedWindowMinimize);
-contextBridge.exposeInMainWorld(
-  "focusedWindowToggleMaximize",
-  focusedWindowToggleMaximize,
-);
-contextBridge.exposeInMainWorld(
-  "focusedWindowIsMaximized",
+Object.entries({
+  deleteObject,
+  dialog,
+  focusedWindowClose,
   focusedWindowIsMaximized,
-);
+  focusedWindowMinimize,
+  focusedWindowToggleMaximize,
+  getObjectBlob,
+  getObjectText,
+  headObject,
+  putObject,
+  removeEmptyDirectories,
+}).forEach(([apiKey, api]) => {
+  contextBridge.exposeInMainWorld(apiKey, api);
+});
 
 /* -------------------------------------------------------------------------- */
