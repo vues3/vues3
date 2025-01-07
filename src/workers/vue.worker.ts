@@ -5,6 +5,7 @@ import type {
 import type { WorkerLanguageService } from "@volar/monaco/worker";
 import type { worker } from "monaco-editor";
 
+import { Window } from "@remote-dom/polyfill";
 import { createNpmFileSystem } from "@volar/jsdelivr";
 import { createTypeScriptWorkerLanguageService } from "@volar/monaco/worker";
 import {
@@ -13,10 +14,11 @@ import {
   resolveVueCompilerOptions,
 } from "@vue/language-service";
 import { initialize } from "monaco-editor/esm/vs/editor/editor.worker";
-import * as typescript from "typescript";
+import typescript from "typescript";
 import { URI } from "vscode-uri";
 import { version } from "vue";
 
+Window.setGlobal(new Window());
 const vueCompilerOptions = (() => {
   const target = Number(version.split(".").slice(0, -1).join("."));
   return resolveVueCompilerOptions({ target });
