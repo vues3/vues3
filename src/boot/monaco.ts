@@ -1,4 +1,5 @@
 import type { WorkerLanguageService } from "@volar/monaco/worker";
+import type monacoNs from "monaco-editor-core";
 
 import { shikiToMonaco } from "@shikijs/monaco";
 import {
@@ -59,5 +60,8 @@ activateAutoInsertion(worker, languageId, getSyncUris, monaco.editor);
 registerProviders(worker, languageId, getSyncUris, monaco.languages).catch(
   () => {},
 );
-shikiToMonaco(createHighlighterCoreSync({ engine, langs, themes }), monaco);
+shikiToMonaco(
+  createHighlighterCoreSync({ engine, langs, themes }),
+  monaco as typeof monacoNs,
+);
 configureMonacoTailwindcss(monaco, { languageSelector });
