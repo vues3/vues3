@@ -45,6 +45,7 @@
     "crypto-js": "^4.2.0",
     "mime": "^4.0.6",
     "monaco-editor": "^0.52.2",
+    "monaco-editor-core": "^0.52.2",
     "quasar": "^2.17.6",
     "shiki": "^1.26.1",
     "to-xml": "^0.1.11",
