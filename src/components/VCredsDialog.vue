@@ -67,16 +67,14 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       )
 </template>
 <script setup lang="ts">
-import type { TCredentials } from "@vues3/shared";
 import type { QInput } from "quasar";
 
-import { validateCredentials } from "@vues3/shared";
-import { useStorage } from "@vueuse/core";
 import endpoints from "assets/endpoints.json";
 import regions from "assets/regions.json";
 import CryptoJS from "crypto-js";
 import { useDialogPluginComponent, useQuasar } from "quasar";
-import { enumerable, mergeDefaults, writable } from "stores/defaults";
+import { enumerable, writable } from "stores/defaults";
+import { credential } from "stores/s3";
 import { ref, triggerRef, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -90,17 +88,7 @@ const { t } = useI18n();
 const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
   useDialogPluginComponent();
 const bucketRef = useTemplateRef<QInput>("bucketRef");
-const creds = useStorage(
-  "@",
-  () => {
-    const value = {} as TCredentials;
-    validateCredentials?.(value) as boolean;
-    return value;
-  },
-  localStorage,
-  { mergeDefaults },
-);
-const cred = creds.value[props.value ?? ""] as
+const cred = credential.value[props.value ?? ""] as
   | Record<string, null | string>
   | undefined;
 const decrypt = (value?: null | string) =>
@@ -125,20 +113,23 @@ const encrypt = (obj: Record<string, null | string>) =>
     : obj;
 const click = (value: Record<string, null | string>) => {
   if (Bucket.value)
-    if (props.value !== Bucket.value && Reflect.has(creds.value, Bucket.value))
+    if (
+      props.value !== Bucket.value &&
+      Reflect.has(credential.value, Bucket.value)
+    )
       $q.dialog({
         message: t("That account already exists"),
         title: t("Confirm"),
       });
     else {
       if (props.value && props.value !== Bucket.value)
-        Reflect.deleteProperty(creds.value, props.value);
-      Reflect.defineProperty(creds.value, Bucket.value, {
+        Reflect.deleteProperty(credential.value, props.value);
+      Reflect.defineProperty(credential.value, Bucket.value, {
         enumerable,
         value,
         writable,
       });
-      triggerRef(creds);
+      triggerRef(credential);
       onDialogOK();
     }
 };
