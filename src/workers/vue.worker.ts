@@ -1,8 +1,17 @@
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
 import type {
   LanguageServiceEnvironment,
   ProjectContext,
 } from "@volar/language-service";
-import type { WorkerLanguageService } from "@volar/monaco/worker";
+import type {
+  LanguagePlugin,
+  LanguageServicePlugin,
+  WorkerLanguageService,
+} from "@volar/monaco/worker";
+import type { VueCompilerOptions } from "@vue/language-service";
 import type { worker } from "monaco-editor";
 
 import { Window } from "@remote-dom/polyfill";
@@ -18,44 +27,87 @@ import typescript from "typescript";
 import { URI } from "vscode-uri";
 import { version } from "vue";
 
+/* -------------------------------------------------------------------------- */
+/*                                    Init                                    */
+/* -------------------------------------------------------------------------- */
+
 Window.setGlobal(new Window());
-const vueCompilerOptions = (() => {
+
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const vueCompilerOptions: VueCompilerOptions = (() => {
   const target = Number(version.split(".").slice(0, -1).join("."));
   return resolveVueCompilerOptions({ target });
 })();
-const setup = ({ project }: { project: ProjectContext }) => {
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const asFileName: ({ path }: URI) => string = ({ path }) => path;
+
+/* -------------------------------------------------------------------------- */
+
+const setup: ({ project }: { project: ProjectContext }) => void = ({
+  project,
+}) => {
   const compilerOptions = vueCompilerOptions;
   const value = { compilerOptions };
   Reflect.defineProperty(project, "vue", { value });
 };
-const { options: compilerOptions } = (() => {
-  const allowImportingTsExtensions = true;
-  const allowJs = true;
-  const checkJs = true;
-  const jsx = "Preserve";
-  const module = "ESNext";
-  const moduleResolution = "Bundler";
-  const target = "ESNext";
-  return typescript.convertCompilerOptionsFromJson(
-    {
-      allowImportingTsExtensions,
-      allowJs,
-      checkJs,
-      jsx,
-      module,
-      moduleResolution,
-      target,
-    },
-    "",
-  );
-})();
+
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const { options: compilerOptions }: { options: typescript.CompilerOptions } =
+  (() => {
+    const allowImportingTsExtensions = true;
+    const allowJs = true;
+    const checkJs = true;
+    const jsx = "Preserve";
+    const module = "ESNext";
+    const moduleResolution = "Bundler";
+    const target = "ESNext";
+    return typescript.convertCompilerOptionsFromJson(
+      {
+        allowImportingTsExtensions,
+        allowJs,
+        checkJs,
+        jsx,
+        module,
+        moduleResolution,
+        target,
+      },
+      "",
+    );
+  })();
+
+/* -------------------------------------------------------------------------- */
+
 const env: LanguageServiceEnvironment = (() => {
   const fs = createNpmFileSystem();
   const workspaceFolders = [URI.file("/")];
   return { fs, workspaceFolders };
 })();
-const asFileName = ({ path }: { path: string }) => path;
-const languagePlugins = [
+
+/* -------------------------------------------------------------------------- */
+
+const uriConverter: {
+  asFileName(uri: URI): string;
+  asUri(fileName: string): URI;
+} = (() => {
+  const asUri = (fileName: string) => URI.file(fileName);
+  return { asFileName, asUri };
+})();
+
+/* -------------------------------------------------------------------------- */
+/*                                   Arrays                                   */
+/* -------------------------------------------------------------------------- */
+
+const languagePlugins: LanguagePlugin<URI>[] = [
   createVueLanguagePlugin(
     typescript,
     compilerOptions,
@@ -63,11 +115,16 @@ const languagePlugins = [
     asFileName,
   ),
 ];
-const languageServicePlugins = getFullLanguageServicePlugins(typescript);
-const uriConverter = (() => {
-  const asUri = (fileName: string) => URI.file(fileName);
-  return { asFileName, asUri };
-})();
+
+/* -------------------------------------------------------------------------- */
+
+const languageServicePlugins: LanguageServicePlugin[] =
+  getFullLanguageServicePlugins(typescript);
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
 // eslint-disable-next-line no-restricted-globals
 self.onmessage = () => {
   (
@@ -89,3 +146,5 @@ self.onmessage = () => {
     }),
   );
 };
+
+/* -------------------------------------------------------------------------- */
