@@ -1,8 +1,17 @@
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+import type { BootCallback } from "@quasar/app-vite";
+
 import { defineBoot } from "#q-app/wrappers";
 import routes from "src/router/routes";
 import { bucket } from "stores/io";
 
-export default defineBoot(({ router }) => {
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const callback: BootCallback = ({ router }) => {
   const [route] = routes;
   router.beforeEach(({ path }, from, next) => {
     if (["/", "/main"].includes(path)) next();
@@ -13,4 +22,12 @@ export default defineBoot(({ router }) => {
       router.addRoute(route);
     }
   });
-});
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                   Exports                                  */
+/* -------------------------------------------------------------------------- */
+
+export default defineBoot(callback);
+
+/* -------------------------------------------------------------------------- */
