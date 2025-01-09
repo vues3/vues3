@@ -25,7 +25,7 @@ import CryptoJS from "crypto-js";
 import { mergeDefaults } from "stores/defaults";
 
 /* -------------------------------------------------------------------------- */
-/*                                  Constants                                 */
+/*                                   Objects                                  */
 /* -------------------------------------------------------------------------- */
 
 /**
@@ -62,7 +62,7 @@ const credentialDefaults: () => TCredentials = () => {
 };
 
 /* -------------------------------------------------------------------------- */
-/*                                 Composables                                */
+/*                                 References                                 */
 /* -------------------------------------------------------------------------- */
 
 /** A credential storage reference */
@@ -225,6 +225,7 @@ const getObjectBlob: (
 /* -------------------------------------------------------------------------- */
 
 export {
+  credential,
   deleteObject,
   getObjectBlob,
   getObjectText,
