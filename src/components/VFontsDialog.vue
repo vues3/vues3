@@ -30,8 +30,13 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       q-btn(:label="t('Close')", @click="onDialogHide", flat)
 </template>
 <script setup lang="ts">
-import type { QTableProps } from "quasar";
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
+import type { QDialog, QTableProps } from "quasar";
 import type { Ref } from "vue";
+import type { Composer } from "vue-i18n";
 
 import { deep } from "@vues3/shared";
 import json from "assets/fonts.json";
@@ -40,33 +45,82 @@ import { fonts } from "stores/app";
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-defineEmits([...useDialogPluginComponent.emits]);
-const { t } = useI18n();
-const { dialogRef, onDialogHide } = useDialogPluginComponent();
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const { t }: Composer = useI18n();
+
+/* -------------------------------------------------------------------------- */
+
+const {
+  dialogRef,
+  onDialogHide,
+}: {
+  dialogRef: Ref<QDialog | undefined>;
+  onDialogHide: () => void;
+} = useDialogPluginComponent();
+
+/* -------------------------------------------------------------------------- */
+
+const columns: QTableProps["columns"] = json as QTableProps["columns"];
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
 const selected: Ref<Record<string, string>[]> = ref([]);
-const columns = json as QTableProps["columns"];
+
+/* -------------------------------------------------------------------------- */
+
 const rows: Ref<Record<string, string>[]> = ref([]);
-onMounted(() => {
-  rows.value = fonts.map((name) => {
-    const id = uid();
-    return { id, name };
-  });
-});
-watch(
-  rows,
-  (value) => {
-    fonts.length = 0;
-    fonts.push(...(value.map(({ name }) => name).filter(Boolean) as never[]));
-  },
-  { deep },
-);
-const addRow = () => {
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const addRow: () => void = () => {
   const id = uid();
   const name = "";
   rows.value.push({ id, name });
 };
-const removeRow = () => {
+
+/* -------------------------------------------------------------------------- */
+
+const removeRow: () => void = () => {
   const set = new Set(selected.value);
   rows.value = rows.value.filter((x) => !set.has(x));
 };
+
+/* -------------------------------------------------------------------------- */
+
+const initRows: () => void = () => {
+  rows.value = fonts.map((name) => {
+    const id = uid();
+    return { id, name };
+  });
+};
+
+/* -------------------------------------------------------------------------- */
+
+const updateFonts: (value: Record<string, string>[]) => void = (value) => {
+  fonts.length = 0;
+  fonts.push(...(value.map(({ name }) => name).filter(Boolean) as never[]));
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+defineEmits([...useDialogPluginComponent.emits]);
+
+/* -------------------------------------------------------------------------- */
+
+onMounted(initRows);
+
+/* -------------------------------------------------------------------------- */
+
+watch(rows, updateFonts, { deep });
+
+/* -------------------------------------------------------------------------- */
 </script>
