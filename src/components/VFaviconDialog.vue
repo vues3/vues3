@@ -15,20 +15,54 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       q-btn(:label="t('Close')", @click="onDialogHide", flat)
 </template>
 <script setup lang="ts">
-import type { QUploader, QUploaderFactoryFn } from "quasar";
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
+import type {
+  QDialog,
+  QUploader,
+  QUploaderFactoryFn,
+  QVueGlobals,
+} from "quasar";
 import type { Ref } from "vue";
+import type { Composer } from "vue-i18n";
 
 import { useDialogPluginComponent, useQuasar } from "quasar";
 import { putObject } from "stores/io";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-defineEmits([...useDialogPluginComponent.emits]);
-const $q = useQuasar();
-const { t } = useI18n();
-const { dialogRef, onDialogHide } = useDialogPluginComponent();
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
 
-const uploader: Ref<QUploader | undefined> = ref();
+const $q: QVueGlobals = useQuasar();
+
+/* -------------------------------------------------------------------------- */
+
+const { t }: Composer = useI18n();
+
+/* -------------------------------------------------------------------------- */
+
+const {
+  dialogRef,
+  onDialogHide,
+}: {
+  dialogRef: Ref<QDialog | undefined>;
+  onDialogHide: () => void;
+} = useDialogPluginComponent();
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
+const uploader: Ref<null | QUploader> = ref(null);
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
 const factory: QUploaderFactoryFn = async (files) => {
   const [file] = files;
   let message = t("Favicon uploaded successfully");
@@ -47,4 +81,12 @@ const factory: QUploaderFactoryFn = async (files) => {
   $q.notify({ message });
   return Promise.reject(new Error());
 };
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+defineEmits([...useDialogPluginComponent.emits]);
+
+/* -------------------------------------------------------------------------- */
 </script>
