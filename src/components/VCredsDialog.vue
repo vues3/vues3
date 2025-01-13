@@ -67,7 +67,13 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       )
 </template>
 <script setup lang="ts">
-import type { QInput } from "quasar";
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
+import type { QDialog, QInput, QVueGlobals } from "quasar";
+import type { Ref, ShallowRef } from "vue";
+import type { Composer } from "vue-i18n";
 
 import endpoints from "assets/endpoints.json";
 import regions from "assets/regions.json";
@@ -78,31 +84,97 @@ import { credential } from "stores/s3";
 import { ref, triggerRef, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 
+/* -------------------------------------------------------------------------- */
+/*                                 Properties                                 */
+/* -------------------------------------------------------------------------- */
+
 const props = defineProps<{
   pin?: string;
   value?: string;
 }>();
-defineEmits([...useDialogPluginComponent.emits]);
-const $q = useQuasar();
-const { t } = useI18n();
-const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
-  useDialogPluginComponent();
-const bucketRef = useTemplateRef<QInput>("bucketRef");
-const cred = credential.value[props.value ?? ""] as
-  | Record<string, null | string>
-  | undefined;
-const decrypt = (value?: null | string) =>
+
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const $q: QVueGlobals = useQuasar();
+
+/* -------------------------------------------------------------------------- */
+
+const { t }: Composer = useI18n();
+
+/* -------------------------------------------------------------------------- */
+
+const {
+  dialogRef,
+  onDialogCancel,
+  onDialogHide,
+  onDialogOK,
+}: {
+  dialogRef: Ref<QDialog | undefined>;
+  onDialogCancel: () => void;
+  onDialogHide: () => void;
+  onDialogOK: () => void;
+} = useDialogPluginComponent();
+
+/* -------------------------------------------------------------------------- */
+
+const cred: null | Record<string, null | string> = (credential.value[
+  props.value ?? ""
+] ?? null) as null | Record<string, null | string>;
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const decrypt: (value?: null | string) => null | string = (value) =>
   props.pin
     ? CryptoJS.AES.decrypt(value ?? "", props.pin).toString(CryptoJS.enc.Utf8)
     : (value ?? null);
-const Bucket = ref(decrypt(cred?.Bucket));
-const secretAccessKey = ref(decrypt(cred?.secretAccessKey));
-const region = ref(decrypt(cred?.region));
-const endpoint = ref(decrypt(cred?.endpoint));
-const isPwd = ref(true);
-const accessKeyId = ref(decrypt(cred?.accessKeyId));
-const getRegions = (value: null | string) => regions[value as keyof object];
-const encrypt = (obj: Record<string, null | string>) =>
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
+const bucketRef: Readonly<ShallowRef<null | QInput>> =
+  useTemplateRef<QInput>("bucketRef");
+
+/* -------------------------------------------------------------------------- */
+
+const Bucket: Ref<null | string> = ref(decrypt(cred?.Bucket));
+
+/* -------------------------------------------------------------------------- */
+
+const secretAccessKey: Ref<null | string> = ref(decrypt(cred?.secretAccessKey));
+
+/* -------------------------------------------------------------------------- */
+
+const region: Ref<null | string> = ref(decrypt(cred?.region));
+
+/* -------------------------------------------------------------------------- */
+
+const endpoint: Ref<null | string> = ref(decrypt(cred?.endpoint));
+
+/* -------------------------------------------------------------------------- */
+
+const isPwd: Ref<boolean> = ref(true);
+
+/* -------------------------------------------------------------------------- */
+
+const accessKeyId: Ref<null | string> = ref(decrypt(cred?.accessKeyId));
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const getRegions: (value: null | string) => string[] | undefined = (value) =>
+  regions[(value ?? "") as keyof object];
+
+/* -------------------------------------------------------------------------- */
+
+const encrypt: (
+  obj: Record<string, null | string>,
+) => Record<string, null | string> = (obj) =>
   props.pin
     ? Object.fromEntries(
         Object.entries(obj).map(([key, value]) => [
@@ -111,7 +183,10 @@ const encrypt = (obj: Record<string, null | string>) =>
         ]),
       )
     : obj;
-const click = (value: Record<string, null | string>) => {
+
+/* -------------------------------------------------------------------------- */
+
+const click: (value: Record<string, null | string>) => void = (value) => {
   if (Bucket.value)
     if (
       props.value !== Bucket.value &&
@@ -133,4 +208,12 @@ const click = (value: Record<string, null | string>) => {
       onDialogOK();
     }
 };
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+defineEmits([...useDialogPluginComponent.emits]);
+
+/* -------------------------------------------------------------------------- */
 </script>
