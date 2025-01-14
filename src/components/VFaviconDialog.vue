@@ -14,6 +14,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
     q-card-actions.text-primary(align="right")
       q-btn(:label="t('Close')", @click="onDialogHide", flat)
 </template>
+
 <script setup lang="ts">
 /* -------------------------------------------------------------------------- */
 /*                                   Imports                                  */
