@@ -33,7 +33,11 @@ onBeforeMount(async () => {
 watch(
   text,
   debounce((value) => {
-    putObject("robots.txt", value as string, "text/plain").catch(() => {});
+    putObject("robots.txt", value as string, "text/plain").catch(
+      (error: unknown) => {
+        console.error(error);
+      },
+    );
   }, second),
 );
 </script>
