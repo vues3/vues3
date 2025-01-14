@@ -115,7 +115,9 @@ window.MonacoEnvironment = { getWorker };
 /* -------------------------------------------------------------------------- */
 
 registerProviders(worker, languageId, getSyncUris, monaco.languages).catch(
-  () => {},
+  (error: unknown) => {
+    console.error(error);
+  },
 );
 
 /* -------------------------------------------------------------------------- */
