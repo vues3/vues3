@@ -56,11 +56,18 @@ const cleaner = (value: TAppPage[]) => {
     if (children.length) cleaner(children as TAppPage[]);
     (async () => {
       const { images } = getDocument(getContent(await sfc));
-      if (id) deleteObject(`pages/${id}.vue`).catch(() => {});
+      if (id)
+        deleteObject(`pages/${id}.vue`).catch((error: unknown) => {
+          console.error(error);
+        });
       [...images].forEach(({ src }) => {
-        deleteObject(src).catch(() => {});
+        deleteObject(src).catch((error: unknown) => {
+          console.error(error);
+        });
       });
-    })().catch(() => {});
+    })().catch((error: unknown) => {
+      console.error(error);
+    });
   });
 };
 watch(deleted, (value) => {
@@ -85,7 +92,9 @@ watch(
           .forEach((url) => {
             URL.revokeObjectURL(urls.get(url) ?? "");
             urls.delete(url);
-            deleteObject(url).catch(() => {});
+            deleteObject(url).catch((error: unknown) => {
+              console.error(error);
+            });
           });
       }
       prevImages.length = 0;
@@ -202,7 +211,9 @@ const routerLink = "router-link";
                       .forEach((src) => {
                         URL.revokeObjectURL(urls.get(src) ?? "");
                         urls.delete(src);
-                        deleteObject(src).catch(() => {});
+                        deleteObject(src).catch((error: unknown) => {
+                          console.error(error);
+                        });
                       });
                     oldImages.length = 0;
                     oldImages.push(...sources);
@@ -211,7 +222,9 @@ const routerLink = "router-link";
                         `pages/${this.id}.vue`,
                         model.getValue(),
                         "text/html",
-                      ).catch(() => {});
+                      ).catch((error: unknown) => {
+                        console.error(error);
+                      });
                   }
                 }
               }, second),
@@ -247,7 +260,9 @@ watch(bucket, async (value) => {
           ) as TPage[]
         )[0] ?? ({} as TPage),
       );
-    })().catch(() => {});
+    })().catch((error: unknown) => {
+      console.error(error);
+    });
     (async () => {
       fonts.length = 0;
       fonts.push(
@@ -255,13 +270,17 @@ watch(bucket, async (value) => {
           (await getObjectText("fonts.json", cache)) || "[]",
         ) as never[]),
       );
-    })().catch(() => {});
+    })().catch((error: unknown) => {
+      console.error(error);
+    });
     (async () => {
       const { imports } = JSON.parse(
         (await getObjectText("index.importmap", cache)) || "{}",
       ) as TImportmap;
       importmap.imports = imports;
-    })().catch(() => {});
+    })().catch((error: unknown) => {
+      console.error(error);
+    });
     (async () => {
       {
         const [cname = ""] = (await getObjectText("CNAME", cache)).split(
@@ -271,9 +290,13 @@ watch(bucket, async (value) => {
         domain.value = cname.trim();
       }
       watch(domain, (cname) => {
-        putObject("CNAME", cname, "text/plain").catch(() => {});
+        putObject("CNAME", cname, "text/plain").catch((error: unknown) => {
+          console.error(error);
+        });
       });
-    })().catch(() => {});
+    })().catch((error: unknown) => {
+      console.error(error);
+    });
     const [localManifest, serverManifest] = (
       (await Promise.all([
         (await fetch("runtime/.vite/manifest.json")).json(),
@@ -303,7 +326,9 @@ watch(bucket, async (value) => {
       [...serverManifest]
         .filter((x) => !localManifest.has(x))
         .forEach((element) => {
-          deleteObject(element).catch(() => {});
+          deleteObject(element).catch((error: unknown) => {
+            console.error(error);
+          });
         });
       [...localManifest.add(".vite/manifest.json")]
         .filter((x) => !serverManifest.has(x))
@@ -314,8 +339,12 @@ watch(bucket, async (value) => {
               element,
               new Uint8Array(await body.arrayBuffer()),
               body.type,
-            ).catch(() => {});
-          })().catch(() => {});
+            ).catch((error: unknown) => {
+              console.error(error);
+            });
+          })().catch((error: unknown) => {
+            console.error(error);
+          });
         });
     }
   } else {
@@ -334,7 +363,9 @@ watch(
   debounce((value) => {
     if (value)
       putObject("index.json", JSON.stringify(value), "application/json").catch(
-        () => {},
+        (error: unknown) => {
+          console.error(error);
+        },
       );
   }, second),
   { deep },
@@ -361,7 +392,9 @@ watch(
   debounce((value, oldValue) => {
     if (oldValue)
       putObject("fonts.json", JSON.stringify(value), "application/json").catch(
-        () => {},
+        (error: unknown) => {
+          console.error(error);
+        },
       );
   }),
 );
@@ -379,7 +412,9 @@ watch(
         "index.importmap",
         JSON.stringify({ imports }),
         "application/importmap+json",
-      ).catch(() => {});
+      ).catch((error: unknown) => {
+        console.error(error);
+      });
   }),
   { deep },
 );
@@ -407,7 +442,9 @@ watch(
         "sitemap.xml",
         toXML({ "?": 'xml version="1.0" encoding="UTF-8"', urlset }),
         "application/xml",
-      ).catch(() => {});
+      ).catch((error: unknown) => {
+        console.error(error);
+      });
     }
   }, second),
   { deep },
@@ -431,7 +468,9 @@ watch(
       (async () => {
         await Promise.allSettled(promises);
         await removeEmptyDirectories();
-      })().catch(() => {});
+      })().catch((error: unknown) => {
+        console.error(error);
+      });
       const body = index
         .replace(
           '<script type="importmap"></script>',
@@ -514,15 +553,23 @@ ${JSON.stringify(imap, null, " ")}
   </head>`,
               );
             if (loc)
-              putObject(`${loc}/index.html`, htm, "text/html").catch(() => {});
+              putObject(`${loc}/index.html`, htm, "text/html").catch(
+                (error: unknown) => {
+                  console.error(error);
+                },
+              );
             putObject(
               path ? `${path}/index.html` : "index.html",
               htm,
               "text/html",
-            ).catch(() => {});
+            ).catch((error: unknown) => {
+              console.error(error);
+            });
           },
         );
     }, second),
     { deep },
   );
-})().catch(() => {});
+})().catch((error: unknown) => {
+  console.error(error);
+});
