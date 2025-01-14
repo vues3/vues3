@@ -148,7 +148,9 @@ onChange((files) => {
             new Uint8Array(await file.arrayBuffer()),
             type,
           );
-        })().catch(() => {});
+        })().catch((error: unknown) => {
+          console.error(error);
+        });
         urls.set(filePath, URL.createObjectURL(file));
         image.url = filePath;
       } else $q.notify({ message });
@@ -171,7 +173,9 @@ watch(
         .forEach(({ url = "" }) => {
           (async () => {
             urls.set(url, URL.createObjectURL(await getObjectBlob(url)));
-          })().catch(() => {});
+          })().catch((error: unknown) => {
+            console.error(error);
+          });
         });
     }
   },
