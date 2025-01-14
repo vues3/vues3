@@ -37,6 +37,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         q-btn(@click="removeRow", icon="remove", outline)
       q-btn(:label="t('Close')", @click="onDialogHide", flat)
 </template>
+
 <script setup lang="ts">
 /* -------------------------------------------------------------------------- */
 /*                                   Imports                                  */
