@@ -26,6 +26,7 @@
 import type { TPage } from "@vues3/shared";
 import type { UseFileDialogReturn } from "@vueuse/core";
 import type { QVueGlobals } from "quasar";
+import type { Ref } from "vue";
 import type { Composer } from "vue-i18n";
 
 import { deep } from "@vues3/shared";
@@ -76,20 +77,20 @@ let index = 0;
 /*                                 References                                 */
 /* -------------------------------------------------------------------------- */
 
-const images = ref([] as TPage["images"]);
+const images: Ref<TPage["images"]> = ref([]);
 
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const upload = (i: number) => {
+const upload: (i: number) => void = (i) => {
   index = i;
   open();
 };
 
 /* -------------------------------------------------------------------------- */
 
-const left = (i: number) => {
+const left: (i: number) => void = (i) => {
   if (i) {
     const prev = images.value[i - 1];
     if (images.value[i] && prev)
@@ -99,7 +100,7 @@ const left = (i: number) => {
 
 /* -------------------------------------------------------------------------- */
 
-const right = (i: number) => {
+const right: (i: number) => void = (i) => {
   if (i < images.value.length - 1) {
     const next = images.value[i + 1];
     if (images.value[i] && next)
@@ -109,7 +110,7 @@ const right = (i: number) => {
 
 /* -------------------------------------------------------------------------- */
 
-const add = (i: number) => {
+const add: (i: number) => void = (i) => {
   images.value.splice(
     i + 1,
     0,
@@ -119,7 +120,7 @@ const add = (i: number) => {
 
 /* -------------------------------------------------------------------------- */
 
-const remove = (i: number) => {
+const remove: (i: number) => void = (i) => {
   $q.dialog({
     cancel: true,
     message: t("Do you really want to delete?"),
@@ -131,10 +132,8 @@ const remove = (i: number) => {
 };
 
 /* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
 
-onChange((files) => {
+const uploadImage: (files: FileList | null) => void = (files) => {
   const image = images.value[index];
   if (files && image) {
     const [file] = files;
@@ -156,48 +155,54 @@ onChange((files) => {
       } else $q.notify({ message });
     }
   }
-});
+};
 
 /* -------------------------------------------------------------------------- */
 
-watch(
-  images,
-  (value) => {
-    if (!value.length) add(-1);
-    if (the.value) {
-      the.value.images = value
-        .filter(({ url }) => url)
-        .map(({ alt = "", url = "" }) => ({ alt, url }));
-      the.value.images
-        .filter(({ url = "" }) => !urls.has(url))
-        .forEach(({ url = "" }) => {
-          (async () => {
-            urls.set(url, URL.createObjectURL(await getObjectBlob(url)));
-          })().catch((error: unknown) => {
-            console.error(error);
-          });
+const addBlobs: (value: TPage["images"]) => void = (value) => {
+  if (!value.length) add(-1);
+  if (the.value) {
+    the.value.images = value
+      .filter(({ url }) => url)
+      .map(({ alt = "", url = "" }) => ({ alt, url }));
+    the.value.images
+      .filter(({ url = "" }) => !urls.has(url))
+      .forEach(({ url = "" }) => {
+        (async () => {
+          urls.set(url, URL.createObjectURL(await getObjectBlob(url)));
+        })().catch((error: unknown) => {
+          console.error(error);
         });
-    }
-  },
-  { deep },
-);
+      });
+  }
+};
 
 /* -------------------------------------------------------------------------- */
 
-watch(
-  the,
-  (value) => {
-    if (!value?.images.length) {
-      images.value.length = 0;
-      add(-1);
-    } else
-      images.value = value.images.map(({ alt = "", url = "" }) => ({
-        alt,
-        url,
-      }));
-  },
-  { immediate },
-);
+const initImages: (value: TPage | undefined) => void = (value) => {
+  if (!value?.images.length) {
+    images.value.length = 0;
+    add(-1);
+  } else
+    images.value = value.images.map(({ alt = "", url = "" }) => ({
+      alt,
+      url,
+    }));
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+onChange(uploadImage);
+
+/* -------------------------------------------------------------------------- */
+
+watch(images, addBlobs, { deep });
+
+/* -------------------------------------------------------------------------- */
+
+watch(the, initImages, { immediate });
 
 /* -------------------------------------------------------------------------- */
 </script>
