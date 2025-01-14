@@ -34,7 +34,12 @@ q-btn-group.q-mx-xs(flat, spread)
           v-model.trim="prop.node.name"
         )
 </template>
+
 <script setup lang="ts">
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
 import type { TPage } from "@vues3/shared";
 import type { QTree, QTreeNode } from "quasar";
 import type { Ref } from "vue";
@@ -46,7 +51,20 @@ import { cancel, immediate, persistent } from "stores/defaults";
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const $q = useQuasar();
+
+/* -------------------------------------------------------------------------- */
+
 const { t } = useI18n();
+
+/* -------------------------------------------------------------------------- */
+/*                                   Arrays                                   */
+/* -------------------------------------------------------------------------- */
+
 const errors = [
   (propNode: TPage) => !propNode.name,
   (propNode: TPage) =>
@@ -60,12 +78,40 @@ const errors = [
   (propNode: TPage) =>
     ["?", "\\", "#"].some((value) => propNode.name?.includes(value)),
 ];
+
+/* -------------------------------------------------------------------------- */
+
+const nodes: QTreeNode[] = data as QTreeNode[];
+
+/* -------------------------------------------------------------------------- */
+/*                                Computations                                */
+/* -------------------------------------------------------------------------- */
+
+const the = computed(() =>
+  pages.value.length
+    ? (pages.value.find(({ id }) => id === selected.value) ?? null)
+    : undefined,
+);
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
+const qtree: Ref<QTree | undefined> = ref();
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
 const error = (propNode: TPage) =>
   errors
     .map((value) => value(propNode))
     .reduceRight(
       (previousValue, currentValue) => previousValue || currentValue,
     );
+
+/* -------------------------------------------------------------------------- */
+
 const errorMessage = (propNode: TPage) => {
   switch (true) {
     case errors[0]?.(propNode):
@@ -78,34 +124,39 @@ const errorMessage = (propNode: TPage) => {
       return undefined;
   }
 };
-const nodes = data as QTreeNode[];
-const the = computed(() =>
-  pages.value.length
-    ? (pages.value.find(({ id }) => id === selected.value) ?? null)
-    : undefined,
-);
-const $q = useQuasar();
-const qtree: Ref<QTree | undefined> = ref();
-const title = t("Confirm");
-const message = t("Do you really want to delete?");
+
+/* -------------------------------------------------------------------------- */
+
 const clickUp = () => {
   if (the.value?.id) up(the.value.id);
 };
+
+/* -------------------------------------------------------------------------- */
+
 const clickDown = () => {
   if (the.value?.id) down(the.value.id);
 };
+
+/* -------------------------------------------------------------------------- */
+
 const clickLeft = () => {
   if (the.value?.id) {
     const id = left(the.value.id);
     if (id) qtree.value?.setExpanded(id, true);
   }
 };
+
+/* -------------------------------------------------------------------------- */
+
 const clickRight = () => {
   if (the.value?.id) {
     const id = right(the.value.id);
     if (id) qtree.value?.setExpanded(id, true);
   }
 };
+
+/* -------------------------------------------------------------------------- */
+
 const clickAdd = () => {
   if (the.value?.id) {
     const id = add(the.value.id);
@@ -116,6 +167,9 @@ const clickAdd = () => {
     }
   }
 };
+
+/* -------------------------------------------------------------------------- */
+
 const clickRemove = () => {
   if (the.value?.parent)
     $q.dialog({ cancel, message, persistent, title }).onOk(() => {
@@ -126,11 +180,36 @@ const clickRemove = () => {
       }
     });
 };
-const value = false;
-onMounted(() => {
+
+/* -------------------------------------------------------------------------- */
+
+const expand = () => {
   const [{ id } = {}] = data;
   if (id) qtree.value?.setExpanded(id, true);
-});
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                  Constants                                 */
+/* -------------------------------------------------------------------------- */
+
+const title: string = t("Confirm");
+
+/* -------------------------------------------------------------------------- */
+
+const message: string = t("Do you really want to delete?");
+
+/* -------------------------------------------------------------------------- */
+
+const value = false;
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+onMounted(expand);
+
+/* -------------------------------------------------------------------------- */
+
 watch(
   the,
   (newVal, oldVal) => {
@@ -142,7 +221,10 @@ watch(
   },
   { immediate },
 );
+
+/* -------------------------------------------------------------------------- */
 </script>
+
 <style lang="sass" scoped>
 .min-w-96
   min-width: 96px
