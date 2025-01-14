@@ -113,7 +113,9 @@ const insertImage = (file: File) => {
     const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
     (async () => {
       await putObject(filePath, new Uint8Array(await file.arrayBuffer()), type);
-    })().catch(() => {});
+    })().catch((error: unknown) => {
+      console.error(error);
+    });
     urls.set(filePath, URL.createObjectURL(file));
     editor.value?.runCmd(
       "insertHTML",
