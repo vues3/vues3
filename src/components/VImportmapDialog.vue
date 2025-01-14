@@ -38,9 +38,14 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       q-btn(:label="t('Close')", @click="onDialogHide", flat)
 </template>
 <script setup lang="ts">
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
 import type { TImportmap } from "@vues3/shared";
-import type { QTableProps } from "quasar";
+import type { QDialog, QTableProps } from "quasar";
 import type { Ref } from "vue";
+import type { Composer } from "vue-i18n";
 
 import { deep, importmap } from "@vues3/shared";
 import json from "assets/importmap.json";
@@ -48,13 +53,57 @@ import { uid, useDialogPluginComponent } from "quasar";
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-defineEmits([...useDialogPluginComponent.emits]);
-const { t } = useI18n();
-const { dialogRef, onDialogHide } = useDialogPluginComponent();
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const { t }: Composer = useI18n();
+
+/* -------------------------------------------------------------------------- */
+
+const {
+  dialogRef,
+  onDialogHide,
+}: {
+  dialogRef: Ref<QDialog | undefined>;
+  onDialogHide: () => void;
+} = useDialogPluginComponent();
+
+/* -------------------------------------------------------------------------- */
+
+const columns: QTableProps["columns"] = json as QTableProps["columns"];
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
 const selected: Ref<Record<string, string>[]> = ref([]);
-const columns = json as QTableProps["columns"];
+
+/* -------------------------------------------------------------------------- */
+
 const rows: Ref<Record<string, string>[]> = ref([]);
-onMounted(() => {
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const addRow: () => void = () => {
+  const id = uid();
+  const name = "";
+  const path = "";
+  rows.value.push({ id, name, path });
+};
+
+/* -------------------------------------------------------------------------- */
+
+const removeRow: () => void = () => {
+  const set = new Set(selected.value);
+  rows.value = rows.value.filter((x) => !set.has(x));
+};
+
+/* -------------------------------------------------------------------------- */
+
+const importmapToRows: () => void = () => {
   const { imports = {} } = importmap;
   rows.value = Object.entries(imports).map(([name, path]) => {
     const id = uid();
@@ -66,26 +115,31 @@ onMounted(() => {
       rows.value.findIndex(({ name }) => name === "vue"),
     ),
   );
-});
-watch(
-  rows,
-  (value) => {
-    importmap.imports = Object.fromEntries(
-      value
-        .filter(({ name, path }) => path && name)
-        .map(({ name, path }) => [name, path]),
-    ) as TImportmap["imports"];
-  },
-  { deep },
-);
-const addRow = () => {
-  const id = uid();
-  const name = "";
-  const path = "";
-  rows.value.push({ id, name, path });
 };
-const removeRow = () => {
-  const set = new Set(selected.value);
-  rows.value = rows.value.filter((x) => !set.has(x));
+
+/* -------------------------------------------------------------------------- */
+
+const rowsToImportmap: (value: Record<string, string>[]) => void = (value) => {
+  importmap.imports = Object.fromEntries(
+    value
+      .filter(({ name, path }) => path && name)
+      .map(({ name, path }) => [name, path]),
+  ) as TImportmap["imports"];
 };
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+defineEmits([...useDialogPluginComponent.emits]);
+
+/* -------------------------------------------------------------------------- */
+
+onMounted(importmapToRows);
+
+/* -------------------------------------------------------------------------- */
+
+watch(rows, rowsToImportmap, { deep });
+
+/* -------------------------------------------------------------------------- */
 </script>
