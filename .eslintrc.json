@@ -11,8 +11,7 @@
     "node": true
   },
   "extends": [
-    "airbnb-base",
-    "airbnb-typescript/base",
+    "eslint:recommended",
     "plugin:@typescript-eslint/strict-type-checked",
     "plugin:@typescript-eslint/stylistic-type-checked",
     "plugin:vue/vue3-strongly-recommended",
