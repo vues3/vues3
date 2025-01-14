@@ -66,6 +66,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         label="Ok"
       )
 </template>
+
 <script setup lang="ts">
 /* -------------------------------------------------------------------------- */
 /*                                   Imports                                  */
