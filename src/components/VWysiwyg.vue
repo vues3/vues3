@@ -114,7 +114,7 @@ const insertImage = (file: File) => {
     (async () => {
       await putObject(filePath, new Uint8Array(await file.arrayBuffer()), type);
     })().catch((error: unknown) => {
-      console.error(error);
+      window.console.error(error);
     });
     urls.set(filePath, URL.createObjectURL(file));
     editor.value?.runCmd(
