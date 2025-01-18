@@ -35,7 +35,7 @@ watch(
   debounce((value) => {
     putObject("robots.txt", value as string, "text/plain").catch(
       (error: unknown) => {
-        console.error(error);
+        window.console.error(error);
       },
     );
   }, second),
