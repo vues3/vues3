@@ -193,10 +193,7 @@ const routerLink = "router-link";
         const uri = Uri.parse(`file:///${this.id}.vue`);
         let model = editor.getModel(uri);
         if (!model) {
-          const value =
-            (await getObjectText(`pages/${this.id}.vue`, cache)) ||
-            `<template></template>
-`;
+          const value = await getObjectText(`pages/${this.id}.vue`, cache);
           model = editor.getModel(uri);
           if (!model) {
             model = editor.createModel(value, "vue", uri);
@@ -229,6 +226,9 @@ const routerLink = "router-link";
                 }
               }, second),
             );
+            if (!value)
+              model.setValue(`<template></template>
+`);
           }
         }
         return model;
@@ -454,7 +454,7 @@ watch(
   const index = await (await fetch("runtime/index.html")).text();
   watch(
     [pages, importmap, domain],
-    debounce((arr) => {
+    debounce(async (arr) => {
       const [page, imap, cname] = arr as [TPage[], TImportmap, string];
       const promises: Promise<void>[] = [];
       oldPages.forEach(({ loc, path }) => {
@@ -465,12 +465,8 @@ watch(
             deleteObject(path ? `${path}/index.html` : "index.html"),
           );
       });
-      (async () => {
-        await Promise.allSettled(promises);
-        await removeEmptyDirectories();
-      })().catch((error: unknown) => {
-        window.console.error(error);
-      });
+      await Promise.allSettled(promises);
+      await removeEmptyDirectories();
       const body = index
         .replace(
           '<script type="importmap"></script>',
