@@ -34,10 +34,7 @@ import * as languageConfigs from "stores/language-configs";
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const getWorker: (workerId: string, label: string) => Worker = (
-  workerId,
-  label,
-) => {
+function getWorker(workerId: string, label: string): Worker {
   switch (label) {
     case "tailwindcss":
       return new TailwindcssWorker();
@@ -46,12 +43,7 @@ const getWorker: (workerId: string, label: string) => Worker = (
     default:
       return new EditorWorker();
   }
-};
-
-/* -------------------------------------------------------------------------- */
-
-const getSyncUris: () => monaco.Uri[] = () =>
-  monaco.editor.getModels().map(({ uri }) => uri);
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                  Constants                                 */
@@ -93,14 +85,16 @@ const worker: monaco.editor.MonacoWebWorker<WorkerLanguageService> =
 const engine: RegexEngine = createJavaScriptRegexEngine();
 
 /* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
+/*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-window.MonacoEnvironment = { getWorker };
+function getSyncUris(): monaco.Uri[] {
+  return monaco.editor.getModels().map(({ uri }) => uri);
+}
 
 /* -------------------------------------------------------------------------- */
 
-["vue", "js", "ts", "css"].forEach((value, index) => {
+function registerLanguage(value: string, index: number): void {
   const id = languageId[index];
   if (id) {
     const extensions = [`.${value}`];
@@ -110,13 +104,23 @@ window.MonacoEnvironment = { getWorker };
       languageConfigs[value as keyof typeof languageConfigs],
     );
   }
-});
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+window.MonacoEnvironment = { getWorker };
+
+/* -------------------------------------------------------------------------- */
+
+["vue", "js", "ts", "css"].forEach(registerLanguage);
 
 /* -------------------------------------------------------------------------- */
 
 registerProviders(worker, languageId, getSyncUris, monaco.languages).catch(
   (error: unknown) => {
-    console.error(error);
+    window.console.error(error);
   },
 );
 
