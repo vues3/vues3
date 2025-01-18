@@ -34,11 +34,11 @@ const createWindow = async () => {
   enable(mainWindow.webContents);
   if (process.env.DEV)
     await mainWindow.loadURL(process.env.APP_URL).catch((error: unknown) => {
-      console.error(error);
+      window.console.error(error);
     });
   else
     await mainWindow.loadFile("index.html").catch((error: unknown) => {
-      console.error(error);
+      window.console.error(error);
     });
   mainWindow.on("closed", () => {
     mainWindow = undefined;
@@ -50,7 +50,7 @@ app
   .whenReady()
   .then(createWindow)
   .catch((error: unknown) => {
-    console.error(error);
+    window.console.error(error);
   });
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
@@ -58,6 +58,6 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   if (mainWindow === undefined)
     createWindow().catch((error: unknown) => {
-      console.error(error);
+      window.console.error(error);
     });
 });
