@@ -139,7 +139,6 @@ const getObjectBlob: (
   if (handle?.kind === "file") return handle.getFile();
   return new Blob();
 };
-// (await Bucket.getFileHandle(Key)).getFile();
 
 /* -------------------------------------------------------------------------- */
 
