@@ -111,11 +111,9 @@ const right: (i: number) => void = (i) => {
 /* -------------------------------------------------------------------------- */
 
 const add: (i: number) => void = (i) => {
-  images.value.splice(
-    i + 1,
-    0,
-    Object.fromEntries(["alt", "url"].map((key) => [key, ""])),
-  );
+  const alt = "";
+  const url = "";
+  images.value.splice(i + 1, 0, { alt, url });
 };
 
 /* -------------------------------------------------------------------------- */
@@ -148,7 +146,7 @@ const uploadImage: (files: FileList | null) => void = (files) => {
             type,
           );
         })().catch((error: unknown) => {
-          console.error(error);
+          window.console.error(error);
         });
         urls.set(filePath, URL.createObjectURL(file));
         image.url = filePath;
@@ -171,7 +169,7 @@ const addBlobs: (value: TPage["images"]) => void = (value) => {
         (async () => {
           urls.set(url, URL.createObjectURL(await getObjectBlob(url)));
         })().catch((error: unknown) => {
-          console.error(error);
+          window.console.error(error);
         });
       });
   }
