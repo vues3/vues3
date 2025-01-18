@@ -167,7 +167,7 @@ const directLogin: (bucketValue: string) => void = (bucketValue) => {
   bucket.value = bucketValue;
   router.addRoute({ component, name, path });
   router.push(path).catch((error: unknown) => {
-    console.error(error);
+    window.console.error(error);
   });
 };
 
