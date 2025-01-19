@@ -6,7 +6,7 @@ import type { SFCDescriptor } from "@vue/compiler-sfc";
 import type { TImportmap, TPage } from "@vues3/shared";
 import type { Ref } from "vue";
 
-import { data, deep, importmap, pages } from "@vues3/shared";
+import { consoleError, data, deep, importmap, pages } from "@vues3/shared";
 import { editor, Uri } from "monaco-editor";
 import { debounce } from "quasar";
 import { cache, second, writable } from "stores/defaults";
@@ -67,18 +67,11 @@ const cleaner = (value: TAppPage[]) => {
     if (children.length) cleaner(children as TAppPage[]);
     (async () => {
       const { images } = getDocument(getContent(await sfc));
-      if (id)
-        deleteObject(`pages/${id}.vue`).catch((error: unknown) => {
-          window.console.error(error);
-        });
+      if (id) deleteObject(`pages/${id}.vue`).catch(consoleError);
       [...images].forEach(({ src }) => {
-        deleteObject(src).catch((error: unknown) => {
-          window.console.error(error);
-        });
+        deleteObject(src).catch(consoleError);
       });
-    })().catch((error: unknown) => {
-      window.console.error(error);
-    });
+    })().catch(consoleError);
   });
 };
 watch(deleted, (value) => {
@@ -103,9 +96,7 @@ watch(
           .forEach((url) => {
             URL.revokeObjectURL(urls.get(url) ?? "");
             urls.delete(url);
-            deleteObject(url).catch((error: unknown) => {
-              window.console.error(error);
-            });
+            deleteObject(url).catch(consoleError);
           });
       }
       prevImages.length = 0;
@@ -219,9 +210,7 @@ const routerLink = "router-link";
                       .forEach((src) => {
                         URL.revokeObjectURL(urls.get(src) ?? "");
                         urls.delete(src);
-                        deleteObject(src).catch((error: unknown) => {
-                          window.console.error(error);
-                        });
+                        deleteObject(src).catch(consoleError);
                       });
                     oldImages.length = 0;
                     oldImages.push(...sources);
@@ -230,9 +219,7 @@ const routerLink = "router-link";
                         `pages/${this.id}.vue`,
                         model.getValue(),
                         "text/html",
-                      ).catch((error: unknown) => {
-                        window.console.error(error);
-                      });
+                      ).catch(consoleError);
                   }
                 }
               }, second),
@@ -271,9 +258,7 @@ watch(bucket, async (value) => {
           ) as TPage[]
         )[0] ?? ({} as TPage),
       );
-    })().catch((error: unknown) => {
-      window.console.error(error);
-    });
+    })().catch(consoleError);
     (async () => {
       fonts.length = 0;
       fonts.push(
@@ -281,17 +266,13 @@ watch(bucket, async (value) => {
           (await getObjectText("fonts.json", cache)) || "[]",
         ) as never[]),
       );
-    })().catch((error: unknown) => {
-      window.console.error(error);
-    });
+    })().catch(consoleError);
     (async () => {
       const { imports } = JSON.parse(
         (await getObjectText("index.importmap", cache)) || "{}",
       ) as TImportmap;
       importmap.imports = imports;
-    })().catch((error: unknown) => {
-      window.console.error(error);
-    });
+    })().catch(consoleError);
     (async () => {
       {
         const [cname = ""] = (await getObjectText("CNAME", cache)).split(
@@ -301,13 +282,9 @@ watch(bucket, async (value) => {
         domain.value = cname.trim();
       }
       watch(domain, (cname) => {
-        putObject("CNAME", cname, "text/plain").catch((error: unknown) => {
-          window.console.error(error);
-        });
+        putObject("CNAME", cname, "text/plain").catch(consoleError);
       });
-    })().catch((error: unknown) => {
-      window.console.error(error);
-    });
+    })().catch(consoleError);
     const [localManifest, serverManifest] = (
       (await Promise.all([
         (await fetch("runtime/.vite/manifest.json")).json(),
@@ -337,9 +314,7 @@ watch(bucket, async (value) => {
       [...serverManifest]
         .filter((x) => !localManifest.has(x))
         .forEach((element) => {
-          deleteObject(element).catch((error: unknown) => {
-            window.console.error(error);
-          });
+          deleteObject(element).catch(consoleError);
         });
       [...localManifest.add(".vite/manifest.json")]
         .filter((x) => !serverManifest.has(x))
@@ -350,12 +325,8 @@ watch(bucket, async (value) => {
               element,
               new Uint8Array(await body.arrayBuffer()),
               body.type,
-            ).catch((error: unknown) => {
-              window.console.error(error);
-            });
-          })().catch((error: unknown) => {
-            window.console.error(error);
-          });
+            ).catch(consoleError);
+          })().catch(consoleError);
         });
     }
   } else {
@@ -374,9 +345,7 @@ watch(
   debounce((value) => {
     if (value)
       putObject("index.json", JSON.stringify(value), "application/json").catch(
-        (error: unknown) => {
-          window.console.error(error);
-        },
+        consoleError,
       );
   }, second),
   { deep },
@@ -392,9 +361,7 @@ watch(
   debounce((value, oldValue) => {
     if (oldValue)
       putObject("fonts.json", JSON.stringify(value), "application/json").catch(
-        (error: unknown) => {
-          window.console.error(error);
-        },
+        consoleError,
       );
   }),
 );
@@ -415,9 +382,7 @@ watch(
         "index.importmap",
         JSON.stringify({ imports }),
         "application/importmap+json",
-      ).catch((error: unknown) => {
-        window.console.error(error);
-      });
+      ).catch(consoleError);
   }),
   { deep },
 );
@@ -448,9 +413,7 @@ watch(
         "sitemap.xml",
         toXML({ "?": 'xml version="1.0" encoding="UTF-8"', urlset }),
         "application/xml",
-      ).catch((error: unknown) => {
-        window.console.error(error);
-      });
+      ).catch(consoleError);
     }
   }, second),
   { deep },
@@ -559,25 +522,19 @@ ${JSON.stringify(imap, null, " ")}
               );
             if (loc)
               putObject(`${loc}/index.html`, htm, "text/html").catch(
-                (error: unknown) => {
-                  window.console.error(error);
-                },
+                consoleError,
               );
             putObject(
               path ? `${path}/index.html` : "index.html",
               htm,
               "text/html",
-            ).catch((error: unknown) => {
-              window.console.error(error);
-            });
+            ).catch(consoleError);
           },
         );
     }, second),
     { deep },
   );
-})().catch((error: unknown) => {
-  window.console.error(error);
-});
+})().catch(consoleError);
 
 /* -------------------------------------------------------------------------- */
 /*                                   Exports                                  */
