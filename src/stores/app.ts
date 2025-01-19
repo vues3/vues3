@@ -1,12 +1,14 @@
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
 import type { SFCDescriptor } from "@vue/compiler-sfc";
 import type { TImportmap, TPage } from "@vues3/shared";
 import type { Ref } from "vue";
 
 import { data, deep, importmap, pages } from "@vues3/shared";
-import mimes from "assets/mimes.json";
-import mime from "mime";
 import { editor, Uri } from "monaco-editor";
-import { debounce, uid } from "quasar";
+import { debounce } from "quasar";
 import { cache, second, writable } from "stores/defaults";
 import {
   bucket,
@@ -22,20 +24,29 @@ import { computed, reactive, ref, version, watch } from "vue";
 import toString from "vue-sfc-descriptor-to-string";
 import { parse, parseCache } from "vue/compiler-sfc";
 
-export type TAppPage = TPage & {
+/* -------------------------------------------------------------------------- */
+/*                                    Types                                   */
+/* -------------------------------------------------------------------------- */
+
+type TAppPage = TPage & {
   contenteditable: boolean;
   html: Promise<string> | string;
   sfc: Promise<editor.ITextModel>;
 };
 
-export const domain = ref("");
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
+const domain = ref("");
+
 const parser = new DOMParser();
 const getDocument = (value: string) =>
   parser.parseFromString(
     `<head><base href="//"></head><body>${value}</body>`,
     "text/html",
   );
-export const selected: Ref<string | undefined> = ref();
+const selected: Ref<string | undefined> = ref();
 let descriptor: SFCDescriptor | undefined;
 let errors = [];
 const getContent = (model: editor.ITextModel) => {
@@ -50,7 +61,7 @@ const getImages = (model: editor.ITextModel) => {
   const { images } = getDocument(getContent(model));
   return [...images].map(({ src }: { src: string }) => src);
 };
-export const deleted: Ref<TPage | undefined> = ref();
+const deleted: Ref<TPage | undefined> = ref();
 const cleaner = (value: TAppPage[]) => {
   value.forEach(({ children, id, sfc }) => {
     if (children.length) cleaner(children as TAppPage[]);
@@ -73,13 +84,13 @@ const cleaner = (value: TAppPage[]) => {
 watch(deleted, (value) => {
   if (value) cleaner([value as TAppPage]);
 });
-export const the = computed(
+const the = computed(
   () =>
     (pages.value.find(({ id }) => id === selected.value) ?? pages.value[0]) as
       | TAppPage
       | undefined,
 );
-export const urls = reactive(new Map<string, string>());
+const urls = reactive(new Map<string, string>());
 const prevImages: string[] = [];
 watch(
   the,
@@ -249,7 +260,7 @@ const routerLink = "router-link";
   });
 }
 const vue = `assets/vue.esm-browser.prod-${version}.js`;
-export const fonts = reactive([]);
+const fonts = reactive([]);
 watch(bucket, async (value) => {
   if (value) {
     (async () => {
@@ -370,23 +381,12 @@ watch(
   }, second),
   { deep },
 );
-export const rightDrawer = ref(false);
-export const putImage = async (file: File) => {
-  const { type } = file;
-  const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
-  let message = "";
-  try {
-    if (mimes.includes(type))
-      await putObject(filePath, new Uint8Array(await file.arrayBuffer()), type);
-    else
-      throw new Error(
-        "The graphic file type is not suitable for use on the Internet",
-      );
-  } catch (err) {
-    ({ message } = err as Error);
-  }
-  return { filePath, message };
-};
+const rightDrawer = ref(false);
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
 watch(
   fonts,
   debounce((value, oldValue) => {
@@ -398,6 +398,9 @@ watch(
       );
   }),
 );
+
+/* -------------------------------------------------------------------------- */
+
 watch(
   importmap,
   debounce((value, oldValue) => {
@@ -418,6 +421,9 @@ watch(
   }),
   { deep },
 );
+
+/* -------------------------------------------------------------------------- */
+
 watch(
   [pages, domain],
   debounce((arr) => {
@@ -449,6 +455,9 @@ watch(
   }, second),
   { deep },
 );
+
+/* -------------------------------------------------------------------------- */
+
 (async () => {
   const oldPages: Record<string, null | string | undefined>[] = [];
   const index = await (await fetch("runtime/index.html")).text();
@@ -569,3 +578,13 @@ ${JSON.stringify(imap, null, " ")}
 })().catch((error: unknown) => {
   window.console.error(error);
 });
+
+/* -------------------------------------------------------------------------- */
+/*                                   Exports                                  */
+/* -------------------------------------------------------------------------- */
+
+export type { TAppPage };
+
+export { deleted, domain, fonts, rightDrawer, selected, the, urls };
+
+/* -------------------------------------------------------------------------- */
