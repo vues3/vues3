@@ -31,49 +31,48 @@ const recursive = true;
 
 /** Check the file existence */
 
-async function deleteObject(Bucket: string, Key: string): Promise<void> {
+const deleteObject = async (Bucket: string, Key: string): Promise<void> => {
   await unlink(join(Bucket, Key));
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
 /** Adds an object to a bucket */
 
-function focusedWindowClose(): void {
+const focusedWindowClose = (): void => {
   BrowserWindow.getFocusedWindow()?.close();
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
 /** Remove empty directories */
 
-function focusedWindowIsMaximized(): boolean | null {
-  return BrowserWindow.getFocusedWindow()?.isMaximized() ?? null;
-}
+const focusedWindowIsMaximized = (): boolean | null =>
+  BrowserWindow.getFocusedWindow()?.isMaximized() ?? null;
 
 /* -------------------------------------------------------------------------- */
 
 /** Removes an object from a bucket */
 
-function focusedWindowMinimize(): void {
+const focusedWindowMinimize = (): void => {
   BrowserWindow.getFocusedWindow()?.minimize();
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
 /** Retrieves an object */
 
-function focusedWindowToggleMaximize(): void {
+const focusedWindowToggleMaximize = (): void => {
   const focusedWindow = BrowserWindow.getFocusedWindow();
   if (focusedWindow?.isMaximized()) focusedWindow.unmaximize();
   else focusedWindow?.maximize();
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
 /** Retrieves a text object */
 
-async function getObject(Bucket: string, Key: string): Promise<Response> {
+const getObject = async (Bucket: string, Key: string): Promise<Response> => {
   try {
     const file = join(Bucket, Key);
     const [body, mime] = await Promise.all([readFile(file), import("mime")]);
@@ -84,37 +83,35 @@ async function getObject(Bucket: string, Key: string): Promise<Response> {
     //
   }
   return new Response();
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
 /** Retrieves a blob object */
 
-async function getObjectBlob(Bucket: string, Key: string): Promise<Blob> {
-  return (await getObject(Bucket, Key)).blob();
-}
+const getObjectBlob = async (Bucket: string, Key: string): Promise<Blob> =>
+  (await getObject(Bucket, Key)).blob();
 
 /* -------------------------------------------------------------------------- */
 
-async function getObjectText(Bucket: string, Key: string): Promise<string> {
-  return (await getObject(Bucket, Key)).text();
-}
+const getObjectText = async (Bucket: string, Key: string): Promise<string> =>
+  (await getObject(Bucket, Key)).text();
 
 /* -------------------------------------------------------------------------- */
 
-async function headObject(Bucket: string, Key: string): Promise<null> {
+const headObject = async (Bucket: string, Key: string): Promise<null> => {
   const stats = await lstat(join(Bucket, Key));
   if (stats.isFile()) return null;
   throw new Error("It's not a file");
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
-async function putObject(
+const putObject = async (
   Bucket: string,
   Key: string,
   body: StreamingBlobPayloadInputTypes,
-): Promise<void> {
+): Promise<void> => {
   const filePath = join(Bucket, Key);
   const dirName = dirname(filePath);
   try {
@@ -123,14 +120,14 @@ async function putObject(
     await mkdir(dirName, { recursive });
   }
   await writeFile(filePath, body as string | Uint8Array);
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
-async function removeEmptyDirectories(
+const removeEmptyDirectories = async (
   directory: string,
   exclude: string[],
-): Promise<void> {
+): Promise<void> => {
   const fileStats = await lstat(directory);
   if (!fileStats.isDirectory() || exclude.includes(basename(directory))) return;
   let fileNames = await readdir(directory);
@@ -143,7 +140,7 @@ async function removeEmptyDirectories(
     fileNames = await readdir(directory);
   }
   if (!fileNames.length) await rmdir(directory);
-}
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
