@@ -1,4 +1,5 @@
 import { enable, initialize } from "@electron/remote/main/index.js";
+import { consoleError } from "@vues3/shared";
 import { app, BrowserWindow, Menu } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -33,31 +34,18 @@ const createWindow = async () => {
   });
   enable(mainWindow.webContents);
   if (process.env.DEV)
-    await mainWindow.loadURL(process.env.APP_URL).catch((error: unknown) => {
-      window.console.error(error);
-    });
-  else
-    await mainWindow.loadFile("index.html").catch((error: unknown) => {
-      window.console.error(error);
-    });
+    await mainWindow.loadURL(process.env.APP_URL).catch(consoleError);
+  else await mainWindow.loadFile("index.html").catch(consoleError);
   mainWindow.on("closed", () => {
     mainWindow = undefined;
   });
   mainWindow.show();
   // mainWindow.webContents.openDevTools();
 };
-app
-  .whenReady()
-  .then(createWindow)
-  .catch((error: unknown) => {
-    window.console.error(error);
-  });
+app.whenReady().then(createWindow).catch(consoleError);
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
 app.on("activate", () => {
-  if (mainWindow === undefined)
-    createWindow().catch((error: unknown) => {
-      window.console.error(error);
-    });
+  if (mainWindow === undefined) createWindow().catch(consoleError);
 });
