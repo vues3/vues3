@@ -29,7 +29,7 @@ import type { QVueGlobals } from "quasar";
 import type { Ref } from "vue";
 import type { Composer } from "vue-i18n";
 
-import { deep } from "@vues3/shared";
+import { consoleError, deep } from "@vues3/shared";
 import { useFileDialog } from "@vueuse/core";
 import mimes from "assets/mimes.json";
 import mime from "mime";
@@ -130,8 +130,51 @@ const remove: (i: number) => void = (i) => {
 };
 
 /* -------------------------------------------------------------------------- */
+/*                                  Watchers                                  */
+/* -------------------------------------------------------------------------- */
 
-const uploadImage: (files: FileList | null) => void = (files) => {
+watch(
+  images,
+  (value) => {
+    if (!value.length) add(-1);
+    if (the.value) {
+      the.value.images = value
+        .filter(({ url }) => url)
+        .map(({ alt = "", url = "" }) => ({ alt, url }));
+      the.value.images
+        .filter(({ url = "" }) => !urls.has(url))
+        .forEach(({ url = "" }) => {
+          (async () => {
+            urls.set(url, URL.createObjectURL(await getObjectBlob(url)));
+          })().catch(consoleError);
+        });
+    }
+  },
+  { deep },
+);
+
+/* -------------------------------------------------------------------------- */
+
+watch(
+  the,
+  (value) => {
+    if (!value?.images.length) {
+      images.value.length = 0;
+      add(-1);
+    } else
+      images.value = value.images.map(({ alt = "", url = "" }) => ({
+        alt,
+        url,
+      }));
+  },
+  { immediate },
+);
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+onChange((files) => {
   const image = images.value[index];
   if (files && image) {
     const [file] = files;
@@ -145,62 +188,13 @@ const uploadImage: (files: FileList | null) => void = (files) => {
             new Uint8Array(await file.arrayBuffer()),
             type,
           );
-        })().catch((error: unknown) => {
-          window.console.error(error);
-        });
+        })().catch(consoleError);
         urls.set(filePath, URL.createObjectURL(file));
         image.url = filePath;
       } else $q.notify({ message });
     }
   }
-};
-
-/* -------------------------------------------------------------------------- */
-
-const addBlobs: (value: TPage["images"]) => void = (value) => {
-  if (!value.length) add(-1);
-  if (the.value) {
-    the.value.images = value
-      .filter(({ url }) => url)
-      .map(({ alt = "", url = "" }) => ({ alt, url }));
-    the.value.images
-      .filter(({ url = "" }) => !urls.has(url))
-      .forEach(({ url = "" }) => {
-        (async () => {
-          urls.set(url, URL.createObjectURL(await getObjectBlob(url)));
-        })().catch((error: unknown) => {
-          window.console.error(error);
-        });
-      });
-  }
-};
-
-/* -------------------------------------------------------------------------- */
-
-const initImages: (value: TPage | undefined) => void = (value) => {
-  if (!value?.images.length) {
-    images.value.length = 0;
-    add(-1);
-  } else
-    images.value = value.images.map(({ alt = "", url = "" }) => ({
-      alt,
-      url,
-    }));
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
-
-onChange(uploadImage);
-
-/* -------------------------------------------------------------------------- */
-
-watch(images, addBlobs, { deep });
-
-/* -------------------------------------------------------------------------- */
-
-watch(the, initImages, { immediate });
+});
 
 /* -------------------------------------------------------------------------- */
 </script>
