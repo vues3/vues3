@@ -2,23 +2,16 @@
 /*                                   Imports                                  */
 /* -------------------------------------------------------------------------- */
 
+import { consoleError } from "@vues3/shared";
 import { Lang } from "quasar";
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const ru: () => Promise<void> = async () => {
-  if (Lang.getLocale() === "ru-RU")
-    Lang.set((await import("quasar/lang/ru")).default);
-};
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
 /* -------------------------------------------------------------------------- */
 
-ru().catch((error: unknown) => {
-  window.console.error(error);
-});
+(async () => {
+  if (Lang.getLocale() === "ru-RU")
+    Lang.set((await import("quasar/lang/ru")).default);
+})().catch(consoleError);
 
 /* -------------------------------------------------------------------------- */
