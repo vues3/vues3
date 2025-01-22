@@ -19,6 +19,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 <script setup lang="ts">
 import type { Ref } from "vue";
 
+import { consoleError } from "@vues3/shared";
 import { debounce, useDialogPluginComponent } from "quasar";
 import { cache, second } from "stores/defaults";
 import { getObjectText, putObject } from "stores/io";
@@ -33,11 +34,7 @@ onBeforeMount(async () => {
 watch(
   text,
   debounce((value) => {
-    putObject("robots.txt", value as string, "text/plain").catch(
-      (error: unknown) => {
-        window.console.error(error);
-      },
-    );
+    putObject("robots.txt", value as string, "text/plain").catch(consoleError);
   }, second),
 );
 </script>
