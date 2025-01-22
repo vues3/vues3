@@ -21,7 +21,7 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-item-section(avatar)
           q-btn(
             :icon="name === cred.Bucket ? 'lock_open' : 'lock'",
-            @click="(evt: Event) => { evt.stopPropagation(); lock(name); }",
+            @click="(evt: Event) => { evt.stopPropagation(); lock(name.toString()); }",
             flat,
             padding="sm"
           )
@@ -187,8 +187,9 @@ const getDir: () => Promise<void> = async () => {
       setFileSystemDirectoryHandle(dirHandle);
       const { name } = dirHandle;
       directLogin(name);
-    } catch (e) {
-      //
+    } catch (err) {
+      const { message } = err as Error;
+      $q.notify({ message });
     }
 };
 
@@ -259,7 +260,7 @@ const remove: (name: number | string) => void = (name) => {
 
 /* -------------------------------------------------------------------------- */
 
-const lock: (name: number | string) => void = (name) => {
+const lock: (name: string) => void = (name) => {
   const value =
     name === credential.value[name]?.Bucket
       ? undefined
