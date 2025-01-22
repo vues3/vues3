@@ -33,7 +33,7 @@ import type { Component, Ref } from "vue";
 
 import presetWebFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
-import { customFetch, getFonts } from "@vues3/shared";
+import { consoleError, customFetch, getFonts } from "@vues3/shared";
 import { useFileDialog } from "@vueuse/core";
 import Defaults from "app/uno.config";
 import mimes from "assets/mimes.json";
@@ -113,9 +113,7 @@ const insertImage = (file: File) => {
     const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
     (async () => {
       await putObject(filePath, new Uint8Array(await file.arrayBuffer()), type);
-    })().catch((error: unknown) => {
-      window.console.error(error);
-    });
+    })().catch(consoleError);
     urls.set(filePath, URL.createObjectURL(file));
     editor.value?.runCmd(
       "insertHTML",
