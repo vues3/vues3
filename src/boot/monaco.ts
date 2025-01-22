@@ -34,7 +34,7 @@ import * as languageConfigs from "stores/language-configs";
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-function getWorker(workerId: string, label: string): Worker {
+const getWorker: monacoNs.Environment["getWorker"] = (workerId, label) => {
   switch (label) {
     case "tailwindcss":
       return new TailwindcssWorker();
@@ -43,7 +43,7 @@ function getWorker(workerId: string, label: string): Worker {
     default:
       return new EditorWorker();
   }
-}
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                  Constants                                 */
@@ -88,23 +88,8 @@ const engine: RegexEngine = createJavaScriptRegexEngine();
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-function getSyncUris(): monaco.Uri[] {
-  return monaco.editor.getModels().map(({ uri }) => uri);
-}
-
-/* -------------------------------------------------------------------------- */
-
-function registerLanguage(value: string, index: number): void {
-  const id = languageId[index];
-  if (id) {
-    const extensions = [`.${value}`];
-    monaco.languages.register({ extensions, id });
-    monaco.languages.setLanguageConfiguration(
-      id,
-      languageConfigs[value as keyof typeof languageConfigs],
-    );
-  }
-}
+const getSyncUris = (): monaco.Uri[] =>
+  monaco.editor.getModels().map(({ uri }) => uri);
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
@@ -114,7 +99,17 @@ window.MonacoEnvironment = { getWorker };
 
 /* -------------------------------------------------------------------------- */
 
-["vue", "js", "ts", "css"].forEach(registerLanguage);
+["vue", "js", "ts", "css"].forEach((value, index) => {
+  const id = languageId[index];
+  if (id) {
+    const extensions = [`.${value}`];
+    monaco.languages.register({ extensions, id });
+    monaco.languages.setLanguageConfiguration(
+      id,
+      languageConfigs[value as keyof typeof languageConfigs],
+    );
+  }
+});
 
 /* -------------------------------------------------------------------------- */
 
