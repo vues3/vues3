@@ -90,7 +90,7 @@ import type { Component } from "vue";
 import type { ComposerTranslation } from "vue-i18n";
 import type { Router } from "vue-router";
 
-import { validateCredentials } from "@vues3/shared";
+import { consoleError, validateCredentials } from "@vues3/shared";
 import { useStorage } from "@vueuse/core";
 import VCredsDialog from "components/VCredsDialog.vue";
 import VOtpDialog from "components/VOtpDialog.vue";
@@ -166,9 +166,7 @@ const directLogin: (bucketValue: string) => void = (bucketValue) => {
   const component = contentPage as Component;
   bucket.value = bucketValue;
   router.addRoute({ component, name, path });
-  router.push(path).catch((error: unknown) => {
-    window.console.error(error);
-  });
+  router.push(path).catch(consoleError);
 };
 
 /* -------------------------------------------------------------------------- */
