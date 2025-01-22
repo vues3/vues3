@@ -395,7 +395,7 @@ watch(
     const [page, cname] = arr as [TPage[], string];
     if (cname) {
       const url = page
-        .filter(({ enabled, path }) => enabled && path !== null)
+        .filter(({ enabled, path }) => enabled && path !== undefined)
         .map(({ changefreq, lastmod, priority, to }) => {
           const loc = `https://${cname}${to === "/" ? "" : encodeURI(to ?? "")}`;
           return {
@@ -458,7 +458,7 @@ ${JSON.stringify(imap, null, " ")}
         );
       oldPages.length = 0;
       page
-        .filter(({ path }) => path !== null)
+        .filter(({ path }) => path !== undefined)
         .forEach(
           ({
             branch,
