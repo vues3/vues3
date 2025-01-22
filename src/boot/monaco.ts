@@ -16,6 +16,7 @@ import {
   activateMarkers,
   registerProviders,
 } from "@volar/monaco";
+import { consoleError } from "@vues3/shared";
 import * as monaco from "monaco-editor";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import { configureMonacoTailwindcss } from "monaco-tailwindcss";
@@ -114,9 +115,7 @@ window.MonacoEnvironment = { getWorker };
 /* -------------------------------------------------------------------------- */
 
 registerProviders(worker, languageId, getSyncUris, monaco.languages).catch(
-  (error: unknown) => {
-    window.console.error(error);
-  },
+  consoleError,
 );
 
 /* -------------------------------------------------------------------------- */
