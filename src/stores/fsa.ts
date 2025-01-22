@@ -8,6 +8,12 @@ import type { RunSequentialPromisesFulfilledResult } from "quasar";
 import { runSequentialPromises } from "quasar";
 
 /* -------------------------------------------------------------------------- */
+/*                                    Types                                   */
+/* -------------------------------------------------------------------------- */
+
+type FileSystemHandle = FileSystemDirectoryHandle | FileSystemFileHandle | null;
+
+/* -------------------------------------------------------------------------- */
 /*                                  Constants                                 */
 /* -------------------------------------------------------------------------- */
 
@@ -26,11 +32,7 @@ const getHandle: (
   Bucket: FileSystemDirectoryHandle,
   Key: string,
   Create?: boolean,
-) => Promise<FileSystemDirectoryHandle | FileSystemFileHandle | null> = async (
-  Bucket,
-  Key,
-  Create = false,
-) => {
+) => Promise<FileSystemHandle> = async (Bucket, Key, Create = false) => {
   const branch = [null, ...Key.split("/")];
   const callbackfnBranch: (
     leaf: null | string,
