@@ -83,14 +83,14 @@ const images: Ref<TPage["images"]> = ref([]);
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const upload: (i: number) => void = (i) => {
+const upload = (i: number): void => {
   index = i;
   open();
 };
 
 /* -------------------------------------------------------------------------- */
 
-const left: (i: number) => void = (i) => {
+const left = (i: number): void => {
   if (i) {
     const prev = images.value[i - 1];
     if (images.value[i] && prev)
@@ -100,7 +100,7 @@ const left: (i: number) => void = (i) => {
 
 /* -------------------------------------------------------------------------- */
 
-const right: (i: number) => void = (i) => {
+const right = (i: number): void => {
   if (i < images.value.length - 1) {
     const next = images.value[i + 1];
     if (images.value[i] && next)
@@ -110,7 +110,7 @@ const right: (i: number) => void = (i) => {
 
 /* -------------------------------------------------------------------------- */
 
-const add: (i: number) => void = (i) => {
+const add = (i: number): void => {
   const alt = "";
   const url = "";
   images.value.splice(i + 1, 0, { alt, url });
@@ -118,7 +118,7 @@ const add: (i: number) => void = (i) => {
 
 /* -------------------------------------------------------------------------- */
 
-const remove: (i: number) => void = (i) => {
+const remove = (i: number): void => {
   $q.dialog({
     cancel: true,
     message: t("Do you really want to delete?"),
