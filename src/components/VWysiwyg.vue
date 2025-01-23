@@ -21,15 +21,24 @@ form(
     ref="editor"
   )
 </template>
+
 <script setup lang="ts">
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
+import type { RuntimeOptions } from "@unocss/runtime";
+import type { UseFileDialogReturn } from "@vueuse/core";
 import type {
   QEditor,
-  QEditorCommand,
+  QEditorProps,
   QuasarIconSetEditor,
   QuasarLanguageEditorLabel,
+  QVueGlobals,
   StringDictionary,
 } from "quasar";
 import type { Component, Ref } from "vue";
+import type { Composer } from "vue-i18n";
 
 import presetWebFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
@@ -46,6 +55,10 @@ import { putObject } from "stores/io";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
+/* -------------------------------------------------------------------------- */
+/*                                 Properties                                 */
+/* -------------------------------------------------------------------------- */
+
 const props = withDefaults(
   defineProps<{
     id: string | undefined;
@@ -56,58 +69,46 @@ const props = withDefaults(
     modelValue: "",
   },
 );
-defineEmits(["update:modelValue"]);
-const $q = useQuasar();
-const { t } = useI18n();
-const editor: Ref<QEditor | undefined> = ref();
+
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const $q: QVueGlobals = useQuasar();
+
+/* -------------------------------------------------------------------------- */
+
+const { t }: Composer = useI18n();
+
+/* -------------------------------------------------------------------------- */
+/*                                  Constants                                 */
+/* -------------------------------------------------------------------------- */
+
 const placeholder = t("Add some content to your page...");
-const htm = ref(await props.modelValue);
-onMounted(() => {
-  const rootElement = editor.value?.getContentEl as () => Element | undefined;
-  watch(
-    () => getFonts(Fonts),
-    async (fonts) => {
-      let { presets } = Defaults;
-      presets = [
-        ...presets,
-        presetWebFonts({
-          customFetch,
-          fonts,
-        }),
-      ];
-      const defaults = { presets };
-      await initUnocssRuntime({ bypassDefined, defaults, rootElement });
-    },
-    { immediate },
-  );
-  watch(
-    () => props.id,
-    async () => {
-      htm.value = await props.modelValue;
-      const contentEl = rootElement();
-      if (
-        contentEl?.innerHTML !== undefined &&
-        contentEl.innerHTML !== htm.value
-      )
-        contentEl.innerHTML = htm.value;
-    },
-  );
-});
-const fonts = computed(() => ({
-  ...getFonts([
-    "Arial",
-    "Arial Black",
-    "Comic Sans",
-    "Courier New",
-    "Impact",
-    "Lucida Grande",
-    "Times New Roman",
-    "Verdana",
-  ]),
-  ...getFonts(Fonts),
-}));
+
+/* -------------------------------------------------------------------------- */
+
 const message = t("The graphic file type is not suitable for use on the web");
-const insertImage = (file: File) => {
+
+/* -------------------------------------------------------------------------- */
+
+const list = "no-icons";
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
+const editor: Ref<QEditor | undefined> = ref();
+
+/* -------------------------------------------------------------------------- */
+
+const htm = ref(await props.modelValue);
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const insertImage = (file: File): void => {
   const { type } = file;
   if (mimes.includes(type)) {
     const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
@@ -121,7 +122,10 @@ const insertImage = (file: File) => {
     );
   } else $q.notify({ message });
 };
-const capture = (evt: ClipboardEvent | DragEvent) => {
+
+/* -------------------------------------------------------------------------- */
+
+const capture = (evt: ClipboardEvent | DragEvent): void => {
   const { files = [] } =
     (evt as DragEvent).dataTransfer ??
     (evt as ClipboardEvent).clipboardData ??
@@ -132,8 +136,16 @@ const capture = (evt: ClipboardEvent | DragEvent) => {
     [...files].forEach(insertImage);
   }
 };
-const { files, open } = useFileDialog({ accept, reset });
-const definitions = {
+
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const { files, open }: UseFileDialogReturn = useFileDialog({ accept, reset });
+
+/* -------------------------------------------------------------------------- */
+
+const definitions: QEditorProps["definitions"] = {
   ...(Object.fromEntries(
     [
       ["upload", t("Upload Image"), open],
@@ -148,7 +160,7 @@ const definitions = {
         },
       ],
     ].map(([icon, tip, handler]) => [icon, { handler, icon, tip }]),
-  ) as Record<string, QEditorCommand>),
+  ) as QEditorProps["definitions"]),
   ...(Object.fromEntries(
     [
       ...[...Array(6).keys()].map((key) => [
@@ -163,9 +175,93 @@ const definitions = {
         htmlTip: `<span class="prose"><${key} class="!my-0">${$q.lang.editor[value as keyof StringDictionary<QuasarLanguageEditorLabel>]}</${key}></span>`,
       },
     ]),
-  ) as Record<string, QEditorCommand>),
+  ) as QEditorProps["definitions"]),
 };
-const list = "no-icons";
+
+/* -------------------------------------------------------------------------- */
+/*                                  Watchers                                  */
+/* -------------------------------------------------------------------------- */
+
+watch(files, (newFiles) => {
+  if (newFiles) [...newFiles].forEach(insertImage);
+});
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+defineEmits(["update:modelValue"]);
+
+/* -------------------------------------------------------------------------- */
+
+onMounted(() => {
+  /* -------------------------------------------------------------------------- */
+  /*                                   Objects                                  */
+  /* -------------------------------------------------------------------------- */
+
+  const rootElement: RuntimeOptions["rootElement"] = editor.value?.getContentEl;
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  Watchers                                  */
+  /* -------------------------------------------------------------------------- */
+
+  watch(
+    () => getFonts(Fonts),
+    async (fonts) => {
+      if (rootElement) {
+        let { presets } = Defaults;
+        presets = [
+          ...presets,
+          presetWebFonts({
+            customFetch,
+            fonts,
+          }),
+        ];
+        const defaults: RuntimeOptions["defaults"] = { presets };
+        await initUnocssRuntime({ bypassDefined, defaults, rootElement });
+      }
+    },
+    { immediate },
+  );
+
+  /* -------------------------------------------------------------------------- */
+
+  watch(
+    () => props.id,
+    async () => {
+      htm.value = await props.modelValue;
+      const contentEl = rootElement?.();
+      if (
+        contentEl?.innerHTML !== undefined &&
+        contentEl.innerHTML !== htm.value
+      )
+        contentEl.innerHTML = htm.value;
+    },
+  );
+
+  /* -------------------------------------------------------------------------- */
+});
+
+/* -------------------------------------------------------------------------- */
+/*                                Computations                                */
+/* -------------------------------------------------------------------------- */
+
+const fonts = computed(() => ({
+  ...getFonts([
+    "Arial",
+    "Arial Black",
+    "Comic Sans",
+    "Courier New",
+    "Impact",
+    "Lucida Grande",
+    "Times New Roman",
+    "Verdana",
+  ]),
+  ...getFonts(Fonts),
+}));
+
+/* -------------------------------------------------------------------------- */
+
 const toolbar = computed(() => [
   ["left", "center", "right", "justify"],
   ["bold", "italic", "strike", "underline", "subscript", "superscript"],
@@ -214,7 +310,6 @@ const toolbar = computed(() => [
   ["undo", "redo"],
   ["upload", "dashboard", "share"],
 ]);
-watch(files, (newFiles) => {
-  if (newFiles) [...newFiles].forEach(insertImage);
-});
+
+/* -------------------------------------------------------------------------- */
 </script>
