@@ -120,15 +120,15 @@ const {
 
 /* -------------------------------------------------------------------------- */
 
-const cred: null | Record<string, null | string> = (credential.value[
+const cred: Record<string, null | string> | undefined = credential.value[
   props.value ?? ""
-] ?? null) as null | Record<string, null | string>;
+] as Record<string, null | string> | undefined;
 
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const decrypt: (value?: null | string) => null | string = (value) =>
+const decrypt = (value?: string): null | string =>
   props.pin
     ? CryptoJS.AES.decrypt(value ?? "", props.pin).toString(CryptoJS.enc.Utf8)
     : (value ?? null);
@@ -142,19 +142,21 @@ const bucketRef: Readonly<ShallowRef<null | QInput>> =
 
 /* -------------------------------------------------------------------------- */
 
-const Bucket: Ref<null | string> = ref(decrypt(cred?.Bucket));
+const Bucket: Ref<null | string> = ref(decrypt(cred?.Bucket ?? undefined));
 
 /* -------------------------------------------------------------------------- */
 
-const secretAccessKey: Ref<null | string> = ref(decrypt(cred?.secretAccessKey));
+const secretAccessKey: Ref<null | string> = ref(
+  decrypt(cred?.secretAccessKey ?? undefined),
+);
 
 /* -------------------------------------------------------------------------- */
 
-const region: Ref<null | string> = ref(decrypt(cred?.region));
+const region: Ref<null | string> = ref(decrypt(cred?.region ?? undefined));
 
 /* -------------------------------------------------------------------------- */
 
-const endpoint: Ref<null | string> = ref(decrypt(cred?.endpoint));
+const endpoint: Ref<null | string> = ref(decrypt(cred?.endpoint ?? undefined));
 
 /* -------------------------------------------------------------------------- */
 
@@ -162,20 +164,22 @@ const isPwd: Ref<boolean> = ref(true);
 
 /* -------------------------------------------------------------------------- */
 
-const accessKeyId: Ref<null | string> = ref(decrypt(cred?.accessKeyId));
+const accessKeyId: Ref<null | string> = ref(
+  decrypt(cred?.accessKeyId ?? undefined),
+);
 
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const getRegions: (value: null | string) => string[] | undefined = (value) =>
+const getRegions = (value: null | string): string[] | undefined =>
   regions[(value ?? "") as keyof object];
 
 /* -------------------------------------------------------------------------- */
 
-const encrypt: (
+const encrypt = (
   obj: Record<string, null | string>,
-) => Record<string, null | string> = (obj) =>
+): Record<string, null | string> =>
   props.pin
     ? Object.fromEntries(
         Object.entries(obj).map(([key, value]) => [
@@ -187,7 +191,7 @@ const encrypt: (
 
 /* -------------------------------------------------------------------------- */
 
-const click: (value: Record<string, null | string>) => void = (value) => {
+const click = (value: Record<string, null | string>): void => {
   if (Bucket.value)
     if (
       props.value !== Bucket.value &&
