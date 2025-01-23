@@ -1,47 +1,97 @@
 <template lang="pug">
 .size-full(ref="monaco")
 </template>
+
 <script setup lang="ts">
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
+import type { ThemeRegistrationRaw } from "shiki";
 import type { Ref } from "vue";
 
 import { editor } from "monaco-editor";
 import themeLight from "shiki/themes/light-plus.mjs";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
+/* -------------------------------------------------------------------------- */
+/*                                  Constants                                 */
+/* -------------------------------------------------------------------------- */
+
+const automaticLayout = true;
+
+/* -------------------------------------------------------------------------- */
+
+const ambiguousCharacters = false;
+
+/* -------------------------------------------------------------------------- */
+
+const scrollBeyondLastLine = false;
+
+/* -------------------------------------------------------------------------- */
+
+const fixedOverflowWidgets = true;
+
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const unicodeHighlight = { ambiguousCharacters };
+
+/* -------------------------------------------------------------------------- */
+
+const { name: theme = "light-plus" }: ThemeRegistrationRaw = themeLight;
+
+/* -------------------------------------------------------------------------- */
+/*                                 Properties                                 */
+/* -------------------------------------------------------------------------- */
+
 const props = defineProps<{
   model: Promise<editor.ITextModel>;
 }>();
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
 const monaco: Ref<HTMLElement | undefined> = ref();
+
+/* -------------------------------------------------------------------------- */
+/*                                  Variables                                 */
+/* -------------------------------------------------------------------------- */
+
 let editorInstance: editor.IStandaloneCodeEditor | undefined;
-const model = await props.model;
+
+/* -------------------------------------------------------------------------- */
+/*                                  Watchers                                  */
+/* -------------------------------------------------------------------------- */
+
 watch(
   () => props.model,
   async (value) => {
     editorInstance?.setModel(await value);
   },
 );
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+const model = await props.model;
+
+/* -------------------------------------------------------------------------- */
+
 onMounted(() => {
-  editorInstance = (() => {
-    const automaticLayout = true;
-    const unicodeHighlight = (() => {
-      const ambiguousCharacters = false;
-      return { ambiguousCharacters };
-    })();
-    const scrollBeyondLastLine = false;
-    const fixedOverflowWidgets = true;
-    const { name: theme = "light-plus" } = themeLight;
-    return (
-      monaco.value &&
-      editor.create(monaco.value, {
-        automaticLayout,
-        fixedOverflowWidgets,
-        model,
-        scrollBeyondLastLine,
-        theme,
-        unicodeHighlight,
-      })
-    );
-  })();
+  editorInstance =
+    monaco.value &&
+    editor.create(monaco.value, {
+      automaticLayout,
+      fixedOverflowWidgets,
+      model,
+      scrollBeyondLastLine,
+      theme,
+      unicodeHighlight,
+    });
   if (editorInstance) {
     editorInstance.focus();
     const { _themeService: themeService } = editorInstance as unknown as Record<
@@ -74,7 +124,12 @@ onMounted(() => {
     }
   }
 });
+
+/* -------------------------------------------------------------------------- */
+
 onBeforeUnmount(() => {
   editorInstance?.dispose();
 });
+
+/* -------------------------------------------------------------------------- */
 </script>
