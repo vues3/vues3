@@ -41,10 +41,19 @@ q-btn-group.q-mx-xs(flat, spread)
 /* -------------------------------------------------------------------------- */
 
 import type { TPage } from "@vues3/shared";
-import type { QTree, QTreeNode } from "quasar";
+import type { QTree } from "quasar";
 import type { Ref } from "vue";
 
-import { add, data, down, left, pages, remove, right, up } from "@vues3/shared";
+import {
+  add,
+  down,
+  left,
+  nodes,
+  pages,
+  remove,
+  right,
+  up,
+} from "@vues3/shared";
 import { useQuasar } from "quasar";
 import { deleted, selected } from "stores/app";
 import { cancel, immediate, persistent } from "stores/defaults";
@@ -80,10 +89,6 @@ const errors = [
 ];
 
 /* -------------------------------------------------------------------------- */
-
-const nodes: QTreeNode[] = data as QTreeNode[];
-
-/* -------------------------------------------------------------------------- */
 /*                                Computations                                */
 /* -------------------------------------------------------------------------- */
 
@@ -117,7 +122,7 @@ const value = false;
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const error = (propNode: TPage) =>
+const error = (propNode: TPage): boolean =>
   errors
     .map((errFnc) => errFnc(propNode))
     .reduceRight(
@@ -126,7 +131,7 @@ const error = (propNode: TPage) =>
 
 /* -------------------------------------------------------------------------- */
 
-const errorMessage = (propNode: TPage) => {
+const errorMessage = (propNode: TPage): string | undefined => {
   switch (true) {
     case errors[0]?.(propNode):
       return t("The name is empty");
@@ -141,19 +146,19 @@ const errorMessage = (propNode: TPage) => {
 
 /* -------------------------------------------------------------------------- */
 
-const clickUp = () => {
+const clickUp = (): void => {
   if (the.value?.id) up(the.value.id);
 };
 
 /* -------------------------------------------------------------------------- */
 
-const clickDown = () => {
+const clickDown = (): void => {
   if (the.value?.id) down(the.value.id);
 };
 
 /* -------------------------------------------------------------------------- */
 
-const clickLeft = () => {
+const clickLeft = (): void => {
   if (the.value?.id) {
     const id = left(the.value.id);
     if (id) qtree.value?.setExpanded(id, true);
@@ -162,7 +167,7 @@ const clickLeft = () => {
 
 /* -------------------------------------------------------------------------- */
 
-const clickRight = () => {
+const clickRight = (): void => {
   if (the.value?.id) {
     const id = right(the.value.id);
     if (id) qtree.value?.setExpanded(id, true);
@@ -171,7 +176,7 @@ const clickRight = () => {
 
 /* -------------------------------------------------------------------------- */
 
-const clickAdd = () => {
+const clickAdd = (): void => {
   if (the.value?.id) {
     const id = add(the.value.id);
     if (id) {
@@ -184,7 +189,7 @@ const clickAdd = () => {
 
 /* -------------------------------------------------------------------------- */
 
-const clickRemove = () => {
+const clickRemove = (): void => {
   if (the.value?.parent)
     $q.dialog({ cancel, message, persistent, title }).onOk(() => {
       if (the.value?.id) {
@@ -196,18 +201,7 @@ const clickRemove = () => {
 };
 
 /* -------------------------------------------------------------------------- */
-
-const expand = () => {
-  const [{ id } = {}] = data;
-  if (id) qtree.value?.setExpanded(id, true);
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
-
-onMounted(expand);
-
+/*                                  Watchers                                  */
 /* -------------------------------------------------------------------------- */
 
 watch(
@@ -221,6 +215,15 @@ watch(
   },
   { immediate },
 );
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+onMounted(() => {
+  const [{ id } = {}] = nodes;
+  if (id) qtree.value?.setExpanded(id, true);
+});
 
 /* -------------------------------------------------------------------------- */
 </script>
