@@ -26,7 +26,11 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 </template>
 
 <script setup lang="ts">
-import type { QInput } from "quasar";
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
+import type { QDialog, QInput } from "quasar";
 import type { ComponentPublicInstance, ComputedRef, Ref } from "vue";
 
 import { deep } from "@vues3/shared";
@@ -34,19 +38,79 @@ import CryptoJS from "crypto-js";
 import { useDialogPluginComponent } from "quasar";
 import { computed, ref, watch } from "vue";
 
-defineEmits([...useDialogPluginComponent.emits]);
+/* -------------------------------------------------------------------------- */
+/*                                 Properties                                 */
+/* -------------------------------------------------------------------------- */
+
 const props = defineProps<{
   value?: string;
 }>();
-const { dialogRef, onDialogHide, onDialogOK } = useDialogPluginComponent();
-const length = ref(4);
+
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const {
+  dialogRef,
+  onDialogHide,
+  onDialogOK,
+}: {
+  dialogRef: Ref<QDialog | undefined>;
+  onDialogHide: () => void;
+  onDialogOK: (payload?: string) => void;
+} = useDialogPluginComponent();
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
+const length: Ref<number> = ref(4);
+
+/* -------------------------------------------------------------------------- */
+
 const fields: Ref<QInput[]> = ref([]);
+
+/* -------------------------------------------------------------------------- */
+
 const fieldValues: Ref<number[]> = ref([]);
-const selected = ref(0);
+
+/* -------------------------------------------------------------------------- */
+
+const selected: Ref<number> = ref(0);
+
+/* -------------------------------------------------------------------------- */
+
+const error: Ref<boolean> = ref(false);
+
+/* -------------------------------------------------------------------------- */
+/*                                Computations                                */
+/* -------------------------------------------------------------------------- */
+
 const payload: ComputedRef<string> = computed(() =>
   fieldValues.value.filter(Boolean).join(""),
 );
-const error = ref(false);
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const updateFieldRef = (
+  element: ComponentPublicInstance | Element | null,
+  index: number,
+): void => {
+  fields.value[index] = element as QInput;
+};
+
+/* -------------------------------------------------------------------------- */
+
+const focus = (index: number): void => {
+  if (index >= 0 && index < length.value) selected.value = index;
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                  Watchers                                  */
+/* -------------------------------------------------------------------------- */
+
 watch(
   payload,
   (value) => {
@@ -58,16 +122,18 @@ watch(
   },
   { deep },
 );
-const updateFieldRef = (
-  element: ComponentPublicInstance | Element | null,
-  index: number,
-) => {
-  fields.value[index] = element as QInput;
-};
-const focus = (index: number) => {
-  if (index >= 0 && index < length.value) selected.value = index;
-};
+
+/* -------------------------------------------------------------------------- */
+
 watch(selected, (value) => {
   fields.value[value]?.select();
 });
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+defineEmits([...useDialogPluginComponent.emits]);
+
+/* -------------------------------------------------------------------------- */
 </script>
