@@ -6,7 +6,7 @@ import type { SFCDescriptor } from "@vue/compiler-sfc";
 import type { TImportmap, TPage } from "@vues3/shared";
 import type { Ref } from "vue";
 
-import { consoleError, data, deep, importmap, pages } from "@vues3/shared";
+import { consoleError, deep, importmap, nodes, pages } from "@vues3/shared";
 import { editor, Uri } from "monaco-editor";
 import { debounce } from "quasar";
 import { cache, second, writable } from "stores/defaults";
@@ -332,7 +332,7 @@ watch(pages, (objects) => {
 watch(bucket, async (value) => {
   if (value) {
     (async () => {
-      data.push(
+      nodes.push(
         (
           JSON.parse(
             (await getObjectText("index.json", cache)) || "[{}]",
@@ -411,7 +411,7 @@ watch(bucket, async (value) => {
         });
     }
   } else {
-    data.length = 0;
+    nodes.length = 0;
     editor.getModels().forEach((model) => {
       model.dispose();
     });
@@ -425,7 +425,7 @@ watch(bucket, async (value) => {
 /* -------------------------------------------------------------------------- */
 
 watch(
-  data,
+  nodes,
   debounce((value) => {
     if (value)
       putObject("index.json", JSON.stringify(value), "application/json").catch(
