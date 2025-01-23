@@ -80,7 +80,7 @@ const rows: Ref<Record<string, string>[]> = ref([]);
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const addRow: () => void = () => {
+const addRow = (): void => {
   const id = uid();
   const name = "";
   rows.value.push({ id, name });
@@ -88,26 +88,23 @@ const addRow: () => void = () => {
 
 /* -------------------------------------------------------------------------- */
 
-const removeRow: () => void = () => {
+const removeRow = (): void => {
   const set = new Set(selected.value);
   rows.value = rows.value.filter((x) => !set.has(x));
 };
 
 /* -------------------------------------------------------------------------- */
-
-const initRows: () => void = () => {
-  rows.value = fonts.map((name) => {
-    const id = uid();
-    return { id, name };
-  });
-};
-
+/*                                  Watchers                                  */
 /* -------------------------------------------------------------------------- */
 
-const updateFonts: (value: Record<string, string>[]) => void = (value) => {
-  fonts.length = 0;
-  fonts.push(...(value.map(({ name }) => name).filter(Boolean) as never[]));
-};
+watch(
+  rows,
+  (value) => {
+    fonts.length = 0;
+    fonts.push(...(value.map(({ name }) => name).filter(Boolean) as never[]));
+  },
+  { deep },
+);
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
@@ -117,11 +114,12 @@ defineEmits([...useDialogPluginComponent.emits]);
 
 /* -------------------------------------------------------------------------- */
 
-onMounted(initRows);
-
-/* -------------------------------------------------------------------------- */
-
-watch(rows, updateFonts, { deep });
+onMounted(() => {
+  rows.value = fonts.map((name) => {
+    const id = uid();
+    return { id, name };
+  });
+});
 
 /* -------------------------------------------------------------------------- */
 </script>
