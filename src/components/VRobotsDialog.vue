@@ -16,7 +16,13 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
     q-card-actions.text-primary(align="right")
       q-btn(@click="onDialogHide", flat, label="Close")
 </template>
+
 <script setup lang="ts">
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
+import type { QDialog } from "quasar";
 import type { Ref } from "vue";
 
 import { consoleError } from "@vues3/shared";
@@ -25,16 +31,46 @@ import { cache, second } from "stores/defaults";
 import { getObjectText, putObject } from "stores/io";
 import { onBeforeMount, ref, watch } from "vue";
 
-defineEmits([...useDialogPluginComponent.emits]);
-const { dialogRef, onDialogHide } = useDialogPluginComponent();
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const {
+  dialogRef,
+  onDialogHide,
+}: {
+  dialogRef: Ref<QDialog | undefined>;
+  onDialogHide: () => void;
+} = useDialogPluginComponent();
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
 const text: Ref<string | undefined> = ref();
-onBeforeMount(async () => {
-  text.value = await getObjectText("robots.txt", cache);
-});
+
+/* -------------------------------------------------------------------------- */
+/*                                  Watchers                                  */
+/* -------------------------------------------------------------------------- */
+
 watch(
   text,
   debounce((value) => {
     putObject("robots.txt", value as string, "text/plain").catch(consoleError);
   }, second),
 );
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+defineEmits([...useDialogPluginComponent.emits]);
+
+/* -------------------------------------------------------------------------- */
+
+onBeforeMount(async () => {
+  text.value = await getObjectText("robots.txt", cache);
+});
+
+/* -------------------------------------------------------------------------- */
 </script>
