@@ -18,24 +18,65 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
       q-btn(:label="t('Cancel')", @click="onDialogCancel", flat)
       q-btn(@click="onDialogOK(the?.to)", flat, label="Ok")
 </template>
+
 <script setup lang="ts">
-import type { QTreeNode } from "quasar";
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
+import type { QDialog } from "quasar";
+import type { Ref } from "vue";
+import type { Composer } from "vue-i18n";
 
 import { Icon } from "@iconify/vue";
-import { data, pages } from "@vues3/shared";
+import { nodes, pages } from "@vues3/shared";
 import { useDialogPluginComponent } from "quasar";
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-defineEmits([...useDialogPluginComponent.emits]);
-const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
-  useDialogPluginComponent();
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const {
+  dialogRef,
+  onDialogCancel,
+  onDialogHide,
+  onDialogOK,
+}: {
+  dialogRef: Ref<QDialog | undefined>;
+  onDialogCancel: () => void;
+  onDialogHide: () => void;
+  onDialogOK: (payload?: string) => void;
+} = useDialogPluginComponent();
+/* -------------------------------------------------------------------------- */
+
+const { t }: Composer = useI18n();
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
 const selected = ref();
-const { t } = useI18n();
+
+/* -------------------------------------------------------------------------- */
+/*                                Computations                                */
+/* -------------------------------------------------------------------------- */
+
 const the = computed(() => pages.value.find(({ id }) => id === selected.value));
-const nodes = computed(() => data as QTreeNode[]);
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+defineEmits([...useDialogPluginComponent.emits]);
+
+/* -------------------------------------------------------------------------- */
+
 onMounted(() => {
-  const [{ id } = {}] = data;
+  const [{ id } = {}] = nodes;
   selected.value = id;
 });
+
+/* -------------------------------------------------------------------------- */
 </script>
