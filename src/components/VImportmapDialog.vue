@@ -88,7 +88,7 @@ const rows: Ref<Record<string, string>[]> = ref([]);
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const addRow: () => void = () => {
+const addRow = (): void => {
   const id = uid();
   const name = "";
   const path = "";
@@ -97,14 +97,36 @@ const addRow: () => void = () => {
 
 /* -------------------------------------------------------------------------- */
 
-const removeRow: () => void = () => {
+const removeRow = (): void => {
   const set = new Set(selected.value);
   rows.value = rows.value.filter((x) => !set.has(x));
 };
 
 /* -------------------------------------------------------------------------- */
+/*                                  Watchers                                  */
+/* -------------------------------------------------------------------------- */
 
-const importmapToRows: () => void = () => {
+watch(
+  rows,
+  (value) => {
+    importmap.imports = Object.fromEntries(
+      value
+        .filter(({ name, path }) => path && name)
+        .map(({ name, path }) => [name, path]),
+    ) as TImportmap["imports"];
+  },
+  { deep },
+);
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+defineEmits([...useDialogPluginComponent.emits]);
+
+/* -------------------------------------------------------------------------- */
+
+onMounted(() => {
   const { imports = {} } = importmap;
   rows.value = Object.entries(imports).map(([name, path]) => {
     const id = uid();
@@ -116,31 +138,7 @@ const importmapToRows: () => void = () => {
       rows.value.findIndex(({ name }) => name === "vue"),
     ),
   );
-};
-
-/* -------------------------------------------------------------------------- */
-
-const rowsToImportmap: (value: Record<string, string>[]) => void = (value) => {
-  importmap.imports = Object.fromEntries(
-    value
-      .filter(({ name, path }) => path && name)
-      .map(({ name, path }) => [name, path]),
-  ) as TImportmap["imports"];
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
-
-defineEmits([...useDialogPluginComponent.emits]);
-
-/* -------------------------------------------------------------------------- */
-
-onMounted(importmapToRows);
-
-/* -------------------------------------------------------------------------- */
-
-watch(rows, rowsToImportmap, { deep });
+});
 
 /* -------------------------------------------------------------------------- */
 </script>
