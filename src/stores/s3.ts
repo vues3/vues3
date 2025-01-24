@@ -36,18 +36,12 @@ import { mergeDefaults } from "stores/defaults";
 const requestHandler: FetchHttpHandler = new FetchHttpHandler();
 
 /* -------------------------------------------------------------------------- */
-
-/** There are no empty directories on S3 */
-
-const removeEmptyDirectories = null;
-
-/* -------------------------------------------------------------------------- */
 /*                                  Variables                                 */
 /* -------------------------------------------------------------------------- */
 
 /** S3 Client Class */
 
-let s3Client: null | S3Client = null;
+let s3Client: S3Client | undefined;
 
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
@@ -55,7 +49,7 @@ let s3Client: null | S3Client = null;
 
 /** Generate a default value for the credentials storage */
 
-const credentialDefaults: () => TCredentials = () => {
+const credentialDefaults = (): TCredentials => {
   const value = {} as TCredentials;
   validateCredentials?.(value) as boolean;
   return value;
@@ -78,9 +72,15 @@ const credential: RemovableRef<TCredentials> = useStorage(
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
+/** There are no empty directories on S3 */
+
+const removeEmptyDirectories = undefined;
+
+/* -------------------------------------------------------------------------- */
+
 /** S3 client class setter */
 
-const setS3Client: (value: null | S3Client) => void = (value) => {
+const setS3Client = (value?: S3Client): void => {
   s3Client?.destroy();
   s3Client = value;
 };
@@ -92,10 +92,10 @@ const setS3Client: (value: null | S3Client) => void = (value) => {
  * permission to access it.
  */
 
-const headBucket: (
+const headBucket = async (
   Bucket: string,
-  pin: null | string,
-) => Promise<void> = async (Bucket, pin) => {
+  pin: string | undefined,
+): Promise<void> => {
   let { accessKeyId, endpoint, region, secretAccessKey } =
     credential.value[Bucket] ?? {};
   if (pin) {
@@ -122,7 +122,7 @@ const headBucket: (
   try {
     await s3Client.send(new HeadBucketCommand({ Bucket }));
   } catch (err) {
-    setS3Client(null);
+    setS3Client();
     const { message } = err as Error;
     throw new Error(message);
   }
@@ -140,25 +140,23 @@ const headObject: (
   Bucket: string,
   Key: string,
   ResponseCacheControl?: string,
-) => Promise<HeadObjectCommandOutput | null> = async (
+) => Promise<HeadObjectCommandOutput | undefined> = async (
   Bucket,
   Key,
   ResponseCacheControl,
 ) =>
-  s3Client?.send(
-    new HeadObjectCommand({ Bucket, Key, ResponseCacheControl }),
-  ) ?? null;
+  s3Client?.send(new HeadObjectCommand({ Bucket, Key, ResponseCacheControl }));
 
 /* -------------------------------------------------------------------------- */
 
 /** Adds an object to a bucket */
 
-const putObject: (
+const putObject = async (
   Bucket: string,
   Key: string,
   body: StreamingBlobPayloadInputTypes,
   ContentType: string,
-) => Promise<void> = async (Bucket, Key, body, ContentType) => {
+): Promise<void> => {
   const Body = typeof body === "string" ? new TextEncoder().encode(body) : body;
   await s3Client?.send(
     new PutObjectCommand({ Body, Bucket, ContentType, Key }),
@@ -169,10 +167,7 @@ const putObject: (
 
 /** Removes an object from a bucket */
 
-const deleteObject: (Bucket: string, Key: string) => Promise<void> = async (
-  Bucket,
-  Key,
-) => {
+const deleteObject = async (Bucket: string, Key: string): Promise<void> => {
   await s3Client?.send(new DeleteObjectCommand({ Bucket, Key }));
 };
 
@@ -184,7 +179,7 @@ const getObject = async (
   Bucket: string,
   Key: string,
   ResponseCacheControl?: string,
-) => {
+): Promise<Response> => {
   if (s3Client)
     try {
       const { Body, ContentType } = await s3Client.send(
@@ -202,23 +197,22 @@ const getObject = async (
 
 /** Retrieves a text object */
 
-const getObjectText: (
+const getObjectText = async (
   Bucket: string,
   Key: string,
   ResponseCacheControl?: string,
-) => Promise<string> = async (Bucket, Key, ResponseCacheControl) =>
+): Promise<string> =>
   (await getObject(Bucket, Key, ResponseCacheControl)).text();
 
 /* -------------------------------------------------------------------------- */
 
 /** Retrieves a blob object */
 
-const getObjectBlob: (
+const getObjectBlob = async (
   Bucket: string,
   Key: string,
   ResponseCacheControl?: string,
-) => Promise<Blob> = async (Bucket, Key, ResponseCacheControl) =>
-  (await getObject(Bucket, Key, ResponseCacheControl)).blob();
+): Promise<Blob> => (await getObject(Bucket, Key, ResponseCacheControl)).blob();
 
 /* -------------------------------------------------------------------------- */
 /*                                   Exports                                  */
