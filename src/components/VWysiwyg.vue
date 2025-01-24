@@ -102,7 +102,7 @@ const editor: Ref<QEditor | undefined> = ref();
 
 /* -------------------------------------------------------------------------- */
 
-const htm = ref(await props.modelValue);
+const htm: Ref<string> = ref(await props.modelValue);
 
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
