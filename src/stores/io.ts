@@ -33,7 +33,7 @@ const remote: Ref<boolean> = ref(false);
  * handle to a file system directory.
  */
 
-let fileSystemDirectoryHandle: FileSystemDirectoryHandle | null = null;
+let fileSystemDirectoryHandle: FileSystemDirectoryHandle | undefined;
 
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
@@ -60,10 +60,10 @@ const io: () => typeof s3 | Window = () => (remote.value ? s3 : window);
  * permission to access it.
  */
 
-const headBucket: (
+const headBucket = async (
   Bucket: string,
-  pin: null | string,
-) => Promise<void> = async (Bucket, pin) => {
+  pin: string | undefined,
+): Promise<void> => {
   try {
     await s3.headBucket(Bucket, pin);
     remote.value = true;
@@ -81,13 +81,10 @@ const headBucket: (
  * object's metadata.
  */
 
-const headObject: (
+const headObject = async (
   Key: string,
   ResponseCacheControl?: string,
-) => Promise<HeadObjectCommandOutput | null> = async (
-  Key,
-  ResponseCacheControl,
-) => {
+): Promise<HeadObjectCommandOutput | undefined> => {
   if (fileSystemDirectoryHandle)
     return fsa.headObject(fileSystemDirectoryHandle, Key);
   return io().headObject(bucket.value, Key, ResponseCacheControl);
@@ -97,11 +94,11 @@ const headObject: (
 
 /** Adds an object to a bucket */
 
-const putObject: (
+const putObject = async (
   Key: string,
   body: StreamingBlobPayloadInputTypes,
   ContentType: string,
-) => Promise<void> = async (Key, body, ContentType) => {
+): Promise<void> => {
   if (bucket.value)
     if (fileSystemDirectoryHandle)
       await fsa.putObject(fileSystemDirectoryHandle, Key, body);
@@ -112,7 +109,7 @@ const putObject: (
 
 /** Remove empty directories */
 
-const removeEmptyDirectories: () => Promise<void> = async () => {
+const removeEmptyDirectories = async (): Promise<void> => {
   const exclude = ["node_modules", ".git"];
   if (bucket.value)
     if (fileSystemDirectoryHandle)
@@ -124,7 +121,7 @@ const removeEmptyDirectories: () => Promise<void> = async () => {
 
 /** Removes an object from a bucket */
 
-const deleteObject: (Key: string) => Promise<void> = async (Key) => {
+const deleteObject = async (Key: string): Promise<void> => {
   if (bucket.value)
     if (fileSystemDirectoryHandle)
       await fsa.deleteObject(fileSystemDirectoryHandle, Key);
@@ -135,10 +132,10 @@ const deleteObject: (Key: string) => Promise<void> = async (Key) => {
 
 /** Retrieves a text object */
 
-const getObjectText: (
+const getObjectText = async (
   Key: string,
   ResponseCacheControl?: string,
-) => Promise<string> = async (Key, ResponseCacheControl) => {
+): Promise<string> => {
   if (fileSystemDirectoryHandle)
     return fsa.getObjectText(fileSystemDirectoryHandle, Key);
   return io().getObjectText(bucket.value, Key, ResponseCacheControl);
@@ -148,32 +145,26 @@ const getObjectText: (
 
 /** Retrieves a blob object */
 
-const getObjectBlob: (
+const getObjectBlob = async (
   Key: string,
   ResponseCacheControl?: string,
-) => Promise<Blob> = async (Key, ResponseCacheControl) => {
+): Promise<Blob> => {
   if (fileSystemDirectoryHandle)
     return fsa.getObjectBlob(fileSystemDirectoryHandle, Key);
   return io().getObjectBlob(bucket.value, Key, ResponseCacheControl);
 };
 
 /* -------------------------------------------------------------------------- */
+/*                                  Watchers                                  */
+/* -------------------------------------------------------------------------- */
 
-/** A callback function for the bucket watcher */
-
-const cbBucket: (value: string) => void = (value) => {
+watch(bucket, (value) => {
   if (!value) {
-    s3.setS3Client(null);
+    s3.setS3Client();
     remote.value = false;
-    if (fileSystemDirectoryHandle) fileSystemDirectoryHandle = null;
+    if (fileSystemDirectoryHandle) fileSystemDirectoryHandle = undefined;
   }
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
-
-watch(bucket, cbBucket);
+});
 
 /* -------------------------------------------------------------------------- */
 /*                                   Exports                                  */
