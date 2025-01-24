@@ -4,7 +4,7 @@
     "": {
       "name": "vues3",
       "dependencies": {
-        "@aws-sdk/client-s3": "^3.733.0",
+        "@aws-sdk/client-s3": "^3.734.0",
         "@electron/remote": "^2.1.2",
         "@iconify/vue": "^4.3.0",
         "@quasar/app-vite": "^2.0.8",
