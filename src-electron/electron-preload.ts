@@ -47,8 +47,8 @@ const focusedWindowClose = (): void => {
 
 /** Remove empty directories */
 
-const focusedWindowIsMaximized = (): boolean | null =>
-  BrowserWindow.getFocusedWindow()?.isMaximized() ?? null;
+const focusedWindowIsMaximized = (): boolean | undefined =>
+  BrowserWindow.getFocusedWindow()?.isMaximized();
 
 /* -------------------------------------------------------------------------- */
 
@@ -99,9 +99,9 @@ const getObjectText = async (Bucket: string, Key: string): Promise<string> =>
 
 /* -------------------------------------------------------------------------- */
 
-const headObject = async (Bucket: string, Key: string): Promise<null> => {
+const headObject = async (Bucket: string, Key: string): Promise<undefined> => {
   const stats = await lstat(join(Bucket, Key));
-  if (stats.isFile()) return null;
+  if (stats.isFile()) return undefined;
   throw new Error("It's not a file");
 };
 
