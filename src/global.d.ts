@@ -6,12 +6,12 @@ declare global {
     deleteObject: (Bucket: string, Key: string) => Promise<void>;
     dialog: Dialog;
     focusedWindowClose: () => void;
-    focusedWindowIsMaximized: () => boolean | null;
+    focusedWindowIsMaximized: () => boolean | undefined;
     focusedWindowMinimize: () => void;
     focusedWindowToggleMaximize: () => void;
     getObjectBlob: (Bucket: string, Key: string) => Promise<Blob>;
     getObjectText: (Bucket: string, Key: string) => Promise<string>;
-    headObject: (Bucket: string, Key: string) => Promise<null>;
+    headObject: (Bucket: string, Key: string) => Promise<undefined>;
     MonacoEnvironment: Environment;
     putObject: (
       Bucket: string,
