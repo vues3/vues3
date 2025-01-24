@@ -136,9 +136,16 @@ const getImages = (model: editor.ITextModel) => {
 /* -------------------------------------------------------------------------- */
 
 const cleaner = (value: TAppPage[]) => {
-  value.forEach(({ children, id, sfc }) => {
+  value.forEach((page) => {
+    const { children, id, sfc } = page;
     if (children.length) cleaner(children as TAppPage[]);
     (async () => {
+      {
+        const { images } = page;
+        images.forEach(({ url }) => {
+          deleteObject(url).catch(consoleError);
+        });
+      }
       const { images } = getDocument(getContent(await sfc));
       if (id) deleteObject(`pages/${id}.vue`).catch(consoleError);
       [...images].forEach(({ src }) => {
