@@ -8,12 +8,6 @@ import type { RunSequentialPromisesFulfilledResult } from "quasar";
 import { runSequentialPromises } from "quasar";
 
 /* -------------------------------------------------------------------------- */
-/*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
-
-type FileSystemHandle = FileSystemDirectoryHandle | FileSystemFileHandle | null;
-
-/* -------------------------------------------------------------------------- */
 /*                                  Constants                                 */
 /* -------------------------------------------------------------------------- */
 
@@ -22,55 +16,57 @@ type FileSystemHandle = FileSystemDirectoryHandle | FileSystemFileHandle | null;
  * the specified name will be created and returned.
  */
 
-const create = true;
+const create: FileSystemGetDirectoryOptions["create"] = true;
 
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const getHandle: (
+const getHandle = async (
   Bucket: FileSystemDirectoryHandle,
   Key: string,
-  Create?: boolean,
-) => Promise<FileSystemHandle> = async (Bucket, Key, Create = false) => {
-  const branch = [null, ...Key.split("/")];
-  const callbackfnBranch: (
-    leaf: null | string,
-    index: number,
-  ) => (
-    resultAggregator: RunSequentialPromisesFulfilledResult<
-      number,
-      FileSystemDirectoryHandle | FileSystemFileHandle | null
-    >[],
-  ) => Promise<FileSystemDirectoryHandle | FileSystemFileHandle | null> =
-    (leaf, index) => async (resultAggregator) => {
-      if (!leaf) return Bucket;
-      const { value = null } = resultAggregator[index - 1] ?? {};
-      if (value?.kind === "directory")
-        return (
-          (await Array.fromAsync(value.values())).find(
-            ({ name }) => name === leaf,
-          ) ??
-          (Create ? await value.getDirectoryHandle(leaf, { create }) : null)
-        );
-      return null;
-    };
+  Create = false,
+): Promise<FileSystemDirectoryHandle | FileSystemFileHandle | undefined> => {
+  const branch = [undefined, ...Key.split("/")];
   const handle = (
-    await runSequentialPromises(branch.map(callbackfnBranch))
+    await runSequentialPromises(
+      branch.map(
+        (leaf, index) =>
+          async (
+            resultAggregator: RunSequentialPromisesFulfilledResult<
+              number,
+              FileSystemDirectoryHandle | FileSystemFileHandle | undefined
+            >[],
+          ) => {
+            if (!leaf) return Bucket;
+            const { value } = resultAggregator[index - 1] ?? {};
+            if (value?.kind === "directory")
+              return (
+                (await Array.fromAsync(value.values())).find(
+                  ({ name }) => name === leaf,
+                ) ??
+                (Create
+                  ? await value.getDirectoryHandle(leaf, { create })
+                  : undefined)
+              );
+            return undefined;
+          },
+      ),
+    )
   ).map(({ value }) => value);
   return branch.length === handle.length
-    ? (handle[handle.length - 1] ?? null)
-    : null;
+    ? handle[handle.length - 1]
+    : undefined;
 };
 
 /* -------------------------------------------------------------------------- */
 
 /** Remove empty directories */
 
-const removeEmptyDirectories: (
+const removeEmptyDirectories = async (
   directory: FileSystemDirectoryHandle,
   exclude: string[],
-) => Promise<void> = async (directory, exclude) => {
+): Promise<void> => {
   if (exclude.includes(directory.name)) return;
   const values = (await Array.fromAsync(directory.values())).filter(
     ({ kind }) => kind === "directory",
@@ -87,21 +83,21 @@ const removeEmptyDirectories: (
 
 /* -------------------------------------------------------------------------- */
 
-const headObject: (
+const headObject = async (
   Bucket: FileSystemDirectoryHandle,
   Key: string,
-) => Promise<null> = async (Bucket, Key) => {
+): Promise<undefined> => {
   const handle = await getHandle(Bucket, Key);
-  if (handle?.kind === "file") return null;
+  if (handle?.kind === "file") return undefined;
   throw new Error("It's not a file");
 };
 
 /* -------------------------------------------------------------------------- */
 
-const deleteObject: (
+const deleteObject = async (
   Bucket: FileSystemDirectoryHandle,
   Key: string,
-) => Promise<void> = async (Bucket, Key) => {
+): Promise<void> => {
   const keys = Key.split("/");
   const name = keys.pop();
   if (name) {
@@ -112,11 +108,11 @@ const deleteObject: (
 
 /* -------------------------------------------------------------------------- */
 
-const putObject: (
+const putObject = async (
   Bucket: FileSystemDirectoryHandle,
   Key: string,
   body: StreamingBlobPayloadInputTypes,
-) => Promise<void> = async (Bucket, Key, body) => {
+): Promise<void> => {
   const keys = Key.split("/");
   const name = keys.pop();
   if (name) {
@@ -133,10 +129,10 @@ const putObject: (
 
 /** Retrieves a blob object */
 
-const getObjectBlob: (
+const getObjectBlob = async (
   Bucket: FileSystemDirectoryHandle,
   Key: string,
-) => Promise<Blob> = async (Bucket, Key) => {
+): Promise<Blob> => {
   const handle = await getHandle(Bucket, Key);
   if (handle?.kind === "file") return handle.getFile();
   return new Blob();
@@ -146,11 +142,10 @@ const getObjectBlob: (
 
 /** Retrieves a text object */
 
-const getObjectText: (
+const getObjectText = async (
   Bucket: FileSystemDirectoryHandle,
   Key: string,
-) => Promise<string> = async (Bucket, Key) =>
-  (await getObjectBlob(Bucket, Key)).text();
+): Promise<string> => (await getObjectBlob(Bucket, Key)).text();
 
 /* -------------------------------------------------------------------------- */
 /*                                   Exports                                  */
