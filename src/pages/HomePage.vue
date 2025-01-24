@@ -87,7 +87,7 @@ import type { TCredentials } from "@vues3/shared";
 import type { RemovableRef } from "@vueuse/core";
 import type { QVueGlobals } from "quasar";
 import type { Component } from "vue";
-import type { ComposerTranslation } from "vue-i18n";
+import type { Composer } from "vue-i18n";
 import type { Router } from "vue-router";
 
 import { consoleError, validateCredentials } from "@vues3/shared";
@@ -121,14 +121,14 @@ const mode = "readwrite";
 
 /** Generate a default value for the credentials storage */
 
-const credentialDefaults: () => TCredentials = () => {
+const credentialDefaults = (): TCredentials => {
   const value = {} as TCredentials;
   validateCredentials?.(value) as boolean;
   return value;
 };
 
 /* -------------------------------------------------------------------------- */
-/*                                 Composables                                */
+/*                                   Objects                                  */
 /* -------------------------------------------------------------------------- */
 
 const router: Router = useRouter();
@@ -150,17 +150,17 @@ const credential: RemovableRef<TCredentials> = useStorage(
 
 /* -------------------------------------------------------------------------- */
 
-const { t }: { t: ComposerTranslation } = useI18n();
+const { t }: Composer = useI18n();
 
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const isFileSystemAccess: () => boolean = () => "showOpenFilePicker" in window;
+const isFileSystemAccess = (): boolean => "showOpenFilePicker" in window;
 
 /* -------------------------------------------------------------------------- */
 
-const directLogin: (bucketValue: string) => void = (bucketValue) => {
+const directLogin = (bucketValue: string): void => {
   const name = "main";
   const path = `/${name}`;
   const component = contentPage as Component;
@@ -171,7 +171,7 @@ const directLogin: (bucketValue: string) => void = (bucketValue) => {
 
 /* -------------------------------------------------------------------------- */
 
-const getDir: () => Promise<void> = async () => {
+const getDir = async (): Promise<void> => {
   if ($q.platform.is.electron) {
     const {
       filePaths: [filePath],
@@ -193,7 +193,7 @@ const getDir: () => Promise<void> = async () => {
 
 /* -------------------------------------------------------------------------- */
 
-const getPin: (name: string) => Promise<null | string> = async (name) =>
+const getPin = async (name: string): Promise<string | undefined> =>
   new Promise((resolve, reject) => {
     if (name !== credential.value[name]?.Bucket) {
       const component = VOtpDialog as Component;
@@ -206,12 +206,12 @@ const getPin: (name: string) => Promise<null | string> = async (name) =>
         .onCancel(() => {
           reject(new Error(t("Pin is not entered")));
         });
-    } else resolve(null);
+    } else resolve(undefined);
   });
 
 /* -------------------------------------------------------------------------- */
 
-const login: (bucketValue: string) => Promise<void> = async (bucketValue) => {
+const login = async (bucketValue: string): Promise<void> => {
   try {
     await headBucket(bucketValue, await getPin(bucketValue));
     directLogin(bucketValue);
@@ -223,14 +223,14 @@ const login: (bucketValue: string) => Promise<void> = async (bucketValue) => {
 
 /* -------------------------------------------------------------------------- */
 
-const add: () => void = () => {
+const add = (): void => {
   const component = VCredsDialog as Component;
   $q.dialog({ component });
 };
 
 /* -------------------------------------------------------------------------- */
 
-const edit: (name: number | string) => Promise<void> = async (name) => {
+const edit = async (name: number | string): Promise<void> => {
   const component = VCredsDialog as Component;
   const value = name;
   try {
@@ -245,7 +245,7 @@ const edit: (name: number | string) => Promise<void> = async (name) => {
 
 /* -------------------------------------------------------------------------- */
 
-const remove: (name: number | string) => void = (name) => {
+const remove = (name: number | string): void => {
   $q.dialog({
     cancel: true,
     message: t("Do you really want to remove an account from the list?"),
@@ -258,7 +258,7 @@ const remove: (name: number | string) => void = (name) => {
 
 /* -------------------------------------------------------------------------- */
 
-const lock: (name: string) => void = (name) => {
+const lock = (name: string): void => {
   const value =
     name === credential.value[name]?.Bucket
       ? undefined
