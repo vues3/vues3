@@ -165,7 +165,7 @@ q-page.column.full-height.bg-light(v-else)
 import type { IconNameArray, Pagination } from "@quasar/quasar-ui-qiconpicker";
 import type { ValidationRule } from "quasar";
 import type { Ref, WritableComputedRef } from "vue";
-import type { ComposerTranslation } from "vue-i18n";
+import type { Composer } from "vue-i18n";
 
 import { Icon } from "@iconify/vue";
 import mdi from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
@@ -182,10 +182,17 @@ import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 /* -------------------------------------------------------------------------- */
-/*                                 Composables                                */
+/*                                   Objects                                  */
 /* -------------------------------------------------------------------------- */
 
-const { t }: { t: ComposerTranslation } = useI18n();
+const { t }: Composer = useI18n();
+
+/* -------------------------------------------------------------------------- */
+
+const { icons }: { icons: IconNameArray } = mdi as Record<
+  "icons",
+  IconNameArray
+>;
 
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
@@ -208,14 +215,7 @@ const prohibitedCharacters: ValidationRule = (v: null | string) =>
   t("Prohibited characters are used");
 
 /* -------------------------------------------------------------------------- */
-/*                                  Constants                                 */
-/* -------------------------------------------------------------------------- */
-
-const { icons }: { icons: IconNameArray } = mdi as Record<
-  "icons",
-  IconNameArray
->;
-
+/*                                   Arrays                                   */
 /* -------------------------------------------------------------------------- */
 
 const rules: ValidationRule[] = [nameInUse, prohibitedCharacters];
@@ -238,9 +238,9 @@ const pagination: Ref<Pagination> = ref({ itemsPerPage, page });
 /*                                Computations                                */
 /* -------------------------------------------------------------------------- */
 
-const icon: WritableComputedRef<null | string> = computed({
+const icon: WritableComputedRef<string | undefined> = computed({
   get() {
-    return the.value?.icon?.replace(/^mdi:/, "mdi-") ?? null;
+    return the.value?.icon?.replace(/^mdi:/, "mdi-");
   },
   set(value) {
     if (value && the.value) the.value.icon = value.replace(/^mdi-/, "mdi:");
