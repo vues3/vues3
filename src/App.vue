@@ -99,7 +99,7 @@ import VRobotsDialog from "src/components/VRobotsDialog.vue";
 import { domain, rightDrawer } from "stores/app";
 import { bucket } from "stores/io";
 import { useI18n } from "vue-i18n";
-// eslint-disable-next-line import/no-unresolved
+// eslint-disable-next-line import-x/no-unresolved
 import "virtual:uno.css";
 
 const { t } = useI18n();
