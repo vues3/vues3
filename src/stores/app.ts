@@ -381,7 +381,7 @@ watch(bucket, async (value) => {
             (await getObjectText(".vite/manifest.json", cache)) || "{}",
           ),
         ),
-      ])) as Record<string, Record<string, string | string[]> | undefined>[]
+      ])) as Record<string, Record<string, string[]> | undefined>[]
     ).map(
       (element) =>
         new Set(
@@ -608,11 +608,12 @@ ${JSON.stringify(imap, null, " ")}
       [description ?? "", "description"],
       [title, "title"],
       [type ?? "", "type"],
-      ...(cname &&
-        images.flatMap(({ alt, url }) => [
-          [url ? `https://${cname}/${url}` : "", "image"],
-          [alt ?? "", "image:alt"],
-        ])),
+      ...(cname
+        ? images.flatMap(({ alt, url }) => [
+            [url ? `https://${cname}/${url}` : "", "image"],
+            [alt ?? "", "image:alt"],
+          ])
+        : []),
     ]
       .filter(([content]) => content)
       .map(
