@@ -23,7 +23,7 @@ import {
   resolveVueCompilerOptions,
 } from "@vue/language-service";
 import { initialize } from "monaco-editor/esm/vs/editor/editor.worker";
-import typescript from "typescript";
+import typescript, { convertCompilerOptionsFromJson } from "typescript";
 import { URI } from "vscode-uri";
 import { version } from "vue";
 
@@ -71,7 +71,7 @@ const { options: compilerOptions }: { options: typescript.CompilerOptions } =
     const module = "ESNext";
     const moduleResolution = "Bundler";
     const target = "ESNext";
-    return typescript.convertCompilerOptionsFromJson(
+    return convertCompilerOptionsFromJson(
       {
         allowImportingTsExtensions,
         allowJs,
@@ -125,7 +125,6 @@ const languageServicePlugins: LanguageServicePlugin[] =
 /*                                    Main                                    */
 /* -------------------------------------------------------------------------- */
 
-// eslint-disable-next-line no-restricted-globals
 self.onmessage = () => {
   (
     initialize as (
