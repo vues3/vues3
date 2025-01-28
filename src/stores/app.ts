@@ -1,7 +1,3 @@
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
 import type { SFCDescriptor } from "@vue/compiler-sfc";
 import type { TImportmap, TPage } from "@vues3/shared";
 import type { Ref } from "vue";
@@ -25,8 +21,6 @@ import toString from "vue-sfc-descriptor-to-string";
 import { parse, parseCache } from "vue/compiler-sfc";
 
 /* -------------------------------------------------------------------------- */
-/*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
 
 type TAppPage = TPage & {
   contenteditable: boolean;
@@ -35,105 +29,47 @@ type TAppPage = TPage & {
 };
 
 /* -------------------------------------------------------------------------- */
-/*                                  Constants                                 */
-/* -------------------------------------------------------------------------- */
 
-const routerLink = "router-link";
-
-/* -------------------------------------------------------------------------- */
-
-const vue = `assets/vue.esm-browser.prod-${version}.js`;
-
-/* -------------------------------------------------------------------------- */
-/*                                 References                                 */
-/* -------------------------------------------------------------------------- */
-
-const domain = ref("");
-
-/* -------------------------------------------------------------------------- */
-
-const rightDrawer = ref(false);
+const deleted: Ref<TPage | undefined> = ref(),
+  domain = ref(""),
+  fonts = reactive([]),
+  parser: DOMParser = new DOMParser(),
+  prevImages: string[] = [],
+  rightDrawer = ref(false),
+  routerLink = "router-link",
+  selected: Ref<string | undefined> = ref(),
+  the = computed(
+    () =>
+      (pages.value.find(({ id }) => id === selected.value) ??
+        pages.value[0]) as TAppPage | undefined,
+  ),
+  urls = reactive(new Map<string, string>()),
+  vue = `assets/vue.esm-browser.prod-${version}.js`;
 
 /* -------------------------------------------------------------------------- */
 
-const selected: Ref<string | undefined> = ref();
-
-/* -------------------------------------------------------------------------- */
-
-const deleted: Ref<TPage | undefined> = ref();
-
-/* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
-
-const parser: DOMParser = new DOMParser();
-
-/* -------------------------------------------------------------------------- */
-/*                                  Variables                                 */
-/* -------------------------------------------------------------------------- */
-
-let descriptor: SFCDescriptor | undefined;
-
-/* -------------------------------------------------------------------------- */
-
-let errors = [];
-
-/* -------------------------------------------------------------------------- */
-/*                                Computations                                */
-/* -------------------------------------------------------------------------- */
-
-const the = computed(
-  () =>
-    (pages.value.find(({ id }) => id === selected.value) ?? pages.value[0]) as
-      | TAppPage
-      | undefined,
-);
-
-/* -------------------------------------------------------------------------- */
-/*                                  Reactives                                 */
-/* -------------------------------------------------------------------------- */
-
-const urls = reactive(new Map<string, string>());
-
-/* -------------------------------------------------------------------------- */
-
-const fonts = reactive([]);
-
-/* -------------------------------------------------------------------------- */
-/*                                   Arrays                                   */
-/* -------------------------------------------------------------------------- */
-
-const prevImages: string[] = [];
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const getDocument = (value: string) =>
-  parser.parseFromString(
-    `<head><base href="//"></head><body>${value}</body>`,
-    "text/html",
-  );
+let descriptor: SFCDescriptor | undefined,
+  errors = [];
 
 /* -------------------------------------------------------------------------- */
 
 const getContent = (model: editor.ITextModel) => {
-  const filename = `${selected.value ?? "anonymous"}.vue`;
-  ({ descriptor, errors } = parse(model.getValue(), { filename }));
-  const { template } = descriptor;
-  const { content } = template ?? {};
-  return content ?? "";
-};
-
-/* -------------------------------------------------------------------------- */
-
-const getImages = (model: editor.ITextModel) => {
-  parseCache.clear();
-  const { images } = getDocument(getContent(model));
-  return [...images].map(({ src }: { src: string }) => src);
-};
-
-/* -------------------------------------------------------------------------- */
+    const filename = `${selected.value ?? "anonymous"}.vue`;
+    ({ descriptor, errors } = parse(model.getValue(), { filename }));
+    const { template } = descriptor;
+    const { content } = template ?? {};
+    return content ?? "";
+  },
+  getDocument = (value: string) =>
+    parser.parseFromString(
+      `<head><base href="//"></head><body>${value}</body>`,
+      "text/html",
+    ),
+  getImages = (model: editor.ITextModel) => {
+    parseCache.clear();
+    const { images } = getDocument(getContent(model));
+    return [...images].map(({ src }: { src: string }) => src);
+  };
 
 const cleaner = (value: TAppPage[]) => {
   value.forEach((page) => {
@@ -156,148 +92,140 @@ const cleaner = (value: TAppPage[]) => {
 };
 
 /* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
 
 const html = {
-  async get(this: TAppPage) {
-    const doc: Document = getDocument(getContent(await this.sfc));
-    doc.querySelectorAll(routerLink).forEach((link) => {
-      const a = document.createElement("a");
-      a.innerHTML = link.innerHTML;
-      a.setAttribute(`data-${routerLink}`, "true");
-      [...link.attributes].forEach((attr) => {
-        a.setAttribute(
-          attr.nodeName === "to" ? "href" : attr.nodeName,
-          attr.nodeValue ?? "",
-        );
-      });
-      link.replaceWith(a);
-    });
-    (
-      await Promise.all(
-        [...doc.images].map((image) => {
-          const src = image.getAttribute("src");
-          return src && !urls.has(src) ? getObjectBlob(src) : undefined;
-        }),
-      )
-    ).forEach((image, index) => {
-      const src = doc.images[index]?.getAttribute("src") ?? "";
-      if (image?.size) urls.set(src, URL.createObjectURL(image));
-      const url = urls.get(src);
-      if (url) {
-        doc.images[index]?.setAttribute("data-src", src);
-        doc.images[index]?.setAttribute("src", url);
-      }
-    });
-    return doc.body.innerHTML;
-  },
-  async set(this: TAppPage, value: string) {
-    const doc: Document = getDocument(value);
-    const sfc: editor.ITextModel = await this.sfc;
-    doc.querySelectorAll("a").forEach((a) => {
-      try {
-        const url = new URL(
-          a.attributes.getNamedItem("href")?.value ?? "",
-          window.location.origin,
-        );
-        if (
-          Boolean(a.dataset[routerLink]) ||
-          (window.location.origin === url.origin &&
-            url.href === `${url.origin}${url.pathname}`)
-        ) {
-          a.removeAttribute(`data-${routerLink}`);
-          const link = document.createElement(routerLink);
-          link.innerHTML = a.innerHTML;
-          [...a.attributes].forEach((attr) => {
-            link.setAttribute(
-              attr.nodeName === "href" ? "to" : attr.nodeName,
-              attr.nodeValue ?? "",
-            );
-          });
-          a.replaceWith(link);
-        }
-      } catch {
-        //
-      }
-    });
-    [...doc.images].forEach((image) => {
-      if (image.dataset.src) {
-        image.setAttribute("src", image.dataset.src);
-        image.removeAttribute("data-src");
-      }
-    });
-    if (descriptor) {
-      if (descriptor.template) descriptor.template.content = doc.body.innerHTML;
-      sfc.setValue(
-        `${
-          descriptor.template
-            ? ""
-            : `<template>${doc.body.innerHTML}</template>
-`
-        }${(toString as (sfcDescriptor: SFCDescriptor) => string)(descriptor)}`,
-      );
-    }
-  },
-};
-
-/* -------------------------------------------------------------------------- */
-
-const sfc = {
-  async get(this: TAppPage) {
-    if (this.id) {
-      const uri = Uri.parse(`file:///${this.id}.vue`);
-      let model = editor.getModel(uri);
-      if (!model) {
-        const value = await getObjectText(`pages/${this.id}.vue`, cache);
-        model = editor.getModel(uri);
-        if (!model) {
-          model = editor.createModel(value, "vue", uri);
-          const oldImages = getImages(model);
-          model.onDidChangeContent(
-            debounce(() => {
-              if (model) {
-                const sources = getImages(model);
-                if (!errors.length) {
-                  oldImages
-                    .filter((src: string) => !sources.includes(src))
-                    .forEach((src) => {
-                      URL.revokeObjectURL(urls.get(src) ?? "");
-                      urls.delete(src);
-                      deleteObject(src).catch(consoleError);
-                    });
-                  oldImages.length = 0;
-                  oldImages.push(...sources);
-                  if (this.id)
-                    putObject(
-                      `pages/${this.id}.vue`,
-                      model.getValue(),
-                      "text/html",
-                    ).catch(consoleError);
-                }
-              }
-            }, second),
+    async get(this: TAppPage) {
+      const doc: Document = getDocument(getContent(await this.sfc));
+      doc.querySelectorAll(routerLink).forEach((link) => {
+        const a = document.createElement("a");
+        a.innerHTML = link.innerHTML;
+        a.setAttribute(`data-${routerLink}`, "true");
+        [...link.attributes].forEach((attr) => {
+          a.setAttribute(
+            attr.nodeName === "to" ? "href" : attr.nodeName,
+            attr.nodeValue ?? "",
           );
-          if (!value)
-            model.setValue(`<template></template>
-`);
+        });
+        link.replaceWith(a);
+      });
+      (
+        await Promise.all(
+          [...doc.images].map((image) => {
+            const src = image.getAttribute("src");
+            return src && !urls.has(src) ? getObjectBlob(src) : undefined;
+          }),
+        )
+      ).forEach((image, index) => {
+        const src = doc.images[index]?.getAttribute("src") ?? "";
+        if (image?.size) urls.set(src, URL.createObjectURL(image));
+        const url = urls.get(src);
+        if (url) {
+          doc.images[index]?.setAttribute("data-src", src);
+          doc.images[index]?.setAttribute("src", url);
         }
+      });
+      return doc.body.innerHTML;
+    },
+    async set(this: TAppPage, value: string) {
+      const doc: Document = getDocument(value);
+      const sfc: editor.ITextModel = await this.sfc;
+      doc.querySelectorAll("a").forEach((a) => {
+        try {
+          const url = new URL(
+            a.attributes.getNamedItem("href")?.value ?? "",
+            window.location.origin,
+          );
+          if (
+            Boolean(a.dataset[routerLink]) ||
+            (window.location.origin === url.origin &&
+              url.href === `${url.origin}${url.pathname}`)
+          ) {
+            a.removeAttribute(`data-${routerLink}`);
+            const link = document.createElement(routerLink);
+            link.innerHTML = a.innerHTML;
+            [...a.attributes].forEach((attr) => {
+              link.setAttribute(
+                attr.nodeName === "href" ? "to" : attr.nodeName,
+                attr.nodeValue ?? "",
+              );
+            });
+            a.replaceWith(link);
+          }
+        } catch {
+          //
+        }
+      });
+      [...doc.images].forEach((image) => {
+        if (image.dataset.src) {
+          image.setAttribute("src", image.dataset.src);
+          image.removeAttribute("data-src");
+        }
+      });
+      if (descriptor) {
+        if (descriptor.template)
+          descriptor.template.content = doc.body.innerHTML;
+        sfc.setValue(
+          `${
+            descriptor.template
+              ? ""
+              : `<template>${doc.body.innerHTML}</template>
+`
+          }${(toString as (sfcDescriptor: SFCDescriptor) => string)(descriptor)}`,
+        );
       }
-      return model;
-    }
-    return undefined;
+    },
   },
-};
+  sfc = {
+    async get(this: TAppPage) {
+      if (this.id) {
+        const uri = Uri.parse(`file:///${this.id}.vue`);
+        let model = editor.getModel(uri);
+        if (!model) {
+          const value = await getObjectText(`pages/${this.id}.vue`, cache);
+          model = editor.getModel(uri);
+          if (!model) {
+            model = editor.createModel(value, "vue", uri);
+            const oldImages = getImages(model);
+            model.onDidChangeContent(
+              debounce(() => {
+                if (model) {
+                  const sources = getImages(model);
+                  if (!errors.length) {
+                    oldImages
+                      .filter((src: string) => !sources.includes(src))
+                      .forEach((src) => {
+                        URL.revokeObjectURL(urls.get(src) ?? "");
+                        urls.delete(src);
+                        deleteObject(src).catch(consoleError);
+                      });
+                    oldImages.length = 0;
+                    oldImages.push(...sources);
+                    if (this.id)
+                      putObject(
+                        `pages/${this.id}.vue`,
+                        model.getValue(),
+                        "text/html",
+                      ).catch(consoleError);
+                  }
+                }
+              }, second),
+            );
+            if (!value)
+              model.setValue(`<template></template>
+`);
+          }
+        }
+        return model;
+      }
+      return undefined;
+    },
+  };
 
-/* -------------------------------------------------------------------------- */
-/*                                  Watchers                                  */
 /* -------------------------------------------------------------------------- */
 
 watch(deleted, (value) => {
   if (value) cleaner([value as TAppPage]);
 });
-
-/* -------------------------------------------------------------------------- */
 
 watch(
   the,
@@ -320,8 +248,6 @@ watch(
   { deep },
 );
 
-/* -------------------------------------------------------------------------- */
-
 watch(pages, (objects) => {
   const value = false;
   const contenteditable = { value, writable };
@@ -333,8 +259,6 @@ watch(pages, (objects) => {
     });
   });
 });
-
-/* -------------------------------------------------------------------------- */
 
 watch(bucket, async (value) => {
   if (value) {
@@ -429,8 +353,6 @@ watch(bucket, async (value) => {
   }
 });
 
-/* -------------------------------------------------------------------------- */
-
 watch(
   nodes,
   debounce((value) => {
@@ -442,8 +364,6 @@ watch(
   { deep },
 );
 
-/* -------------------------------------------------------------------------- */
-
 watch(
   fonts,
   debounce((value, oldValue) => {
@@ -453,8 +373,6 @@ watch(
       );
   }),
 );
-
-/* -------------------------------------------------------------------------- */
 
 watch(
   importmap,
@@ -474,8 +392,6 @@ watch(
   }),
   { deep },
 );
-
-/* -------------------------------------------------------------------------- */
 
 watch(
   [pages, domain],
@@ -507,27 +423,9 @@ watch(
   { deep },
 );
 
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
-
 (async () => {
-  /* -------------------------------------------------------------------------- */
-  /*                                   Arrays                                   */
-  /* -------------------------------------------------------------------------- */
-
-  const oldPages: Record<string, null | string | undefined>[] = [];
-
-  /* -------------------------------------------------------------------------- */
-  /*                                  Constants                                 */
-  /* -------------------------------------------------------------------------- */
-
-  const index = await (await fetch("runtime/index.html")).text();
-
-  /* -------------------------------------------------------------------------- */
-  /*                                  Watchers                                  */
-  /* -------------------------------------------------------------------------- */
-
+  const index = await (await fetch("runtime/index.html")).text(),
+    oldPages: Record<string, null | string | undefined>[] = [];
   watch(
     [pages, importmap, domain],
     debounce(async (arr) => {
@@ -639,18 +537,10 @@ ${JSON.stringify(imap, null, " ")}
     }, second),
     { deep },
   );
-
-  /* -------------------------------------------------------------------------- */
 })().catch(consoleError);
 
-/* -------------------------------------------------------------------------- */
-/*                                   Exports                                  */
 /* -------------------------------------------------------------------------- */
 
 export type { TAppPage };
 
-/* -------------------------------------------------------------------------- */
-
 export { deleted, domain, fonts, rightDrawer, selected, the, urls };
-
-/* -------------------------------------------------------------------------- */
