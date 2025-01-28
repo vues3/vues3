@@ -28,6 +28,7 @@ import langTsx from "shiki/langs/tsx.mjs";
 import langVue from "shiki/langs/vue.mjs";
 import themeDark from "shiki/themes/dark-plus.mjs";
 import themeLight from "shiki/themes/light-plus.mjs";
+// eslint-disable-next-line import-x/default
 import VueWorker from "src/workers/vue.worker?worker";
 import * as languageConfigs from "stores/language-configs";
 
@@ -103,12 +104,17 @@ window.MonacoEnvironment = { getWorker };
 ["vue", "js", "ts", "css"].forEach((value, index) => {
   const id = languageId[index];
   if (id) {
-    const extensions = [`.${value}`];
-    monaco.languages.register({ extensions, id });
-    monaco.languages.setLanguageConfiguration(
-      id,
-      languageConfigs[value as keyof typeof languageConfigs],
-    );
+    const configuration = (
+        languageConfigs as Record<
+          string,
+          monaco.languages.LanguageConfiguration
+        >
+      )[value],
+      extensions = [`.${value}`];
+    if (configuration) {
+      monaco.languages.register({ extensions, id });
+      monaco.languages.setLanguageConfiguration(id, configuration);
+    }
   }
 });
 
