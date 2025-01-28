@@ -31,8 +31,10 @@ const extendViteConf = (viteConf: Record<string, object>) => {
   });
 };
 const vueTsc = true;
-const lintCommand = 'eslint "./**/*.{js,ts,mjs,cjs,vue}"';
-const eslint = { lintCommand };
+const useFlatConfig = true;
+const lintCommand =
+  'eslint -c ./eslint.config.ts "./src*/**/*.{ts,js,mjs,cjs,vue}"';
+const eslint = { lintCommand, useFlatConfig };
 const include = [fileURLToPath(new URL("./src/i18n", import.meta.url))];
 const extractors = [extractorPug()];
 const configFile = "./uno.config.ts";
