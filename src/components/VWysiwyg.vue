@@ -40,7 +40,7 @@ import type {
 import type { Component, Ref } from "vue";
 import type { Composer } from "vue-i18n";
 
-import presetWebFonts from "@unocss/preset-web-fonts";
+import webFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
 import { consoleError, customFetch, getFonts } from "@vues3/shared";
 import { useFileDialog } from "@vueuse/core";
@@ -210,13 +210,7 @@ onMounted(() => {
     async (fonts) => {
       if (rootElement) {
         let { presets } = Defaults;
-        presets = [
-          ...presets,
-          presetWebFonts({
-            customFetch,
-            fonts,
-          }),
-        ];
+        presets = [...presets, webFonts({ customFetch, fonts })];
         const defaults: RuntimeOptions["defaults"] = { presets };
         await initUnocssRuntime({ bypassDefined, defaults, rootElement });
       }
