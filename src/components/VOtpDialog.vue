@@ -26,7 +26,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 </template>
 
 <script setup lang="ts">
-import type { QDialog, QInput } from "quasar";
+import type { QInput } from "quasar";
 import type { ComponentPublicInstance } from "vue";
 
 import { deep } from "@vues3/shared";
