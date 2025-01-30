@@ -3,10 +3,6 @@
 </template>
 
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
 import type { ThemeRegistrationRaw } from "shiki";
 import type { Ref } from "vue";
 
@@ -15,55 +11,26 @@ import themeLight from "shiki/themes/light-plus.mjs";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 /* -------------------------------------------------------------------------- */
-/*                                  Constants                                 */
-/* -------------------------------------------------------------------------- */
 
-const automaticLayout = true;
-
-/* -------------------------------------------------------------------------- */
-
-const ambiguousCharacters = false;
-
-/* -------------------------------------------------------------------------- */
-
-const scrollBeyondLastLine = false;
-
-/* -------------------------------------------------------------------------- */
-
-const fixedOverflowWidgets = true;
-
-/* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
-
-const unicodeHighlight = { ambiguousCharacters };
+let editorInstance: editor.IStandaloneCodeEditor | undefined;
 
 /* -------------------------------------------------------------------------- */
 
 const { name: theme = "light-plus" }: ThemeRegistrationRaw = themeLight;
 
 /* -------------------------------------------------------------------------- */
-/*                                 Properties                                 */
-/* -------------------------------------------------------------------------- */
 
-const props = defineProps<{
-  model: Promise<editor.ITextModel>;
-}>();
+const ambiguousCharacters = false,
+  automaticLayout = true,
+  fixedOverflowWidgets = true,
+  props = defineProps<{
+    model: Promise<editor.ITextModel>;
+  }>(),
+  model = await props.model,
+  monaco: Ref<HTMLElement | undefined> = ref(),
+  scrollBeyondLastLine = false,
+  unicodeHighlight = { ambiguousCharacters };
 
-/* -------------------------------------------------------------------------- */
-/*                                 References                                 */
-/* -------------------------------------------------------------------------- */
-
-const monaco: Ref<HTMLElement | undefined> = ref();
-
-/* -------------------------------------------------------------------------- */
-/*                                  Variables                                 */
-/* -------------------------------------------------------------------------- */
-
-let editorInstance: editor.IStandaloneCodeEditor | undefined;
-
-/* -------------------------------------------------------------------------- */
-/*                                  Watchers                                  */
 /* -------------------------------------------------------------------------- */
 
 watch(
@@ -72,14 +39,6 @@ watch(
     editorInstance?.setModel(await value);
   },
 );
-
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
-
-const model = await props.model;
-
-/* -------------------------------------------------------------------------- */
 
 onMounted(() => {
   editorInstance =
@@ -125,11 +84,7 @@ onMounted(() => {
   }
 });
 
-/* -------------------------------------------------------------------------- */
-
 onBeforeUnmount(() => {
   editorInstance?.dispose();
 });
-
-/* -------------------------------------------------------------------------- */
 </script>
