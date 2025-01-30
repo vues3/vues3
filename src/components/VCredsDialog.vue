@@ -68,13 +68,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 </template>
 
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
-import type { QDialog, QInput, QVueGlobals } from "quasar";
-import type { Ref, ShallowRef } from "vue";
-import type { Composer } from "vue-i18n";
+import type { QDialog, QInput } from "quasar";
 
 import endpoints from "assets/endpoints.json";
 import regions from "assets/regions.json";
@@ -86,139 +80,73 @@ import { ref, triggerRef, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 
 /* -------------------------------------------------------------------------- */
-/*                                 Properties                                 */
-/* -------------------------------------------------------------------------- */
 
-const props = defineProps<{
-  pin?: string;
-  value?: string;
-}>();
-
-/* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
-
-const $q: QVueGlobals = useQuasar();
+const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
+    useDialogPluginComponent(),
+  { t } = useI18n();
 
 /* -------------------------------------------------------------------------- */
 
-const { t }: Composer = useI18n();
+const $q = useQuasar(),
+  props = defineProps<{
+    pin?: string;
+    value?: string;
+  }>();
 
 /* -------------------------------------------------------------------------- */
 
-const {
-  dialogRef,
-  onDialogCancel,
-  onDialogHide,
-  onDialogOK,
-}: {
-  dialogRef: Ref<QDialog | undefined>;
-  onDialogCancel: () => void;
-  onDialogHide: () => void;
-  onDialogOK: () => void;
-} = useDialogPluginComponent();
-
-/* -------------------------------------------------------------------------- */
-
-const cred: Record<string, null | string> | undefined = credential.value[
-  props.value ?? ""
-] as Record<string, null | string> | undefined;
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const decrypt = (value?: string): null | string =>
+const decrypt = (value?: string) =>
   props.pin
     ? CryptoJS.AES.decrypt(value ?? "", props.pin).toString(CryptoJS.enc.Utf8)
     : (value ?? null);
 
 /* -------------------------------------------------------------------------- */
-/*                                 References                                 */
-/* -------------------------------------------------------------------------- */
 
-const bucketRef: Readonly<ShallowRef<null | QInput>> =
-  useTemplateRef<QInput>("bucketRef");
-
-/* -------------------------------------------------------------------------- */
-
-const Bucket: Ref<null | string> = ref(decrypt(cred?.Bucket ?? undefined));
-
-/* -------------------------------------------------------------------------- */
-
-const secretAccessKey: Ref<null | string> = ref(
-  decrypt(cred?.secretAccessKey ?? undefined),
-);
+const cred = credential.value[props.value ?? ""],
+  accessKeyId = ref(decrypt(cred?.accessKeyId ?? undefined)),
+  Bucket = ref(decrypt(cred?.Bucket ?? undefined)),
+  bucketRef = useTemplateRef<QInput>("bucketRef"),
+  endpoint = ref(decrypt(cred?.endpoint ?? undefined)),
+  isPwd = ref(true),
+  region = ref(decrypt(cred?.region ?? undefined)),
+  secretAccessKey = ref(decrypt(cred?.secretAccessKey ?? undefined));
 
 /* -------------------------------------------------------------------------- */
 
-const region: Ref<null | string> = ref(decrypt(cred?.region ?? undefined));
-
-/* -------------------------------------------------------------------------- */
-
-const endpoint: Ref<null | string> = ref(decrypt(cred?.endpoint ?? undefined));
-
-/* -------------------------------------------------------------------------- */
-
-const isPwd: Ref<boolean> = ref(true);
-
-/* -------------------------------------------------------------------------- */
-
-const accessKeyId: Ref<null | string> = ref(
-  decrypt(cred?.accessKeyId ?? undefined),
-);
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const getRegions = (value: null | string): string[] | undefined =>
-  regions[(value ?? "") as keyof object];
-
-/* -------------------------------------------------------------------------- */
-
-const encrypt = (
-  obj: Record<string, null | string>,
-): Record<string, null | string> =>
-  props.pin
-    ? Object.fromEntries(
-        Object.entries(obj).map(([key, value]) => [
-          key,
-          CryptoJS.AES.encrypt(value ?? "", props.pin ?? "").toString(),
-        ]),
+const click = (value: Record<string, null | string>) => {
+    if (Bucket.value)
+      if (
+        props.value !== Bucket.value &&
+        Reflect.has(credential.value, Bucket.value)
       )
-    : obj;
+        $q.dialog({
+          message: t("That account already exists"),
+          title: t("Confirm"),
+        });
+      else {
+        if (props.value && props.value !== Bucket.value)
+          Reflect.deleteProperty(credential.value, props.value);
+        Reflect.defineProperty(credential.value, Bucket.value, {
+          enumerable,
+          value,
+          writable,
+        });
+        triggerRef(credential);
+        onDialogOK();
+      }
+  },
+  encrypt = (obj: Record<string, null | string>) =>
+    props.pin
+      ? Object.fromEntries(
+          Object.entries(obj).map(([key, value]) => [
+            key,
+            CryptoJS.AES.encrypt(value ?? "", props.pin ?? "").toString(),
+          ]),
+        )
+      : obj,
+  getRegions = (value: null | string) => regions[(value ?? "") as keyof object];
 
-/* -------------------------------------------------------------------------- */
-
-const click = (value: Record<string, null | string>): void => {
-  if (Bucket.value)
-    if (
-      props.value !== Bucket.value &&
-      Reflect.has(credential.value, Bucket.value)
-    )
-      $q.dialog({
-        message: t("That account already exists"),
-        title: t("Confirm"),
-      });
-    else {
-      if (props.value && props.value !== Bucket.value)
-        Reflect.deleteProperty(credential.value, props.value);
-      Reflect.defineProperty(credential.value, Bucket.value, {
-        enumerable,
-        value,
-        writable,
-      });
-      triggerRef(credential);
-      onDialogOK();
-    }
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
 /* -------------------------------------------------------------------------- */
 
 defineEmits([...useDialogPluginComponent.emits]);
-
-/* -------------------------------------------------------------------------- */
 </script>
