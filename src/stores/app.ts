@@ -33,7 +33,7 @@ type TAppPage = TPage & {
 const deleted: Ref<TPage | undefined> = ref(),
   domain = ref(""),
   fonts = reactive([]),
-  parser: DOMParser = new DOMParser(),
+  parser = new DOMParser(),
   prevImages: string[] = [],
   rightDrawer = ref(false),
   routerLink = "router-link",
@@ -68,7 +68,7 @@ const getContent = (model: editor.ITextModel) => {
   getImages = (model: editor.ITextModel) => {
     parseCache.clear();
     const { images } = getDocument(getContent(model));
-    return [...images].map(({ src }: { src: string }) => src);
+    return [...images].map(({ src }) => src);
   };
 
 const cleaner = (value: TAppPage[]) => {
@@ -127,8 +127,8 @@ const html = {
       return doc.body.innerHTML;
     },
     async set(this: TAppPage, value: string) {
-      const doc: Document = getDocument(value);
-      const sfc: editor.ITextModel = await this.sfc;
+      const doc = getDocument(value),
+        sfc: editor.ITextModel = await this.sfc;
       doc.querySelectorAll("a").forEach((a) => {
         try {
           const url = new URL(
@@ -192,7 +192,7 @@ const html = {
                   const sources = getImages(model);
                   if (!errors.length) {
                     oldImages
-                      .filter((src: string) => !sources.includes(src))
+                      .filter((src) => !sources.includes(src))
                       .forEach((src) => {
                         URL.revokeObjectURL(urls.get(src) ?? "");
                         urls.delete(src);
@@ -234,7 +234,7 @@ watch(
     if (images) {
       if (value?.id === oldValue?.id) {
         prevImages
-          .filter((url: string) => !images.includes(url))
+          .filter((url) => !images.includes(url))
           .forEach((url) => {
             URL.revokeObjectURL(urls.get(url) ?? "");
             urls.delete(url);
@@ -249,8 +249,8 @@ watch(
 );
 
 watch(pages, (objects) => {
-  const value = false;
-  const contenteditable = { value, writable };
+  const value = false,
+    contenteditable = { value, writable };
   objects.forEach((object) => {
     Object.defineProperties(object, {
       contenteditable,
@@ -399,20 +399,20 @@ watch(
     const [page, cname] = arr as [TPage[], string];
     if (cname) {
       const url = page
-        .filter(({ enabled, path }) => enabled && path !== undefined)
-        .map(({ changefreq, lastmod, priority, to }) => {
-          const loc = `https://${cname}${to === "/" ? "" : encodeURI(to ?? "")}`;
-          return {
-            ...(changefreq && { changefreq }),
-            ...(lastmod && { lastmod }),
-            ...(priority && { priority }),
-            loc,
-          };
-        });
-      const urlset = {
-        "@xmlns": "https://www.sitemaps.org/schemas/sitemap/0.9",
-        url,
-      };
+          .filter(({ enabled, path }) => enabled && path !== undefined)
+          .map(({ changefreq, lastmod, priority, to }) => {
+            const loc = `https://${cname}${to === "/" ? "" : encodeURI(to ?? "")}`;
+            return {
+              ...(changefreq && { changefreq }),
+              ...(lastmod && { lastmod }),
+              ...(priority && { priority }),
+              loc,
+            };
+          }),
+        urlset = {
+          "@xmlns": "https://www.sitemaps.org/schemas/sitemap/0.9",
+          url,
+        };
       putObject(
         "sitemap.xml",
         toXML({ "?": 'xml version="1.0" encoding="UTF-8"', urlset }),
@@ -429,8 +429,8 @@ watch(
   watch(
     [pages, importmap, domain],
     debounce(async (arr) => {
-      const [page, imap, cname] = arr as [TPage[], TImportmap, string];
-      const promises: Promise<void>[] = [];
+      const [page, imap, cname] = arr as [TPage[], TImportmap, string],
+        promises: Promise<void>[] = [];
       oldPages.forEach(({ loc, path }) => {
         if (loc && !page.find((value) => value.loc === loc))
           promises.push(deleteObject(`${loc}/index.html`));
@@ -475,19 +475,19 @@ ${JSON.stringify(imap, null, " ")}
           }) => {
             oldPages.push({ loc, path });
             const canonical =
-              cname && `https://${cname}${to === "/" ? "" : (to ?? "")}`;
-            const htm = body
-              .replace(
-                '<base href="" />',
-                `<base href="${
-                  Array(branch.length - 1)
-                    .fill("..")
-                    .join("/") || "./"
-                }" />`,
-              )
-              .replace(
-                "</head>",
-                `<title>${title ?? ""}</title>
+                cname && `https://${cname}${to === "/" ? "" : (to ?? "")}`,
+              htm = body
+                .replace(
+                  '<base href="" />',
+                  `<base href="${
+                    Array(branch.length - 1)
+                      .fill("..")
+                      .join("/") || "./"
+                  }" />`,
+                )
+                .replace(
+                  "</head>",
+                  `<title>${title ?? ""}</title>
     ${canonical && `<link rel="canonical" href="${canonical.replaceAll('"', "&quot;")}">`}
     ${[
       [description ?? "", "description"],
@@ -522,7 +522,7 @@ ${JSON.stringify(imap, null, " ")}
       ).join(`
     `)}
   </head>`,
-              );
+                );
             if (loc)
               putObject(`${loc}/index.html`, htm, "text/html").catch(
                 consoleError,
