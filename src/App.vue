@@ -102,36 +102,44 @@ import { useI18n } from "vue-i18n";
 // eslint-disable-next-line import-x/no-unresolved
 import "virtual:uno.css";
 
+/* -------------------------------------------------------------------------- */
+
 const { t } = useI18n();
-const $q = useQuasar();
+
+/* -------------------------------------------------------------------------- */
+
+const $q = useQuasar(),
+  cancel = true,
+  message = t("Enter a valid domain name:"),
+  persistent = true,
+  title = t("Domain");
+
+/* -------------------------------------------------------------------------- */
+
 const click = (component: Component) => {
-  $q.dialog({ component });
-};
-const cancel = true;
-const message = t("Enter a valid domain name:");
-const persistent = true;
-const title = t("Domain");
-const isValid = (val: string) =>
-  /\b((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}\b/.test(
-    val,
-  );
+    $q.dialog({ component });
+  },
+  closeApp = () => {
+    window.focusedWindowClose();
+  },
+  isMaximized = () => window.focusedWindowIsMaximized(),
+  isValid = (val: string) =>
+    /\b((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}\b/.test(
+      val,
+    ),
+  minimize = () => {
+    window.focusedWindowMinimize();
+  },
+  toggleMaximize = () => {
+    window.focusedWindowToggleMaximize();
+  };
 const clickDomain = () => {
-  const model = domain.value;
-  const prompt = { isValid, model };
+  const model = domain.value,
+    prompt = { isValid, model };
   $q.dialog({ cancel, message, persistent, prompt, title }).onOk(
     (data: string) => {
       domain.value = data;
     },
   );
 };
-const minimize = () => {
-  window.focusedWindowMinimize();
-};
-const toggleMaximize = () => {
-  window.focusedWindowToggleMaximize();
-};
-const closeApp = () => {
-  window.focusedWindowClose();
-};
-const isMaximized = () => window.focusedWindowIsMaximized();
 </script>
