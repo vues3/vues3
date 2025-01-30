@@ -20,13 +20,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 </template>
 
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
-import type { QDialog } from "quasar";
 import type { Ref } from "vue";
-import type { Composer } from "vue-i18n";
 
 import { Icon } from "@iconify/vue";
 import { nodes, pages } from "@vues3/shared";
@@ -35,48 +29,22 @@ import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 /* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
 
-const {
-  dialogRef,
-  onDialogCancel,
-  onDialogHide,
-  onDialogOK,
-}: {
-  dialogRef: Ref<QDialog | undefined>;
-  onDialogCancel: () => void;
-  onDialogHide: () => void;
-  onDialogOK: (payload?: string) => void;
-} = useDialogPluginComponent();
-/* -------------------------------------------------------------------------- */
-
-const { t }: Composer = useI18n();
+const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
+    useDialogPluginComponent(),
+  { t } = useI18n();
 
 /* -------------------------------------------------------------------------- */
-/*                                 References                                 */
-/* -------------------------------------------------------------------------- */
 
-const selected = ref();
+const selected: Ref<string | undefined> = ref(),
+  the = computed(() => pages.value.find(({ id }) => id === selected.value));
 
-/* -------------------------------------------------------------------------- */
-/*                                Computations                                */
-/* -------------------------------------------------------------------------- */
-
-const the = computed(() => pages.value.find(({ id }) => id === selected.value));
-
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
 /* -------------------------------------------------------------------------- */
 
 defineEmits([...useDialogPluginComponent.emits]);
-
-/* -------------------------------------------------------------------------- */
 
 onMounted(() => {
   const [{ id } = {}] = nodes;
   selected.value = id;
 });
-
-/* -------------------------------------------------------------------------- */
 </script>
