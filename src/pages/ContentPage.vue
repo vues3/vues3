@@ -158,14 +158,8 @@ q-page.column.full-height.bg-light(v-else)
     q-spinner-hourglass
 </template>
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
-import type { IconNameArray, Pagination } from "@quasar/quasar-ui-qiconpicker";
+import type { IconNameArray } from "@quasar/quasar-ui-qiconpicker";
 import type { ValidationRule } from "quasar";
-import type { Ref, WritableComputedRef } from "vue";
-import type { Composer } from "vue-i18n";
 
 import { Icon } from "@iconify/vue";
 import mdi from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
@@ -182,82 +176,44 @@ import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 /* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
 
-const { t }: Composer = useI18n();
-
-/* -------------------------------------------------------------------------- */
-
-const { icons }: { icons: IconNameArray } = mdi as Record<
-  "icons",
-  IconNameArray
->;
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const nameInUse: ValidationRule = (v) =>
-  !(
-    !!v &&
-    !!pages.value.find(
-      (element) =>
-        element.id !== the.value?.id &&
-        (element.path === v || element.loc === v),
-    )
-  ) || t("That name is already in use");
+const { icons } = mdi as Record<"icons", IconNameArray>,
+  { t } = useI18n();
 
 /* -------------------------------------------------------------------------- */
 
-const prohibitedCharacters: ValidationRule = (v: null | string) =>
-  !["?", "\\", "#"].some((value) => v?.includes(value)) ||
-  t("Prohibited characters are used");
-
-/* -------------------------------------------------------------------------- */
-/*                                   Arrays                                   */
-/* -------------------------------------------------------------------------- */
-
-const rules: ValidationRule[] = [nameInUse, prohibitedCharacters];
-
-/* -------------------------------------------------------------------------- */
-/*                                 References                                 */
-/* -------------------------------------------------------------------------- */
-
-const filter: Ref<string> = ref("");
-
-/* -------------------------------------------------------------------------- */
-
-const tab: Ref<string> = ref("wysiwyg");
-
-/* -------------------------------------------------------------------------- */
-
-const pagination: Ref<Pagination> = ref({ itemsPerPage, page });
-
-/* -------------------------------------------------------------------------- */
-/*                                Computations                                */
-/* -------------------------------------------------------------------------- */
-
-const icon: WritableComputedRef<string | undefined> = computed({
-  get() {
-    return the.value?.icon?.replace(/^mdi:/, "mdi-");
-  },
-  set(value) {
-    if (value && the.value) the.value.icon = value.replace(/^mdi-/, "mdi:");
-  },
-});
-
-/* -------------------------------------------------------------------------- */
-
-const loc: WritableComputedRef<null | string> = computed({
-  get() {
-    return the.value?.loc ?? null;
-  },
-  set(value) {
-    if (the.value)
-      the.value.loc = value?.replace(/((?=(\/+))\2)$|(^\/+)/g, "") ?? null;
-  },
-});
-
-/* -------------------------------------------------------------------------- */
+const filter = ref(""),
+  icon = computed({
+    get() {
+      return the.value?.icon?.replace(/^mdi:/, "mdi-");
+    },
+    set(value) {
+      if (value && the.value) the.value.icon = value.replace(/^mdi-/, "mdi:");
+    },
+  }),
+  loc = computed({
+    get() {
+      return the.value?.loc ?? null;
+    },
+    set(value) {
+      if (the.value)
+        the.value.loc = value?.replace(/((?=(\/+))\2)$|(^\/+)/g, "") ?? null;
+    },
+  }),
+  pagination = ref({ itemsPerPage, page }),
+  rules: ValidationRule[] = [
+    (v) =>
+      !(
+        !!v &&
+        !!pages.value.find(
+          (element) =>
+            element.id !== the.value?.id &&
+            (element.path === v || element.loc === v),
+        )
+      ) || t("That name is already in use"),
+    (v: null | string) =>
+      !["?", "\\", "#"].some((value) => v?.includes(value)) ||
+      t("Prohibited characters are used"),
+  ],
+  tab = ref("wysiwyg");
 </script>
