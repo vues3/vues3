@@ -1,12 +1,3 @@
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
-import type {
-  LanguageRegistration,
-  RegexEngine,
-  ThemeRegistrationRaw,
-} from "@shikijs/types";
 import type { WorkerLanguageService } from "@volar/monaco/worker";
 import type monacoNs from "monaco-editor-core";
 
@@ -33,73 +24,34 @@ import VueWorker from "src/workers/vue.worker?worker";
 import * as languageConfigs from "stores/language-configs";
 
 /* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
 
-const getWorker: monacoNs.Environment["getWorker"] = (workerId, label) => {
-  switch (label) {
-    case "tailwindcss":
-      return new TailwindcssWorker();
-    case "vue":
-      return new VueWorker();
-    default:
-      return new EditorWorker();
-  }
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                  Constants                                 */
-/* -------------------------------------------------------------------------- */
-
-const moduleId = "vs/language/vue/vueWorker";
+const getSyncUris = () => monaco.editor.getModels().map(({ uri }) => uri),
+  getWorker: monacoNs.Environment["getWorker"] = (workerId, label) => {
+    switch (label) {
+      case "tailwindcss":
+        return new TailwindcssWorker();
+      case "vue":
+        return new VueWorker();
+      default:
+        return new EditorWorker();
+    }
+  };
 
 /* -------------------------------------------------------------------------- */
 
-const languageId = ["vue", "javascript", "typescript", "css"];
+const engine = createJavaScriptRegexEngine(),
+  label = "vue",
+  langs = [langVue, langTsx, langJsx],
+  languageId = ["vue", "javascript", "typescript", "css"],
+  languageSelector = "vue",
+  moduleId = "vs/language/vue/vueWorker",
+  themes = [themeDark, themeLight],
+  worker: monaco.editor.MonacoWebWorker<WorkerLanguageService> =
+    monaco.editor.createWebWorker({ label, moduleId });
 
-/* -------------------------------------------------------------------------- */
-
-const label = "vue";
-
-/* -------------------------------------------------------------------------- */
-
-const languageSelector = "vue";
-
-/* -------------------------------------------------------------------------- */
-/*                                   Arrays                                   */
-/* -------------------------------------------------------------------------- */
-
-const langs: LanguageRegistration[][] = [langVue, langTsx, langJsx];
-
-/* -------------------------------------------------------------------------- */
-
-const themes: ThemeRegistrationRaw[] = [themeDark, themeLight];
-
-/* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
-
-const worker: monaco.editor.MonacoWebWorker<WorkerLanguageService> =
-  monaco.editor.createWebWorker({ label, moduleId });
-
-/* -------------------------------------------------------------------------- */
-
-const engine: RegexEngine = createJavaScriptRegexEngine();
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const getSyncUris = (): monaco.Uri[] =>
-  monaco.editor.getModels().map(({ uri }) => uri);
-
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
 /* -------------------------------------------------------------------------- */
 
 window.MonacoEnvironment = { getWorker };
-
-/* -------------------------------------------------------------------------- */
 
 ["vue", "js", "ts", "css"].forEach((value, index) => {
   const id = languageId[index];
@@ -117,30 +69,13 @@ window.MonacoEnvironment = { getWorker };
     }
   }
 });
-
-/* -------------------------------------------------------------------------- */
-
 registerProviders(worker, languageId, getSyncUris, monaco.languages).catch(
   consoleError,
 );
-
-/* -------------------------------------------------------------------------- */
-
 activateMarkers(worker, languageId, label, getSyncUris, monaco.editor);
-
-/* -------------------------------------------------------------------------- */
-
 activateAutoInsertion(worker, languageId, getSyncUris, monaco.editor);
-
-/* -------------------------------------------------------------------------- */
-
 shikiToMonaco(
   createHighlighterCoreSync({ engine, langs, themes }),
   monaco as typeof monacoNs,
 );
-
-/* -------------------------------------------------------------------------- */
-
 configureMonacoTailwindcss(monaco, { languageSelector });
-
-/* -------------------------------------------------------------------------- */
