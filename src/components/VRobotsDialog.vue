@@ -18,10 +18,6 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 </template>
 
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
 import type { QDialog } from "quasar";
 import type { Ref } from "vue";
 
@@ -32,26 +28,16 @@ import { getObjectText, putObject } from "stores/io";
 import { onBeforeMount, ref, watch } from "vue";
 
 /* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
 
-const {
-  dialogRef,
-  onDialogHide,
-}: {
-  dialogRef: Ref<QDialog | undefined>;
-  onDialogHide: () => void;
-} = useDialogPluginComponent();
+const { dialogRef, onDialogHide } = useDialogPluginComponent();
 
-/* -------------------------------------------------------------------------- */
-/*                                 References                                 */
 /* -------------------------------------------------------------------------- */
 
 const text: Ref<string | undefined> = ref();
 
 /* -------------------------------------------------------------------------- */
-/*                                  Watchers                                  */
-/* -------------------------------------------------------------------------- */
+
+defineEmits([...useDialogPluginComponent.emits]);
 
 watch(
   text,
@@ -60,17 +46,7 @@ watch(
   }, second),
 );
 
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
-
-defineEmits([...useDialogPluginComponent.emits]);
-
-/* -------------------------------------------------------------------------- */
-
 onBeforeMount(async () => {
   text.value = await getObjectText("robots.txt", cache);
 });
-
-/* -------------------------------------------------------------------------- */
 </script>
