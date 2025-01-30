@@ -4,25 +4,31 @@ import { app, BrowserWindow, Menu } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 
-initialize();
-Menu.setApplicationMenu(null);
-const currentDir = fileURLToPath(new URL(".", import.meta.url));
+/* -------------------------------------------------------------------------- */
+
 let mainWindow: BrowserWindow | undefined;
-const icon = path.resolve(currentDir, "icons/icon.png");
-const devTools = false;
-const show = false;
-const height = 600;
-const width = 1000;
-const sandbox = false;
-const frame = false;
-const preload = path.resolve(
-  currentDir,
-  path.join(
-    process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
-    `electron-preload${process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION}`,
+
+/* -------------------------------------------------------------------------- */
+
+const currentDir = fileURLToPath(new URL(".", import.meta.url)),
+  devTools = false,
+  frame = false,
+  height = 600,
+  icon = path.resolve(currentDir, "icons/icon.png"),
+  preload = path.resolve(
+    currentDir,
+    path.join(
+      process.env.QUASAR_ELECTRON_PRELOAD_FOLDER,
+      `electron-preload${process.env.QUASAR_ELECTRON_PRELOAD_EXTENSION}`,
+    ),
   ),
-);
-const webPreferences = { devTools, preload, sandbox };
+  sandbox = false,
+  show = false,
+  webPreferences = { devTools, preload, sandbox },
+  width = 1000;
+
+/* -------------------------------------------------------------------------- */
+
 const createWindow = async () => {
   mainWindow = new BrowserWindow({
     frame,
@@ -42,6 +48,11 @@ const createWindow = async () => {
   mainWindow.show();
   // mainWindow.webContents.openDevTools();
 };
+
+/* -------------------------------------------------------------------------- */
+
+initialize();
+Menu.setApplicationMenu(null);
 app.whenReady().then(createWindow).catch(consoleError);
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
