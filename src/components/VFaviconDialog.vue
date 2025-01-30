@@ -16,18 +16,8 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 </template>
 
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
-import type {
-  QDialog,
-  QUploader,
-  QUploaderFactoryFn,
-  QVueGlobals,
-} from "quasar";
+import type { QUploader, QUploaderFactoryFn } from "quasar";
 import type { Ref } from "vue";
-import type { Composer } from "vue-i18n";
 
 import { useDialogPluginComponent, useQuasar } from "quasar";
 import { putObject } from "stores/io";
@@ -35,33 +25,15 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 /* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
 
-const $q: QVueGlobals = useQuasar();
-
-/* -------------------------------------------------------------------------- */
-
-const { t }: Composer = useI18n();
+const $q = useQuasar(),
+  uploader: Ref<null | QUploader> = ref(null);
 
 /* -------------------------------------------------------------------------- */
 
-const {
-  dialogRef,
-  onDialogHide,
-}: {
-  dialogRef: Ref<QDialog | undefined>;
-  onDialogHide: () => void;
-} = useDialogPluginComponent();
+const { dialogRef, onDialogHide } = useDialogPluginComponent(),
+  { t } = useI18n();
 
-/* -------------------------------------------------------------------------- */
-/*                                 References                                 */
-/* -------------------------------------------------------------------------- */
-
-const uploader: Ref<null | QUploader> = ref(null);
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
 const factory: QUploaderFactoryFn = async (files) => {
@@ -84,10 +56,6 @@ const factory: QUploaderFactoryFn = async (files) => {
 };
 
 /* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
 
 defineEmits([...useDialogPluginComponent.emits]);
-
-/* -------------------------------------------------------------------------- */
 </script>
