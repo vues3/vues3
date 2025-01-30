@@ -1,5 +1,4 @@
 import type { FlatConfig } from "@typescript-eslint/utils/ts-eslint";
-import type { Linter } from "eslint";
 
 import { FlatCompat } from "@eslint/eslintrc";
 import eslint from "@eslint/js";
@@ -9,8 +8,6 @@ import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 import pluginVue from "eslint-plugin-vue";
 import tseslint, { configs, parser } from "typescript-eslint";
 import vueParser from "vue-eslint-parser";
-
-import eslintrc from "./.eslintrc.json";
 
 /* -------------------------------------------------------------------------- */
 
@@ -47,7 +44,7 @@ export default tseslint.config(
   { ignores },
   { rules },
   { languageOptions },
-  ...compat.config(eslintrc as Linter.LegacyConfig),
+  ...compat.extends("plugin:vue-pug/vue3-recommended"),
   eslint.configs.recommended,
   eslintPluginImportX.flatConfigs.recommended,
   eslintPluginImportX.flatConfigs.typescript,
