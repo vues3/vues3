@@ -1,7 +1,0 @@
-{
-  "extends": ["plugin:vue-pug/vue3-recommended"],
-  "plugins": ["eslint-plugin-tsdoc"],
-  "rules": {
-    "tsdoc/syntax": "warn"
-  }
-}
