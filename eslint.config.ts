@@ -36,6 +36,7 @@ const compat = new FlatCompat(),
     ],
     "no-shadow": "off",
     "no-use-before-define": "off",
+    "prettier/prettier": ["error", { endOfLine: "auto" }],
   };
 
 /* -------------------------------------------------------------------------- */
