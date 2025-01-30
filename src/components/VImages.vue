@@ -24,10 +24,6 @@
 /* -------------------------------------------------------------------------- */
 
 import type { TPage } from "@vues3/shared";
-import type { UseFileDialogReturn } from "@vueuse/core";
-import type { QVueGlobals } from "quasar";
-import type { Ref } from "vue";
-import type { Composer } from "vue-i18n";
 
 import { consoleError, deep } from "@vues3/shared";
 import { useFileDialog } from "@vueuse/core";
@@ -41,96 +37,61 @@ import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 /* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
 
-const $q: QVueGlobals = useQuasar();
+const { onChange, open } = useFileDialog({
+    accept,
+    capture,
+    multiple,
+    reset,
+  }),
+  { t } = useI18n();
 
-/* -------------------------------------------------------------------------- */
-
-const { t }: Composer = useI18n();
-
-/* -------------------------------------------------------------------------- */
-
-const { onChange, open }: UseFileDialogReturn = useFileDialog({
-  accept,
-  capture,
-  multiple,
-  reset,
-});
-
-/* -------------------------------------------------------------------------- */
-/*                                  Constants                                 */
-/* -------------------------------------------------------------------------- */
-
-const message: string = t(
-  "The graphic file type is not suitable for use on the web",
-);
-
-/* -------------------------------------------------------------------------- */
-/*                                  Variables                                 */
 /* -------------------------------------------------------------------------- */
 
 let index = 0;
 
 /* -------------------------------------------------------------------------- */
-/*                                 References                                 */
-/* -------------------------------------------------------------------------- */
 
-const images: Ref<TPage["images"]> = ref([]);
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const upload = (i: number): void => {
-  index = i;
-  open();
-};
+const $q = useQuasar(),
+  images = ref([] as TPage["images"]),
+  message = t("The graphic file type is not suitable for use on the web");
 
 /* -------------------------------------------------------------------------- */
 
-const left = (i: number): void => {
-  if (i) {
-    const prev = images.value[i - 1];
-    if (images.value[i] && prev)
-      [images.value[i - 1], images.value[i]] = [images.value[i], prev];
-  }
-};
+const add = (i: number) => {
+    const alt = "",
+      url = "";
+    images.value.splice(i + 1, 0, { alt, url });
+  },
+  left = (i: number) => {
+    if (i) {
+      const prev = images.value[i - 1];
+      if (images.value[i] && prev)
+        [images.value[i - 1], images.value[i]] = [images.value[i], prev];
+    }
+  },
+  remove = (i: number) => {
+    $q.dialog({
+      cancel: true,
+      message: t("Do you really want to delete?"),
+      persistent: true,
+      title: t("Confirm"),
+    }).onOk(() => {
+      images.value.splice(i, 1);
+    });
+  },
+  right = (i: number) => {
+    if (i < images.value.length - 1) {
+      const next = images.value[i + 1];
+      if (images.value[i] && next)
+        [images.value[i], images.value[i + 1]] = [next, images.value[i]];
+    }
+  },
+  upload = (i: number) => {
+    index = i;
+    open();
+  };
 
-/* -------------------------------------------------------------------------- */
-
-const right = (i: number): void => {
-  if (i < images.value.length - 1) {
-    const next = images.value[i + 1];
-    if (images.value[i] && next)
-      [images.value[i], images.value[i + 1]] = [next, images.value[i]];
-  }
-};
-
-/* -------------------------------------------------------------------------- */
-
-const add = (i: number): void => {
-  const alt = "";
-  const url = "";
-  images.value.splice(i + 1, 0, { alt, url });
-};
-
-/* -------------------------------------------------------------------------- */
-
-const remove = (i: number): void => {
-  $q.dialog({
-    cancel: true,
-    message: t("Do you really want to delete?"),
-    persistent: true,
-    title: t("Confirm"),
-  }).onOk(() => {
-    images.value.splice(i, 1);
-  });
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                  Watchers                                  */
 /* -------------------------------------------------------------------------- */
 
 watch(
@@ -153,8 +114,6 @@ watch(
   { deep },
 );
 
-/* -------------------------------------------------------------------------- */
-
 watch(
   the,
   (value) => {
@@ -169,10 +128,6 @@ watch(
   },
   { immediate },
 );
-
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
 
 onChange((files) => {
   const image = images.value[index];
@@ -195,6 +150,4 @@ onChange((files) => {
     }
   }
 });
-
-/* -------------------------------------------------------------------------- */
 </script>
