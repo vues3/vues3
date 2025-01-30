@@ -7,20 +7,8 @@ import { fileURLToPath } from "url";
 import { mergeConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
-/** Boot files to load. Order is important. */
-const boot = ["route", "quasar-lang-pack", "i18n", "monaco"];
-/**
- * Global CSS/Stylus/SCSS/SASS/... files from /src/css/, except for theme files,
- * which are included by default.
- */
-const css = ["app.sass"];
-// eslint-disable-next-line tsdoc/syntax
-/** What to import from @quasar/extras package. */
-const extras: (QuasarFonts | QuasarIconSets)[] = [
-  "mdi-v7",
-  "roboto-font",
-  "material-icons",
-];
+/* -------------------------------------------------------------------------- */
+
 const extendViteConf = (viteConf: Record<string, object>) => {
   const { define = {} } = viteConf;
   const value = mergeConfig(define, {
@@ -30,40 +18,49 @@ const extendViteConf = (viteConf: Record<string, object>) => {
     value,
   });
 };
-const vueTsc = true;
-const useFlatConfig = true;
-const lintCommand =
-  'eslint -c ./eslint.config.ts "./src*/**/*.{ts,js,mjs,cjs,vue}"';
-const eslint = { lintCommand, useFlatConfig };
-const include = [fileURLToPath(new URL("./src/i18n", import.meta.url))];
-const extractors = [extractorPug()];
-const configFile = "./uno.config.ts";
-const src = "./node_modules/@vues3/runtime/dist/*";
-const dest = "runtime";
-const targets = [{ dest, src }];
-const vitePlugins = [
-  ["@intlify/unplugin-vue-i18n/vite", { include }],
-  ["vite-plugin-checker", { eslint, vueTsc }, { server: false }],
-  ["@unocss/vite", { configFile, extractors }],
-  [viteStaticCopy, { targets }],
-];
-const strict = true;
-const typescript = { strict };
-const build: object = { extendViteConf, typescript, vitePlugins };
-const open = false;
-const devServer = { open };
-const plugins: (keyof QuasarPlugins)[] = ["Dialog", "Notify"];
-/**
- * What Quasar language pack to use, what Quasar icon set to use for Quasar
- * components, etc.
- */
-const framework = { plugins };
-const bundler = "builder";
-const appId = "com.electron.vues3";
-const grade: SnapOptions["grade"] = "stable";
-const snap = { grade };
-const builder = { appId, snap };
-const preloadScripts = ["electron-preload"];
+
+/* -------------------------------------------------------------------------- */
+
+const appId = "com.electron.vues3",
+  boot = ["route", "quasar-lang-pack", "i18n", "monaco"],
+  strict = true,
+  typescript = { strict },
+  configFile = "./uno.config.ts",
+  lintCommand =
+    'eslint -c ./eslint.config.ts "./src*/**/*.{ts,js,mjs,cjs,vue}"',
+  useFlatConfig = true,
+  eslint = { lintCommand, useFlatConfig },
+  extractors = [extractorPug()],
+  include = [fileURLToPath(new URL("./src/i18n", import.meta.url))],
+  dest = "runtime",
+  src = "./node_modules/@vues3/runtime/dist/*",
+  targets = [{ dest, src }],
+  vueTsc = true,
+  vitePlugins = [
+    ["@intlify/unplugin-vue-i18n/vite", { include }],
+    ["vite-plugin-checker", { eslint, vueTsc }, { server: false }],
+    ["@unocss/vite", { configFile, extractors }],
+    [viteStaticCopy, { targets }],
+  ],
+  build: object = { extendViteConf, typescript, vitePlugins },
+  grade: SnapOptions["grade"] = "stable",
+  snap = { grade },
+  builder = { appId, snap },
+  bundler = "builder",
+  css = ["app.css"],
+  open = false,
+  devServer = { open },
+  extras: (QuasarFonts | QuasarIconSets)[] = [
+    "mdi-v7",
+    "roboto-font",
+    "material-icons",
+  ],
+  plugins: (keyof QuasarPlugins)[] = ["Dialog", "Notify"],
+  framework = { plugins },
+  preloadScripts = ["electron-preload"];
+
+/* -------------------------------------------------------------------------- */
+
 export default defineConfig(() => ({
   boot,
   build,
