@@ -31,13 +31,7 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
 </template>
 
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
-import type { QDialog, QTableProps } from "quasar";
-import type { Ref } from "vue";
-import type { Composer } from "vue-i18n";
+import type { QTableProps } from "quasar";
 
 import { deep } from "@vues3/shared";
 import json from "assets/fonts.json";
@@ -47,56 +41,31 @@ import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 /* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
 
-const { t }: Composer = useI18n();
-
-/* -------------------------------------------------------------------------- */
-
-const {
-  dialogRef,
-  onDialogHide,
-}: {
-  dialogRef: Ref<QDialog | undefined>;
-  onDialogHide: () => void;
-} = useDialogPluginComponent();
+const { dialogRef, onDialogHide } = useDialogPluginComponent(),
+  { t } = useI18n();
 
 /* -------------------------------------------------------------------------- */
 
-const columns: QTableProps["columns"] = json as QTableProps["columns"];
-
-/* -------------------------------------------------------------------------- */
-/*                                 References                                 */
-/* -------------------------------------------------------------------------- */
-
-const selected: Ref<Record<string, string>[]> = ref([]);
+const columns = json as QTableProps["columns"],
+  rows = ref([] as Record<string, string>[]),
+  selected = ref([] as Record<string, string>[]);
 
 /* -------------------------------------------------------------------------- */
 
-const rows: Ref<Record<string, string>[]> = ref([]);
+const addRow = () => {
+    const id = uid(),
+      name = "";
+    rows.value.push({ id, name });
+  },
+  removeRow = () => {
+    const set = new Set(selected.value);
+    rows.value = rows.value.filter((x) => !set.has(x));
+  };
 
 /* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
 
-const addRow = (): void => {
-  const id = uid();
-  const name = "";
-  rows.value.push({ id, name });
-};
-
-/* -------------------------------------------------------------------------- */
-
-const removeRow = (): void => {
-  const set = new Set(selected.value);
-  rows.value = rows.value.filter((x) => !set.has(x));
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                  Watchers                                  */
-/* -------------------------------------------------------------------------- */
-
+defineEmits([...useDialogPluginComponent.emits]);
 watch(
   rows,
   (value) => {
@@ -105,21 +74,10 @@ watch(
   },
   { deep },
 );
-
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
-
-defineEmits([...useDialogPluginComponent.emits]);
-
-/* -------------------------------------------------------------------------- */
-
 onMounted(() => {
   rows.value = fonts.map((name) => {
     const id = uid();
     return { id, name };
   });
 });
-
-/* -------------------------------------------------------------------------- */
 </script>
