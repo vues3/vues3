@@ -36,10 +36,6 @@ q-btn-group.q-mx-xs(flat, spread)
 </template>
 
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
 import type { TPage } from "@vues3/shared";
 import type { QTree } from "quasar";
 import type { Ref } from "vue";
@@ -61,147 +57,94 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 /* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
-
-const $q = useQuasar();
-
-/* -------------------------------------------------------------------------- */
 
 const { t } = useI18n();
 
 /* -------------------------------------------------------------------------- */
-/*                                   Arrays                                   */
-/* -------------------------------------------------------------------------- */
 
-const errors = [
-  (propNode: TPage) => !propNode.name,
-  (propNode: TPage) =>
-    !!pages.value.find(
-      (element) =>
-        element.id !== propNode.id &&
-        propNode.path &&
-        (("path" in element && element.path === propNode.path) ||
-          ("loc" in element && element.loc === propNode.path)),
-    ),
-  (propNode: TPage) =>
-    ["?", "\\", "#"].some((value) => propNode.name?.includes(value)),
-];
-
-/* -------------------------------------------------------------------------- */
-/*                                Computations                                */
-/* -------------------------------------------------------------------------- */
-
-const the = computed(() =>
-  pages.value.length
-    ? (pages.value.find(({ id }) => id === selected.value) ?? null)
-    : undefined,
-);
-
-/* -------------------------------------------------------------------------- */
-/*                                 References                                 */
-/* -------------------------------------------------------------------------- */
-
-const qtree: Ref<QTree | undefined> = ref();
-
-/* -------------------------------------------------------------------------- */
-/*                                  Constants                                 */
-/* -------------------------------------------------------------------------- */
-
-const title: string = t("Confirm");
+const $q = useQuasar(),
+  errors = [
+    (propNode: TPage) => !propNode.name,
+    (propNode: TPage) =>
+      !!pages.value.find(
+        (element) =>
+          element.id !== propNode.id &&
+          propNode.path &&
+          (("path" in element && element.path === propNode.path) ||
+            ("loc" in element && element.loc === propNode.path)),
+      ),
+    (propNode: TPage) =>
+      ["?", "\\", "#"].some((value) => propNode.name?.includes(value)),
+  ],
+  message = t("Do you really want to delete?"),
+  qtree: Ref<QTree | undefined> = ref(),
+  the = computed(() =>
+    pages.value.length
+      ? (pages.value.find(({ id }) => id === selected.value) ?? null)
+      : undefined,
+  ),
+  title = t("Confirm"),
+  value = false;
 
 /* -------------------------------------------------------------------------- */
 
-const message: string = t("Do you really want to delete?");
-
-/* -------------------------------------------------------------------------- */
-
-const value = false;
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const error = (propNode: TPage): boolean =>
-  errors
-    .map((errFnc) => errFnc(propNode))
-    .reduceRight(
-      (previousValue, currentValue) => previousValue || currentValue,
-    );
-
-/* -------------------------------------------------------------------------- */
-
-const errorMessage = (propNode: TPage): string | undefined => {
-  switch (true) {
-    case errors[0]?.(propNode):
-      return t("The name is empty");
-    case errors[1]?.(propNode):
-      return t("That name is already in use");
-    case errors[2]?.(propNode):
-      return t("Prohibited characters are used");
-    default:
-      return undefined;
-  }
-};
-
-/* -------------------------------------------------------------------------- */
-
-const clickUp = (): void => {
-  if (the.value?.id) up(the.value.id);
-};
-
-/* -------------------------------------------------------------------------- */
-
-const clickDown = (): void => {
-  if (the.value?.id) down(the.value.id);
-};
-
-/* -------------------------------------------------------------------------- */
-
-const clickLeft = (): void => {
-  if (the.value?.id) {
-    const id = left(the.value.id);
-    if (id) qtree.value?.setExpanded(id, true);
-  }
-};
-
-/* -------------------------------------------------------------------------- */
-
-const clickRight = (): void => {
-  if (the.value?.id) {
-    const id = right(the.value.id);
-    if (id) qtree.value?.setExpanded(id, true);
-  }
-};
-
-/* -------------------------------------------------------------------------- */
-
-const clickAdd = (): void => {
-  if (the.value?.id) {
-    const id = add(the.value.id);
-    if (id) {
-      if (the.value.children.length)
-        qtree.value?.setExpanded(the.value.id, true);
-      selected.value = id;
-    }
-  }
-};
-
-/* -------------------------------------------------------------------------- */
-
-const clickRemove = (): void => {
-  if (the.value?.parent)
-    $q.dialog({ cancel, message, persistent, title }).onOk(() => {
-      if (the.value?.id) {
-        deleted.value = the.value;
-        const id = remove(the.value.id);
-        if (id) selected.value = id;
+const clickAdd = () => {
+    if (the.value?.id) {
+      const id = add(the.value.id);
+      if (id) {
+        if (the.value.children.length)
+          qtree.value?.setExpanded(the.value.id, true);
+        selected.value = id;
       }
-    });
-};
+    }
+  },
+  clickDown = () => {
+    if (the.value?.id) down(the.value.id);
+  },
+  clickLeft = () => {
+    if (the.value?.id) {
+      const id = left(the.value.id);
+      if (id) qtree.value?.setExpanded(id, true);
+    }
+  },
+  clickRemove = () => {
+    if (the.value?.parent)
+      $q.dialog({ cancel, message, persistent, title }).onOk(() => {
+        if (the.value?.id) {
+          deleted.value = the.value;
+          const id = remove(the.value.id);
+          if (id) selected.value = id;
+        }
+      });
+  },
+  clickRight = () => {
+    if (the.value?.id) {
+      const id = right(the.value.id);
+      if (id) qtree.value?.setExpanded(id, true);
+    }
+  },
+  clickUp = () => {
+    if (the.value?.id) up(the.value.id);
+  },
+  error = (propNode: TPage) =>
+    errors
+      .map((errFnc) => errFnc(propNode))
+      .reduceRight(
+        (previousValue, currentValue) => previousValue || currentValue,
+      ),
+  errorMessage = (propNode: TPage) => {
+    switch (true) {
+      case errors[0]?.(propNode):
+        return t("The name is empty");
+      case errors[1]?.(propNode):
+        return t("That name is already in use");
+      case errors[2]?.(propNode):
+        return t("Prohibited characters are used");
+      default:
+        return undefined;
+    }
+  };
 
-/* -------------------------------------------------------------------------- */
-/*                                  Watchers                                  */
 /* -------------------------------------------------------------------------- */
 
 watch(
@@ -215,20 +158,14 @@ watch(
   },
   { immediate },
 );
-
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
-
 onMounted(() => {
   const [{ id } = {}] = nodes;
   if (id) qtree.value?.setExpanded(id, true);
 });
-
-/* -------------------------------------------------------------------------- */
 </script>
 
-<style lang="sass" scoped>
-.min-w-96
-  min-width: 96px
+<style scoped>
+.min-w-96 {
+  min-width: 96px;
+}
 </style>
