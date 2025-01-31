@@ -19,10 +19,10 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-list
           q-item(tag="label", v-ripple)
             q-item-section(avatar)
-              q-checkbox(v-model="the.along")
+              q-checkbox(v-model="the.flat")
             q-item-section
-              q-item-label along
-              q-item-label(caption) along
+              q-item-label flat
+              q-item-label(caption) flat
           q-select(
             hide-dropdown-icon,
             label="class",
