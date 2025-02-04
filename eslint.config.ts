@@ -5,6 +5,7 @@ import eslint from "@eslint/js";
 import eslintPluginImportX from "eslint-plugin-import-x";
 import perfectionist from "eslint-plugin-perfectionist";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import { configs as sonarjs } from "eslint-plugin-sonarjs";
 import pluginVue from "eslint-plugin-vue";
 import tseslint, { configs, parser } from "typescript-eslint";
 import vueParser from "vue-eslint-parser";
@@ -24,7 +25,6 @@ const compat = new FlatCompat(),
   },
   languageOptions = { parser: vueParser, parserOptions },
   rules: FlatConfig.Rules = {
-    "@typescript-eslint/no-shadow": "error",
     "@typescript-eslint/no-use-before-define": "error",
     "import-x/no-extraneous-dependencies": [
       "error",
@@ -34,7 +34,6 @@ const compat = new FlatCompat(),
         whitelist: ["electron"],
       },
     ],
-    "no-shadow": "off",
     "no-use-before-define": "off",
     "prettier/prettier": ["error", { endOfLine: "auto" }],
   };
@@ -52,6 +51,8 @@ export default tseslint.config(
   configs.strictTypeChecked,
   configs.stylisticTypeChecked,
   ...pluginVue.configs["flat/strongly-recommended"],
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  sonarjs.recommended,
   perfectionist.configs["recommended-natural"],
   eslintPluginPrettierRecommended,
 );
