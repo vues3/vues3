@@ -11,12 +11,20 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 
 const extendViteConf = (viteConf: Record<string, object>) => {
   const { define = {} } = viteConf;
-  const value = mergeConfig(define, {
-    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-  });
-  Reflect.defineProperty(viteConf, "define", {
-    value,
-  });
+  {
+    const value = mergeConfig(define, {
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    });
+    Reflect.defineProperty(viteConf, "define", {
+      value,
+    });
+  }
+  {
+    const value = "./";
+    Reflect.defineProperty(viteConf, "base", {
+      value,
+    });
+  }
 };
 
 /* -------------------------------------------------------------------------- */
