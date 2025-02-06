@@ -34,8 +34,8 @@ import type { Component, Ref } from "vue";
 
 import webFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
-import { consoleError, customFetch, defaultFonts } from "@vues3/shared";
-import { reactiveComputed, useFileDialog } from "@vueuse/core";
+import { consoleError, customFetch, getFonts } from "@vues3/shared";
+import { useFileDialog } from "@vueuse/core";
 import Defaults from "app/uno.config";
 import mimes from "assets/mimes.json";
 import VLinkDialog from "components/VLinkDialog.vue";
@@ -55,14 +55,6 @@ const { t } = useI18n();
 
 const $q = useQuasar(),
   editor: Ref<QEditor | undefined> = ref(),
-  fonts = reactiveComputed(() =>
-    Object.fromEntries(
-      [...defaultFonts, ...Fonts].map((value) => [
-        value.toLowerCase().replaceAll(" ", "_"),
-        value,
-      ]),
-    ),
-  ),
   props = withDefaults(
     defineProps<{
       id: string | undefined;
@@ -76,58 +68,7 @@ const $q = useQuasar(),
   htm = ref(await props.modelValue),
   list = "no-icons",
   message = t("The graphic file type is not suitable for use on the web"),
-  placeholder = t("Add some content to your page..."),
-  toolbar = computed(() => [
-    ["left", "center", "right", "justify"],
-    ["bold", "italic", "strike", "underline", "subscript", "superscript"],
-    ["hr", "link"],
-    ["print", "fullscreen"],
-    [
-      ...[
-        [
-          "formatting",
-          [
-            "p",
-            ...[...Array(6).keys()].map((key) => `h${String(key + 1)}`),
-            "code",
-          ],
-          false,
-          false,
-        ],
-        [
-          "fontSize",
-          [...Array(7).keys()].map((key) => `size-${String(key + 1)}`),
-          true,
-          true,
-        ],
-        [
-          "defaultFont",
-          [
-            "default_font",
-            ...Object.keys(fonts).sort((a, b) => a.localeCompare(b)),
-          ],
-          false,
-          true,
-        ],
-      ].map(([key, options, fixedLabel, fixedIcon]) => ({
-        fixedIcon,
-        fixedLabel,
-        icon: $q.iconSet.editor[
-          key as keyof StringDictionary<QuasarIconSetEditor>
-        ],
-        label:
-          $q.lang.editor[
-            key as keyof StringDictionary<QuasarLanguageEditorLabel>
-          ],
-        list,
-        options,
-      })),
-      "removeFormat",
-    ],
-    ["quote", "unordered", "ordered", "outdent", "indent"],
-    ["undo", "redo"],
-    ["upload", "dashboard", "share"],
-  ]);
+  placeholder = t("Add some content to your page...");
 
 /* -------------------------------------------------------------------------- */
 
@@ -207,8 +148,8 @@ watch(files, (newFiles) => {
 onMounted(() => {
   const rootElement = editor.value?.getContentEl;
   watch(
-    fonts,
-    async () => {
+    () => getFonts(Fonts),
+    async (fonts) => {
       if (rootElement) {
         let { presets } = Defaults;
         presets = [...presets, webFonts({ customFetch, fonts })];
@@ -231,4 +172,71 @@ onMounted(() => {
     },
   );
 });
+
+/* -------------------------------------------------------------------------- */
+
+const fonts = computed(() => ({
+    ...getFonts([
+      "Arial",
+      "Arial Black",
+      "Comic Sans",
+      "Courier New",
+      "Impact",
+      "Lucida Grande",
+      "Times New Roman",
+      "Verdana",
+    ]),
+    ...getFonts(Fonts),
+  })),
+  toolbar = computed(() => [
+    ["left", "center", "right", "justify"],
+    ["bold", "italic", "strike", "underline", "subscript", "superscript"],
+    ["hr", "link"],
+    ["print", "fullscreen"],
+    [
+      ...[
+        [
+          "formatting",
+          [
+            "p",
+            ...[...Array(6).keys()].map((key) => `h${String(key + 1)}`),
+            "code",
+          ],
+          false,
+          false,
+        ],
+        [
+          "fontSize",
+          [...Array(7).keys()].map((key) => `size-${String(key + 1)}`),
+          true,
+          true,
+        ],
+        [
+          "defaultFont",
+          [
+            "default_font",
+            ...Object.keys(fonts.value).sort((a, b) => a.localeCompare(b)),
+          ],
+          false,
+          true,
+        ],
+      ].map(([key, options, fixedLabel, fixedIcon]) => ({
+        fixedIcon,
+        fixedLabel,
+        icon: $q.iconSet.editor[
+          key as keyof StringDictionary<QuasarIconSetEditor>
+        ],
+        label:
+          $q.lang.editor[
+            key as keyof StringDictionary<QuasarLanguageEditorLabel>
+          ],
+        list,
+        options,
+      })),
+      "removeFormat",
+    ],
+    ["quote", "unordered", "ordered", "outdent", "indent"],
+    ["undo", "redo"],
+    ["upload", "dashboard", "share"],
+  ]);
 </script>
