@@ -25,6 +25,7 @@ const compat = new FlatCompat(),
   },
   languageOptions = { parser: vueParser, parserOptions },
   rules: FlatConfig.Rules = {
+    "@typescript-eslint/no-shadow": "error",
     "@typescript-eslint/no-use-before-define": "error",
     "import-x/no-extraneous-dependencies": [
       "error",
@@ -34,6 +35,7 @@ const compat = new FlatCompat(),
         whitelist: ["electron"],
       },
     ],
+    "no-shadow": "off",
     "no-use-before-define": "off",
     "prettier/prettier": ["error", { endOfLine: "auto" }],
   };
