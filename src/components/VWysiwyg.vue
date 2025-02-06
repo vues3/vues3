@@ -34,7 +34,7 @@ import type { Component, Ref } from "vue";
 
 import webFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
-import { consoleError, customFetch } from "@vues3/shared";
+import { consoleError, customFetch, defaultFonts } from "@vues3/shared";
 import { reactiveComputed, useFileDialog } from "@vueuse/core";
 import Defaults from "app/uno.config";
 import mimes from "assets/mimes.json";
@@ -57,17 +57,10 @@ const $q = useQuasar(),
   editor: Ref<QEditor | undefined> = ref(),
   fonts = reactiveComputed(() =>
     Object.fromEntries(
-      [
-        "Arial",
-        "Arial Black",
-        "Comic Sans",
-        "Courier New",
-        "Impact",
-        "Lucida Grande",
-        "Times New Roman",
-        "Verdana",
-        ...Fonts,
-      ].map((value) => [value.toLowerCase().replaceAll(" ", "_"), value]),
+      [...defaultFonts, ...Fonts].map((value) => [
+        value.toLowerCase().replaceAll(" ", "_"),
+        value,
+      ]),
     ),
   ),
   props = withDefaults(
