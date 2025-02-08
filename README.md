@@ -1,35 +1,24 @@
-![banner](https://vues3.ru/images/a20a7511-f08a-419c-b62c-6757ce65e6df.png)
+# Web editor vueS3
 
-# vueS3
+### vueS3 is an open-source and free web editor for creating websites
 
-VueS3 is a convenient and flexible tool for creating a cloud-based website.
-
-VueS3 is designed to work in clouds: Amazon Web Services, Google Cloud, Cloudflare, Oracle Cloud, Yandex Cloud, VK Cloud...
-
-## Documentation
-
-All documentation are located at [vues3.ru](https://vues3.ru).
+- Create static websites with Vue without installing or setting up a development environment (Node.js, Vite, etc.)
+- Create Vue single-file components (also known as \*.vue files, or SFC for Single File Component) without a preliminary build step
+- Compilation of Vue single-file components occurs in the runtime mode directly in the browser when viewing the site, with no need for SSR (Server-Side Rendering)
+- Of course, you can use the Composition API, moreover, it can be used together with TypeScript
+- For static pages, use the WYSIWYG mode, which doesn’t require even basic knowledge of HTML
+- For editing Vue single-file components, the Monaco editor is used (the same one as in Microsoft VS Code) with Volar.js pre-installed
+- Out of the box, the CSS framework Tailwind CSS is supported; just use Tailwind CSS classes without any additional configuration
+- If you need external modules, such as libraries or frameworks, you can import them, including directly from services like jsDelivr and UNPKG
+- You can edit the website directly on your hard drive or connect to any S3 storage
+- To run your website, you'll only need any basic web server capable of serving static pages. In the case of S3, you don't even need that, as this functionality is usually built into the storage itself
+- By the way, GitHub Pages is also a great option for hosting your website—it works like a charm
+- Special attention is given to search engine optimization (SEO) mechanisms, which ensure that search bots can effectively index the site
+- vueS3 is a non-commercial, open-source project – feel free to explore and use it!
 
 ## Web Application
 
 You can starting to use vueS3 at [run.vues3.ru](https://run.vues3.ru).
-
-## Installation
-
-Use the package manager [bun](https://bun.sh) to install vueS3.
-
-```bash
-git clone https://github.com/vues3/vues3.git
-
-bun install
-
-# if you want a spa application
-bun run build
-# if you want a native application
-bun run build:electron
-```
-
-The result will be built in the dist subfolder.
 
 ## Download
 
@@ -39,24 +28,9 @@ You can always download the [last precompiled version](https://github.com/vues3/
 
 [facebook.com/vues3](https://facebook.com/vues3)
 
-[vk.com/vues3](https://vk.com/vues3)
+## Made on the shores of the Baltic Sea
 
-## Screenshots
-
-![screenshot](https://vues3.ru/images/screenshots/screenshot_1.png)
-
-![screenshot](https://vues3.ru/images/screenshots/screenshot_2.png)
-
-![screenshot](https://vues3.ru/images/screenshots/screenshot_3.png)
-
-![screenshot](https://vues3.ru/images/screenshots/screenshot_4.png)
-
-![screenshot](https://vues3.ru/images/screenshots/screenshot_5.png)
-
-## Acknowledgements
-
-- [Vue3/Vue2 Single File Component loader](https://github.com/FranckFreiburger/vue3-sfc-loader)
-- [UnoCSS: Instant On-demand Atomic CSS Engine](https://unocss.dev)
+![screenshot](https://vues3.ru/images/drakkar.svg)
 
 ## License
 
