@@ -57,10 +57,10 @@ q-page.column
             q-timeline-entry(:title="t('Homepage')", icon="home")
               template(#subtitle)
                 a.text-no-wrap.text-white(
-                  :href="`https://${t('vues3.com')}`",
+                  :href="`https://${t('vues3.github.io')}`",
                   rel="noopener noreferrer",
                   target="_blank"
-                ) {{ t('vues3.com') }}
+                ) {{ t('vues3.github.io') }}
             q-timeline-entry(:title="t('Repository')", icon="share")
               template(#subtitle)
                 a.text-no-wrap.text-white(
