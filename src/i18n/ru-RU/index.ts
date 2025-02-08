@@ -40,7 +40,7 @@ export default Object.fromEntries([
   ["The type of media of your content", "Тип содержимого страницы"],
   ["Upload Image", "Загрузить картинку"],
   ["ver", "вер"],
-  ["vues3.com", "vues3.ru"],
+  ["vues3.github.io", "vues3.ru"],
   ["Favicon uploaded successfully", "Фавиконка успешно загружена"],
   ["Favicon upload failed", "Сбой загрузки фавиконки"],
   ["Prohibited characters are used", "Использованы запрещенные символы"],
