@@ -35,7 +35,7 @@ export default Object.fromEntries(
     "The type of media of your content",
     "Upload Image",
     "ver",
-    "vues3.com",
+    "vues3.github.io",
     "Favicon uploaded successfully",
     "Favicon upload failed",
     "Prohibited characters are used",
