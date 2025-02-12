@@ -47,4 +47,5 @@ export default Object.fromEntries([
   ["Open...", "Открыть..."],
   ["Enter a valid domain name:", "Введите доменное имя:"],
   ["Domain", "Домен"],
+  ["Show Blocks", "Показать блоки"],
 ]);
