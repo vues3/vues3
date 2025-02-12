@@ -7,7 +7,7 @@
         "@aws-sdk/client-s3": "^3.744.0",
         "@electron/remote": "^2.1.2",
         "@iconify/vue": "^4.3.0",
-        "@quasar/app-vite": "^2.0.8",
+        "@quasar/app-vite": "^2.0.9",
         "@quasar/quasar-ui-qiconpicker": "^2.0.7",
         "@remote-dom/polyfill": "^1.4.2",
         "@shikijs/monaco": "^2.3.2",
@@ -26,7 +26,7 @@
         "@volar/jsdelivr": "^2.4.11",
         "@volar/monaco": "^2.4.11",
         "@vue/language-service": "^2.2.0",
-        "@vues3/shared": "^0.4.10",
+        "@vues3/shared": "^0.4.11",
         "@vueuse/core": "^12.5.0",
         "crypto-js": "^4.2.0",
         "mime": "^4.0.6",
@@ -48,13 +48,13 @@
         "@eslint/js": "^9.20.0",
         "@intlify/unplugin-vue-i18n": "^6.0.3",
         "@prettier/plugin-pug": "^3.2.1",
-        "@quasar/extras": "^1.16.16",
+        "@quasar/extras": "^1.16.17",
         "@quasar/quasar-app-extension-qiconpicker": "^2.0.7",
         "@types/crypto-js": "^4.2.2",
         "@types/eslint__eslintrc": "^2.1.2",
         "@types/wicg-file-system-access": "^2023.10.5",
         "@vue/language-plugin-pug": "^2.2.0",
-        "@vues3/runtime": "^0.1.51",
+        "@vues3/runtime": "^0.1.52",
         "autoprefixer": "^10.4.20",
         "electron": "^34.1.1",
         "electron-builder": "^25.1.8",
@@ -71,7 +71,7 @@
         "prettier-plugin-jsdoc": "^1.3.2",
         "prettier-plugin-tailwindcss": "^0.6.11",
         "pug": "^3.0.3",
-        "typescript-eslint": "^8.23.0",
+        "typescript-eslint": "^8.24.0",
         "vite": "^6.1.0",
         "vite-plugin-checker": "^0.8.0",
         "vite-plugin-static-copy": "^2.2.0",
@@ -561,9 +561,9 @@
 
     "@prettier/plugin-pug": ["@prettier/plugin-pug@3.2.1", "", { "dependencies": { "pug-lexer": "^5.0.1" }, "peerDependencies": { "prettier": "^3.0.0" } }, "sha512-JvcW+44DtpnVsQFu++vBHl2fGVsuZC8iyxwutEUOt94thksdmXYQp1jFZWzaXckkwqLSgJHSyu19i1qvag5GJQ=="],
 
-    "@quasar/app-vite": ["@quasar/app-vite@2.0.8", "", { "dependencies": { "@quasar/render-ssr-error": "^1.0.3", "@quasar/ssl-certificate": "^1.0.0", "@quasar/vite-plugin": "^1.9.0", "@types/chrome": "^0.0.262", "@types/compression": "^1.7.5", "@types/cordova": "^11.0.3", "@types/express": "^4.17.21", "@vitejs/plugin-vue": "^5.1.4", "archiver": "^7.0.1", "chokidar": "^3.6.0", "ci-info": "^4.0.0", "compression": "^1.7.5", "confbox": "^0.1.8", "cross-spawn": "^7.0.6", "dot-prop": "9.0.0", "dotenv": "^16.4.5", "dotenv-expand": "^11.0.6", "elementtree": "0.1.7", "esbuild": "^0.24.2", "express": "^4.21.2", "fs-extra": "^11.2.0", "html-minifier-terser": "^7.2.0", "inquirer": "^9.3.7", "isbinaryfile": "^5.0.4", "kolorist": "^1.8.0", "lodash": "^4.17.21", "minimist": "^1.2.8", "open": "^10.1.0", "rollup-plugin-visualizer": "^5.13.1", "sass-embedded": "^1.83.0", "semver": "^7.6.3", "serialize-javascript": "^6.0.2", "tinyglobby": "^0.2.10", "ts-essentials": "^9.4.2", "vite": "^6.0.7", "webpack-merge": "^6.0.1" }, "peerDependencies": { "@electron/packager": ">= 18", "electron-builder": ">= 22", "pinia": "^2.0.0", "quasar": "^2.16.0", "typescript": ">= 5.4", "vue": "^3.2.29", "vue-router": "^4.0.12", "workbox-build": ">= 6" }, "optionalPeers": ["@electron/packager", "electron-builder", "pinia", "typescript", "workbox-build"], "bin": { "quasar": "bin/quasar.js" } }, "sha512-E2l5vV0Fi955U2Uz+iSAeVaJzsA0x5GY9ZMU6irIJWep39O/zpFGcyGz9uXjBEBkOX002id1P5HoGnh4Tm4alQ=="],
+    "@quasar/app-vite": ["@quasar/app-vite@2.0.9", "", { "dependencies": { "@quasar/render-ssr-error": "^1.0.3", "@quasar/ssl-certificate": "^1.0.0", "@quasar/vite-plugin": "^1.9.0", "@types/chrome": "^0.0.262", "@types/compression": "^1.7.5", "@types/cordova": "^11.0.3", "@types/express": "^4.17.21", "@vitejs/plugin-vue": "^5.1.4", "archiver": "^7.0.1", "chokidar": "^3.6.0", "ci-info": "^4.0.0", "compression": "^1.7.5", "confbox": "^0.1.8", "cross-spawn": "^7.0.6", "dot-prop": "9.0.0", "dotenv": "^16.4.5", "dotenv-expand": "^11.0.6", "elementtree": "0.1.7", "esbuild": "^0.24.2", "express": "^4.21.2", "fs-extra": "^11.2.0", "html-minifier-terser": "^7.2.0", "inquirer": "^9.3.7", "isbinaryfile": "^5.0.4", "kolorist": "^1.8.0", "lodash": "^4.17.21", "minimist": "^1.2.8", "open": "^10.1.0", "rollup-plugin-visualizer": "^5.13.1", "sass-embedded": "^1.83.0", "semver": "^7.6.3", "serialize-javascript": "^6.0.2", "tinyglobby": "^0.2.10", "ts-essentials": "^9.4.2", "vite": "^6.1.0", "webpack-merge": "^6.0.1" }, "peerDependencies": { "@electron/packager": ">= 18", "electron-builder": ">= 22", "pinia": "^2.0.0", "quasar": "^2.16.0", "typescript": ">= 5.4", "vue": "^3.2.29", "vue-router": "^4.0.12", "workbox-build": ">= 6" }, "optionalPeers": ["@electron/packager", "electron-builder", "pinia", "typescript", "workbox-build"], "bin": { "quasar": "bin/quasar.js" } }, "sha512-qRIXxB8cOpEmdoaq4tFf5PkVc06VdBUqDJ9vx2egcGazWL4rS8gmjUFA8Jg6P+hpjs6yWMLYU7+f83y4NozjCw=="],
 
-    "@quasar/extras": ["@quasar/extras@1.16.16", "", {}, "sha512-aswGUbEyLvt45KB1u6hBD3s82KnOdkqTn6YVu3xX5aGgwQkCWPyqb3FMTEHG+4+gGTMp4pIcnng96RlqswQctQ=="],
+    "@quasar/extras": ["@quasar/extras@1.16.17", "", {}, "sha512-4aX9XU/oj1+8O2C7LQCgywmoIw7suyUEZMPFFLWI61f21mF55VOsMdLCBhjeFgL5U4EWy079mfOR6/J8thi/ag=="],
 
     "@quasar/quasar-app-extension-qiconpicker": ["@quasar/quasar-app-extension-qiconpicker@2.0.7", "", { "dependencies": { "@quasar/quasar-ui-qiconpicker": "^2.0.7" } }, "sha512-yv2/uO0RXp8ttu60gLFxQgEaQo//pzaOCHWMi+A1rrELAiTXskF+XmMC0Jqgs4iaClu9NcK5Wz2Ce7oZho7U6w=="],
 
@@ -951,11 +951,11 @@
 
     "@vue/typescript-plugin": ["@vue/typescript-plugin@2.2.0", "", { "dependencies": { "@volar/typescript": "~2.4.11", "@vue/language-core": "2.2.0", "@vue/shared": "^3.5.0" } }, "sha512-7okpTvJ8blQApgUtfPvkO1tOkxxWt8oScXwsjQRB46QAgZ/0LwWpWG0yB8mvBLkw4mZpSXsp6e3ntnUwRagURA=="],
 
-    "@vues3/flat-json-tree": ["@vues3/flat-json-tree@0.5.1", "", { "dependencies": { "@vueuse/core": "12.5.0", "uuid": "^11.0.5", "vue": "^3.5.13" } }, "sha512-2fB7GzGl5T02dGEzDQwnX/dI8LHnN0iPy19c5kFeF2+BaJSEeAzxJ2kP+5KGS6UcphdQ6CfOxMKNACQM+xVZew=="],
+    "@vues3/flat-json-tree": ["@vues3/flat-json-tree@0.5.2", "", { "dependencies": { "@vueuse/core": "12.5.0", "uuid": "^11.0.5", "vue": "^3.5.13" } }, "sha512-D+qqUJsGH25OeIJfvvt7Lv74MyRdmR7jfJsGirSztjIAOIGRvo1KTvkDnR3Ksrq8G6JBxIfzjMsJWs6+ECJNNA=="],
 
-    "@vues3/runtime": ["@vues3/runtime@0.1.51", "", { "dependencies": { "@iconify/vue": "^4.3.0", "@unhead/vue": "^1.11.18", "@unocss/core": "^65.4.3", "@unocss/preset-attributify": "^65.4.3", "@unocss/preset-icons": "^65.4.3", "@unocss/preset-tagify": "^65.4.3", "@unocss/preset-typography": "^65.4.3", "@unocss/preset-uno": "^65.4.3", "@unocss/preset-web-fonts": "^65.4.3", "@unocss/reset": "^65.4.3", "@unocss/runtime": "^65.4.3", "@vues3/shared": "^0.4.10", "@vueuse/core": "^12.5.0", "uuid": "^11.0.5", "vue": "^3.5.13", "vue-router": "^4.5.0", "vue3-sfc-loader": "^0.9.5" } }, "sha512-Mc3VuCySimDV4eN4QpAnIPwY5Vm0qYBLcbXkbS1SI4V6UU3tbwUQ0I+DEKr7zOaVhTad5Z6dut5igBHNRBb7VQ=="],
+    "@vues3/runtime": ["@vues3/runtime@0.1.52", "", { "dependencies": { "@iconify/vue": "^4.3.0", "@unhead/vue": "^1.11.18", "@unocss/core": "^65.4.3", "@unocss/preset-attributify": "^65.4.3", "@unocss/preset-icons": "^65.4.3", "@unocss/preset-tagify": "^65.4.3", "@unocss/preset-typography": "^65.4.3", "@unocss/preset-uno": "^65.4.3", "@unocss/preset-web-fonts": "^65.4.3", "@unocss/reset": "^65.4.3", "@unocss/runtime": "^65.4.3", "@vues3/shared": "^0.4.11", "@vueuse/core": "^12.5.0", "uuid": "^11.0.5", "vue": "^3.5.13", "vue-router": "^4.5.0", "vue3-sfc-loader": "^0.9.5" } }, "sha512-Rhdgtn8MM4+I6BI7a2z8bc8DZKaJSivTUtY9tsQvhNwHXDPb48mwkTHPscGMWDB2E1K5GtUw2nMKn04/B20szg=="],
 
-    "@vues3/shared": ["@vues3/shared@0.4.10", "", { "dependencies": { "@vues3/flat-json-tree": "^0.5.1", "ajv": "^8.17.1", "ajv-keywords": "^5.1.0", "json-schema-to-ts": "^3.1.1", "uuid": "^11.0.5", "vue": "^3.5.13" } }, "sha512-GQhaCMRsWUsjKkKmijIVkRuYd3QKSFbWIS/eucO92jjYHtHUo4leoDw0MHVTLTX5coIUnUTtkE08EdftecKUWw=="],
+    "@vues3/shared": ["@vues3/shared@0.4.11", "", { "dependencies": { "@vues3/flat-json-tree": "^0.5.2", "ajv": "^8.17.1", "ajv-keywords": "^5.1.0", "json-schema-to-ts": "^3.1.1", "uuid": "^11.0.5", "vue": "^3.5.13" } }, "sha512-JxSoAk0Fb650dx2slMHHyqJCAZ8jt86VfWQa0KeN68N73yFJnOdGCvapqIp89UjKil1rmSGq8DuRT4P62anThw=="],
 
     "@vueuse/core": ["@vueuse/core@12.5.0", "", { "dependencies": { "@types/web-bluetooth": "^0.0.20", "@vueuse/metadata": "12.5.0", "@vueuse/shared": "12.5.0", "vue": "^3.5.13" } }, "sha512-GVyH1iYqNANwcahAx8JBm6awaNgvR/SwZ1fjr10b8l1HIgDp82ngNbfzJUgOgWEoxjL+URAggnlilAEXwCOZtg=="],
 
