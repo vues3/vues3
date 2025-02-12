@@ -141,7 +141,7 @@ q-page.column.full-height(v-if="the")
   q-tab-panels.full-width.col(v-model="tab")
     q-tab-panel.column(name="wysiwyg")
       Suspense
-        v-wysiwyg.full-width.col.column(v-model="the.html", :id="the.id")
+        v-wysiwyg(v-model="the.html", :id="the.id")
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
