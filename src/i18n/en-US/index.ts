@@ -42,5 +42,6 @@ export default Object.fromEntries(
     "Open...",
     "Enter a valid domain name:",
     "Domain",
+    "Show Blocks",
   ].map((key) => [key, key]),
 );
