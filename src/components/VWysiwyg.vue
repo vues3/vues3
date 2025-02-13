@@ -46,7 +46,7 @@ import { consoleError, customFetch, getFonts } from "@vues3/shared";
 import { useFileDialog } from "@vueuse/core";
 import Defaults from "app/uno.config";
 import mimes from "assets/mimes.json";
-import VLinkDialog from "components/VLinkDialog.vue";
+import VLinkDialog from "components/dialogs/VLinkDialog.vue";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { fonts as Fonts, urls } from "stores/app";

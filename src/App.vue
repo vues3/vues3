@@ -91,11 +91,11 @@ q-layout(view="hHh Lpr lff")
 import type { Component } from "vue";
 
 import "@unocss/reset/tailwind-compat.css";
+import VFaviconDialog from "components/dialogs/VFaviconDialog.vue";
+import VFontsDialog from "components/dialogs/VFontsDialog.vue";
+import VImportmapDialog from "components/dialogs/VImportmapDialog.vue";
+import VRobotsDialog from "components/dialogs/VRobotsDialog.vue";
 import { useQuasar } from "quasar";
-import VFaviconDialog from "src/components/VFaviconDialog.vue";
-import VFontsDialog from "src/components/VFontsDialog.vue";
-import VImportmapDialog from "src/components/VImportmapDialog.vue";
-import VRobotsDialog from "src/components/VRobotsDialog.vue";
 import { domain, rightDrawer } from "stores/app";
 import { bucket } from "stores/io";
 import { useI18n } from "vue-i18n";

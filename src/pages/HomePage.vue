@@ -84,8 +84,8 @@ import type { Component } from "vue";
 
 import { consoleError, validateCredentials } from "@vues3/shared";
 import { useStorage } from "@vueuse/core";
-import VCredsDialog from "components/VCredsDialog.vue";
-import VOtpDialog from "components/VOtpDialog.vue";
+import VCredsDialog from "components/dialogs/VCredsDialog.vue";
+import VOtpDialog from "components/dialogs/VOtpDialog.vue";
 import CryptoJS from "crypto-js";
 import contentPage from "pages/ContentPage.vue";
 import { useQuasar } from "quasar";
