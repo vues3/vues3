@@ -1,5 +1,5 @@
 <template lang="pug">
-q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
+q-drawer(v-model="rightDrawer", bordered, show-if-above, side="right")
   q-card(flat)
     q-card-section
       q-item
@@ -9,21 +9,21 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           .text-overline {{ t("S3 Accounts") }}
     q-separator
     .full-width.q-pt-lg.q-px-lg.q-pb-sm(v-if="$q.platform.is.electron || isFileSystemAccess()")
-      q-btn.fit(:label="t('Open...')", push, @click="getDir", color="primary")
+      q-btn.fit(:label="t('Open...')", push, color="primary", @click="getDir")
     q-list(padding)
       q-item(
-        :key="name",
-        @click="login(name.toString())",
-        clickable,
         v-for="(cred, name) in credential",
-        v-ripple
+        :key="name",
+        v-ripple,
+        clickable,
+        @click="login(name.toString())"
       )
         q-item-section(avatar)
           q-btn(
             :icon="name === cred.Bucket ? 'lock_open' : 'lock'",
-            @click="(evt: Event) => { evt.stopPropagation(); lock(name.toString()); }",
             flat,
-            padding="sm"
+            padding="sm",
+            @click="(evt: Event) => { evt.stopPropagation(); lock(name.toString()); }"
           )
         q-item-section
           q-item-label.rtl(overline, lines="1")
@@ -31,21 +31,21 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
         q-item-section(side)
           .q-gutter-xs
             q-btn.gt-xs(
-              @click="(evt: Event) => { evt.stopPropagation(); remove(name); }",
               dense,
               flat,
               icon="delete",
-              size="md"
+              size="md",
+              @click="(evt: Event) => { evt.stopPropagation(); remove(name); }"
             )
             q-btn.gt-xs(
-              @click="(evt: Event) => { evt.stopPropagation(); edit(name); }",
               dense,
               flat,
               icon="edit",
-              size="md"
+              size="md",
+              @click="(evt: Event) => { evt.stopPropagation(); edit(name); }"
             )
     q-card-actions(vertical)
-      q-btn(@click="add", fab, icon="add", round)
+      q-btn(fab, icon="add", round, @click="add")
 q-page.column
   .col.column.q-ma-md
     q-img.col.rounded-borders(no-spinner, src="~/assets/bg.jpg")
