@@ -48,4 +48,13 @@ export default Object.fromEntries([
   ["Enter a valid domain name:", "Введите доменное имя:"],
   ["Domain", "Домен"],
   ["Show Blocks", "Показать блоки"],
+  [
+    "Robots.txt is a text file that contains site indexing parameters for the search engine robots",
+    "Robots.txt — это текстовый файл, который содержит параметры индексирования сайта для роботов поисковых систем",
+  ],
+  [
+    "The class global attribute is a list of the classes of the element, separated by ASCII whitespace",
+    "Глобальный атрибут class это разделённый пробелом список регистров зависимых классов элемента",
+  ],
+  ["Edit classes", "Редактировать классы"],
 ]);
