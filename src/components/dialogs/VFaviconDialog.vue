@@ -1,18 +1,18 @@
 <template lang="pug">
-q-dialog(@hide="onDialogHide", ref="dialogRef")
+q-dialog(ref="dialogRef", @hide="onDialogHide")
   q-card
     q-card-section(horizontal)
       q-uploader.min-h-72(
+        ref="uploader",
         :factory,
         accept="image/vnd.microsoft.icon",
         flat,
         label="Favicon",
-        ref="uploader",
         square
       )
     q-separator
     q-card-actions.text-primary(align="right")
-      q-btn(:label="t('Close')", @click="onDialogHide", flat)
+      q-btn(:label="t('Close')", flat, @click="onDialogHide")
 </template>
 
 <script setup lang="ts">
