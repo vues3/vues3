@@ -1,24 +1,24 @@
 <template lang="pug">
-q-dialog(@hide="onDialogHide", ref="dialogRef")
+q-dialog(ref="dialogRef", @hide="onDialogHide")
   q-card.w-full
     q-card-section
       q-input(
+        ref="bucketRef",
+        v-model.trim="Bucket",
         :rules="[(v: null | string) => !!v || t('Item is required')]",
         clearable,
-        label="bucket",
-        ref="bucketRef",
-        v-model.trim="Bucket"
+        label="bucket"
       )
         template(#prepend)
           q-icon(name="delete")
-      q-input(clearable, label="access key id", v-model.trim="accessKeyId", hint="" )
+      q-input(v-model.trim="accessKeyId", clearable, label="access key id", hint="" )
         template(#prepend)
           q-icon(name="key")
       q-input(
+        v-model.trim="secretAccessKey",
         :type="isPwd ? 'password' : 'text'",
         clearable,
         label="secret access key",
-        v-model.trim="secretAccessKey",
         hint=""
       )
         template(#prepend)
@@ -29,8 +29,8 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
             @click="isPwd = !isPwd"
           )
       q-select(
+        v-model.trim="endpoint",
         :options="endpoints",
-        @input-value="(value: string) => { endpoint = value; }",
         clearable,
         emit-value,
         fill-input,
@@ -39,13 +39,13 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         label="endpoint url",
         type="url",
         use-input,
-        v-model.trim="endpoint"
+        @input-value="(value: string) => { endpoint = value; }"
       )
         template(#prepend)
           q-icon(name="link")
       q-select(
+        v-model.trim="region",
         :options="getRegions(endpoint)",
-        @input-value="(value: string) => { region = value; }",
         clearable,
         emit-value,
         fill-input,
@@ -53,17 +53,17 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         hint="",
         label="region",
         use-input,
-        v-model.trim="region"
+        @input-value="(value: string) => { region = value; }"
       )
         template(#prepend)
           q-icon(name="flag")
     q-separator
     q-card-actions.text-primary.bg-grey-1(align="right")
-      q-btn(@click="onDialogCancel", flat, label="Cancel")
+      q-btn(flat, label="Cancel", @click="onDialogCancel")
       q-btn(
-        @click="() => { bucketRef?.validate(); if (!bucketRef?.hasError) click(encrypt({ Bucket, secretAccessKey, region, endpoint, accessKeyId })); }",
         flat,
-        label="Ok"
+        label="Ok",
+        @click="() => { bucketRef?.validate(); if (!bucketRef?.hasError) click(encrypt({ Bucket, secretAccessKey, region, endpoint, accessKeyId })); }"
       )
 </template>
 
