@@ -1,21 +1,21 @@
 <template lang="pug">
 .q-pa-md.row.q-gutter-md.items-start
   q-card.w-full.max-w-96(
+    v-for="(image, i) in images",
     :key="i",
     bordered,
-    flat,
-    v-for="(image, i) in images"
+    flat
   )
     q-card-section(horizontal)
       q-img.col(:ratio="16 / 9", :src="urls.get(image.url ?? '')", fit="cover")
         .absolute-bottom
-          q-input(dark, dense, v-model="image.alt")
+          q-input(v-model="image.alt", dark, dense)
       q-card-actions.q-px-md.justify-around(vertical)
-        q-btn(@click="add(i)", flat, icon="add", round)
-        q-btn(@click="remove(i)", flat, icon="remove", round)
-        q-btn(@click="left(i)", flat, icon="arrow_left", round)
-        q-btn(@click="right(i)", flat, icon="arrow_right", round)
-        q-btn(@click="upload(i)", flat, icon="upload", round)
+        q-btn(flat, icon="add", round, @click="add(i)")
+        q-btn(flat, icon="remove", round, @click="remove(i)")
+        q-btn(flat, icon="arrow_left", round, @click="left(i)")
+        q-btn(flat, icon="arrow_right", round, @click="right(i)")
+        q-btn(flat, icon="upload", round, @click="upload(i)")
 </template>
 
 <script setup lang="ts">
@@ -31,7 +31,14 @@ import mimes from "assets/mimes.json";
 import mime from "mime";
 import { uid, useQuasar } from "quasar";
 import { the, urls } from "stores/app";
-import { accept, capture, immediate, multiple, reset } from "stores/defaults";
+import {
+  accept,
+  capture,
+  immediate,
+  multiple,
+  persistent,
+  reset,
+} from "stores/defaults";
 import { getObjectBlob, putObject } from "stores/io";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -74,7 +81,7 @@ const add = (i: number) => {
     $q.dialog({
       cancel: true,
       message: t("Do you really want to delete?"),
-      persistent: true,
+      persistent,
       title: t("Confirm"),
     }).onOk(() => {
       images.value.splice(i, 1);
