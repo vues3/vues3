@@ -29,8 +29,9 @@ const extendViteConf = (viteConf: Record<string, object>) => {
 
 /* -------------------------------------------------------------------------- */
 
-const appId = "com.electron.vues3",
-  boot = ["route", "quasar-lang-pack", "i18n", "monaco"],
+const alias = { "node:path": "path-browserify" },
+  appId = "com.electron.vues3",
+  boot = ["main", "route", "quasar-lang-pack", "i18n", "monaco"],
   strict = true,
   typescript = { strict },
   configFile = "./uno.config.ts",
@@ -50,7 +51,7 @@ const appId = "com.electron.vues3",
     ["@unocss/vite", { configFile, extractors }],
     [viteStaticCopy, { targets }],
   ],
-  build: object = { extendViteConf, typescript, vitePlugins },
+  build: object = { alias, extendViteConf, typescript, vitePlugins },
   grade: SnapOptions["grade"] = "stable",
   snap = { grade },
   builder = { appId, snap },
