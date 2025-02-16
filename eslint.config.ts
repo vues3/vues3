@@ -25,8 +25,7 @@ const compat = new FlatCompat(),
   },
   languageOptions = { parser: vueParser, parserOptions },
   rules: FlatConfig.Rules = {
-    "@typescript-eslint/no-shadow": "error",
-    "@typescript-eslint/no-use-before-define": "error",
+    "@typescript-eslint/no-use-before-define": ["error", "nofunc"],
     "import-x/no-extraneous-dependencies": [
       "error",
       {
@@ -35,8 +34,6 @@ const compat = new FlatCompat(),
         whitelist: ["electron"],
       },
     ],
-    "no-shadow": "off",
-    "no-use-before-define": "off",
     "prettier/prettier": ["error", { endOfLine: "auto" }],
   };
 
@@ -52,8 +49,7 @@ export default tseslint.config(
   eslintPluginImportX.flatConfigs.typescript,
   configs.strictTypeChecked,
   configs.stylisticTypeChecked,
-  ...pluginVue.configs["flat/strongly-recommended"],
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  ...pluginVue.configs["flat/recommended"],
   sonarjs.recommended,
   perfectionist.configs["recommended-natural"],
   eslintPluginPrettierRecommended,
