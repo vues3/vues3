@@ -1,5 +1,5 @@
 <template lang="pug">
-q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
+q-drawer(v-model="rightDrawer", bordered, show-if-above, side="right")
   q-list(v-if="nodes && the")
     q-expansion-item(
       :label="t('Content Tree')",
@@ -17,21 +17,21 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           q-item-label {{ t("Page Settings") }}
       q-card-section
         q-list
-          q-item(tag="label", v-ripple)
+          q-item(v-ripple, tag="label")
             q-item-section(avatar)
               q-checkbox(v-model="the.flat")
             q-item-section
               q-item-label flat
               q-item-label(caption) flat
           q-select(
+            v-model.trim="the.class",
             hide-dropdown-icon,
             label="class",
             multiple,
             new-value-mode="add",
             stack-label,
             use-chips,
-            use-input,
-            v-model.trim="the.class"
+            use-input
           )
     q-separator
     q-card(flat)
@@ -42,25 +42,26 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           q-item-label {{ t("SEO Settings") }}
       q-card-section
         q-select(
+          v-model="the.type",
           :label="t('The type of media of your content')",
           :options="types",
           clearable,
-          hint="type",
-          v-model="the.type"
+          hint="type"
         )
         q-input(
+          v-model.trim="the.header",
           :label="t('Page Header')",
-          hint="header",
-          v-model.trim="the.header"
+          hint="header"
         )
         q-input(
+          v-model.trim="the.description",
           :label="t('Page Description')",
           autogrow,
           hint="description",
-          type="textarea",
-          v-model.trim="the.description"
+          type="textarea"
         )
         q-select(
+          v-model.trim="the.keywords",
           :label="t('Keywords')",
           hide-dropdown-icon,
           hint="keywords",
@@ -68,71 +69,70 @@ q-drawer(bordered, show-if-above, side="right", v-model="rightDrawer")
           new-value-mode="add",
           stack-label,
           use-chips,
-          use-input,
-          v-model.trim="the.keywords"
+          use-input
         )
         q-input(
+          v-model.trim="loc",
           :rules,
           :label="t('Permanent Link')",
           hint="loc",
           prefix="/",
-          type="url",
-          v-model.trim="loc"
+          type="url"
         )
         q-select(
+          v-model="the.changefreq",
           :label="t('Change Frequency')",
           :options="changefreq",
           clearable,
-          hint="changefreq",
-          v-model="the.changefreq"
+          hint="changefreq"
         )
         q-input(
+          v-model.number="the.priority",
           :label="t('Priority')",
           hint="priority",
           max="1",
           min="0",
           step="0.1",
-          type="number",
-          v-model.number="the.priority"
+          type="number"
         )
         q-input(
+          v-model="the.lastmod",
           :label="t('Last Modification')",
           clearable,
           hint="lastmod",
-          type="datetime-local",
-          v-model="the.lastmod"
+          type="datetime-local"
         )
         q-input(
+          v-model.trim="the.icon",
           :label="t('Icon')",
           clearable,
-          hint="icon",
-          v-model.trim="the.icon"
+          hint="icon"
         )
           template(#prepend)
             Icon.q-icon.cursor-pointer(:icon="the.icon || 'mdi:tray-arrow-up'")
             q-popup-proxy.column.items-center.justify-center
               q-input.q-ma-md(
+                v-model="filter",
                 :label="t('Search...')",
                 clearable,
-                dense,
-                v-model="filter"
+                dense
               )
               q-icon-picker(
+                v-model="icon",
+                v-model:model-pagination="pagination",
                 :filter,
                 :icons,
                 dense,
-                tooltips,
-                v-model="icon",
-                v-model:model-pagination="pagination"
+                tooltips
               )
 q-page.column.full-height(v-if="the")
   q-tabs.text-grey(
+    v-model="tab",
     active-color="primary",
     align="justify",
     dense,
     indicator-color="primary",
-    narrow-indicator,
-    v-model="tab"
+    narrow-indicator
   )
     q-tab(label="wysiwyg", name="wysiwyg")
     q-tab(label="vue", name="vue")
@@ -141,7 +141,7 @@ q-page.column.full-height(v-if="the")
   q-tab-panels.full-width.col(v-model="tab")
     q-tab-panel.column(name="wysiwyg")
       Suspense
-        v-wysiwyg(v-model="the.html", :id="the.id")
+        v-wysiwyg(:id="the.id", v-model="the.html")
         template(#fallback)
           q-inner-loading(showing)
             q-spinner-hourglass
