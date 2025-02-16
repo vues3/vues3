@@ -1,22 +1,22 @@
 <template lang="pug">
-q-dialog(@hide="onDialogHide", ref="dialogRef")
+q-dialog(ref="dialogRef", @hide="onDialogHide")
   q-card.w-full
     q-card-section.scroll.h-96
       q-tree(
+        v-model:selected="selected",
         :nodes,
         default-expand-all,
         no-selection-unset,
         node-key="id",
-        selected-color="primary",
-        v-model:selected="selected"
+        selected-color="primary"
       )
         template(#default-header="prop")
           Icon.q-icon.q-tree__icon.q-mr-sm(:icon="prop.node.icon || 'mdi:web'")
           div {{ prop.node.name }}
     q-separator
     q-card-actions.text-primary(align="right")
-      q-btn(:label="t('Cancel')", @click="onDialogCancel", flat)
-      q-btn(@click="onDialogOK(the?.to)", flat, label="Ok")
+      q-btn(:label="t('Cancel')", flat, @click="onDialogCancel")
+      q-btn(flat, label="Ok", @click="onDialogOK(the?.to)")
 </template>
 
 <script setup lang="ts">
