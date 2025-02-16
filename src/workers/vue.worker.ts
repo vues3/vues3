@@ -7,8 +7,8 @@ import { createNpmFileSystem } from "@volar/jsdelivr";
 import { createTypeScriptWorkerLanguageService } from "@volar/monaco/worker";
 import {
   createVueLanguagePlugin,
+  getDefaultCompilerOptions,
   getFullLanguageServicePlugins,
-  resolveVueCompilerOptions,
 } from "@vue/language-service";
 import { initialize } from "monaco-editor/esm/vs/editor/editor.worker";
 import typescript, { convertCompilerOptionsFromJson } from "typescript";
@@ -35,7 +35,7 @@ const allowImportingTsExtensions = true,
   moduleResolution = "Bundler",
   target = "ESNext",
   uriConverter = { asFileName, asUri },
-  vueCompilerOptions = resolveVueCompilerOptions({});
+  vueCompilerOptions = getDefaultCompilerOptions();
 
 /* -------------------------------------------------------------------------- */
 
