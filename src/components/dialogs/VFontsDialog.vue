@@ -1,10 +1,11 @@
 <template lang="pug">
-q-dialog(@hide="onDialogHide", ref="dialogRef")
+q-dialog(ref="dialogRef", @hide="onDialogHide")
   q-card.w-full
     q-card-section Fonts
     q-separator
     q-card-section.mt-4.h-96(horizontal)
       q-table.w-full(
+        v-model:selected="selected",
         :columns,
         :rows,
         :rows-per-page-options="[0]",
@@ -14,20 +15,19 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         row-key="id",
         selection="multiple",
         separator="none",
-        v-model:selected="selected",
         virtual-scroll
       )
         template(#body-selection="props")
-          q-checkbox(dense, v-model="props.selected")
+          q-checkbox(v-model="props.selected", dense)
         template(#body-cell="props")
           q-td(:props)
-            q-input.min-w-20(dense, v-model.trim="props.row[props.col.name]")
+            q-input.min-w-20(v-model.trim="props.row[props.col.name]", dense)
     q-separator
     q-card-actions.text-primary(align="between")
       q-btn-group(outline)
-        q-btn(@click="addRow", icon="add", outline)
-        q-btn(@click="removeRow", icon="remove", outline)
-      q-btn(:label="t('Close')", @click="onDialogHide", flat)
+        q-btn(icon="add", outline, @click="addRow")
+        q-btn(icon="remove", outline, @click="removeRow")
+      q-btn(:label="t('Close')", flat, @click="onDialogHide")
 </template>
 
 <script setup lang="ts">
