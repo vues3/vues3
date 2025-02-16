@@ -1,18 +1,13 @@
 <template lang="pug">
-q-dialog(@hide="onDialogHide", ref="dialogRef")
+q-dialog(ref="dialogRef", @hide="onDialogHide")
   q-card.q-dialog-plugin
     q-card-section.row.q-gutter-sm.justify-center
       q-input(
-        :class="{ 'bg-negative': error }",
+        v-for="i in length",
         :key="i",
         :ref="(el) => { updateFieldRef(el, i - 1); }",
-        @blur="fields[selected]?.focus()",
-        @click="selected = i - 1",
-        @keydown.tab.prevent,
-        @keyup.delete="focus(i - 2)",
-        @keyup.left="focus(i - 2)",
-        @keyup.right="focus(i)",
-        @update:model-value="(ev) => { if (ev) focus(i); }",
+        v-model="fieldValues[i - 1]",
+        :class="{ 'bg-negative': error }",
         autofocus,
         input-class="text-center",
         mask="#",
@@ -20,8 +15,13 @@ q-dialog(@hide="onDialogHide", ref="dialogRef")
         outlined,
         style="width: 6ch",
         type="password",
-        v-for="i in length",
-        v-model="fieldValues[i - 1]"
+        @blur="fields[selected]?.focus()",
+        @click="selected = i - 1",
+        @keydown.tab.prevent,
+        @keyup.delete="focus(i - 2)",
+        @keyup.left="focus(i - 2)",
+        @keyup.right="focus(i)",
+        @update:model-value="(ev) => { if (ev) focus(i); }"
       )
 </template>
 
