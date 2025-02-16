@@ -1,37 +1,37 @@
 <template lang="pug">
 q-btn-group.q-mx-xs(flat, spread)
-  q-btn(@click="clickAdd", icon="note")
-  q-btn(@click="clickRemove", icon="delete")
-  q-btn(@click="clickLeft", icon="chevron_left")
-  q-btn(@click="clickRight", icon="chevron_right")
-  q-btn(@click="clickDown", icon="expand_more")
-  q-btn(@click="clickUp", icon="expand_less")
+  q-btn(icon="note", @click="clickAdd")
+  q-btn(icon="delete", @click="clickRemove")
+  q-btn(icon="chevron_left", @click="clickLeft")
+  q-btn(icon="chevron_right", @click="clickRight")
+  q-btn(icon="expand_more", @click="clickDown")
+  q-btn(icon="expand_less", @click="clickUp")
 .scroll.col
   q-tree.q-ma-xs(
+    ref="qtree",
     :nodes,
     :selected,
     accordion,
     no-selection-unset,
-    node-key="id",
-    ref="qtree"
+    node-key="id"
   )
     template(#default-header="prop")
       .row.no-wrap.full-width.items-center(
         @dblclick="prop.node.contenteditable = true",
         @keypress.stop
       )
-        q-checkbox.q-mr-xs(dense, v-model="prop.node.enabled")
+        q-checkbox.q-mr-xs(v-model="prop.node.enabled", dense)
         q-input.full-width.min-w-96(
+          v-model.trim="prop.node.name",
           :bg-color="prop.node.id === selected ? 'primary' : undefined",
           :error="error(prop.node)",
           :error-message="errorMessage(prop.node)",
           :readonly="!prop.node.contenteditable",
-          @click.stop="selected = prop.node.id",
-          @keyup.enter="prop.node.contenteditable = false",
           dense,
           hide-bottom-space,
           outlined,
-          v-model.trim="prop.node.name"
+          @click.stop="selected = prop.node.id",
+          @keyup.enter="prop.node.contenteditable = false"
         )
 </template>
 
