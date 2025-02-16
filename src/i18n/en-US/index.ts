@@ -43,5 +43,8 @@ export default Object.fromEntries(
     "Enter a valid domain name:",
     "Domain",
     "Show Blocks",
+    "Robots.txt is a text file that contains site indexing parameters for the search engine robots",
+    "The class global attribute is a list of the classes of the element, separated by ASCII whitespace",
+    "Edit classes",
   ].map((key) => [key, key]),
 );
