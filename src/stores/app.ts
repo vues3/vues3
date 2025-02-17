@@ -101,10 +101,9 @@ const html = {
         a.innerHTML = link.innerHTML;
         a.setAttribute(`data-${routerLink}`, "true");
         [...link.attributes].forEach((attr) => {
-          a.setAttribute(
-            attr.nodeName === "to" ? "href" : attr.nodeName,
-            attr.nodeValue ?? "",
-          );
+          if (attr.nodeName === "to")
+            a.setAttribute("href", attr.nodeValue ?? "");
+          else a.setAttributeNode(attr.cloneNode() as Attr);
         });
         link.replaceWith(a);
       });
@@ -144,10 +143,9 @@ const html = {
             const link = document.createElement(routerLink);
             link.innerHTML = a.innerHTML;
             [...a.attributes].forEach((attr) => {
-              link.setAttribute(
-                attr.nodeName === "href" ? "to" : attr.nodeName,
-                attr.nodeValue ?? "",
-              );
+              if (attr.nodeName === "href")
+                link.setAttribute("to", attr.nodeValue ?? "");
+              else link.setAttributeNode(attr.cloneNode() as Attr);
             });
             a.replaceWith(link);
           }
