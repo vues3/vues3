@@ -1,5 +1,10 @@
 import type { SnapOptions } from "app-builder-lib";
-import type { QuasarFonts, QuasarIconSets, QuasarPlugins } from "quasar";
+import type {
+  QuasarAnimations,
+  QuasarFonts,
+  QuasarIconSets,
+  QuasarPlugins,
+} from "quasar";
 
 import { defineConfig } from "#q-app/wrappers";
 import extractorPug from "@unocss/extractor-pug";
@@ -30,6 +35,7 @@ const extendViteConf = (viteConf: Record<string, object>) => {
 /* -------------------------------------------------------------------------- */
 
 const alias = { "node:path": "path-browserify" },
+  animations: QuasarAnimations[] = ["zoomIn", "zoomOut"],
   appId = "com.electron.vues3",
   boot = ["main", "route", "quasar-lang-pack", "i18n", "monaco"],
   strict = true,
@@ -71,6 +77,7 @@ const alias = { "node:path": "path-browserify" },
 /* -------------------------------------------------------------------------- */
 
 export default defineConfig(() => ({
+  animations,
   boot,
   build,
   css,
