@@ -18,7 +18,7 @@ import {
 import { toXML } from "to-xml";
 import { computed, reactive, ref, version, watch } from "vue";
 import toString from "vue-sfc-descriptor-to-string";
-import { parse, parseCache } from "vue/compiler-sfc";
+import { parse } from "vue/compiler-sfc";
 
 /* -------------------------------------------------------------------------- */
 
@@ -48,48 +48,35 @@ const deleted: Ref<TPage | undefined> = ref(),
 
 /* -------------------------------------------------------------------------- */
 
-let descriptor: SFCDescriptor | undefined,
-  errors = [];
+let descriptor: SFCDescriptor | undefined;
 
 /* -------------------------------------------------------------------------- */
 
-const getContent = (model: editor.ITextModel) => {
-    const filename = `${selected.value ?? "anonymous"}.vue`;
-    ({ descriptor, errors } = parse(model.getValue(), { filename }));
-    const { template } = descriptor;
-    const { content } = template ?? {};
-    return content ?? "";
-  },
-  getDocument = (value: string) =>
-    parser.parseFromString(
-      `<head><base href="//"></head><body>${value}</body>`,
-      "text/html",
-    ),
-  getImages = (model: editor.ITextModel) => {
-    parseCache.clear();
-    const { images } = getDocument(getContent(model));
-    return [...images].map(({ src }) => src);
-  };
-
-const cleaner = (value: TAppPage[]) => {
+function cleaner(value: TAppPage[]) {
   value.forEach((page) => {
-    const { children, id, sfc } = page;
+    const { children, id, images } = page;
     if (children.length) cleaner(children as TAppPage[]);
-    (async () => {
-      {
-        const { images } = page;
-        images.forEach(({ url }) => {
-          deleteObject(url).catch(consoleError);
-        });
-      }
-      const { images } = getDocument(getContent(await sfc));
-      if (id) deleteObject(`pages/${id}.vue`).catch(consoleError);
-      [...images].forEach(({ src }) => {
-        deleteObject(src).catch(consoleError);
-      });
-    })().catch(consoleError);
+    images.forEach(({ url }) => {
+      deleteObject(url).catch(consoleError);
+    });
+    if (id) deleteObject(`pages/${id}.vue`).catch(consoleError);
   });
-};
+}
+
+function getContent(model: editor.ITextModel) {
+  const filename = `${selected.value ?? "anonymous"}.vue`;
+  ({ descriptor } = parse(model.getValue(), { filename }));
+  const { template } = descriptor;
+  const { content } = template ?? {};
+  return content ?? "";
+}
+
+function getDocument(value: string) {
+  return parser.parseFromString(
+    `<head><base href="//"></head><body>${value}</body>`,
+    "text/html",
+  );
+}
 
 /* -------------------------------------------------------------------------- */
 
@@ -183,29 +170,14 @@ const html = {
           model = editor.getModel(uri);
           if (!model) {
             model = editor.createModel(value, "vue", uri);
-            const oldImages = getImages(model);
             model.onDidChangeContent(
               debounce(() => {
-                if (model) {
-                  const sources = getImages(model);
-                  if (!errors.length) {
-                    oldImages
-                      .filter((src) => !sources.includes(src))
-                      .forEach((src) => {
-                        URL.revokeObjectURL(urls.get(src) ?? "");
-                        urls.delete(src);
-                        deleteObject(src).catch(consoleError);
-                      });
-                    oldImages.length = 0;
-                    oldImages.push(...sources);
-                    if (this.id)
-                      putObject(
-                        `pages/${this.id}.vue`,
-                        model.getValue(),
-                        "text/html",
-                      ).catch(consoleError);
-                  }
-                }
+                if (model && this.id)
+                  putObject(
+                    `pages/${this.id}.vue`,
+                    model.getValue(),
+                    "text/html",
+                  ).catch(consoleError);
               }, second),
             );
             if (!value)
