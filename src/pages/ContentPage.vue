@@ -51,14 +51,16 @@ q-drawer(v-model="rightDrawer", bordered, show-if-above, side="right")
         q-input(
           v-model.trim="the.header",
           :label="t('Page Header')",
-          hint="header"
+          hint="header",
+          clearable
         )
         q-input(
           v-model.trim="the.description",
           :label="t('Page Description')",
           autogrow,
           hint="description",
-          type="textarea"
+          type="textarea",
+          clearable
         )
         q-select(
           v-model.trim="the.keywords",
@@ -77,7 +79,8 @@ q-drawer(v-model="rightDrawer", bordered, show-if-above, side="right")
           :label="t('Permanent Link')",
           hint="loc",
           prefix="/",
-          type="url"
+          type="url",
+          clearable
         )
         q-select(
           v-model="the.changefreq",
