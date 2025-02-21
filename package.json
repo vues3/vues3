@@ -12,7 +12,7 @@
     "lint:fix": "bun eslint . --fix",
     "dev": "bun quasar dev",
     "dev:electron": "bun quasar dev -m electron",
-    "build": "bun quasar build",
+    "build": "bunx quasar build",
     "build:electron": "bun quasar build -m electron"
   },
   "dependencies": {
