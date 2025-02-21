@@ -7,13 +7,13 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "postinstall": "bun quasar prepare",
-    "lint": "bun eslint .",
-    "lint:fix": "bun eslint . --fix",
-    "dev": "bun quasar dev",
-    "dev:electron": "bun quasar dev -m electron",
-    "build": "bunx quasar build",
-    "build:electron": "bun quasar build -m electron"
+    "postinstall": "quasar prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "dev": "quasar dev",
+    "dev:electron": "quasar dev -m electron",
+    "build": "quasar build",
+    "build:electron": "quasar build -m electron"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.750.0",
