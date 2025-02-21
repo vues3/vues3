@@ -4,13 +4,13 @@ import attributify from "@unocss/preset-attributify";
 import icons from "@unocss/preset-icons/browser";
 import tagify from "@unocss/preset-tagify";
 import typography from "@unocss/preset-typography";
-import uno from "@unocss/preset-uno";
+import wind3 from "@unocss/preset-wind3";
 
 /* -------------------------------------------------------------------------- */
 
 const cdn = "https://cdn.jsdelivr.net/npm/",
   presets: Preset[] = [
-    uno(),
+    wind3(),
     typography(),
     icons({ cdn }),
     tagify(),
