@@ -7,13 +7,13 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "postinstall": "quasar prepare",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "dev": "quasar dev",
-    "dev:electron": "quasar dev -m electron",
-    "build": "quasar build",
-    "build:electron": "quasar build -m electron"
+    "postinstall": "bun quasar prepare",
+    "lint": "bun eslint .",
+    "lint:fix": "bun eslint . --fix",
+    "dev": "bun quasar dev",
+    "dev:electron": "bun quasar dev -m electron",
+    "build": "bun quasar build",
+    "build:electron": "bun quasar build -m electron"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.750.0",
@@ -31,7 +31,7 @@
     "@unocss/preset-icons": "^66.0.0",
     "@unocss/preset-tagify": "^66.0.0",
     "@unocss/preset-typography": "^66.0.0",
-    "@unocss/preset-uno": "^66.0.0",
+    "@unocss/preset-wind3": "^66.0.0",
     "@unocss/preset-web-fonts": "^66.0.0",
     "@unocss/reset": "^66.0.0",
     "@unocss/runtime": "^66.0.0",
@@ -72,7 +72,7 @@
     "electron": "^34.2.0",
     "electron-builder": "^25.1.8",
     "eslint-config-prettier": "10.0.1",
-    "eslint-import-resolver-typescript": "^3.8.2",
+    "eslint-import-resolver-typescript": "^3.8.3",
     "eslint-plugin-import-x": "^4.6.1",
     "eslint-plugin-perfectionist": "^4.9.0",
     "eslint-plugin-prettier": "^5.2.3",
@@ -87,7 +87,7 @@
     "pug": "^3.0.3",
     "typescript-eslint": "^8.24.1",
     "vite": "^6.1.1",
-    "vite-plugin-checker": "^0.8.0",
+    "vite-plugin-checker": "^0.9.0",
     "vite-plugin-static-copy": "^2.2.0",
     "vue-eslint-parser": "^9.4.3",
     "vue-tsc": "^2.2.2"
