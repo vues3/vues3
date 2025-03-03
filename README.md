@@ -2,7 +2,7 @@
 
 vueS3 is an open-source and free web editor for creating websites
 
-### :link: The project website: [vues3.github.io](https://vues3.github.io)
+### :link: Project website: [vues3.github.io](https://vues3.github.io)
 
 ### :globe_with_meridians: Web Application
 
