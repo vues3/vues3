@@ -27,7 +27,6 @@ q-page-sticky(position="bottom-right", :offset="[18, 18]")
     ref="qtree",
     :nodes,
     :selected,
-    accordion,
     no-selection-unset,
     node-key="id"
   )
