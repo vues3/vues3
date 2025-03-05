@@ -23,7 +23,7 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
 import type { Ref } from "vue";
 
 import { Icon } from "@iconify/vue";
-import { nodes, pages } from "@vues3/shared";
+import { atlas, nodes } from "@vues3/shared";
 import { useDialogPluginComponent } from "quasar";
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -37,7 +37,7 @@ const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
 /* -------------------------------------------------------------------------- */
 
 const selected: Ref<string | undefined> = ref(),
-  the = computed(() => pages.value.find(({ id }) => id === selected.value));
+  the = computed(() => atlas[selected.value ?? ""]);
 
 /* -------------------------------------------------------------------------- */
 
