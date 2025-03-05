@@ -113,7 +113,7 @@ const $q = useQuasar(),
   fonts = computed(getFonts),
   props = withDefaults(
     defineProps<{
-      id?: string;
+      id?: string | undefined;
       modelValue?: Promise<string> | string;
     }>(),
     {
