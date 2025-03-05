@@ -58,6 +58,7 @@ import type { QTree } from "quasar";
 
 import {
   add,
+  atlas,
   down,
   left,
   nodes,
@@ -204,9 +205,7 @@ function errorMessage(propNode: TPage) {
 
 /** Поиск выделенного объекта */
 function getThe() {
-  return pages.value.length
-    ? (pages.value.find(({ id }) => id === selected.value) ?? null)
-    : undefined;
+  return pages.value.length ? (atlas[selected.value ?? ""] ?? null) : undefined;
 }
 
 /** Вычисляем по положению выделенного элемента, нужно ли показывать кнопку меню */
