@@ -2,7 +2,14 @@ import type { SFCDescriptor } from "@vue/compiler-sfc";
 import type { TImportmap, TPage } from "@vues3/shared";
 import type { Ref } from "vue";
 
-import { consoleError, deep, importmap, nodes, pages } from "@vues3/shared";
+import {
+  atlas,
+  consoleError,
+  deep,
+  importmap,
+  nodes,
+  pages,
+} from "@vues3/shared";
 import { editor, Uri } from "monaco-editor";
 import { debounce } from "quasar";
 import { cache, second, writable } from "stores/defaults";
@@ -40,8 +47,7 @@ const deleted: Ref<TPage | undefined> = ref(),
   selected: Ref<string | undefined> = ref(),
   the = computed(
     () =>
-      (pages.value.find(({ id }) => id === selected.value) ??
-        pages.value[0]) as TAppPage | undefined,
+      (atlas[selected.value ?? ""] ?? pages.value[0]) as TAppPage | undefined,
   ),
   urls = reactive(new Map<string, string>()),
   vue = `assets/vue.esm-browser.prod-${version}.js`;
