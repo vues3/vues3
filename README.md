@@ -1,3 +1,5 @@
+[![vues3](https://snapcraft.io/vues3/badge.svg)](https://snapcraft.io/vues3)
+
 # :sailboat: Web editor vueS3
 
 vueS3 is an open-source and free web editor for creating websites
