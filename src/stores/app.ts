@@ -26,17 +26,11 @@ import { toXML } from "to-xml";
 import { computed, reactive, ref, version, watch } from "vue";
 import toString from "vue-sfc-descriptor-to-string";
 import { parse } from "vue/compiler-sfc";
-
-/* -------------------------------------------------------------------------- */
-
 type TAppPage = TPage & {
   contenteditable: boolean;
   html: Promise<string> | string;
   sfc: Promise<editor.ITextModel>;
 };
-
-/* -------------------------------------------------------------------------- */
-
 const deleted: Ref<TPage | undefined> = ref(),
   domain = ref(""),
   fonts = reactive([]),
@@ -51,44 +45,29 @@ const deleted: Ref<TPage | undefined> = ref(),
   ),
   urls = reactive(new Map<string, string>()),
   vue = `assets/vue.esm-browser.prod-${version}.js`;
-
-/* -------------------------------------------------------------------------- */
-
 let descriptor: SFCDescriptor | undefined;
-
-/* -------------------------------------------------------------------------- */
-
-function cleaner(value: TAppPage[]) {
-  value.forEach((page) => {
-    const { children, id, images } = page;
-    if (children.length) cleaner(children as TAppPage[]);
-    images.forEach(({ url }) => {
-      deleteObject(url).catch(consoleError);
+const cleaner = (value: TAppPage[]) => {
+    value.forEach((page) => {
+      const { children, id, images } = page;
+      if (children.length) cleaner(children as TAppPage[]);
+      images.forEach(({ url }) => {
+        deleteObject(url).catch(consoleError);
+      });
+      if (id) deleteObject(`pages/${id}.vue`).catch(consoleError);
     });
-    if (id) deleteObject(`pages/${id}.vue`).catch(consoleError);
-  });
-}
-
-function getContent(model: editor.ITextModel) {
-  const filename = `${selected.value ?? "anonymous"}.vue`;
-  ({ descriptor } = parse(model.getValue(), { filename }));
-  const { template } = descriptor;
-  const { content } = template ?? {};
-  return content ?? "";
-}
-
-function getDocument(value: string) {
-  return parser.parseFromString(
-    `<head><base href="//"></head><body>${value}</body>`,
-    "text/html",
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-
-const html = {
+  },
+  getDocument = (value: string) =>
+    parser.parseFromString(
+      `<head><base href="//"></head><body>${value}</body>`,
+      "text/html",
+    ),
+  html = {
     async get(this: TAppPage) {
-      const doc: Document = getDocument(getContent(await this.sfc));
+      const filename = `${selected.value ?? "anonymous"}.vue`;
+      ({ descriptor } = parse((await this.sfc).getValue(), { filename }));
+      const { template } = descriptor;
+      const { content } = template ?? {};
+      const doc = getDocument(content ?? "");
       doc.querySelectorAll(routerLink).forEach((link) => {
         const a = document.createElement("a");
         a.innerHTML = link.innerHTML;
@@ -196,13 +175,9 @@ const html = {
       return undefined;
     },
   };
-
-/* -------------------------------------------------------------------------- */
-
 watch(deleted, (value) => {
   if (value) cleaner([value as TAppPage]);
 });
-
 watch(
   the,
   (value, oldValue) => {
@@ -223,7 +198,6 @@ watch(
   },
   { deep },
 );
-
 watch(pages, (objects) => {
   const value = false,
     contenteditable = { value, writable };
@@ -235,7 +209,6 @@ watch(pages, (objects) => {
     });
   });
 });
-
 watch(bucket, async (value) => {
   if (value) {
     (async () => {
@@ -328,7 +301,6 @@ watch(bucket, async (value) => {
     });
   }
 });
-
 watch(
   nodes,
   debounce((value) => {
@@ -339,7 +311,6 @@ watch(
   }, second),
   { deep },
 );
-
 watch(
   fonts,
   debounce((value, oldValue) => {
@@ -349,7 +320,6 @@ watch(
       );
   }),
 );
-
 watch(
   importmap,
   debounce((value, oldValue) => {
@@ -368,7 +338,6 @@ watch(
   }),
   { deep },
 );
-
 watch(
   [pages, domain],
   debounce((arr) => {
@@ -398,7 +367,6 @@ watch(
   }, second),
   { deep },
 );
-
 (async () => {
   const index = await (await fetch("runtime/index.html")).text(),
     oldPages: Record<string, null | string | undefined>[] = [];
@@ -514,9 +482,5 @@ ${JSON.stringify(imap, null, " ")}
     { deep },
   );
 })().catch(consoleError);
-
-/* -------------------------------------------------------------------------- */
-
 export type { TAppPage };
-
 export { deleted, domain, fonts, rightDrawer, selected, the, urls };
