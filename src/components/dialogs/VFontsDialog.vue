@@ -33,7 +33,6 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
 <script setup lang="ts">
 import type { QTableProps } from "quasar";
 
-import { deep } from "@vues3/shared";
 import json from "assets/fonts.json";
 import { uid, useDialogPluginComponent } from "quasar";
 import { fonts } from "stores/app";
@@ -72,7 +71,7 @@ watch(
     fonts.length = 0;
     fonts.push(...(value.map(({ name }) => name).filter(Boolean) as never[]));
   },
-  { deep },
+  { deep: true },
 );
 onMounted(() => {
   rows.value = fonts.map((name) => {
