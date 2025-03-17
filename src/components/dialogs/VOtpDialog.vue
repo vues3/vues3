@@ -29,7 +29,6 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
 import type { QInput } from "quasar";
 import type { ComponentPublicInstance } from "vue";
 
-import { deep } from "@vues3/shared";
 import CryptoJS from "crypto-js";
 import { useDialogPluginComponent } from "quasar";
 import { computed, ref, watch } from "vue";
@@ -75,7 +74,7 @@ watch(
       if (!error.value) onDialogOK(value);
     } else error.value = false;
   },
-  { deep },
+  { deep: true },
 );
 
 watch(selected, (value) => {
