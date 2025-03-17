@@ -20,14 +20,14 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
         template(#body-selection="props")
           q-checkbox(
             v-model="props.selected",
-            :disable="!props.rowIndex && props.row.name === 'vue'",
+            :disable="['vue', 'vue-router'].includes(props.row.name)",
             dense
           )
         template(#body-cell="props")
           q-td(:auto-width="props.col.name === 'name'", :props)
             q-input.min-w-24(
               v-model.trim="props.row[props.col.name]",
-              :disable="!props.rowIndex && props.row.name === 'vue'",
+              :disable="['vue', 'vue-router'].includes(props.row.name)",
               dense
             )
     q-separator
@@ -37,34 +37,20 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
         q-btn(icon="remove", outline, @click="removeRow")
       q-btn(:label="t('Close')", flat, @click="onDialogHide")
 </template>
-
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
 import type { TImportmap } from "@vues3/shared";
 import type { QTableProps } from "quasar";
 
-import { deep, importmap } from "@vues3/shared";
+import { importmap } from "@vues3/shared";
 import json from "assets/importmap.json";
 import { uid, useDialogPluginComponent } from "quasar";
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-
-/* -------------------------------------------------------------------------- */
-
 const { dialogRef, onDialogHide } = useDialogPluginComponent(),
   { t } = useI18n();
-
-/* -------------------------------------------------------------------------- */
-
 const columns = json as QTableProps["columns"],
   rows = ref([] as Record<string, string>[]),
   selected = ref([] as Record<string, string>[]);
-
-/* -------------------------------------------------------------------------- */
-
 const addRow = () => {
     const id = uid(),
       name = "",
@@ -75,9 +61,6 @@ const addRow = () => {
     const set = new Set(selected.value);
     rows.value = rows.value.filter((x) => !set.has(x));
   };
-
-/* -------------------------------------------------------------------------- */
-
 defineEmits([...useDialogPluginComponent.emits]);
 watch(
   rows,
@@ -88,19 +71,18 @@ watch(
         .map(({ name, path }) => [name, path]),
     ) as TImportmap["imports"];
   },
-  { deep },
+  { deep: true },
 );
 onMounted(() => {
-  const { imports = {} } = importmap;
-  rows.value = Object.entries(imports).map(([name, path]) => {
-    const id = uid();
-    return { id, name, path };
-  });
-  rows.value.push(
-    ...rows.value.splice(
-      0,
-      rows.value.findIndex(({ name }) => name === "vue"),
-    ),
-  );
+  const { imports: { vue, ["vue-router"]: vueRouter, ...imports } = {} } =
+    importmap;
+  rows.value = Object.entries(imports).map(([name, path]) => ({
+    id: uid(),
+    name,
+    path,
+  }));
+  if (vueRouter)
+    rows.value.unshift({ id: uid(), name: "vue-router", path: vueRouter });
+  if (vue) rows.value.unshift({ id: uid(), name: "vue", path: vue });
 });
 </script>
