@@ -6,8 +6,13 @@ import { createI18n } from "vue-i18n";
 /* -------------------------------------------------------------------------- */
 
 export default defineBoot(({ app }) => {
-  const locale = Lang.getLocale() === "ru-RU" ? "ru-RU" : "en-US";
-  app.use(createI18n({ locale, messages }));
+  app.use(
+    createI18n({
+      legacy: false,
+      locale: Lang.getLocale() === "ru-RU" ? "ru-RU" : "en-US",
+      messages,
+    }),
+  );
 });
 
 /* -------------------------------------------------------------------------- */
