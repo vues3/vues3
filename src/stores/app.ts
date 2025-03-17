@@ -2,14 +2,8 @@ import type { SFCDescriptor } from "@vue/compiler-sfc";
 import type { TImportmap, TPage } from "@vues3/shared";
 import type { Ref } from "vue";
 
-import {
-  atlas,
-  consoleError,
-  deep,
-  importmap,
-  nodes,
-  pages,
-} from "@vues3/shared";
+import { atlas, consoleError, importmap, nodes, pages } from "@vues3/shared";
+import { dependencies } from "app/package.json";
 import { editor, Uri } from "monaco-editor";
 import { debounce } from "quasar";
 import { cache, second, writable } from "stores/defaults";
@@ -23,7 +17,7 @@ import {
   removeEmptyDirectories,
 } from "stores/io";
 import { toXML } from "to-xml";
-import { computed, reactive, ref, version, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import toString from "vue-sfc-descriptor-to-string";
 import { parse } from "vue/compiler-sfc";
 type TAppPage = TPage & {
@@ -33,6 +27,12 @@ type TAppPage = TPage & {
 };
 const deleted: Ref<TPage | undefined> = ref(),
   domain = ref(""),
+  external = Object.fromEntries(
+    ["vue", "vue-router"].map((key) => [
+      key,
+      `assets/${key}.esm-browser.prod-${dependencies[key as keyof typeof dependencies].replace(/^\^/, "")}.js`,
+    ]),
+  ),
   fonts = reactive([]),
   parser = new DOMParser(),
   prevImages: string[] = [],
@@ -43,8 +43,7 @@ const deleted: Ref<TPage | undefined> = ref(),
     () =>
       (atlas[selected.value ?? ""] ?? pages.value[0]) as TAppPage | undefined,
   ),
-  urls = reactive(new Map<string, string>()),
-  vue = `assets/vue.esm-browser.prod-${version}.js`;
+  urls = reactive(new Map<string, string>());
 let descriptor: SFCDescriptor | undefined;
 const cleaner = (value: TAppPage[]) => {
     value.forEach((page) => {
@@ -196,7 +195,7 @@ watch(
       prevImages.push(...images);
     }
   },
-  { deep },
+  { deep: true },
 );
 watch(pages, (objects) => {
   const value = false,
@@ -265,7 +264,7 @@ watch(bucket, async (value) => {
         ),
     );
     if (localManifest && serverManifest) {
-      const files = [vue, "robots.txt", "fonts.json"];
+      const files = [...Object.values(external), "robots.txt", "fonts.json"];
       (
         await Promise.allSettled(files.map((file) => headObject(file, cache)))
       ).forEach(({ status }, index) => {
@@ -309,7 +308,7 @@ watch(
         consoleError,
       );
   }, second),
-  { deep },
+  { deep: true },
 );
 watch(
   fonts,
@@ -325,10 +324,12 @@ watch(
   debounce((value, oldValue) => {
     const { imports } = value as TImportmap;
     let save = Boolean(oldValue);
-    if (imports.vue !== `./${vue}`) {
-      imports.vue = `./${vue}`;
-      save = true;
-    }
+    Object.entries(external).forEach(([key, value]) => {
+      if (imports[key] !== `./${value}`) {
+        imports[key] = `./${value}`;
+        save = true;
+      }
+    });
     if (save)
       putObject(
         "index.importmap",
@@ -336,7 +337,7 @@ watch(
         "application/importmap+json",
       ).catch(consoleError);
   }),
-  { deep },
+  { deep: true },
 );
 watch(
   [pages, domain],
@@ -365,7 +366,7 @@ watch(
       ).catch(consoleError);
     }
   }, second),
-  { deep },
+  { deep: true },
 );
 (async () => {
   const index = await (await fetch("runtime/index.html")).text(),
@@ -479,7 +480,7 @@ ${JSON.stringify(imap, null, " ")}
           },
         );
     }, second),
-    { deep },
+    { deep: true },
   );
 })().catch(consoleError);
 export type { TAppPage };
