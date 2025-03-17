@@ -25,7 +25,7 @@
 
 import type { TPage } from "@vues3/shared";
 
-import { consoleError, deep } from "@vues3/shared";
+import { consoleError } from "@vues3/shared";
 import { useFileDialog } from "@vueuse/core";
 import mimes from "assets/mimes.json";
 import mime from "mime";
@@ -118,7 +118,7 @@ watch(
         });
     }
   },
-  { deep },
+  { deep: true },
 );
 
 watch(
