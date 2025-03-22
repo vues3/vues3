@@ -3,7 +3,6 @@ import type { TImportmap, TPage } from "@vues3/shared";
 import type { Ref } from "vue";
 
 import { atlas, consoleError, importmap, nodes, pages } from "@vues3/shared";
-import { dependencies } from "app/package.json";
 import { editor, Uri } from "monaco-editor";
 import { debounce } from "quasar";
 import { cache, second, writable } from "stores/defaults";
@@ -17,7 +16,8 @@ import {
   removeEmptyDirectories,
 } from "stores/io";
 import { toXML } from "to-xml";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, version, watch } from "vue";
+import { version as routerVersion } from "vue-router/package.json";
 import toString from "vue-sfc-descriptor-to-string";
 import { parse } from "vue/compiler-sfc";
 type TAppPage = TPage & {
@@ -28,9 +28,12 @@ type TAppPage = TPage & {
 const deleted: Ref<TPage | undefined> = ref(),
   domain = ref(""),
   external = Object.fromEntries(
-    ["vue", "vue-router"].map((key) => [
+    Object.entries({
+      vue: version,
+      "vue-router": routerVersion,
+    }).map(([key, value]) => [
       key,
-      `assets/${key}.esm-browser.prod-${dependencies[key as keyof typeof dependencies].replace(/^\^/, "")}.js`,
+      `assets/${key}.esm-browser.prod-${value}.js`,
     ]),
   ),
   fonts = reactive([]),
