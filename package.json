@@ -16,7 +16,7 @@
     "build:electron": "quasar build -m electron"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.775.0",
+    "@aws-sdk/client-s3": "^3.777.0",
     "@electron/remote": "^2.1.2",
     "@iconify/vue": "^4.3.0",
     "@quasar/app-vite": "^2.2.0",
@@ -71,8 +71,8 @@
     "electron": "^35.1.2",
     "electron-builder": "^26.0.12",
     "eslint-config-prettier": "10.1.1",
-    "eslint-import-resolver-typescript": "^4.2.5",
-    "eslint-plugin-import-x": "^4.9.3",
+    "eslint-import-resolver-typescript": "^4.3.1",
+    "eslint-plugin-import-x": "^4.9.4",
     "eslint-plugin-perfectionist": "^4.10.1",
     "eslint-plugin-prettier": "^5.2.5",
     "eslint-plugin-vue": "^10.0.0",
