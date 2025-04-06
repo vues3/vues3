@@ -210,8 +210,8 @@ const filter = ref(""),
         !!v &&
         !!pages.value.find(
           (element) =>
-            element.id !== the.value?.id &&
-            (element.path === v || element.loc === v),
+            element.path === v ||
+            (element.id !== the.value?.id && element.loc === v),
         )
       ) || t("That name is already in use"),
     (v: null | string) =>
