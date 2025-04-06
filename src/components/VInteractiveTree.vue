@@ -78,10 +78,9 @@ const $q = useQuasar(),
     (propNode: TPage) =>
       !!pages.value.find(
         (element) =>
-          element.id !== propNode.id &&
           propNode.path &&
-          (("path" in element && element.path === propNode.path) ||
-            ("loc" in element && element.loc === propNode.path)),
+          ((element.id !== propNode.id && element.path === propNode.path) ||
+            element.loc === propNode.path),
       ),
     (propNode: TPage) =>
       ["?", "\\", "#"].some((value) => propNode.name?.includes(value)),
