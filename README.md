@@ -48,7 +48,7 @@ vueS3 is an open-source and free web editor for creating websites
 
 > [!NOTE]
 >
-> <img src="https://vues3.ru/images/drakkar.svg" width="250"/>
+> <img src="https://vues3.github.io/images/drakkar.svg" width="250"/>
 >
 > Made on the shores of the Baltic Sea
 
