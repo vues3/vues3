@@ -19,7 +19,7 @@ export default defineConfig(() => ({
         value: "./",
       });
     },
-    typescript: { strict: true },
+    typescript: { strict: true, vueShim: true },
     vitePlugins: [
       [
         "@intlify/unplugin-vue-i18n/vite",
@@ -55,7 +55,7 @@ export default defineConfig(() => ({
   css: ["app.css"],
   devServer: { open: false },
   electron: {
-    builder: { appId: "com.electron.vues3", snap: { grade: "stable" } },
+    builder: { appId: "vues3" },
     bundler: "builder",
     preloadScripts: ["electron-preload"],
   },
