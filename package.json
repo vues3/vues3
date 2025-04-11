@@ -16,7 +16,7 @@
     "build:electron": "quasar build -m electron"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.782.0",
+    "@aws-sdk/client-s3": "^3.787.0",
     "@electron/remote": "^2.1.2",
     "@iconify/vue": "^4.3.0",
     "@quasar/app-vite": "^2.2.0",
@@ -66,7 +66,7 @@
     "@types/crypto-js": "^4.2.2",
     "@types/wicg-file-system-access": "^2023.10.6",
     "@vue/language-plugin-pug": "^2.2.8",
-    "@vues3/runtime": "^0.2.11",
+    "@vues3/runtime": "^0.2.12",
     "autoprefixer": "^10.4.21",
     "electron": "^35.1.5",
     "electron-builder": "^26.0.12",
