@@ -8,7 +8,9 @@ q-drawer(v-model="rightDrawer", bordered, show-if-above, side="right")
         q-item-section
           .text-overline {{ t("S3 Accounts") }}
     q-separator
-    .full-width.q-pt-lg.q-px-lg.q-pb-sm(v-if="$q.platform.is.electron || isFileSystemAccess()")
+    .full-width.q-pt-lg.q-px-lg.q-pb-sm(
+      v-if="$q.platform.is.electron || isFileSystemAccess()"
+    )
       q-btn.fit(:label="t('Open...')", push, color="primary", @click="getDir")
     q-list(padding)
       q-item(
@@ -49,7 +51,7 @@ q-drawer(v-model="rightDrawer", bordered, show-if-above, side="right")
 q-page.column
   .col.column.q-ma-md
     q-img.col.rounded-borders(no-spinner, src="~/assets/bg.jpg")
-      q-card.backdrop-blur-sm.absolute-center
+      q-card.absolute-center.backdrop-blur-sm
         q-card-section
           .text-h5 vueS3
         q-card-section
@@ -60,7 +62,7 @@ q-page.column
                   :href="`https://${t('vues3.github.io')}`",
                   rel="noopener noreferrer",
                   target="_blank"
-                ) {{ t('vues3.github.io') }}
+                ) {{ t("vues3.github.io") }}
             q-timeline-entry(:title="t('Repository')", icon="share")
               template(#subtitle)
                 a.text-no-wrap.text-white(
@@ -74,7 +76,7 @@ q-page.column
                   :href="`https://${t('facebook.com/vues3')}`",
                   rel="noopener noreferrer",
                   target="_blank"
-                ) {{ t('facebook.com/vues3') }}
+                ) {{ t("facebook.com/vues3") }}
         q-card-section
           .text-overline {{ t("ver") }}.: {{ APP_VERSION }}
 </template>
