@@ -11,7 +11,12 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
       )
         template(#prepend)
           q-icon(name="delete")
-      q-input(v-model.trim="accessKeyId", clearable, label="access key id", hint="" )
+      q-input(
+        v-model.trim="accessKeyId",
+        clearable,
+        label="access key id",
+        hint=""
+      )
         template(#prepend)
           q-icon(name="key")
       q-input(
