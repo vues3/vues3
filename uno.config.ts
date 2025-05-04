@@ -10,7 +10,7 @@ import wind4 from "@unocss/preset-wind4";
 
 const cdn = "https://cdn.jsdelivr.net/npm/",
   presets: Preset[] = [
-    wind4(),
+    wind4({ preflights: { reset: true } }),
     typography(),
     icons({ cdn }),
     tagify(),
