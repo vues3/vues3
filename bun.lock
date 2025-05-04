@@ -54,7 +54,7 @@
         "@types/path-browserify": "^1.0.3",
         "@types/wicg-file-system-access": "^2023.10.6",
         "@vue/language-plugin-pug": "^2.2.10",
-        "@vues3/runtime": "^0.2.23",
+        "@vues3/runtime": "^0.2.24",
         "autoprefixer": "^10.4.21",
         "electron": "^36.1.0",
         "electron-builder": "^26.0.12",
@@ -766,7 +766,7 @@
 
     "@vues3/flat-json-tree": ["@vues3/flat-json-tree@0.7.3", "", { "dependencies": { "@vueuse/core": "13.1.0", "uuid": "^11.1.0", "vue": "^3.5.13" } }, "sha512-qY1xwfLIjH2d2S/UJ8kr6kf32TTVs8fSMQjw4u6Dq5HmVvRiWk8brdyc/tRxwm3MwxeAyT1sXD4pUrNRIb/Ztw=="],
 
-    "@vues3/runtime": ["@vues3/runtime@0.2.23", "", { "dependencies": { "@iconify/vue": "^5.0.0", "@unhead/vue": "^2.0.8", "@unocss/core": "^66.1.0", "@unocss/preset-attributify": "^66.1.0", "@unocss/preset-icons": "^66.1.0", "@unocss/preset-tagify": "^66.1.0", "@unocss/preset-typography": "^66.1.0", "@unocss/preset-web-fonts": "^66.1.0", "@unocss/preset-wind4": "^66.1.0", "@unocss/reset": "^66.1.0", "@unocss/runtime": "^66.1.0", "@vues3/sfc-loader": "^1.2.3", "@vues3/shared": "^0.5.11", "@vueuse/core": "^13.1.0", "globals": "^16.0.0", "uuid": "^11.1.0", "vue": "^3.5.13", "vue-router": "^4.5.1" } }, "sha512-rNmIaOWQtCbckW07CmUKOyfgJW8FVB8lhHqmlQhxT8ARyWhreWG53rr5OY5O9Uco/PvkxlVZcTG2qNAp2HTO1w=="],
+    "@vues3/runtime": ["@vues3/runtime@0.2.24", "", { "dependencies": { "@iconify/vue": "^5.0.0", "@unhead/vue": "^2.0.8", "@unocss/core": "^66.1.0", "@unocss/preset-attributify": "^66.1.0", "@unocss/preset-icons": "^66.1.0", "@unocss/preset-tagify": "^66.1.0", "@unocss/preset-typography": "^66.1.0", "@unocss/preset-web-fonts": "^66.1.0", "@unocss/preset-wind4": "^66.1.0", "@unocss/reset": "^66.1.0", "@unocss/runtime": "^66.1.0", "@vues3/sfc-loader": "^1.2.3", "@vues3/shared": "^0.5.11", "@vueuse/core": "^13.1.0", "globals": "^16.0.0", "uuid": "^11.1.0", "vue": "^3.5.13", "vue-router": "^4.5.1" } }, "sha512-52tIgRl8XUZNHkJk2pcyCk5I/JtrknYz7pu48yVxEN7amM4ap+eoonDdQ0S2Ftlmd5eEEvsDPCSoA/716PMFSg=="],
 
     "@vues3/sfc-loader": ["@vues3/sfc-loader@1.2.3", "", { "dependencies": { "@vue/compiler-sfc": "^3.5.13", "@vueuse/core": "^13.1.0", "hash-sum": "^2.0.0", "sucrase": "^3.35.0" } }, "sha512-BKE+fGBLJY1qNuqt37mcySvaa8dCrt3dydRyq5GY2Gcu1zstkSxluJP3LzibSOnIR/8DWlkDz8ALChKeYdZI7A=="],
 
