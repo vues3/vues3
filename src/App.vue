@@ -87,7 +87,6 @@ q-layout(view="hHh Lpr lff")
 import type { PromptInputType } from "quasar";
 import type { Component } from "vue";
 
-import "@unocss/reset/tailwind-compat.css";
 import { consoleError } from "@vues3/shared";
 import VFaviconDialog from "components/dialogs/VFaviconDialog.vue";
 import VFontsDialog from "components/dialogs/VFontsDialog.vue";
