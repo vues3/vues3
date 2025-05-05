@@ -1,8 +1,5 @@
 import type { ProjectContext } from "@volar/language-service";
-import type {
-  LanguageServicePlugin,
-  WorkerLanguageService,
-} from "@volar/monaco/worker";
+import type { WorkerLanguageService } from "@volar/monaco/worker";
 import type { worker } from "monaco-editor";
 
 import { Window } from "@remote-dom/polyfill";
@@ -33,9 +30,7 @@ const allowImportingTsExtensions = true,
   workspaceFolders = [URI.file("/")],
   env = { fs, workspaceFolders },
   jsx = "Preserve",
-  languageServicePlugins = getFullLanguageServicePlugins(
-    typescript,
-  ) as LanguageServicePlugin[],
+  languageServicePlugins = getFullLanguageServicePlugins(typescript),
   module = "ESNext",
   moduleResolution = "Bundler",
   target = "ESNext",
