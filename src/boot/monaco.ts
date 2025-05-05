@@ -26,7 +26,7 @@ import * as languageConfigs from "stores/language-configs";
 /* -------------------------------------------------------------------------- */
 
 const getSyncUris = () => monaco.editor.getModels().map(({ uri }) => uri),
-  getWorker: monacoNs.Environment["getWorker"] = (workerId, label) => {
+  getWorker: monaco.Environment["getWorker"] = (workerId, label) => {
     switch (label) {
       case "tailwindcss":
         return new TailwindcssWorker();
