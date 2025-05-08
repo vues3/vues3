@@ -8,16 +8,15 @@ export default defineConfig(() => ({
   boot: ["main", "route", "quasar-lang-pack", "i18n", "monaco"],
   build: {
     alias: { "node:path": "path-browserify" },
-    extendViteConf: (viteConf) => {
-      const { define = {} } = viteConf;
-      Reflect.defineProperty(viteConf, "define", {
-        value: mergeConfig(define, {
+    extendViteConf: (config) => {
+      config.base = "./";
+      config.define = mergeConfig(
+        config.define ?? {},
+        {
           __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-        }),
-      });
-      Reflect.defineProperty(viteConf, "base", {
-        value: "./",
-      });
+        },
+        false,
+      );
     },
     typescript: { strict: true, vueShim: true },
     vitePlugins: [
