@@ -1,8 +1,6 @@
-import type { ProjectContext } from "@volar/language-service";
 import type { WorkerLanguageService } from "@volar/monaco/worker";
 import type { worker } from "monaco-editor";
 
-import { Window } from "@remote-dom/polyfill";
 import { createNpmFileSystem } from "@volar/jsdelivr";
 import { createTypeScriptWorkerLanguageService } from "@volar/monaco/worker";
 import {
@@ -14,65 +12,19 @@ import { initialize } from "monaco-editor/esm/vs/editor/editor.worker";
 import typescript, { convertCompilerOptionsFromJson } from "typescript";
 import { URI } from "vscode-uri";
 
-/* -------------------------------------------------------------------------- */
-
-Window.setGlobal(new Window());
-
-/* -------------------------------------------------------------------------- */
-
-const asFileName = ({ path }: URI) => path,
-  asUri = (fileName: string) => URI.file(fileName);
-
-const allowImportingTsExtensions = true,
-  allowJs = true,
-  checkJs = true,
-  fs = createNpmFileSystem(),
-  workspaceFolders = [URI.file("/")],
-  env = { fs, workspaceFolders },
-  jsx = "Preserve",
-  languageServicePlugins = getFullLanguageServicePlugins(typescript),
-  module = "ESNext",
-  moduleResolution = "Bundler",
-  target = "ESNext",
-  uriConverter = { asFileName, asUri },
-  vueCompilerOptions = getDefaultCompilerOptions();
-
-/* -------------------------------------------------------------------------- */
-
-const setup = ({ project }: { project: ProjectContext }) => {
-  const compilerOptions = vueCompilerOptions,
-    value = { compilerOptions };
-  Reflect.defineProperty(project, "vue", { value });
-};
-
-/* -------------------------------------------------------------------------- */
-
-const { options: compilerOptions } = convertCompilerOptionsFromJson(
-  {
-    allowImportingTsExtensions,
-    allowJs,
-    checkJs,
-    jsx,
-    module,
-    moduleResolution,
-    target,
-  },
-  "",
-);
-
-/* -------------------------------------------------------------------------- */
-
-const languagePlugins = [
-  createVueLanguagePlugin(
-    typescript,
-    compilerOptions,
-    vueCompilerOptions,
-    asFileName,
-  ),
-];
-
-/* -------------------------------------------------------------------------- */
-
+const vueCompilerOptions = getDefaultCompilerOptions(),
+  { options: compilerOptions } = convertCompilerOptionsFromJson(
+    {
+      allowImportingTsExtensions: true,
+      allowJs: true,
+      checkJs: true,
+      jsx: "Preserve",
+      module: "ESNext",
+      moduleResolution: "Bundler",
+      target: "ESNext",
+    },
+    "",
+  );
 self.onmessage = () => {
   (
     initialize as (
@@ -83,12 +35,24 @@ self.onmessage = () => {
   )((workerContext) =>
     createTypeScriptWorkerLanguageService({
       compilerOptions,
-      env,
-      languagePlugins,
-      languageServicePlugins,
-      setup,
+      env: { fs: createNpmFileSystem(), workspaceFolders: [URI.file("/")] },
+      languagePlugins: [
+        createVueLanguagePlugin(
+          typescript,
+          compilerOptions,
+          vueCompilerOptions,
+          ({ path }) => path,
+        ),
+      ],
+      languageServicePlugins: getFullLanguageServicePlugins(typescript),
+      setup: ({ project }) => {
+        project.vue = { compilerOptions: vueCompilerOptions };
+      },
       typescript,
-      uriConverter,
+      uriConverter: {
+        asFileName: ({ path }) => path,
+        asUri: (fileName) => URI.file(fileName),
+      },
       workerContext,
     }),
   );
