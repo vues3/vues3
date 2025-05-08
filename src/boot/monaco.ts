@@ -23,10 +23,16 @@ import themeLight from "shiki/themes/light-plus.mjs";
 import VueWorker from "src/workers/vue.worker?worker";
 import * as languageConfigs from "stores/language-configs";
 
-/* -------------------------------------------------------------------------- */
-
 const getSyncUris = () => monaco.editor.getModels().map(({ uri }) => uri),
-  getWorker: monaco.Environment["getWorker"] = (workerId, label) => {
+  label = "vue",
+  languageId = ["vue", "javascript", "typescript", "css"],
+  worker: monaco.editor.MonacoWebWorker<WorkerLanguageService> =
+    monaco.editor.createWebWorker({
+      label,
+      moduleId: "vs/language/vue/vueWorker",
+    });
+window.MonacoEnvironment = {
+  getWorker: (workerId: string, label: string) => {
     switch (label) {
       case "tailwindcss":
         return new TailwindcssWorker();
@@ -35,24 +41,8 @@ const getSyncUris = () => monaco.editor.getModels().map(({ uri }) => uri),
       default:
         return new EditorWorker();
     }
-  };
-
-/* -------------------------------------------------------------------------- */
-
-const engine = createJavaScriptRegexEngine(),
-  label = "vue",
-  langs = [langVue, langTsx, langJsx],
-  languageId = ["vue", "javascript", "typescript", "css"],
-  languageSelector = "vue",
-  moduleId = "vs/language/vue/vueWorker",
-  themes = [themeDark, themeLight],
-  worker: monaco.editor.MonacoWebWorker<WorkerLanguageService> =
-    monaco.editor.createWebWorker({ label, moduleId });
-
-/* -------------------------------------------------------------------------- */
-
-window.MonacoEnvironment = { getWorker };
-
+  },
+};
 ["vue", "js", "ts", "css"].forEach((value, index) => {
   const id = languageId[index];
   if (id) {
@@ -75,7 +65,11 @@ registerProviders(worker, languageId, getSyncUris, monaco.languages).catch(
 activateMarkers(worker, languageId, label, getSyncUris, monaco.editor);
 activateAutoInsertion(worker, languageId, getSyncUris, monaco.editor);
 shikiToMonaco(
-  createHighlighterCoreSync({ engine, langs, themes }),
+  createHighlighterCoreSync({
+    engine: createJavaScriptRegexEngine(),
+    langs: [langVue, langTsx, langJsx],
+    themes: [themeDark, themeLight],
+  }),
   monaco as typeof monacoNs,
 );
-configureMonacoTailwindcss(monaco, { languageSelector });
+configureMonacoTailwindcss(monaco, { languageSelector: label });
