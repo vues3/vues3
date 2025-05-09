@@ -1,4 +1,4 @@
-import { languages } from 'monaco-editor-core'
+import { languages } from 'monaco-editor'
 
 // export const html: languages.LanguageConfiguration = {
 //   comments: {
