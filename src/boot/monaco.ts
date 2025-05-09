@@ -7,7 +7,6 @@ import {
   activateMarkers,
   registerProviders,
 } from "@volar/monaco";
-import { consoleError } from "@vues3/shared";
 import * as monaco from "monaco-editor";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import { configureMonacoTailwindcss } from "monaco-tailwindcss";
@@ -59,9 +58,7 @@ window.MonacoEnvironment = {
     }
   }
 });
-registerProviders(worker, languageId, getSyncUris, monaco.languages).catch(
-  consoleError,
-);
+void registerProviders(worker, languageId, getSyncUris, monaco.languages);
 activateMarkers(worker, languageId, label, getSyncUris, monaco.editor);
 activateAutoInsertion(worker, languageId, getSyncUris, monaco.editor);
 shikiToMonaco(
