@@ -139,6 +139,7 @@ q-page.column.full-height(v-if="the")
   )
     q-tab(label="wysiwyg", name="wysiwyg")
     q-tab(label="vue", name="vue")
+    q-tab(label="json-ld", name="jsonld")
     q-tab(label="images", name="images")
   q-separator
   q-tab-panels.full-width.col(v-model="tab")
@@ -151,6 +152,12 @@ q-page.column.full-height(v-if="the")
     q-tab-panel(name="vue")
       Suspense
         v-source-code(:model="the.sfc")
+          template(#fallback)
+            q-inner-loading(showing)
+              q-spinner-hourglass
+    q-tab-panel(name="jsonld")
+      Suspense
+        v-source-code(:model="the.jsonld")
           template(#fallback)
             q-inner-loading(showing)
               q-spinner-hourglass
