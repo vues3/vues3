@@ -9,10 +9,13 @@ import {
 } from "@volar/monaco";
 import * as monaco from "monaco-editor";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+// eslint-disable-next-line import-x/default
+import JsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import { configureMonacoTailwindcss } from "monaco-tailwindcss";
 import TailwindcssWorker from "monaco-tailwindcss/tailwindcss.worker?worker";
 import { createHighlighterCoreSync } from "shiki/core";
 import { createJavaScriptRegexEngine } from "shiki/engine-javascript.mjs";
+import langJson from "shiki/langs/json.mjs";
 import langJsx from "shiki/langs/jsx.mjs";
 import langTsx from "shiki/langs/tsx.mjs";
 import langVue from "shiki/langs/vue.mjs";
@@ -33,6 +36,8 @@ const getSyncUris = () => monaco.editor.getModels().map(({ uri }) => uri),
 window.MonacoEnvironment = {
   getWorker: (workerId: string, label: string) => {
     switch (label) {
+      case "json":
+        return new JsonWorker();
       case "tailwindcss":
         return new TailwindcssWorker();
       case "vue":
@@ -64,7 +69,7 @@ activateAutoInsertion(worker, languageId, getSyncUris, monaco.editor);
 shikiToMonaco(
   createHighlighterCoreSync({
     engine: createJavaScriptRegexEngine(),
-    langs: [langVue, langTsx, langJsx],
+    langs: [langVue, langTsx, langJsx, langJson],
     themes: [themeDark, themeLight],
   }),
   monaco as typeof monacoNs,
