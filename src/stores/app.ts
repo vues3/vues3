@@ -23,6 +23,7 @@ import { parse } from "vue/compiler-sfc";
 type TAppPage = TPage & {
   contenteditable: boolean;
   html: Promise<string> | string;
+  jsonld: Promise<editor.ITextModel>;
   sfc: Promise<editor.ITextModel>;
 };
 const deleted: Ref<TPage | undefined> = ref(),
@@ -63,6 +64,33 @@ const cleaner = (value: TAppPage[]) => {
       `<head><base href="//"></head><body>${value}</body>`,
       "text/html",
     ),
+  getModel = async (
+    id: string,
+    ext: string,
+    language: string,
+    mime: string,
+    init: string,
+  ) => {
+    const uri = Uri.parse(`file:///${id}.${language}`);
+    let model = editor.getModel(uri);
+    if (!model) {
+      const value = await getObjectText(`pages/${id}.${ext}`, cache);
+      model = editor.getModel(uri);
+      if (!model) {
+        model = editor.createModel(value, language, uri);
+        model.onDidChangeContent(
+          debounce(() => {
+            if (model && id)
+              putObject(`pages/${id}.${ext}`, model.getValue(), mime).catch(
+                consoleError,
+              );
+          }, second),
+        );
+        if (!value) model.setValue(init);
+      }
+    }
+    return model;
+  },
   html = {
     async get(this: TAppPage) {
       const filename = `${selected.value ?? "anonymous"}.vue`;
@@ -147,34 +175,25 @@ const cleaner = (value: TAppPage[]) => {
       }
     },
   },
+  jsonld = {
+    get(this: TAppPage) {
+      return this.id
+        ? getModel(this.id, "jsonld", "json", "application/ld+json", "")
+        : undefined;
+    },
+  },
   sfc = {
-    async get(this: TAppPage) {
-      if (this.id) {
-        const uri = Uri.parse(`file:///${this.id}.vue`);
-        let model = editor.getModel(uri);
-        if (!model) {
-          const value = await getObjectText(`pages/${this.id}.vue`, cache);
-          model = editor.getModel(uri);
-          if (!model) {
-            model = editor.createModel(value, "vue", uri);
-            model.onDidChangeContent(
-              debounce(() => {
-                if (model && this.id)
-                  putObject(
-                    `pages/${this.id}.vue`,
-                    model.getValue(),
-                    "text/html",
-                  ).catch(consoleError);
-              }, second),
-            );
-            if (!value)
-              model.setValue(`<template></template>
-`);
-          }
-        }
-        return model;
-      }
-      return undefined;
+    get(this: TAppPage) {
+      return this.id
+        ? getModel(
+            this.id,
+            "vue",
+            "vue",
+            "text/html",
+            `<template></template>
+`,
+          )
+        : undefined;
     },
   };
 watch(deleted, (value) => {
@@ -207,6 +226,7 @@ watch(pages, (objects) => {
     Object.defineProperties(object, {
       contenteditable,
       html,
+      jsonld,
       sfc,
     });
   });
