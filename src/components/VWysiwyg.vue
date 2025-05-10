@@ -306,19 +306,19 @@ watch(
       scrollTarget.value.innerHTML = htm.value;
   },
 );
-watch(
-  Fonts,
-  async (value) => {
-    const fonts = getFontsObjectFromArray(value);
-    let { presets } = Defaults;
-    presets = [...presets, webFonts({ customFetch, fonts })];
-    const defaults = { presets };
-    await initUnocssRuntime({ bypassDefined, defaults, rootElement });
-  },
-  { immediate },
-);
 onMounted(() => {
   rootElement = editor.value?.getContentEl ?? (() => undefined);
+  watch(
+    Fonts,
+    async (value) => {
+      const fonts = getFontsObjectFromArray(value);
+      let { presets } = Defaults;
+      presets = [...presets, webFonts({ customFetch, fonts })];
+      const defaults = { presets };
+      await initUnocssRuntime({ bypassDefined, defaults, rootElement });
+    },
+    { immediate },
+  );
   scrollTarget.value = rootElement();
   scrollTarget.value?.addEventListener("mouseover", onMouseover);
   scrollTarget.value?.addEventListener("contextmenu", onContextmenu);
