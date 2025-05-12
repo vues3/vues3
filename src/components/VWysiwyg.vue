@@ -1,12 +1,12 @@
 <!-- eslint-disable vue/no-v-html vue/no-v-text-v-html-on-component -->
 <template lang="pug">
-form.col.column(
+form.full-width.col.column(
   autocapitalize="on",
   autocomplete="on",
   autocorrect="on",
   spellcheck="true"
 )
-  q-editor.col.column(
+  q-editor.full-width.col.column(
     ref="editor",
     :definitions,
     :dense="$q.screen.lt.md",
