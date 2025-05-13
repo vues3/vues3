@@ -1,6 +1,7 @@
 import type { WorkerLanguageService } from "@volar/monaco/worker";
 import type { worker } from "monaco-editor";
 
+import { Window } from "@remote-dom/polyfill";
 import { createNpmFileSystem } from "@volar/jsdelivr";
 import { createTypeScriptWorkerLanguageService } from "@volar/monaco/worker";
 import {
@@ -11,6 +12,9 @@ import {
 import { initialize } from "monaco-editor/esm/vs/editor/editor.worker";
 import typescript, { convertCompilerOptionsFromJson } from "typescript";
 import { URI } from "vscode-uri";
+
+/** Don't remove! It's prevent emoji errors. (Non-UTF characters in the code) */
+Window.setGlobal(new Window());
 
 const vueCompilerOptions = getDefaultCompilerOptions(),
   { options: compilerOptions } = convertCompilerOptionsFromJson(
