@@ -1,22 +1,6 @@
 <template lang="pug">
 q-layout(view="hHh Lpr lff")
   q-header
-    q-bar.q-electron-drag(
-      v-if="$q.platform.is.electron",
-      bg-primary,
-      text-white
-    )
-      q-icon(name="wysiwyg")
-      .col.text-weight-bold.text-center vueS3
-      q-space
-      q-btn(dense, flat, icon="minimize", @click="minimize")
-      q-btn(
-        dense,
-        flat,
-        :icon="isMaximized() ? 'unfold_less' : 'unfold_more'",
-        @click="toggleMaximize"
-      )
-      q-btn(dense, flat, icon="close", @click="closeApp")
     q-toolbar
       q-toolbar-title
         q-avatar(icon="img:favicon.svg", size="xl")
@@ -99,31 +83,17 @@ import "virtual:uno.css";
 import { bucket, getObjectText, putObject } from "stores/io";
 import { useI18n } from "vue-i18n";
 
-/* -------------------------------------------------------------------------- */
-
-const { t } = useI18n();
-
-/* -------------------------------------------------------------------------- */
-
 const $q = useQuasar(),
   cancel = true,
   click = (component: Component) => {
     $q.dialog({ component });
   },
-  closeApp = () => {
-    window.focusedWindowClose();
-  },
-  isMaximized = () => window.focusedWindowIsMaximized(),
   isValid = (val: string) =>
     /\b((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}\b/.test(
       val,
     ),
-  minimize = () => {
-    window.focusedWindowMinimize();
-  },
-  toggleMaximize = () => {
-    window.focusedWindowToggleMaximize();
-  };
+  { t } = useI18n();
+
 const clickDomain = () => {
     const message = t("Enter a valid domain name:"),
       model = domain.value,
