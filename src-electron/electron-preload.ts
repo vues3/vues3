@@ -1,6 +1,6 @@
 import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
 
-import { BrowserWindow, dialog } from "@electron/remote";
+import { dialog } from "@electron/remote";
 import { contextBridge } from "electron";
 import {
   access,
@@ -14,27 +14,8 @@ import {
 } from "fs/promises";
 import { basename, dirname, join } from "path";
 
-/* -------------------------------------------------------------------------- */
-
-const recursive = true;
-
-/* -------------------------------------------------------------------------- */
-
 const deleteObject = async (Bucket: string, Key: string) => {
     await unlink(join(Bucket, Key));
-  },
-  focusedWindowClose = () => {
-    BrowserWindow.getFocusedWindow()?.close();
-  },
-  focusedWindowIsMaximized = () =>
-    BrowserWindow.getFocusedWindow()?.isMaximized(),
-  focusedWindowMinimize = () => {
-    BrowserWindow.getFocusedWindow()?.minimize();
-  },
-  focusedWindowToggleMaximize = () => {
-    const focusedWindow = BrowserWindow.getFocusedWindow();
-    if (focusedWindow?.isMaximized()) focusedWindow.unmaximize();
-    else focusedWindow?.maximize();
   },
   getObject = async (Bucket: string, Key: string) => {
     try {
@@ -67,7 +48,7 @@ const deleteObject = async (Bucket: string, Key: string) => {
     try {
       await access(dirName);
     } catch {
-      await mkdir(dirName, { recursive });
+      await mkdir(dirName, { recursive: true });
     }
     await writeFile(filePath, body as string | Uint8Array);
   },
@@ -87,15 +68,9 @@ const deleteObject = async (Bucket: string, Key: string) => {
     if (!fileNames.length) await rmdir(directory);
   };
 
-/* -------------------------------------------------------------------------- */
-
 Object.entries({
   deleteObject,
   dialog,
-  focusedWindowClose,
-  focusedWindowIsMaximized,
-  focusedWindowMinimize,
-  focusedWindowToggleMaximize,
   getObjectBlob,
   getObjectText,
   headObject,
