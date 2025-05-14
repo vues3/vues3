@@ -110,7 +110,7 @@ const deleted: Ref<TPage | undefined> = ref(),
     `)}
     ${
       value &&
-      `<script type="application/ld+json">
+      `<script type="application/ld+json" id="application/ld+json">
 ${value}
     </script>`
     }
@@ -315,21 +315,22 @@ const cleaner = (value: TAppPage[]) => {
   jsonld = {
     get(this: TAppPage) {
       return this.id
-        ? getModel(this.id, "jsonld", "json", "application/ld+json", "")
+        ? getModel(
+            this.id,
+            "jsonld",
+            "json",
+            "application/ld+json",
+            `{
+    "@context": "https://schema.org"
+}`,
+          )
         : undefined;
     },
   },
   sfc = {
     get(this: TAppPage) {
       return this.id
-        ? getModel(
-            this.id,
-            "vue",
-            "vue",
-            "text/html",
-            `<template></template>
-`,
-          )
+        ? getModel(this.id, "vue", "vue", "text/html", "<template></template>")
         : undefined;
     },
   };
