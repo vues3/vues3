@@ -46,5 +46,11 @@ export default Object.fromEntries(
     "Robots.txt is a text file that contains site indexing parameters for the search engine robots",
     "The class global attribute is a list of the classes of the element, separated by ASCII whitespace",
     "Edit classes",
+    "Copy Link",
+    "Add Image",
+    "Remove Image",
+    "Image Left",
+    "Image Right",
+    "The link has been copied to clipboard",
   ].map((key) => [key, key]),
 );
