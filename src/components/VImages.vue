@@ -19,10 +19,6 @@
 </template>
 
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
 import type { TPage } from "@vues3/shared";
 
 import { consoleError } from "@vues3/shared";
@@ -43,7 +39,7 @@ import { getObjectBlob, putObject } from "stores/io";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-/* -------------------------------------------------------------------------- */
+let index = 0;
 
 const { onChange, open } = useFileDialog({
     accept,
@@ -53,17 +49,9 @@ const { onChange, open } = useFileDialog({
   }),
   { t } = useI18n();
 
-/* -------------------------------------------------------------------------- */
-
-let index = 0;
-
-/* -------------------------------------------------------------------------- */
-
 const $q = useQuasar(),
   images = ref([] as TPage["images"]),
   message = t("The graphic file type is not suitable for use on the web");
-
-/* -------------------------------------------------------------------------- */
 
 const add = (i: number) => {
     const alt = "",
@@ -98,8 +86,6 @@ const add = (i: number) => {
     index = i;
     open();
   };
-
-/* -------------------------------------------------------------------------- */
 
 watch(
   images,
