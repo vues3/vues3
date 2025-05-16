@@ -40,6 +40,9 @@ const deleted: Ref<TPage | undefined> = ref(),
     ]),
   ),
   fonts = reactive([]),
+  initJsonLD = `{
+    "@context": "https://schema.org"
+}`,
   parser = new DOMParser(),
   prevImages: string[] = [],
   putPage = (async () => {
@@ -59,7 +62,16 @@ const deleted: Ref<TPage | undefined> = ref(),
         to,
         type,
       }: TAppPage) => {
-        const value = (await jsonld).getValue();
+        let value;
+        try {
+          value = JSON.stringify(
+            JSON.parse((await jsonld).getValue()),
+            null,
+            1,
+          );
+        } catch {
+          value = JSON.stringify(JSON.parse(initJsonLD), null, 1);
+        }
         const canonical =
             domain.value &&
             `https://${domain.value}${to === "/" ? "" : (to ?? "")}`,
@@ -142,11 +154,11 @@ ${value}
         await removeEmptyDirectories();
         body = index
           .replace(
-            "</head>",
-            `  <script type="importmap">
-${JSON.stringify(imap, null, " ")}
-    </script>
-  </head>`,
+            '<base href="" />',
+            `<base href="" />
+    <script type="importmap">
+${JSON.stringify(imap, null, 1)}
+    </script>`,
           )
           .replace(
             "</head>",
@@ -315,15 +327,7 @@ const cleaner = (value: TAppPage[]) => {
   jsonld = {
     get(this: TAppPage) {
       return this.id
-        ? getModel(
-            this.id,
-            "jsonld",
-            "json",
-            "application/ld+json",
-            `{
-    "@context": "https://schema.org"
-}`,
-          )
+        ? getModel(this.id, "jsonld", "json", "application/ld+json", initJsonLD)
         : undefined;
     },
   },
