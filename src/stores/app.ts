@@ -201,9 +201,12 @@ const cleaner = (value: TAppPage[]) => {
       const { children, id, images } = page;
       if (children.length) cleaner(children as TAppPage[]);
       images.forEach(({ url }) => {
-        deleteObject(url).catch(consoleError);
+        void deleteObject(url);
       });
-      if (id) deleteObject(`pages/${id}.vue`).catch(consoleError);
+      if (id) {
+        void deleteObject(`pages/${id}.vue`);
+        void deleteObject(`pages/${id}.jsonld`);
+      }
     });
   },
   getDocument = (value: string) =>
