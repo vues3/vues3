@@ -53,38 +53,38 @@ q-page.column
     q-img.col.rounded-borders(no-spinner, src="~/assets/bg.jpg")
       q-card.absolute-center.backdrop-blur-sm
         q-card-section
-          .text-h5 vueS3
+          .text-h5 VueBro
         q-card-section
           q-timeline(color="black", layout="comfortable", side="left")
             q-timeline-entry(:title="t('Homepage')", icon="home")
               template(#subtitle)
                 a.text-no-wrap.text-white(
-                  :href="`https://${t('vues3.github.io')}`",
+                  :href="`https://${t('vuebro.github.io')}`",
                   rel="noopener noreferrer",
                   target="_blank"
-                ) {{ t("vues3.github.io") }}
+                ) {{ t("vuebro.github.io") }}
             q-timeline-entry(:title="t('Repository')", icon="share")
               template(#subtitle)
                 a.text-no-wrap.text-white(
-                  href="https://github.com/vues3",
+                  href="https://github.com/vuebro",
                   rel="noopener noreferrer",
                   target="_blank"
-                ) github.com/vues3
+                ) github.com/vuebro
             q-timeline-entry(:title="t('Facebook')", icon="group")
               template(#subtitle)
                 a.text-no-wrap.text-white(
-                  :href="`https://${t('facebook.com/vues3')}`",
+                  :href="`https://${t('facebook.com/vuebro')}`",
                   rel="noopener noreferrer",
                   target="_blank"
-                ) {{ t("facebook.com/vues3") }}
+                ) {{ t("facebook.com/vuebro") }}
         q-card-section
           .text-overline {{ t("ver") }}.: {{ APP_VERSION }}
 </template>
 <script setup lang="ts">
-import type { TCredentials } from "@vues3/shared";
+import type { TCredentials } from "@vuebro/shared";
 import type { Component } from "vue";
 
-import { consoleError, validateCredentials } from "@vues3/shared";
+import { consoleError, validateCredentials } from "@vuebro/shared";
 import { useStorage } from "@vueuse/core";
 import VCredsDialog from "components/dialogs/VCredsDialog.vue";
 import VOtpDialog from "components/dialogs/VOtpDialog.vue";
