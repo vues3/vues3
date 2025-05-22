@@ -52,7 +52,7 @@ q-page-sticky(position="bottom-right", :offset="[18, 18]")
         )
 </template>
 <script setup lang="ts">
-import type { TPage } from "@vues3/shared";
+import type { TPage } from "@vuebro/shared";
 import type { QTree } from "quasar";
 
 import {
@@ -65,7 +65,7 @@ import {
   remove,
   right,
   up,
-} from "@vues3/shared";
+} from "@vuebro/shared";
 import { useQuasar } from "quasar";
 import { deleted, selected } from "stores/app";
 import { cancel, immediate, persistent } from "stores/defaults";
