@@ -23,7 +23,7 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
 import type { Ref } from "vue";
 
 import { Icon } from "@iconify/vue";
-import { atlas, nodes } from "@vues3/shared";
+import { atlas, nodes } from "@vuebro/shared";
 import { useDialogPluginComponent } from "quasar";
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
