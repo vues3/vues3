@@ -1,5 +1,5 @@
 import { defineBoot } from "#q-app/wrappers";
-import { nodes } from "@vues3/shared";
+import { nodes } from "@vuebro/shared";
 import routes from "src/router/routes";
 import { selected } from "stores/app";
 import { bucket } from "stores/io";
