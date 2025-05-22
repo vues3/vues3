@@ -45,7 +45,7 @@ export default defineConfig(() => ({
         viteStaticCopy,
         {
           targets: [
-            { dest: "runtime", src: "./node_modules/@vues3/runtime/dist/*" },
+            { dest: "runtime", src: "./node_modules/@vuebro/runtime/dist/*" },
           ],
         },
       ],
@@ -54,7 +54,7 @@ export default defineConfig(() => ({
   css: ["app.css"],
   devServer: { open: false },
   electron: {
-    builder: { appId: "vues3" },
+    builder: { appId: "vuebro" },
     bundler: "builder",
     preloadScripts: ["electron-preload"],
   },
