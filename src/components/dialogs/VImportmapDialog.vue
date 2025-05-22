@@ -38,10 +38,10 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
       q-btn(:label="t('Close')", flat, @click="onDialogHide")
 </template>
 <script setup lang="ts">
-import type { TImportmap } from "@vues3/shared";
+import type { TImportmap } from "@vuebro/shared";
 import type { QTableProps } from "quasar";
 
-import { importmap } from "@vues3/shared";
+import { importmap } from "@vuebro/shared";
 import json from "assets/importmap.json";
 import { uid, useDialogPluginComponent } from "quasar";
 import { onMounted, ref, watch } from "vue";
