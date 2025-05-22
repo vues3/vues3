@@ -173,7 +173,7 @@ import type { ValidationRule } from "quasar";
 
 import { Icon } from "@iconify/vue";
 import mdi from "@quasar/quasar-ui-qiconpicker/src/components/icon-set/mdi-v6";
-import { nodes, pages } from "@vues3/shared";
+import { nodes, pages } from "@vuebro/shared";
 import changefreq from "assets/changefreq.json";
 import types from "assets/types.json";
 import VImages from "components/VImages.vue";
