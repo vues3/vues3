@@ -1,4 +1,4 @@
-import { consoleError } from "@vues3/shared";
+import { consoleError } from "@vuebro/shared";
 import { Lang } from "quasar";
 
 /* -------------------------------------------------------------------------- */
