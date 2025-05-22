@@ -4,7 +4,7 @@ q-layout(view="hHh Lpr lff")
     q-toolbar
       q-toolbar-title
         q-avatar(icon="img:favicon.svg", size="xl")
-        | vueS3
+        | VueBro
       q-chip(v-if="bucket", icon="language", :label="bucket", :ripple="false")
       q-btn-dropdown.q-mr-xs(
         v-if="bucket",
@@ -71,7 +71,7 @@ q-layout(view="hHh Lpr lff")
 import type { PromptInputType } from "quasar";
 import type { Component } from "vue";
 
-import { consoleError } from "@vues3/shared";
+import { consoleError } from "@vuebro/shared";
 import VFaviconDialog from "components/dialogs/VFaviconDialog.vue";
 import VFontsDialog from "components/dialogs/VFontsDialog.vue";
 import VImportmapDialog from "components/dialogs/VImportmapDialog.vue";
