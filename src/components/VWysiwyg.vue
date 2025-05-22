@@ -64,7 +64,7 @@ import {
   consoleError,
   customFetch,
   getFontsObjectFromArray,
-} from "@vues3/shared";
+} from "@vuebro/shared";
 import { useFileDialog } from "@vueuse/core";
 import Defaults from "app/uno.config";
 import mimes from "assets/mimes.json";
