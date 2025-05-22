@@ -1,10 +1,10 @@
-[![vues3](https://snapcraft.io/vues3/badge.svg)](https://snapcraft.io/vues3)
+[![vuebro](https://snapcraft.io/vuebro/badge.svg)](https://snapcraft.io/vuebro)
 
-# :sailboat: Web editor vueS3
+# :sailboat: Web editor VueBro
 
-vueS3 is an open-source and free web editor for creating websites
+VueBro is an open-source and free web editor for creating websites
 
-### :link: Project website: [vues3.github.io](https://vues3.github.io)
+### :link: Project website: [vuebro.github.io](https://vuebro.github.io)
 
 ### :globe_with_meridians: Web Application
 
@@ -17,18 +17,18 @@ vueS3 is an open-source and free web editor for creating websites
 [<kbd><br> Get AppImage for <br><br> <strong>Linux<strong> <br><br></kbd>][Link]
 [<kbd><br> Get snap for <br><br> <strong>Linux<strong> <br><br></kbd>][snapLink]
 
-[wwwLink]: https://vues3.github.io/vues3
-[Link]: https://github.com/vues3/vues3/releases/latest
-[snapLink]: https://snapcraft.io/vues3
+[wwwLink]: https://vuebro.github.io/vuebro
+[Link]: https://github.com/vuebro/vuebro/releases/latest
+[snapLink]: https://snapcraft.io/vuebro
 
 ## :framed_picture: Screenshots
 
-[<img src="https://vues3.github.io/images/screenshots/1.png" width="250"/>](https://vues3.github.io/images/screenshots/1.png)
-[<img src="https://vues3.github.io/images/screenshots/2.png" width="250"/>](https://vues3.github.io/images/screenshots/2.png)
-[<img src="https://vues3.github.io/images/screenshots/3.png" width="250"/>](https://vues3.github.io/images/screenshots/3.png)
-[<img src="https://vues3.github.io/images/screenshots/4.png" width="250"/>](https://vues3.github.io/images/screenshots/4.png)
-[<img src="https://vues3.github.io/images/screenshots/5.png" width="250"/>](https://vues3.github.io/images/screenshots/5.png)
-[<img src="https://vues3.github.io/images/screenshots/6.png" width="250"/>](https://vues3.github.io/images/screenshots/6.png)
+[<img src="https://vuebro.github.io/images/screenshots/1.png" width="250"/>](https://vuebro.github.io/images/screenshots/1.png)
+[<img src="https://vuebro.github.io/images/screenshots/2.png" width="250"/>](https://vuebro.github.io/images/screenshots/2.png)
+[<img src="https://vuebro.github.io/images/screenshots/3.png" width="250"/>](https://vuebro.github.io/images/screenshots/3.png)
+[<img src="https://vuebro.github.io/images/screenshots/4.png" width="250"/>](https://vuebro.github.io/images/screenshots/4.png)
+[<img src="https://vuebro.github.io/images/screenshots/5.png" width="250"/>](https://vuebro.github.io/images/screenshots/5.png)
+[<img src="https://vuebro.github.io/images/screenshots/6.png" width="250"/>](https://vuebro.github.io/images/screenshots/6.png)
 
 > [!IMPORTANT]
 >
@@ -44,11 +44,11 @@ vueS3 is an open-source and free web editor for creating websites
 > - To run your website, you'll only need any basic web server capable of serving static pages. In the case of S3, you don't even need that, as this functionality is usually built into the storage itself
 > - By the way, GitHub Pages is also a great option for hosting your website—it works like a charm
 > - Special attention is given to search engine optimization (SEO) mechanisms, which ensure that search bots can effectively index the site
-> - vueS3 is a non-commercial, open-source project – feel free to explore and use it!
+> - VueBro is a non-commercial, open-source project – feel free to explore and use it!
 
 > [!NOTE]
 >
-> <img src="https://vues3.github.io/images/drakkar.svg" width="250"/>
+> <img src="https://vuebro.github.io/images/drakkar.svg" width="250"/>
 >
 > Made on the shores of the Baltic Sea
 
