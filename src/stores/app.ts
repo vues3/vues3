@@ -1,8 +1,8 @@
 import type { SFCDescriptor } from "@vue/compiler-sfc";
-import type { TImportmap, TPage } from "@vues3/shared";
+import type { TImportmap, TPage } from "@vuebro/shared";
 import type { Ref } from "vue";
 
-import { atlas, consoleError, importmap, nodes, pages } from "@vues3/shared";
+import { atlas, consoleError, importmap, nodes, pages } from "@vuebro/shared";
 import { editor, Uri } from "monaco-editor";
 import { debounce } from "quasar";
 import { cache, second, writable } from "stores/defaults";
