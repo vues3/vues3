@@ -54,7 +54,7 @@ export default defineConfig(() => ({
   css: ["app.css"],
   devServer: { open: false },
   electron: {
-    builder: { appId: "vues3" },
+    builder: { appId: "vuebro", linux: { target: ["AppImage"] } },
     bundler: "builder",
     preloadScripts: ["electron-preload"],
   },
