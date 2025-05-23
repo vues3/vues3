@@ -66,7 +66,7 @@
     "@vue/language-plugin-pug": "^2.2.10",
     "@vuebro/runtime": "^0.3.3",
     "autoprefixer": "^10.4.21",
-    "electron": "^36.3.1",
+    "electron": "~36.3.1",
     "electron-builder": "^26.0.12",
     "eslint-config-prettier": "10.1.5",
     "eslint-import-resolver-typescript": "^4.3.5",
