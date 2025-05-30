@@ -66,4 +66,9 @@ export default Object.fromEntries([
     "The link has been copied to clipboard",
     "Ссылка скопирована в буфер обмена",
   ],
+  ["Fonts", "Шрифты"],
+  [
+    "Use web fonts from Google Fonts by simply providing the font names",
+    "Используйте веб-шрифты из Google Fonts, просто указав названия шрифтов",
+  ],
 ]);
