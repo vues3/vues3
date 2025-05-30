@@ -1,5 +1,5 @@
 <template lang="pug">
-q-dialog(ref="dialogRef", full-width, full-height, @hide="onDialogHide")
+q-dialog(ref="dialogRef", full-height, @hide="onDialogHide")
   q-card.q-dialog-plugin.column
     q-card-section.q-dialog__title {{ t("Fonts") }}
     q-card-section.q-dialog__message {{ t("Use web fonts from Google Fonts by simply providing the font names") }}
