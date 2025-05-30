@@ -37,11 +37,7 @@ q-layout(view="hHh Lpr lff")
               q-avatar(color="primary", icon="android", text-color="white")
             q-item-section
               q-item-label Robots.txt
-          q-item(
-            v-close-popup,
-            clickable,
-            @click="() => { click(VFontsDialog); }"
-          )
+          q-item(v-close-popup, clickable, @click="clickFonts")
             q-item-section(avatar)
               q-avatar(color="primary", icon="spellcheck", text-color="white")
             q-item-section
@@ -68,7 +64,6 @@ q-layout(view="hHh Lpr lff")
 </template>
 
 <script setup lang="ts">
-import type { PromptInputType } from "quasar";
 import type { Component } from "vue";
 
 import { consoleError } from "@vuebro/shared";
@@ -76,7 +71,7 @@ import VFaviconDialog from "components/dialogs/VFaviconDialog.vue";
 import VFontsDialog from "components/dialogs/VFontsDialog.vue";
 import VImportmapDialog from "components/dialogs/VImportmapDialog.vue";
 import { useQuasar } from "quasar";
-import { domain, rightDrawer } from "stores/app";
+import { domain, fonts, rightDrawer } from "stores/app";
 import { cache, persistent } from "stores/defaults";
 // eslint-disable-next-line import-x/no-unresolved
 import "virtual:uno.css";
@@ -88,35 +83,46 @@ const $q = useQuasar(),
   click = (component: Component) => {
     $q.dialog({ component });
   },
-  isValid = (val: string) =>
-    /\b((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}\b/.test(
-      val,
-    ),
   { t } = useI18n();
 
 const clickDomain = () => {
-    const message = t("Enter a valid domain name:"),
-      model = domain.value,
-      prompt = { isValid, model },
-      title = t("Domain");
-    $q.dialog({ cancel, message, persistent, prompt, title }).onOk(
-      (data: string) => {
-        domain.value = data;
+    $q.dialog({
+      cancel,
+      message: t("Enter a valid domain name:"),
+      persistent,
+      prompt: {
+        isValid: (val) =>
+          /\b((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}\b/.test(
+            val,
+          ),
+        model: domain.value,
       },
-    );
+      title: t("Domain"),
+    }).onOk((data: string) => {
+      domain.value = data;
+    });
+  },
+  clickFonts = () => {
+    $q.dialog({
+      component: VFontsDialog,
+      componentProps: { fonts, persistent: true },
+    }).onOk((data: string[]) => {
+      fonts.length = 0;
+      fonts.push(...data);
+    });
   },
   clickRobots = async () => {
-    const message = t(
+    const title = "robots.txt";
+    $q.dialog({
+      cancel,
+      message: t(
         "Robots.txt is a text file that contains site indexing parameters for the search engine robots",
       ),
-      title = "robots.txt",
-      model = await getObjectText(title, cache),
-      type: PromptInputType = "textarea",
-      prompt = { model, type };
-    $q.dialog({ cancel, message, persistent, prompt, title }).onOk(
-      (data: string) => {
-        putObject(title, data, "text/plain").catch(consoleError);
-      },
-    );
+      persistent,
+      prompt: { model: await getObjectText(title, cache), type: "textarea" },
+      title,
+    }).onOk((data: string) => {
+      putObject(title, data, "text/plain").catch(consoleError);
+    });
   };
 </script>
