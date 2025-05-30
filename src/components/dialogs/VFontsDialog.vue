@@ -1,10 +1,10 @@
 <template lang="pug">
-q-dialog(ref="dialogRef", @hide="onDialogHide")
-  q-card.w-full
-    q-card-section Fonts
-    q-separator
-    q-card-section.mt-4.h-96(horizontal)
-      q-table.w-full(
+q-dialog(ref="dialogRef", full-width, full-height, @hide="onDialogHide")
+  q-card.q-dialog-plugin.column
+    q-card-section.q-dialog__title {{ t("Fonts") }}
+    q-card-section.q-dialog__message {{ t("Use web fonts from Google Fonts by simply providing the font names") }}
+    q-card-section.q-dialog-plugin__form.scroll.col(horizontal)
+      q-table.h-full.w-full(
         v-model:selected="selected",
         :columns,
         :rows,
@@ -14,20 +14,20 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
         hide-bottom,
         row-key="id",
         selection="multiple",
-        separator="none",
-        virtual-scroll
+        separator="none"
       )
         template(#body-selection="props")
           q-checkbox(v-model="props.selected", dense)
         template(#body-cell="props")
           q-td(:props)
             q-input.min-w-20(v-model.trim="props.row[props.col.name]", dense)
-    q-separator
     q-card-actions.text-primary(align="between")
       q-btn-group(outline)
         q-btn(icon="add", outline, @click="addRow")
         q-btn(icon="remove", outline, @click="removeRow")
-      q-btn(:label="t('Close')", flat, @click="onDialogHide")
+      div
+        q-btn(:label="t('Cancel')", flat, @click="onDialogCancel")
+        q-btn(label="Ok", flat, @click="onOKClick")
 </template>
 
 <script setup lang="ts">
@@ -35,21 +35,24 @@ import type { QTableProps } from "quasar";
 
 import json from "assets/fonts.json";
 import { uid, useDialogPluginComponent } from "quasar";
-import { fonts } from "stores/app";
-import { onMounted, ref, watch } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-const { dialogRef, onDialogHide } = useDialogPluginComponent(),
+const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
+    useDialogPluginComponent(),
+  { fonts } = defineProps<{ fonts: string[] }>(),
   { t } = useI18n();
 
 const columns = json as QTableProps["columns"],
-  rows = ref([] as Record<string, string>[]),
+  rows = ref(fonts.map((name) => ({ id: uid(), name }))),
   selected = ref([] as Record<string, string>[]);
-
 const addRow = () => {
     const id = uid(),
       name = "";
     rows.value.push({ id, name });
+  },
+  onOKClick = () => {
+    onDialogOK(rows.value.map(({ name }) => name).filter(Boolean));
   },
   removeRow = () => {
     const set = new Set(selected.value);
@@ -57,18 +60,4 @@ const addRow = () => {
   };
 
 defineEmits([...useDialogPluginComponent.emits]);
-watch(
-  rows,
-  (value) => {
-    fonts.length = 0;
-    fonts.push(...(value.map(({ name }) => name).filter(Boolean) as never[]));
-  },
-  { deep: true },
-);
-onMounted(() => {
-  rows.value = fonts.map((name) => {
-    const id = uid();
-    return { id, name };
-  });
-});
 </script>
