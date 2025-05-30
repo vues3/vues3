@@ -1,6 +1,6 @@
 import type { SFCDescriptor } from "@vue/compiler-sfc";
 import type { TImportmap, TPage } from "@vuebro/shared";
-import type { Ref } from "vue";
+import type { Reactive, Ref } from "vue";
 
 import { atlas, consoleError, importmap, nodes, pages } from "@vuebro/shared";
 import { editor, Uri } from "monaco-editor";
@@ -39,7 +39,7 @@ const deleted: Ref<TPage | undefined> = ref(),
       `assets/${key}.esm-browser.prod-${value}.js`,
     ]),
   ),
-  fonts = reactive([]),
+  fonts: Reactive<string[]> = reactive([]),
   initJsonLD = `{
     "@context": "https://schema.org"
 }`,
