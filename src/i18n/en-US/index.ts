@@ -52,5 +52,7 @@ export default Object.fromEntries(
     "Image Left",
     "Image Right",
     "The link has been copied to clipboard",
+    "Fonts",
+    "Use web fonts from Google Fonts by simply providing the font names",
   ].map((key) => [key, key]),
 );
