@@ -39,18 +39,12 @@ import { fonts } from "stores/app";
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-/* -------------------------------------------------------------------------- */
-
 const { dialogRef, onDialogHide } = useDialogPluginComponent(),
   { t } = useI18n();
-
-/* -------------------------------------------------------------------------- */
 
 const columns = json as QTableProps["columns"],
   rows = ref([] as Record<string, string>[]),
   selected = ref([] as Record<string, string>[]);
-
-/* -------------------------------------------------------------------------- */
 
 const addRow = () => {
     const id = uid(),
@@ -61,8 +55,6 @@ const addRow = () => {
     const set = new Set(selected.value);
     rows.value = rows.value.filter((x) => !set.has(x));
   };
-
-/* -------------------------------------------------------------------------- */
 
 defineEmits([...useDialogPluginComponent.emits]);
 watch(
