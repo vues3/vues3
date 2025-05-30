@@ -54,7 +54,7 @@ export default defineConfig(() => ({
   css: ["app.css"],
   devServer: { open: false },
   electron: {
-    builder: { appId: "vuebro", linux: { target: ["AppImage"] } },
+    builder: { appId: "vuebro" },
     bundler: "builder",
     preloadScripts: ["electron-preload"],
   },
