@@ -16,11 +16,13 @@ q-dialog(ref="dialogRef", full-height, @hide="onDialogHide")
         selection="multiple",
         separator="none"
       )
-        template(#body-selection="props")
-          q-checkbox(v-model="props.selected", dense)
         template(#body-cell="props")
           q-td(:props)
-            q-input.min-w-20(v-model.trim="props.row[props.col.name]", dense)
+            q-input.min-w-20(
+              v-model.trim="props.row[props.col.name]",
+              dense,
+              autofocus
+            )
     q-card-actions.text-primary(align="between")
       q-btn-group(outline)
         q-btn(icon="add", outline, @click="addRow")
@@ -34,29 +36,39 @@ q-dialog(ref="dialogRef", full-height, @hide="onDialogHide")
 import type { QTableProps } from "quasar";
 
 import json from "assets/fonts.json";
-import { uid, useDialogPluginComponent } from "quasar";
+import { uid, useDialogPluginComponent, useQuasar } from "quasar";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
+const { fonts } = defineProps<{ fonts: string[] }>();
+
+const rows = ref(fonts.map((name) => ({ id: uid(), name }))),
+  selected = ref([] as Record<string, string>[]),
+  { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
     useDialogPluginComponent(),
-  { fonts } = defineProps<{ fonts: string[] }>(),
   { t } = useI18n();
 
-const columns = json as QTableProps["columns"],
-  rows = ref(fonts.map((name) => ({ id: uid(), name }))),
-  selected = ref([] as Record<string, string>[]);
-const addRow = () => {
+const $q = useQuasar(),
+  addRow = () => {
     const id = uid(),
       name = "";
     rows.value.push({ id, name });
   },
+  columns = json as QTableProps["columns"],
   onOKClick = () => {
     onDialogOK(rows.value.map(({ name }) => name).filter(Boolean));
   },
   removeRow = () => {
-    const set = new Set(selected.value);
-    rows.value = rows.value.filter((x) => !set.has(x));
+    if (selected.value.length)
+      $q.dialog({
+        cancel: true,
+        message: t("Do you really want to delete?"),
+        persistent: true,
+        title: t("Confirm"),
+      }).onOk(() => {
+        const set = new Set(selected.value);
+        rows.value = rows.value.filter((x) => !set.has(x));
+      });
   };
 
 defineEmits([...useDialogPluginComponent.emits]);
