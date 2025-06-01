@@ -22,6 +22,5 @@ jobs:
         run: sudo snap install snapcraft --classic
       - run: bun run build:electron
         env:
-          #USE_HARD_LINKS: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
