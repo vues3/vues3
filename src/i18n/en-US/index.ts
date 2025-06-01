@@ -54,5 +54,6 @@ export default Object.fromEntries(
     "The link has been copied to clipboard",
     "Fonts",
     "Use web fonts from Google Fonts by simply providing the font names",
+    "The value is a module specifier map, which provides the mappings between module specifier text that might appear in an import statement or import() operator, and the text that will replace it when the specifier is resolved",
   ].map((key) => [key, key]),
 );
