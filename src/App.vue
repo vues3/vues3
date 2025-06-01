@@ -14,11 +14,7 @@ q-layout(view="hHh Lpr lff")
         stretch
       )
         q-list(padding)
-          q-item(
-            v-close-popup,
-            clickable,
-            @click="() => { click(VImportmapDialog); }"
-          )
+          q-item(v-close-popup, clickable, @click="clickImportmap")
             q-item-section(avatar)
               q-avatar(color="primary", icon="map", text-color="white")
             q-item-section
@@ -66,7 +62,7 @@ q-layout(view="hHh Lpr lff")
 <script setup lang="ts">
 import type { Component } from "vue";
 
-import { consoleError } from "@vuebro/shared";
+import { consoleError, importmap } from "@vuebro/shared";
 import VFaviconDialog from "components/dialogs/VFaviconDialog.vue";
 import VFontsDialog from "components/dialogs/VFontsDialog.vue";
 import VImportmapDialog from "components/dialogs/VImportmapDialog.vue";
@@ -109,6 +105,14 @@ const clickDomain = () => {
     }).onOk((data: string[]) => {
       fonts.length = 0;
       fonts.push(...data);
+    });
+  },
+  clickImportmap = () => {
+    $q.dialog({
+      component: VImportmapDialog,
+      componentProps: { importmap, persistent: true },
+    }).onOk((data: Record<string, string>) => {
+      importmap.imports = data;
     });
   },
   clickRobots = async () => {
