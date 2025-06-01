@@ -71,4 +71,8 @@ export default Object.fromEntries([
     "Use web fonts from Google Fonts by simply providing the font names",
     "Используйте веб-шрифты из Google Fonts, просто указав названия шрифтов",
   ],
+  [
+    "The value is a module specifier map, which provides the mappings between module specifier text that might appear in an import statement or import() operator, and the text that will replace it when the specifier is resolved",
+    "«Карта спецификаторов модуля» — это корректный JSON-объект, в котором ключи представляют собой текст, который может встречаться в спецификаторе модуля при его импорте, а соответствующие значения — это URL-адреса или пути, которые заменят этот текст при разрешении спецификатора в адрес",
+  ],
 ]);
