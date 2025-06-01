@@ -1,6 +1,6 @@
 {
   "name": "vuebro",
-  "version": "3.38.2",
+  "version": "3.39.0",
   "description": "VueBro is a program for creating websites from dynamically loaded vue.js templates at runtime and storing them in the S3 cloud storage",
   "productName": "VueBro",
   "author": "Jerry Bruwes <jbruwes@gmail.com>",
