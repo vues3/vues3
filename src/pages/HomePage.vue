@@ -14,7 +14,7 @@ q-drawer(v-model="rightDrawer", bordered, show-if-above, side="right")
       q-btn.fit(:label="t('Open...')", push, color="primary", @click="getDir")
     q-list(padding)
       q-item(
-        v-for="(cred, name) in credential",
+        v-for="[name, cred] in Object.entries(credential).sort()",
         :key="name",
         v-ripple,
         clickable,
