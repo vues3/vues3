@@ -44,7 +44,7 @@ export default Object.fromEntries(
     "Domain",
     "Show Blocks",
     "Robots.txt is a text file that contains site indexing parameters for the search engine robots",
-    "The class global attribute is a list of the classes of the element, separated by ASCII whitespace",
+    "The class global attribute is a list of the classes of the element, separated by whitespace",
     "Edit classes",
     "Copy Link",
     "Add Image",
@@ -55,5 +55,7 @@ export default Object.fromEntries(
     "Fonts",
     "Use web fonts from Google Fonts by simply providing the font names",
     "The value is a module specifier map, which provides the mappings between module specifier text that might appear in an import statement or import() operator, and the text that will replace it when the specifier is resolved",
+    "Internal Links",
+    "Select a page to insert the corresponding link",
   ].map((key) => [key, key]),
 );
