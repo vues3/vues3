@@ -53,7 +53,7 @@ export default Object.fromEntries([
     "Robots.txt — это текстовый файл, который содержит параметры индексирования сайта для роботов поисковых систем",
   ],
   [
-    "The class global attribute is a list of the classes of the element, separated by ASCII whitespace",
+    "The class global attribute is a list of the classes of the element, separated by whitespace",
     "Глобальный атрибут class это разделённый пробелом список регистров зависимых классов элемента",
   ],
   ["Edit classes", "Редактировать классы"],
@@ -74,5 +74,10 @@ export default Object.fromEntries([
   [
     "The value is a module specifier map, which provides the mappings between module specifier text that might appear in an import statement or import() operator, and the text that will replace it when the specifier is resolved",
     "«Карта спецификаторов модуля» — это корректный JSON-объект, в котором ключи представляют собой текст, который может встречаться в спецификаторе модуля при его импорте, а соответствующие значения — это URL-адреса или пути, которые заменят этот текст при разрешении спецификатора в адрес",
+  ],
+  ["Internal Links", "Внутренние ссылки"],
+  [
+    "Select a page to insert the corresponding link",
+    "Выберите страницу, чтобы вставить соответствующую ссылку",
   ],
 ]);
