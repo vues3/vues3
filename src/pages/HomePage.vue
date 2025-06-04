@@ -82,7 +82,6 @@ q-page.column
 </template>
 <script setup lang="ts">
 import type { TCredentials } from "@vuebro/shared";
-import type { Component } from "vue";
 
 import { consoleError, validateCredentials } from "@vuebro/shared";
 import { useStorage } from "@vueuse/core";
@@ -92,17 +91,17 @@ import CryptoJS from "crypto-js";
 import contentPage from "pages/ContentPage.vue";
 import { useQuasar } from "quasar";
 import { rightDrawer } from "stores/app";
-import { mergeDefaults } from "stores/defaults";
+import { mergeDefaults, persistent } from "stores/defaults";
 import { bucket, headBucket, setFileSystemDirectoryHandle } from "stores/io";
 import { triggerRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 
-/* -------------------------------------------------------------------------- */
+const { t } = useI18n();
 
 const $q = useQuasar(),
   // eslint-disable-next-line no-undef
-  APP_VERSION: string = __APP_VERSION__,
+  APP_VERSION = __APP_VERSION__,
   credential = useStorage(
     "@",
     () => {
@@ -113,53 +112,17 @@ const $q = useQuasar(),
     localStorage,
     { mergeDefaults },
   ),
-  mode = "readwrite",
   router = useRouter();
 
-/* -------------------------------------------------------------------------- */
-
-const { t } = useI18n();
-
-/* -------------------------------------------------------------------------- */
-
-const getPin = async (name: string): Promise<string | undefined> =>
-  new Promise((resolve, reject) => {
-    if (name !== credential.value[name]?.Bucket) {
-      const component = VOtpDialog as Component;
-      const value = credential.value[name]?.Bucket;
-      const componentProps = { value };
-      $q.dialog({ component, componentProps })
-        .onOk((payload: string) => {
-          resolve(payload);
-        })
-        .onCancel(() => {
-          reject(new Error(t("Pin is not entered")));
-        });
-    } else resolve(undefined);
-  });
 const add = () => {
-    const component = VCredsDialog as Component;
-    $q.dialog({ component });
+    $q.dialog({ component: VCredsDialog, componentProps: { persistent } });
   },
   directLogin = (bucketValue: string) => {
-    const component = contentPage as Component,
-      name = "main",
+    const name = "main",
       path = `/${name}`;
     bucket.value = bucketValue;
-    router.addRoute({ component, name, path });
+    router.addRoute({ component: contentPage, name, path });
     router.push(path).catch(consoleError);
-  },
-  edit = async (name: number | string) => {
-    const component = VCredsDialog as Component,
-      value = name;
-    try {
-      const pin = await getPin(name.toString()),
-        componentProps = { pin, value };
-      $q.dialog({ component, componentProps });
-    } catch (err) {
-      const { message } = err as Error;
-      $q.notify({ message });
-    }
   },
   getDir = async () => {
     if ($q.platform.is.electron) {
@@ -171,7 +134,9 @@ const add = () => {
       if (filePath) directLogin(filePath);
     } else
       try {
-        const dirHandle = await window.showDirectoryPicker({ mode });
+        const dirHandle = await window.showDirectoryPicker({
+          mode: "readwrite",
+        });
         setFileSystemDirectoryHandle(dirHandle);
         const { name } = dirHandle;
         directLogin(name);
@@ -180,15 +145,32 @@ const add = () => {
         $q.notify({ message });
       }
   },
+  getPin = async (name: string): Promise<string | undefined> =>
+    new Promise((resolve, reject) => {
+      if (name !== credential.value[name]?.Bucket) {
+        $q.dialog({
+          component: VOtpDialog,
+          componentProps: { model: credential.value[name]?.Bucket },
+        })
+          .onOk((payload: string) => {
+            resolve(payload);
+          })
+          .onCancel(() => {
+            reject(new Error(t("Pin is not entered")));
+          });
+      } else resolve(undefined);
+    }),
   isFileSystemAccess = () => "showOpenFilePicker" in window,
   lock = (name: string) => {
-    const value =
-      name === credential.value[name]?.Bucket
-        ? undefined
-        : credential.value[name]?.Bucket;
-    const componentProps = { value };
-    const component = VOtpDialog as Component;
-    $q.dialog({ component, componentProps }).onOk((payload: string) => {
+    $q.dialog({
+      component: VOtpDialog,
+      componentProps: {
+        model:
+          name === credential.value[name]?.Bucket
+            ? undefined
+            : credential.value[name]?.Bucket,
+      },
+    }).onOk((payload: string) => {
       const cred = credential.value[name];
       if (cred)
         if (name === cred.Bucket) {
@@ -227,6 +209,22 @@ const add = () => {
       triggerRef(credential);
     });
   };
+
+const edit = async (name: number | string) => {
+  try {
+    $q.dialog({
+      component: VCredsDialog,
+      componentProps: {
+        model: name,
+        persistent,
+        pin: await getPin(name.toString()),
+      },
+    });
+  } catch (err) {
+    const { message } = err as Error;
+    $q.notify({ message });
+  }
+};
 </script>
 
 <style scope>
