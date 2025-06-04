@@ -33,23 +33,17 @@ import CryptoJS from "crypto-js";
 import { useDialogPluginComponent } from "quasar";
 import { computed, ref, watch } from "vue";
 
-/* -------------------------------------------------------------------------- */
-
-const { dialogRef, onDialogHide, onDialogOK } = useDialogPluginComponent();
-
-/* -------------------------------------------------------------------------- */
+const { dialogRef, onDialogHide, onDialogOK } = useDialogPluginComponent(),
+  { model } = defineProps<{
+    model: string;
+  }>();
 
 const error = ref(false),
-  fields = ref([] as QInput[]),
-  fieldValues = ref([] as number[]),
+  fields = ref<QInput[]>([]),
+  fieldValues = ref<number[]>([]),
   length = ref(4),
   payload = computed(() => fieldValues.value.filter(Boolean).join("")),
-  props = defineProps<{
-    value?: string;
-  }>(),
   selected = ref(0);
-
-/* -------------------------------------------------------------------------- */
 
 const focus = (index: number) => {
     if (index >= 0 && index < length.value) selected.value = index;
@@ -61,16 +55,13 @@ const focus = (index: number) => {
     fields.value[index] = element as QInput;
   };
 
-/* -------------------------------------------------------------------------- */
-
 defineEmits([...useDialogPluginComponent.emits]);
 
 watch(
   payload,
   (value) => {
     if (value.length === length.value) {
-      if (props.value)
-        error.value = !CryptoJS.AES.decrypt(props.value, value).toString();
+      if (model) error.value = !CryptoJS.AES.decrypt(model, value).toString();
       if (!error.value) onDialogOK(value);
     } else error.value = false;
   },
