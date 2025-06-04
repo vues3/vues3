@@ -11,32 +11,25 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
         square
       )
     q-separator
-    q-card-actions.text-primary(align="right")
-      q-btn(:label="t('Close')", flat, @click="onDialogHide")
+    q-card-actions(align="right")
+      q-btn(color="primary", :label="t('Close')", flat, @click="onDialogHide")
 </template>
 
 <script setup lang="ts">
-import type { QUploader, QUploaderFactoryFn } from "quasar";
-import type { Ref } from "vue";
+import type { QUploader } from "quasar";
 
 import { useDialogPluginComponent, useQuasar } from "quasar";
 import { putObject } from "stores/io";
-import { ref } from "vue";
+import { useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
-
-/* -------------------------------------------------------------------------- */
-
-const $q = useQuasar(),
-  uploader: Ref<null | QUploader> = ref(null);
-
-/* -------------------------------------------------------------------------- */
 
 const { dialogRef, onDialogHide } = useDialogPluginComponent(),
   { t } = useI18n();
 
-/* -------------------------------------------------------------------------- */
+const $q = useQuasar(),
+  uploader = useTemplateRef<null | QUploader>("uploader");
 
-const factory: QUploaderFactoryFn = async (files) => {
+const factory = async (files: readonly File[]) => {
   const [file] = files;
   let message = t("Favicon uploaded successfully");
   try {
@@ -54,8 +47,6 @@ const factory: QUploaderFactoryFn = async (files) => {
   $q.notify({ message });
   return Promise.reject(new Error());
 };
-
-/* -------------------------------------------------------------------------- */
 
 defineEmits([...useDialogPluginComponent.emits]);
 </script>
