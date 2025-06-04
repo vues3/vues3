@@ -30,14 +30,28 @@ q-dialog(ref="dialogRef", full-width, full-height, @hide="onDialogHide")
               dense,
               :autofocus="props.col.name === 'name'"
             )
-    q-separator
-    q-card-actions.text-primary(align="between")
+    q-card-actions(align="between")
       q-btn-group(outline)
-        q-btn(icon="add", outline, @click="addRow")
-        q-btn(icon="remove", outline, @click="removeRow")
+        q-btn(
+          color="primary",
+          icon="add",
+          outline,
+          @click="rows.push({ id: uid(), name: '', path: '' })"
+        )
+        q-btn(color="primary", icon="remove", outline, @click="removeRow")
       div
-        q-btn(:label="t('Cancel')", flat, @click="onDialogCancel")
-        q-btn(label="Ok", flat, @click="onOKClick")
+        q-btn(
+          color="primary",
+          :label="t('Cancel')",
+          flat,
+          @click="onDialogCancel"
+        )
+        q-btn(
+          color="primary",
+          label="Ok",
+          flat,
+          @click="onDialogOK(Object.fromEntries(rows.filter(({ name, path }) => path && name).map(({ name, path }) => [name, path])))"
+        )
 </template>
 <script setup lang="ts">
 import type { QTableProps } from "quasar";
@@ -47,54 +61,39 @@ import { uid, useDialogPluginComponent, useQuasar } from "quasar";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-const { importmap } = defineProps<{
+const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
+    useDialogPluginComponent(),
+  { importmap } = defineProps<{
     importmap: { imports: Record<string, string> };
   }>(),
   {
     imports: { vue, ["vue-router"]: vueRouter, ...imports },
-  } = importmap;
+  } = importmap,
+  { t } = useI18n();
 
-const rows = ref(
+const $q = useQuasar(),
+  columns = json as QTableProps["columns"],
+  rows = ref(
     Object.entries(imports).map(([name, path]) => ({
       id: uid(),
       name,
       path,
     })),
   ),
-  selected = ref([] as Record<string, string>[]),
-  { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
-    useDialogPluginComponent(),
-  { t } = useI18n();
+  selected = ref<Record<string, string>[]>([]);
 
-const $q = useQuasar(),
-  addRow = () => {
-    const id = uid(),
-      name = "",
-      path = "";
-    rows.value.push({ id, name, path });
-  },
-  columns = json as QTableProps["columns"],
-  onOKClick = () => {
-    onDialogOK(
-      Object.fromEntries(
-        rows.value
-          .filter(({ name, path }) => path && name)
-          .map(({ name, path }) => [name, path]),
-      ),
-    );
-  },
-  removeRow = () => {
-    if (selected.value.length)
-      $q.dialog({
-        cancel: true,
-        message: t("Do you really want to delete?"),
-        persistent: true,
-        title: t("Confirm"),
-      }).onOk(() => {
-        const set = new Set(selected.value);
-        rows.value = rows.value.filter((x) => !set.has(x));
-      });
-  };
+const removeRow = () => {
+  if (selected.value.length)
+    $q.dialog({
+      cancel: true,
+      message: t("Do you really want to delete?"),
+      persistent: true,
+      title: t("Confirm"),
+    }).onOk(() => {
+      const set = new Set(selected.value);
+      rows.value = rows.value.filter((x) => !set.has(x));
+    });
+};
 
 defineEmits([...useDialogPluginComponent.emits]);
 
