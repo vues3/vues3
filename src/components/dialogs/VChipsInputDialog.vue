@@ -1,5 +1,5 @@
 <template lang="pug">
-q-dialog(ref="dialogRef", :persistent, @hide="onDialogHide")
+q-dialog(ref="dialogRef", @hide="onDialogHide")
   q-card.q-dialog-plugin
     q-card-section.q-dialog__title {{ title }}
     q-card-section.q-dialog__message {{ message }}
@@ -16,31 +16,27 @@ q-dialog(ref="dialogRef", :persistent, @hide="onDialogHide")
       )
     q-card-actions(align="right")
       q-btn(
-        v-if="cancel",
         color="primary",
-        label="Cancel",
         flat,
+        :label="t('Cancel')",
         @click="onDialogCancel"
       )
-      q-btn(color="primary", label="OK", flat, @click="onDialogOK(value)")
+      q-btn(color="primary", flat, label="OK", @click="onDialogOK(value)")
 </template>
 
 <script setup lang="ts">
 import { useDialogPluginComponent } from "quasar";
+import { useI18n } from "vue-i18n";
 
-/* -------------------------------------------------------------------------- */
-
-const value = defineModel<string[]>("value"),
-  { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
+const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
     useDialogPluginComponent(),
-  { message, persistent, title } = defineProps<{
-    cancel: boolean;
+  { message, title } = defineProps<{
     message: string;
-    persistent: boolean;
     title: string;
-  }>();
+  }>(),
+  { t } = useI18n();
 
-/* -------------------------------------------------------------------------- */
+const value = defineModel<string[]>("value");
 
 defineEmits([...useDialogPluginComponent.emits]);
 </script>
