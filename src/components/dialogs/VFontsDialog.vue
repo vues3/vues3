@@ -23,13 +23,28 @@ q-dialog(ref="dialogRef", full-height, @hide="onDialogHide")
               dense,
               autofocus
             )
-    q-card-actions.text-primary(align="between")
+    q-card-actions(align="between")
       q-btn-group(outline)
-        q-btn(icon="add", outline, @click="addRow")
-        q-btn(icon="remove", outline, @click="removeRow")
+        q-btn(
+          color="primary",
+          icon="add",
+          outline,
+          @click="rows.push({ id: uid(), name: '' })"
+        )
+        q-btn(color="primary", icon="remove", outline, @click="removeRow")
       div
-        q-btn(:label="t('Cancel')", flat, @click="onDialogCancel")
-        q-btn(label="Ok", flat, @click="onOKClick")
+        q-btn(
+          color="primary",
+          :label="t('Cancel')",
+          flat,
+          @click="onDialogCancel"
+        )
+        q-btn(
+          color="primary",
+          label="Ok",
+          flat,
+          @click="onDialogOK(rows.map(({ name }) => name).filter(Boolean))"
+        )
 </template>
 
 <script setup lang="ts">
@@ -40,36 +55,28 @@ import { uid, useDialogPluginComponent, useQuasar } from "quasar";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-const { fonts } = defineProps<{ fonts: string[] }>();
-
-const rows = ref(fonts.map((name) => ({ id: uid(), name }))),
-  selected = ref([] as Record<string, string>[]),
-  { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
+const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
     useDialogPluginComponent(),
+  { fonts } = defineProps<{ fonts: string[] }>(),
   { t } = useI18n();
 
 const $q = useQuasar(),
-  addRow = () => {
-    const id = uid(),
-      name = "";
-    rows.value.push({ id, name });
-  },
   columns = json as QTableProps["columns"],
-  onOKClick = () => {
-    onDialogOK(rows.value.map(({ name }) => name).filter(Boolean));
-  },
-  removeRow = () => {
-    if (selected.value.length)
-      $q.dialog({
-        cancel: true,
-        message: t("Do you really want to delete?"),
-        persistent: true,
-        title: t("Confirm"),
-      }).onOk(() => {
-        const set = new Set(selected.value);
-        rows.value = rows.value.filter((x) => !set.has(x));
-      });
-  };
+  rows = ref(fonts.map((name) => ({ id: uid(), name }))),
+  selected = ref<Record<string, string>[]>([]);
+
+const removeRow = () => {
+  if (selected.value.length)
+    $q.dialog({
+      cancel: true,
+      message: t("Do you really want to delete?"),
+      persistent: true,
+      title: t("Confirm"),
+    }).onOk(() => {
+      const set = new Set(selected.value);
+      rows.value = rows.value.filter((x) => !set.has(x));
+    });
+};
 
 defineEmits([...useDialogPluginComponent.emits]);
 </script>
