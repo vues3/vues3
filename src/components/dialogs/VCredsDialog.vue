@@ -1,7 +1,7 @@
 <template lang="pug">
 q-dialog(ref="dialogRef", @hide="onDialogHide")
-  q-card.w-full
-    q-card-section
+  q-card.q-dialog-plugin
+    q-card-section.q-dialog-plugin__form
       q-input(
         ref="bucketRef",
         v-model.trim="Bucket",
@@ -62,10 +62,10 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
       )
         template(#prepend)
           q-icon(name="flag")
-    q-separator
-    q-card-actions.text-primary.bg-grey-1(align="right")
-      q-btn(flat, label="Cancel", @click="onDialogCancel")
+    q-card-actions(align="right")
+      q-btn(color="primary", flat, label="Cancel", @click="onDialogCancel")
       q-btn(
+        color="primary",
         flat,
         label="Ok",
         @click="() => { bucketRef?.validate(); if (!bucketRef?.hasError) click(encrypt({ Bucket, secretAccessKey, region, endpoint, accessKeyId })); }"
@@ -73,7 +73,7 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
 </template>
 
 <script setup lang="ts">
-import type { QDialog, QInput } from "quasar";
+import type { QInput } from "quasar";
 
 import endpoints from "assets/endpoints.json";
 import regions from "assets/regions.json";
@@ -84,30 +84,21 @@ import { credential } from "stores/s3";
 import { ref, triggerRef, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 
-/* -------------------------------------------------------------------------- */
-
 const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
     useDialogPluginComponent(),
+  { model = undefined, pin = undefined } = defineProps<{
+    model?: string;
+    pin?: string;
+  }>(),
   { t } = useI18n();
 
-/* -------------------------------------------------------------------------- */
-
-const $q = useQuasar(),
-  props = defineProps<{
-    pin?: string;
-    value?: string;
-  }>();
-
-/* -------------------------------------------------------------------------- */
-
 const decrypt = (value?: string) =>
-  props.pin
-    ? CryptoJS.AES.decrypt(value ?? "", props.pin).toString(CryptoJS.enc.Utf8)
+  pin
+    ? CryptoJS.AES.decrypt(value ?? "", pin).toString(CryptoJS.enc.Utf8)
     : (value ?? null);
 
-/* -------------------------------------------------------------------------- */
-
-const cred = credential.value[props.value ?? ""],
+const $q = useQuasar(),
+  cred = credential.value[model ?? ""],
   accessKeyId = ref(decrypt(cred?.accessKeyId ?? undefined)),
   Bucket = ref(decrypt(cred?.Bucket ?? undefined)),
   bucketRef = useTemplateRef<QInput>("bucketRef"),
@@ -116,21 +107,16 @@ const cred = credential.value[props.value ?? ""],
   region = ref(decrypt(cred?.region ?? undefined)),
   secretAccessKey = ref(decrypt(cred?.secretAccessKey ?? undefined));
 
-/* -------------------------------------------------------------------------- */
-
 const click = (value: Record<string, null | string>) => {
     if (Bucket.value)
-      if (
-        props.value !== Bucket.value &&
-        Reflect.has(credential.value, Bucket.value)
-      )
+      if (model !== Bucket.value && Reflect.has(credential.value, Bucket.value))
         $q.dialog({
           message: t("That account already exists"),
           title: t("Confirm"),
         });
       else {
-        if (props.value && props.value !== Bucket.value)
-          Reflect.deleteProperty(credential.value, props.value);
+        if (model && model !== Bucket.value)
+          Reflect.deleteProperty(credential.value, model);
         Reflect.defineProperty(credential.value, Bucket.value, {
           enumerable,
           value,
@@ -141,17 +127,15 @@ const click = (value: Record<string, null | string>) => {
       }
   },
   encrypt = (obj: Record<string, null | string>) =>
-    props.pin
+    pin
       ? Object.fromEntries(
           Object.entries(obj).map(([key, value]) => [
             key,
-            CryptoJS.AES.encrypt(value ?? "", props.pin ?? "").toString(),
+            CryptoJS.AES.encrypt(value ?? "", pin).toString(),
           ]),
         )
       : obj,
   getRegions = (value: null | string) => regions[(value ?? "") as keyof object];
-
-/* -------------------------------------------------------------------------- */
 
 defineEmits([...useDialogPluginComponent.emits]);
 </script>
