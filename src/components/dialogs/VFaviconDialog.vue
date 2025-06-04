@@ -10,7 +10,6 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
         label="Favicon",
         square
       )
-    q-separator
     q-card-actions(align="right")
       q-btn(color="primary", :label="t('Close')", flat, @click="onDialogHide")
 </template>
