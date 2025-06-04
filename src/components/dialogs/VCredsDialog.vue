@@ -79,7 +79,7 @@ import endpoints from "assets/endpoints.json";
 import regions from "assets/regions.json";
 import CryptoJS from "crypto-js";
 import { useDialogPluginComponent, useQuasar } from "quasar";
-import { enumerable, writable } from "stores/defaults";
+import { configurable, enumerable, writable } from "stores/defaults";
 import { credential } from "stores/s3";
 import { ref, triggerRef, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
@@ -118,6 +118,7 @@ const click = (value: Record<string, null | string>) => {
         if (model && model !== Bucket.value)
           Reflect.deleteProperty(credential.value, model);
         Reflect.defineProperty(credential.value, Bucket.value, {
+          configurable,
           enumerable,
           value,
           writable,
