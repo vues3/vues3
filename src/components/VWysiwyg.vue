@@ -82,66 +82,15 @@ import {
 import { putObject } from "stores/io";
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+
 let rootElement: () => Element | undefined;
-const editor = ref<QEditor>(),
-  scrollTarget = ref<Element>(),
-  { files, open } = useFileDialog({ accept, reset }),
+
+const { files, open } = useFileDialog({ accept, reset }),
   { t } = useI18n();
+
 const $q = useQuasar(),
   blocks = ref(false),
-  definitions = {
-    ...Object.fromEntries(
-      [
-        [
-          "dashboard",
-          t("Show Blocks"),
-          () => {
-            blocks.value = !blocks.value;
-            if (blocks.value) scrollTarget.value?.classList.add("outline");
-            else scrollTarget.value?.classList.remove("outline");
-          },
-        ],
-        ["wallpaper", t("Upload Image"), open],
-        [
-          "file_present",
-          t("Insert Route"),
-          () => {
-            $q.dialog({
-              component: VLinkDialog,
-              componentProps: {
-                message: t("Select a page to insert the corresponding link"),
-                persistent,
-                title: t("Internal Links"),
-              },
-            }).onOk((value: string) => {
-              editor.value?.runCmd("createLink", value);
-            });
-          },
-        ],
-      ].map(
-        ([icon, tip, handler]) =>
-          [icon, { handler, icon, tip }] as [string, QEditorCommand],
-      ),
-    ),
-    ...Object.fromEntries(
-      [
-        ...[...Array(6).keys()].map((key) => [
-          `h${String(key + 1)}`,
-          `heading${String(key + 1)}`,
-        ]),
-        ["p", "paragraph"],
-        ["code", "code"],
-      ].map(([key = "div", value]) => [
-        key,
-        {
-          htmlTip: `<span class="prose">
-  <${key} class="!my-0">${$q.lang.editor[value as keyof StringDictionary<QuasarLanguageEditorLabel>]}</${key}>
-</span>`,
-        },
-      ]),
-    ),
-  },
-  emit = defineEmits(["update:modelValue"]),
+  editor = ref<QEditor>(),
   fonts = computed(() => ({
     ...getFontsObjectFromArray([
       "Arial",
@@ -166,30 +115,10 @@ const $q = useQuasar(),
     },
   ),
   htm = ref(await props.modelValue),
-  insertImage = (file: File) => {
-    const message = t(
-        "The graphic file type is not suitable for use on the web",
-      ),
-      { type } = file;
-    if (mimes.includes(type)) {
-      const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
-      (async () => {
-        await putObject(
-          filePath,
-          new Uint8Array(await file.arrayBuffer()),
-          type,
-        );
-      })().catch(consoleError);
-      urls.set(filePath, URL.createObjectURL(file));
-      editor.value?.runCmd(
-        "insertHTML",
-        `<img src="${urls.get(filePath) ?? ""}" data-src="${filePath}" alt="" decoding="async" loading="lazy" />`,
-      );
-    } else $q.notify({ message });
-  },
   inViewport = ref(false),
   list = "no-icons",
   placeholder = t("Add some content to your page..."),
+  scrollTarget = ref<Element>(),
   show = ref(false),
   srcElement = ref<boolean | Element>(true),
   tagNameClassList = ref(""),
@@ -245,7 +174,83 @@ const $q = useQuasar(),
     ["undo", "redo"],
     ["wallpaper", "file_present"],
   ]);
-const onContextmenu = (event: Event) => {
+
+const definitions = {
+  ...Object.fromEntries(
+    [
+      [
+        "dashboard",
+        t("Show Blocks"),
+        () => {
+          blocks.value = !blocks.value;
+          if (blocks.value) scrollTarget.value?.classList.add("outline");
+          else scrollTarget.value?.classList.remove("outline");
+        },
+      ],
+      ["wallpaper", t("Upload Image"), open],
+      [
+        "file_present",
+        t("Insert Route"),
+        () => {
+          $q.dialog({
+            component: VLinkDialog,
+            componentProps: {
+              message: t("Select a page to insert the corresponding link"),
+              persistent,
+              title: t("Internal Links"),
+            },
+          }).onOk((value: string) => {
+            editor.value?.runCmd("createLink", value);
+          });
+        },
+      ],
+    ].map(
+      ([icon, tip, handler]) =>
+        [icon, { handler, icon, tip }] as [string, QEditorCommand],
+    ),
+  ),
+  ...Object.fromEntries(
+    [
+      ...[...Array(6).keys()].map((key) => [
+        `h${String(key + 1)}`,
+        `heading${String(key + 1)}`,
+      ]),
+      ["p", "paragraph"],
+      ["code", "code"],
+    ].map(([key = "div", value]) => [
+      key,
+      {
+        htmlTip: `<span class="prose">
+  <${key} class="!my-0">${$q.lang.editor[value as keyof StringDictionary<QuasarLanguageEditorLabel>]}</${key}>
+</span>`,
+      },
+    ]),
+  ),
+};
+
+const emit = defineEmits(["update:modelValue"]),
+  insertImage = (file: File) => {
+    const message = t(
+        "The graphic file type is not suitable for use on the web",
+      ),
+      { type } = file;
+    if (mimes.includes(type)) {
+      const filePath = `images/${uid()}.${mime.getExtension(type) ?? ""}`;
+      (async () => {
+        await putObject(
+          filePath,
+          new Uint8Array(await file.arrayBuffer()),
+          type,
+        );
+      })().catch(consoleError);
+      urls.set(filePath, URL.createObjectURL(file));
+      editor.value?.runCmd(
+        "insertHTML",
+        `<img src="${urls.get(filePath) ?? ""}" data-src="${filePath}" alt="" decoding="async" loading="lazy" />`,
+      );
+    } else $q.notify({ message });
+  },
+  onContextmenu = (event: Event) => {
     event.stopPropagation();
   },
   onMouseover = ({ currentTarget, target: element }: Event) => {
@@ -297,14 +302,17 @@ const onContextmenu = (event: Event) => {
       [...files].forEach(insertImage);
     }
   };
+
 watch(files, (newFiles) => {
   if (newFiles) [...newFiles].forEach(insertImage);
 });
+
 watch(target, async () => {
   show.value = false;
   await nextTick();
   show.value = true;
 });
+
 watch(
   () => props.id,
   async () => {
@@ -313,6 +321,7 @@ watch(
       scrollTarget.value.innerHTML = htm.value;
   },
 );
+
 onMounted(() => {
   rootElement = editor.value?.getContentEl ?? (() => undefined);
   watch(
@@ -331,6 +340,7 @@ onMounted(() => {
   scrollTarget.value?.addEventListener("contextmenu", onContextmenu);
   editor.value?.focus();
 });
+
 onUnmounted(() => {
   scrollTarget.value?.removeEventListener("mouseover", onMouseover);
   scrollTarget.value?.removeEventListener("contextmenu", onContextmenu);
