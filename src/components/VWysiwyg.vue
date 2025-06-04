@@ -56,7 +56,6 @@ import type {
   QuasarLanguageEditorLabel,
   StringDictionary,
 } from "quasar";
-import type { Component } from "vue";
 
 import webFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
@@ -76,7 +75,6 @@ import { fonts as Fonts, urls } from "stores/app";
 import {
   accept,
   bypassDefined,
-  cancel,
   immediate,
   persistent,
   reset,
@@ -108,8 +106,14 @@ const $q = useQuasar(),
           "file_present",
           t("Insert Route"),
           () => {
-            const component = VLinkDialog as Component;
-            $q.dialog({ component }).onOk((value: string) => {
+            $q.dialog({
+              component: VLinkDialog,
+              componentProps: {
+                message: t("Select a page to insert the corresponding link"),
+                persistent,
+                title: t("Internal Links"),
+              },
+            }).onOk((value: string) => {
               editor.value?.runCmd("createLink", value);
             });
           },
@@ -265,14 +269,17 @@ const onContextmenu = (event: Event) => {
   openClassDialog = () => {
     if (typeof srcElement.value !== "boolean") {
       const { classList = [] } = srcElement.value;
-      const component = VChipsInputDialog as Component,
-        message = t(
-          "The class global attribute is a list of the classes of the element, separated by ASCII whitespace",
-        ),
-        title = "class",
-        value = [...classList],
-        componentProps = { cancel, message, persistent, title, value };
-      $q.dialog({ component, componentProps }).onOk((className: string[]) => {
+      $q.dialog({
+        component: VChipsInputDialog,
+        componentProps: {
+          message: t(
+            "The class global attribute is a list of the classes of the element, separated by whitespace",
+          ),
+          persistent,
+          title: "class",
+          value: [...classList],
+        },
+      }).onOk((className: string[]) => {
         if (typeof srcElement.value !== "boolean")
           srcElement.value.className = className.join(" ");
         emit("update:modelValue", scrollTarget.value?.innerHTML);
