@@ -28,14 +28,15 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
 import { useDialogPluginComponent } from "quasar";
 import { useI18n } from "vue-i18n";
 
-const value = defineModel<string[]>("value"),
-  { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
+const { dialogRef, onDialogCancel, onDialogHide, onDialogOK } =
     useDialogPluginComponent(),
   { message, title } = defineProps<{
     message: string;
     title: string;
   }>(),
   { t } = useI18n();
+
+const value = defineModel<string[]>("value");
 
 defineEmits([...useDialogPluginComponent.emits]);
 </script>
