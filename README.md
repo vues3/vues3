@@ -1,6 +1,6 @@
 [![vuebro](https://snapcraft.io/vuebro/badge.svg)](https://snapcraft.io/vuebro)
 
-# :sailboat: Web editor VueBro
+# :punch: Web editor VueBro
 
 VueBro is an open-source and free web editor for creating websites
 
